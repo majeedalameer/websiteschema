@@ -1,4 +1,4 @@
-#summary One-this experiment focus on website http://www.163.com/, we analysis batch of classes, each class has same schema, the pages in same class have same html marks, these marks could present the common schema of this pages.
+#summary this experiment focus on website http://www.163.com/, we analysis batch of classes, each class has same schema, the pages in same class have same html marks, these marks could present the common schema of this pages.
 #labels Clustering,UnsupervisedLearning
 
 = Introduction =
