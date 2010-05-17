@@ -10,7 +10,7 @@ import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.graphics.Device;
 /*
- *
+ * 您必须指定xulrunner的位置，方法：-Dorg.eclipse.swt.browser.XULRunnerPath=/usr/local/xulrunner-sdk/bin
  * @author ray
  */
 
