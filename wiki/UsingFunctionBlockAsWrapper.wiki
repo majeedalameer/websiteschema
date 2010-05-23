@@ -12,6 +12,6 @@ sample/
 websiteschema/fb/
   一些基本功能块
 websiteschema/fb/task/
-  由功能块拼装的执行任务。
-  Task.java     一个Task由多个URL和一个Wrapper组成，一个Task下属有多个SubTask
-  SubTask.java  一个子任务由一个Wrapper和一个URL组成
+ * 由功能块拼装的执行任务。
+ * Task.java     一个Task由多个URL和一个Wrapper组成，一个 Task 下属有多个 SubTask
+ * SubTask.java  一个子任务由一个Wrapper和一个URL组成
