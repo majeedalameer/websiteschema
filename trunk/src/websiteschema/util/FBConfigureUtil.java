@@ -90,7 +90,7 @@ public class FBConfigureUtil {
                     }
                 }
 
-                System.out.println(name);
+//                System.out.println(name);
                 parseFBConfig(n, task);
             }
         }
