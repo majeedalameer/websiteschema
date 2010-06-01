@@ -5,16 +5,15 @@
 package browser.swt;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.browser.ProgressEvent;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.browser.ProgressListener;
 import org.eclipse.swt.graphics.Device;
 
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.ProgressEvent;
 import org.eclipse.swt.browser.ProgressListener;
+import org.eclipse.swt.events.SelectionListener;
 import org.mozilla.interfaces.nsIDOMDocument;
 import org.mozilla.interfaces.nsIDOMHTMLDocument;
 import org.mozilla.interfaces.nsIDOMHTMLElement;
@@ -28,8 +27,15 @@ import org.mozilla.interfaces.nsIWebBrowser;
 public class TestBrowser {
 
     final Display display = new Display();
-    Shell shell = null;
+    final Shell shell = new Shell(display);
     Browser browser = null;
+    String url = "";
+    Text text = null;
+
+    public TestBrowser(String URL){
+        url = URL;
+    }
+
     ProgressListener pListener = new ProgressListener() {
 
         public void changed(ProgressEvent pe) {
@@ -55,6 +61,10 @@ public class TestBrowser {
         }
     };
 
+    public void open(){
+        open(url);
+    }
+
     public void open(String url) {
         if (browser != null) {
             /* The Browser widget can be used */
@@ -74,25 +84,31 @@ public class TestBrowser {
 
     public void init() {
         Device.DEBUG = true;
-        shell = new Shell(display);
-        shell.setLayout(new FillLayout());
-        shell.setText("Mozilla");
+        shell.setLayout(new GridLayout(2, true));
         System.out.println("platform : " + SWT.getPlatform());
         try {
             browser = new Browser(shell, SWT.MOZILLA);
         } catch (SWTError e) {
-            /* The Browser widget throws an SWTError if it fails to
-             * instantiate properly. Application code should catch
-             * this SWTError and disable any feature requiring the
-             * Browser widget.
-             * Platform requirements for the SWT Browser widget are available
-             * from the SWT FAQ website.
-             */
-
             display.dispose();
             return;
         }
+        browser.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true, 2, 1));
+        
+        Button button = new Button(shell, SWT.PUSH);
+	button.setText("转到");
+        button.addSelectionListener(new SelectionListener() {
 
+            public void widgetSelected(SelectionEvent se) {
+                System.out.println("press1 " + text.getText());
+                open(text.getText());
+            }
+
+            public void widgetDefaultSelected(SelectionEvent se) {
+                System.out.println("press2");
+            }
+        });
+        text = new Text(shell, SWT.MULTI | SWT.BORDER);
+        text.setText(url);
     }
 
     public void trigger(nsIDOMNSHTMLElement html) {
@@ -100,8 +116,8 @@ public class TestBrowser {
     }
 
     public static void main(String[] args) {
-        TestBrowser browser = new TestBrowser();
+        TestBrowser browser = new TestBrowser("http://www.baidu.com/");
         browser.init();
-        browser.open("http://www.cs.com.cn/xwzx/05/201005/t20100531_2454386.htm");
+        browser.open();
     }
 }
