@@ -32,10 +32,9 @@ public class TestBrowser {
     String url = "";
     Text text = null;
 
-    public TestBrowser(String URL){
+    public TestBrowser(String URL) {
         url = URL;
     }
-
     ProgressListener pListener = new ProgressListener() {
 
         public void changed(ProgressEvent pe) {
@@ -50,18 +49,19 @@ public class TestBrowser {
             if (null != webBrowser) {
                 nsIDOMDocument document = webBrowser.getContentDOMWindow().getDocument();
                 nsIDOMHTMLDocument htmlDocument = (nsIDOMHTMLDocument) document.queryInterface(nsIDOMHTMLDocument.NS_IDOMHTMLDOCUMENT_IID);
+
                 nsIDOMHTMLElement element = htmlDocument.getBody();
                 nsIDOMNSHTMLElement nsHtmlElement = (nsIDOMNSHTMLElement) element.queryInterface(nsIDOMNSHTMLElement.NS_IDOMNSHTMLELEMENT_IID);
 //                String bodyContent = nsHtmlElement.getInnerHTML();
 //                System.out.println(bodyContent);
-                trigger(nsHtmlElement);
+                trigger(htmlDocument);
             } else {
                 System.out.println("can not get nsIWebBrowser");
             }
         }
     };
 
-    public void open(){
+    public void open() {
         open(url);
     }
 
@@ -93,9 +93,9 @@ public class TestBrowser {
             return;
         }
         browser.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true, 2, 1));
-        
+
         Button button = new Button(shell, SWT.PUSH);
-	button.setText("转到");
+        button.setText("转到");
         button.addSelectionListener(new SelectionListener() {
 
             public void widgetSelected(SelectionEvent se) {
@@ -111,8 +111,10 @@ public class TestBrowser {
         text.setText(url);
     }
 
-    public void trigger(nsIDOMNSHTMLElement html) {
+    public void trigger(nsIDOMHTMLDocument html) {
         System.out.println("trig a new event");
+        url = html.getURL();
+        text.setText(url);
     }
 
     public static void main(String[] args) {
