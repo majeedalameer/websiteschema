@@ -5,6 +5,7 @@
 
 package websiteschema.wrapper
 
+import scala.actors.Actor
 import scala.actors.Actor._
 import websiteschema.wrapper.fb._
 
@@ -12,10 +13,10 @@ import websiteschema.wrapper.fb._
  * An xml file descript the relationship of function blocks.
  * Wrapper build those function blocks and run them.
  */
-class Wrapper {
+class Wrapper extends Actor {
 
   val funcBlocks = Map[String, FB]()
-  val links = new FBLinkManager
+  val fbLinks = new FBLinkManager
   
   var stop = false;
 
@@ -39,7 +40,7 @@ class Wrapper {
   private def getFB(event:BasicEvent):FB = getFB(event.fb)
 
   private def execute(event:BasicEvent){
-    val events = links.getEventLinks(event.fb, event.name)
+    val events = fbLinks.getEventLinks(event.fb, event.name)
     events foreach invokeFB
 
     def invokeFB(eventLink:EventLink) {
@@ -57,7 +58,7 @@ class Wrapper {
 
     def transportEventRelativeData(fb:FB, eventDataLink:EventDataLink): Unit = {
       val output = eventDataLink.relativeData
-      val dataLinks = links.getDataLinks(fb.getName, output)
+      val dataLinks = fbLinks.getDataLinks(fb.getName, output)
       dataLinks foreach transportData
 
       def transportData(dataLink:DataLink):Unit = {
