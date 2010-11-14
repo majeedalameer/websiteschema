@@ -5,14 +5,11 @@
 
 package websiteschema.wrapper.fb
 
-import scala.actors.Actor._
 import websiteschema.wrapper.Wrapper
-import scala.collection.mutable.Map
 import scala.collection.mutable.Set
-import websiteschema.wrapper.fb._
 
-abstract class DemoFB(name:String, params:Map[String,String], wrapper:Wrapper)
-  extends FB(name:String, params:Map[String,String], wrapper:Wrapper)
+class DemoFB(name:String, params:Map[String,String], wrapper:Wrapper)
+  extends AbstractFB(name:String, params:Map[String,String], wrapper:Wrapper)
 {
 
   var date:String = "hello";
@@ -32,7 +29,7 @@ abstract class DemoFB(name:String, params:Map[String,String], wrapper:Wrapper)
     }
     case "end" => {
         println("task over")
-        wrapper ! EndEvent()
+        wrapper ! EndEvent(<result>NULL</result>)
     }
     case _ => println("invalid event")
   }
