@@ -25,7 +25,7 @@ class DemoFB(name:String, params:Map[String,String], wrapper:Wrapper)
   def process(event:String):Unit = event match {
     case "print" => {
         println(date)
-        wrapper ! BasicEvent(name,"date")
+        wrapper ! BasicEvent(getName(),"date")
     }
     case "end" => {
         println("task over")

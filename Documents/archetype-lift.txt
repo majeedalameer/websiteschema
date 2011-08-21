@@ -1,2 +1,1 @@
-mvn archetype:generate -U   -DarchetypeGroupId=net.liftweb -DarchetypeArtifactId=lift-archetype-basic   -DarchetypeVersion=2.0-scala280-SNAPSHOT   -DarchetypeRepository=http://scala-tools.org/repo-snapshots  -DremoteRepositories=http://scala-tools.org/repo-snapshots   -DgroupId=com.liftworkshop
-  -DartifactId=todo  -Dversion=1.0-SNAPSHOT
+mvn archetype:generate -U   -DarchetypeGroupId=net.liftweb -DarchetypeArtifactId=lift-archetype-basic_2.8.0   -DarchetypeVersion=2.3-SNAPSHOT   -DarchetypeRepository=http://scala-tools.org/repo-snapshots  -DremoteRepositories=http://scala-tools.org/repo-snapshots   -DgroupId=com.liftworkshop -DartifactId=todo  -Dversion=1.0-SNAPSHOT

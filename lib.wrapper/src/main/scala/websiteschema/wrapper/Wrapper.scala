@@ -38,10 +38,10 @@ class Wrapper extends Actor {
     }
 
   def getFB(fbName: String) = funcBlocks.get(fbName)
-  private def getFB(event:BasicEvent):Option[FB] = getFB(event.fb)
+  private def getFB(event:BasicEvent):Option[FB] = getFB(event.destFB)
 
   private def execute(event:BasicEvent){
-    val destFBs = fbLinks.getEventLinks(event.fb, event.name)
+    val destFBs = fbLinks.getEventLinks(event.destFB, event.eventName)
     destFBs foreach invokeFB
 
     def invokeFB(eventLink:EventLink) {
@@ -57,7 +57,7 @@ class Wrapper extends Actor {
   private def delivery(event:BasicEvent) {
     getFB(event) match {
       case Some(fb) => {
-          val relativeDatas = fb getRelativeDataLinksOf event.name
+          val relativeDatas = fb getRelativeDataLinksOf event.eventName
           relativeDatas.foreach(transportEventRelativeData(fb, _))
 
           def transportEventRelativeData(fb:FB, eventDataLink:EventDataLink): Unit = {
