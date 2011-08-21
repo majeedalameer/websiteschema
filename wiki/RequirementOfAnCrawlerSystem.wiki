@@ -1,0 +1,16 @@
+#summary One-sentence summary of this page.
+
+= Introduction =
+
+Requirement of an Crawler System, must composite of wrapper induction system and web crawler system.
+
+
+= Details =
+
+一个数据采集系统必定由抽取器和采集器两个部分组成。
+
+采集器主要负责采集数据，这部分必须考虑各种形式的网络数据：表格，pdf，html，doc，flash等，还要考虑动态加载ajax数据，网络代理，反抓取等问题。
+
+抽取器主要负责分析采集到的数据，并将数据转换成各种可用的格式。其中包括去除噪声，文档元数据抽取等。其中文档原数据包括：标题、内容、时间、作者、来源等。另外还有些系统将自动文摘，关键词提取，文本分类等功能也设计在抽取器中实现。
+
+另外的数据采集系统必定有一个抽取器生成系统，这个系统可以分析指定网站，配置采集器，并自动生成抽取器。
