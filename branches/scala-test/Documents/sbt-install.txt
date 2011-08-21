@@ -1,0 +1,5 @@
+1. Download simple build tool sbt-launch.version.jar
+2. cp sbt-launch.jar ~/bin
+3. vi ~/bin/sbt
+       java -Xmx512M -jar `dirname $0`/sbt-launch.version.jar "$@"
+4. chmod u+x ~/bin/sbt

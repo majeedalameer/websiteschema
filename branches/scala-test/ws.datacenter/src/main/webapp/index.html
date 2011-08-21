@@ -1,0 +1,23 @@
+<lift:surround with="default" at="content">
+    <h2>Welcome to your project!</h2>
+    <p>
+    <lift:helloWorld.howdy>
+        <span>Welcome to your Lift app at <b:time/></span>
+    </lift:helloWorld.howdy>
+    <lift:comet type="Chat">
+        <div>
+            <ul id="ul_dude">
+                <chat:line>
+                    <li><chat:msg/> <chat:btn/></li>
+                </chat:line>
+            </ul>
+            <lift:form>
+                <chat:input>
+                    <input type="submit" value="chat"/>
+                </chat:input>
+            </lift:form>
+        </div>
+    </lift:comet>
+    </p>
+</lift:surround>
+
