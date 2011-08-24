@@ -10,3 +10,4 @@
 || 网站 || 网址 || 难度 || 原因 ||
 || 网易 || http://www.163.com/ || 容易 || 页面格式规范，URL格式也规范 ||
 || 证券日报 || http://zqrb.ccstock.cn/ || 中等 || 页面跳转，在Firefox下会自动弹出对话框 ||
+|| 凤凰网 || http://finance.ifeng.com/stock/jshq/20110824/4456409.shtml || 中等 || 翻页 ||
