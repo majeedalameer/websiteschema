@@ -9,5 +9,6 @@
 == 新闻网站 ==
 || 网站 || 网址 || 类型 || 难度 || 原因 ||
 || 网易 || http://www.163.com/ || 栏目页 || 容易 || 页面格式规范，URL格式也规范 ||
-|| 信息时报 || http://informationtimes.dayoo.com/ || 栏目页 || 简单 || 页面跳转，会自动弹出对话框 ||
+|| 信息时报 || http://informationtimes.dayoo.com/ || 栏目页 || 容易 || 页面跳转，会自动弹出对话框 ||
+|| 重庆晚报 || http://www.cqwb.com.cn/cqwb/ || 栏目页 || 容易 || 页面跳转，会自动弹出对话框 ||
 || 凤凰网 || http://finance.ifeng.com/stock/jshq/20110824/4456409.shtml || 内容页 || 容易 || 翻页 ||
