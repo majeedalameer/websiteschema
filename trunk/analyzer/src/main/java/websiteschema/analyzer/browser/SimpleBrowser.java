@@ -8,7 +8,6 @@
  *
  * Created on Aug 23, 2011, 11:59:13 PM
  */
-
 package websiteschema.analyzer.browser;
 
 import com.webrenderer.swing.BrowserFactory;
@@ -16,6 +15,9 @@ import com.webrenderer.swing.IMozillaBrowserCanvas;
 import com.webrenderer.swing.RenderingOptimization;
 import java.awt.BorderLayout;
 import javax.swing.JPanel;
+import websiteschema.analyzer.browser.listener.SimpleMouseListener;
+import websiteschema.analyzer.browser.listener.SimpleNetworkListener;
+import websiteschema.analyzer.browser.listener.SimplePromptListener;
 
 /**
  *
@@ -23,12 +25,20 @@ import javax.swing.JPanel;
  */
 public class SimpleBrowser extends javax.swing.JFrame {
 
-    final IMozillaBrowserCanvas browser;
+    IMozillaBrowserCanvas browser = null;
+    Console console;
 
     /** Creates new form SimpleAnalyzer */
     public SimpleBrowser() {
         initComponents();
-        
+        console = new Console(consoleTextArea);
+
+        //初始化Webrenderer
+        initBrowser();
+        displayBrowserInfo();
+    }
+
+    private void initBrowser() {
         BrowserFactory.setLicenseData("30dtrial", "2PS4MACGJHK0T6JP5F1101Q8");
 
         //Core function to create browser
@@ -40,9 +50,21 @@ public class SimpleBrowser extends javax.swing.JFrame {
 
         browser.loadURL("http://www.baidu.com/");
 
+        browser.addMouseListener(new SimpleMouseListener());
+        browser.addPromptListener(new SimplePromptListener());
+        browser.addNetworkListener(new SimpleNetworkListener());
+
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(BorderLayout.CENTER, browser.getComponent());
         this.jInternalFrame1.setContentPane(panel);
+    }
+
+    private void displayBrowserInfo() {
+        String mozVersion = browser.getMozillaVersion();
+        String mozPath = BrowserFactory.getLibraryPath();
+
+        console.log("mozilla path: " + mozPath);
+        console.log("xulrunner version: " + mozVersion);
     }
 
     /** This method is called from within the constructor to
@@ -55,13 +77,13 @@ public class SimpleBrowser extends javax.swing.JFrame {
     private void initComponents() {
 
         jToolBar1 = new javax.swing.JToolBar();
-        jTextField1 = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
+        urlTextField = new javax.swing.JTextField();
+        goButton = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        consoleTextArea = new javax.swing.JTextArea();
         jInternalFrame1 = new javax.swing.JInternalFrame();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
@@ -72,21 +94,26 @@ public class SimpleBrowser extends javax.swing.JFrame {
 
         jToolBar1.setRollover(true);
 
-        jTextField1.setText("about:blank");
-        jToolBar1.add(jTextField1);
+        urlTextField.setText("about:blank");
+        jToolBar1.add(urlTextField);
 
-        jButton1.setText("go");
-        jButton1.setFocusable(false);
-        jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(jButton1);
+        goButton.setText("go");
+        goButton.setFocusable(false);
+        goButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        goButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        goButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                goButtonActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(goButton);
 
         jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jPanel2.setMaximumSize(new java.awt.Dimension(32767, 200));
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane2.setViewportView(jTextArea1);
+        consoleTextArea.setColumns(20);
+        consoleTextArea.setRows(5);
+        jScrollPane2.setViewportView(consoleTextArea);
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -159,19 +186,27 @@ public class SimpleBrowser extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void goButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_goButtonActionPerformed
+        // TODO add your handling code here:
+        String url = urlTextField.getText();
+        browser.loadURL(url);
+    }//GEN-LAST:event_goButtonActionPerformed
+
     /**
-    * @param args the command line arguments
-    */
+     * @param args the command line arguments
+     */
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
+
+            @Override
             public void run() {
                 new SimpleBrowser().setVisible(true);
             }
         });
     }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    private javax.swing.JTextArea consoleTextArea;
+    private javax.swing.JButton goButton;
     private javax.swing.JInternalFrame jInternalFrame1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
@@ -181,9 +216,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JTextField jTextField1;
     private javax.swing.JToolBar jToolBar1;
+    private javax.swing.JTextField urlTextField;
     // End of variables declaration//GEN-END:variables
-
 }
