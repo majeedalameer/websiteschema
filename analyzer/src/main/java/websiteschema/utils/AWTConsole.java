@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package websiteschema.analyzer.browser;
+package websiteschema.utils;
 
 import javax.swing.JTextArea;
 
@@ -11,14 +11,15 @@ import javax.swing.JTextArea;
  *
  * @author ray
  */
-public class Console {
+public class AWTConsole implements Console {
 
     JTextArea textArea;
 
-    public Console(JTextArea textArea) {
+    public AWTConsole(JTextArea textArea) {
         this.textArea = textArea;
     }
 
+    @Override
     public void log(String info) {
         textArea.append(info);
         textArea.append("\n");
