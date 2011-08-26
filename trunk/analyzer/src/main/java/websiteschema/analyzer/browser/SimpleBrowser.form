@@ -78,6 +78,9 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="about:blank"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="urlTextFieldActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="goButton">
           <Properties>

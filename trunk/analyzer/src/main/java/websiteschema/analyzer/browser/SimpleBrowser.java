@@ -10,6 +10,8 @@
  */
 package websiteschema.analyzer.browser;
 
+import websiteschema.utils.Console;
+import websiteschema.utils.AWTConsole;
 import com.webrenderer.swing.BrowserFactory;
 import com.webrenderer.swing.IMozillaBrowserCanvas;
 import com.webrenderer.swing.RenderingOptimization;
@@ -18,6 +20,8 @@ import javax.swing.JPanel;
 import websiteschema.analyzer.browser.listener.SimpleMouseListener;
 import websiteschema.analyzer.browser.listener.SimpleNetworkListener;
 import websiteschema.analyzer.browser.listener.SimplePromptListener;
+import websiteschema.context.BrowserContext;
+import websiteschema.vips.VipsCanvas;
 
 /**
  *
@@ -27,19 +31,25 @@ public class SimpleBrowser extends javax.swing.JFrame {
 
     IMozillaBrowserCanvas browser = null;
     Console console;
+    VipsFrame vipsFrame;
+    VipsCanvas vipsCanvas;
+    BrowserContext context;
+    boolean vips = true;
 
     /** Creates new form SimpleAnalyzer */
     public SimpleBrowser() {
         initComponents();
-        console = new Console(consoleTextArea);
-
+        console = new AWTConsole(consoleTextArea);
+        
         //初始化Webrenderer
         initBrowser();
         displayBrowserInfo();
     }
 
     private void initBrowser() {
-        BrowserFactory.setLicenseData("30dtrial", "2PS4MACGJHK0T6JP5F1101Q8");
+        //3O0N6H48EE721MIG4A31C21Q
+//        BrowserFactory.setLicenseData("30dtrial", "2PS4MACGJHK0T6JP5F1101Q8");
+        BrowserFactory.setLicenseData("30dtrial", "3O0N6H48EE721MIG4A31C21Q");
 
         //Core function to create browser
         browser = BrowserFactory.spawnMozilla();
@@ -50,13 +60,27 @@ public class SimpleBrowser extends javax.swing.JFrame {
 
         browser.loadURL("http://www.baidu.com/");
 
-        browser.addMouseListener(new SimpleMouseListener());
-        browser.addPromptListener(new SimplePromptListener());
-        browser.addNetworkListener(new SimpleNetworkListener());
-
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(BorderLayout.CENTER, browser.getComponent());
         this.jInternalFrame1.setContentPane(panel);
+
+        //添加VIPS测试代码
+        context = new BrowserContext();
+        context.setUseVIPS(vips);
+        if (context.isUseVIPS()) {
+            vipsFrame = new VipsFrame();
+            vipsCanvas = new VipsCanvas();
+            vipsFrame.setVisible(true);
+            context.setVipsFrame(vipsFrame);
+            context.setVipsCanvas(vipsCanvas);
+            vipsFrame.setCanvas(vipsCanvas);
+        }
+        context.setConsole(console);
+
+        //添加Listener
+        browser.addMouseListener(new SimpleMouseListener(context));
+        browser.addPromptListener(new SimplePromptListener());
+        browser.addNetworkListener(new SimpleNetworkListener(context, browser));
     }
 
     private void displayBrowserInfo() {
@@ -95,6 +119,11 @@ public class SimpleBrowser extends javax.swing.JFrame {
         jToolBar1.setRollover(true);
 
         urlTextField.setText("about:blank");
+        urlTextField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                urlTextFieldActionPerformed(evt);
+            }
+        });
         jToolBar1.add(urlTextField);
 
         goButton.setText("go");
@@ -191,6 +220,12 @@ public class SimpleBrowser extends javax.swing.JFrame {
         String url = urlTextField.getText();
         browser.loadURL(url);
     }//GEN-LAST:event_goButtonActionPerformed
+
+    private void urlTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_urlTextFieldActionPerformed
+        // TODO add your handling code here:
+        String url = urlTextField.getText();
+        browser.loadURL(url);
+    }//GEN-LAST:event_urlTextFieldActionPerformed
 
     /**
      * @param args the command line arguments
