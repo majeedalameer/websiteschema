@@ -11,7 +11,7 @@ import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
 import websiteschema.element.Rectangle;
-import websiteschema.element.RectangleFactory;
+import websiteschema.element.factory.RectangleFactory;
 
 /**
  *

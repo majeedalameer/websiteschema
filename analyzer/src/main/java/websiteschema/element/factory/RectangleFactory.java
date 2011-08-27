@@ -3,9 +3,10 @@
  * and open the template in the editor.
  */
 
-package websiteschema.element;
+package websiteschema.element.factory;
 
 import com.webrenderer.swing.dom.IElement;
+import websiteschema.element.Rectangle;
 
 /**
  *
