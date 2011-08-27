@@ -5,14 +5,20 @@
 package websiteschema.analyzer.browser.listener;
 
 import com.webrenderer.swing.dom.IElement;
+import com.webrenderer.swing.dom.IStyleRule;
+import com.webrenderer.swing.dom.IStyleSheet;
 import com.webrenderer.swing.event.MouseEvent;
 import com.webrenderer.swing.event.MouseListener;
 import org.apache.log4j.Logger;
 import websiteschema.context.BrowserContext;
+import websiteschema.element.CSSProperties;
 import websiteschema.element.Rectangle;
-import websiteschema.element.RectangleFactory;
+import websiteschema.element.StyleSheet;
+import websiteschema.element.factory.RectangleFactory;
 import websiteschema.element.XPathAttributes;
-import websiteschema.element.XPathFactory;
+import websiteschema.element.factory.StyleSheetFactory;
+import websiteschema.element.factory.XPathFactory;
+import websiteschema.vips.extraction.VipsBlockExtractor;
 
 /**
  *
@@ -23,6 +29,8 @@ public class SimpleMouseListener implements MouseListener {
     XPathAttributes attr = new XPathAttributes();
     Logger l = Logger.getRootLogger();
     BrowserContext context;
+    IElement lastClickedElement;
+    String lastStyle = null;
 
     public SimpleMouseListener(BrowserContext context) {
         attr.setUsingClass(true);
@@ -34,12 +42,39 @@ public class SimpleMouseListener implements MouseListener {
     @Override
     public void onClick(MouseEvent me) {
         l.debug("mouse onclick");
-        IElement ele = me.getTargetElement();
-        Rectangle rect = new RectangleFactory().create(ele);
-        String xpath = new XPathFactory().create(ele, attr);
-        l.debug("xpath: " + xpath);
-        System.out.println("xpath: " + xpath);
-        l.debug(rect);
+        if (null != context.getBrowser().getDocument()) {
+            IElement ele = me.getTargetElement();
+            if (null != lastClickedElement) {
+                if (null != lastStyle && !"".equals(lastStyle)) {
+                    lastClickedElement.setAttribute("style", lastStyle, 0);
+                } else {
+                    lastClickedElement.removeAttribute("style", 0);
+                }
+            }
+            lastStyle = ele.getAttribute("style", 0);
+            if (null != lastStyle && !"".equals(lastStyle)) {
+                ele.setAttribute("style", lastStyle + ";border-style: solid; border-width: 5px;", 0);
+            } else {
+                ele.setAttribute("style", "border-style: solid; border-width: 5px;", 0);
+            }
+            lastClickedElement = ele;
+            Rectangle rect = new RectangleFactory().create(ele);
+            String xpath = new XPathFactory().create(ele, attr);
+            l.debug("xpath: " + xpath);
+            System.out.println("xpath: " + xpath);
+            l.debug(rect);
+            String referrer1 = context.getBrowser().getDocument().getReferrer();
+            StyleSheet styleSheets = context.getStyleSheet(referrer1);
+            CSSProperties css = new StyleSheetFactory().createCSSProperties(styleSheets, ele);
+            l.debug("CSS Properties: " + css);
+            VipsBlockExtractor be = new VipsBlockExtractor();
+            be.setContext(context);
+            String referrer2 = context.getBrowser().getDocument().getReferrer();
+            be.setReferrer(referrer2);
+            Rectangle rectBody = new RectangleFactory().create(context.getBrowser().getDocument().getBody());
+            be.setPageSize(rectBody.getHeight() * rect.getWidth());
+            be.analysisElement(ele);
+        }
     }
 
     @Override

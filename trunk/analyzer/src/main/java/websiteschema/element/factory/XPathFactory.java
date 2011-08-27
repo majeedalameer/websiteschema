@@ -2,9 +2,10 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package websiteschema.element;
+package websiteschema.element.factory;
 
 import com.webrenderer.swing.dom.IElement;
+import websiteschema.element.XPathAttributes;
 
 /**
  * 根据指定的设置（XPathAttributes），生成指定元素的xpath。
