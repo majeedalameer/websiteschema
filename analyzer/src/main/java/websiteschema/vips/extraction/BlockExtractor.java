@@ -2,9 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package websiteschema.vips.extraction;
 
+import websiteschema.vips.extraction.rule.DivideRule;
 import com.webrenderer.swing.dom.IElement;
 
 /**
@@ -13,10 +13,9 @@ import com.webrenderer.swing.dom.IElement;
  */
 public interface BlockExtractor {
 
-    public final static int Dividable = 2;
-    public final static int UnDividable = 1;
-    public final static int Cut = 0;
+    public final static int Dividable = -1;
+    public final static int UnDividable = -2;
+    public final static int Cut = -3;
 
-    public int dividable(IElement ele, int level);
-
+    public DivideRule dividable(IElement ele, int level);
 }

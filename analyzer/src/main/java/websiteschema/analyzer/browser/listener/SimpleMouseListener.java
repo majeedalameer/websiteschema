@@ -36,6 +36,7 @@ public class SimpleMouseListener implements MouseListener {
         attr.setUsingClass(true);
         attr.setUsingId(true);
         attr.setSpecifyAttr("name");
+        attr.setUsingPosition(true);
         this.context = context;
     }
 
@@ -44,20 +45,7 @@ public class SimpleMouseListener implements MouseListener {
         l.debug("mouse onclick");
         if (null != context.getBrowser().getDocument()) {
             IElement ele = me.getTargetElement();
-            if (null != lastClickedElement) {
-                if (null != lastStyle && !"".equals(lastStyle)) {
-                    lastClickedElement.setAttribute("style", lastStyle, 0);
-                } else {
-                    lastClickedElement.removeAttribute("style", 0);
-                }
-            }
-            lastStyle = ele.getAttribute("style", 0);
-            if (null != lastStyle && !"".equals(lastStyle)) {
-                ele.setAttribute("style", lastStyle + ";border-style: solid; border-width: 5px;", 0);
-            } else {
-                ele.setAttribute("style", "border-style: solid; border-width: 5px;", 0);
-            }
-            lastClickedElement = ele;
+            drawRectangleInPage(ele);
             Rectangle rect = new RectangleFactory().create(ele);
             String xpath = new XPathFactory().create(ele, attr);
             l.debug("xpath: " + xpath);
@@ -67,14 +55,33 @@ public class SimpleMouseListener implements MouseListener {
             StyleSheet styleSheets = context.getStyleSheet(referrer1);
             CSSProperties css = new StyleSheetFactory().createCSSProperties(styleSheets, ele);
             l.debug("CSS Properties: " + css);
+
+
             VipsBlockExtractor be = new VipsBlockExtractor();
             be.setContext(context);
             String referrer2 = context.getBrowser().getDocument().getReferrer();
             be.setReferrer(referrer2);
             Rectangle rectBody = new RectangleFactory().create(context.getBrowser().getDocument().getBody());
-            be.setPageSize(rectBody.getHeight() * rect.getWidth());
+            be.setPageSize(rectBody.getHeight() * rectBody.getWidth());
             be.analysisElement(ele);
         }
+    }
+
+    private void drawRectangleInPage(IElement ele) {
+        if (null != lastClickedElement) {
+            if (null != lastStyle && !"".equals(lastStyle)) {
+                lastClickedElement.setAttribute("style", lastStyle, 0);
+            } else {
+                lastClickedElement.removeAttribute("style", 0);
+            }
+        }
+        lastStyle = ele.getAttribute("style", 0);
+        if (null != lastStyle && !"".equals(lastStyle)) {
+            ele.setAttribute("style", lastStyle + ";border-style: solid; border-width: 5px;", 0);
+        } else {
+            ele.setAttribute("style", "border-style: solid; border-width: 5px;", 0);
+        }
+        lastClickedElement = ele;
     }
 
     @Override

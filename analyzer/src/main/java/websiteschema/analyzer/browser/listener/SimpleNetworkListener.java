@@ -16,6 +16,11 @@ import websiteschema.element.Rectangle;
 import websiteschema.element.StyleSheet;
 import websiteschema.element.factory.RectangleFactory;
 import websiteschema.element.factory.StyleSheetFactory;
+import websiteschema.utils.Configure;
+import websiteschema.vips.VisualPageSegmenter;
+import websiteschema.vips.extraction.BlockExtractor;
+import websiteschema.vips.extraction.BlockExtractorFactory;
+import websiteschema.vips.extraction.VipsBlockExtractor;
 
 /**
  *
@@ -45,14 +50,28 @@ public class SimpleNetworkListener implements NetworkListener {
     @Override
     public void onDocumentComplete(NetworkEvent ne) {
         l.debug("onDocumentComplete " + ne.getURL());
-        if (context.isUseVIPS()) {
-            context.getVipsCanvas().setDocument(browser.getDocument());
-        }
 
         IDocument doc = context.getBrowser().getDocument();
         StyleSheet styleSheet = new StyleSheetFactory().createStyleSheet(doc);
         String referrer = doc.getReferrer();
         context.setStyleSheet(referrer, styleSheet);
+
+        if (context.isUseVIPS()) {
+            context.getVipsCanvas().setDocument(browser.getDocument());
+        }
+        // Creator VIPS Segmenter
+        VisualPageSegmenter segmenter = new VisualPageSegmenter();
+        // Create extractor
+        Rectangle rect = RectangleFactory.getInstance().create(doc.getBody());
+        double pageSize = rect.getHeight() * rect.getWidth();
+        context.getConsole().log("Page: " + rect + " Size: " + pageSize);
+        double threshold = context.getConfigure().getDoubleProperty("VIPS", "RelativeSizeThreshold", 0.1);
+        BlockExtractor extractor =
+                BlockExtractorFactory.getInstance().create(context, referrer, pageSize, threshold);
+
+        // Set extractor
+        segmenter.setExtractor(extractor);
+        segmenter.pageSegment(doc);
     }
 
     @Override

@@ -61,13 +61,15 @@ public class StyleSheetFactory {
     public CSSProperties createCSSProperties(StyleSheet styleSheet, IElement ele) {
         CSSProperties ret = new CSSProperties();
 
-        String[] selectors = getSelector(ele);
+        if (null != styleSheet) {
+            String[] selectors = getSelector(ele);
 
-        for (String selector : selectors) {
-            Map<String, String> properties = styleSheet.get(selector);
-            if (null != properties) {
-                for (String key : properties.keySet()) {
-                    ret.put(key, properties.get(key));
+            for (String selector : selectors) {
+                Map<String, String> properties = styleSheet.get(selector);
+                if (null != properties) {
+                    for (String key : properties.keySet()) {
+                        ret.put(key, properties.get(key));
+                    }
                 }
             }
         }

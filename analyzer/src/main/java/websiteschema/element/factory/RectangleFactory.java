@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package websiteschema.element.factory;
 
 import com.webrenderer.swing.dom.IElement;
@@ -14,12 +13,18 @@ import websiteschema.element.Rectangle;
  */
 public class RectangleFactory {
 
+    private static final RectangleFactory instance = new RectangleFactory();
+
+    public static RectangleFactory getInstance() {
+        return instance;
+    }
+
     public Rectangle create(IElement ele) {
         int h = (int) ele.getOffsetHeight();
         int w = (int) ele.getOffsetWidth();
         int l = getAbsoluteOffsetLeft(ele);
         int t = getAbsoluteOffsetTop(ele);
-        return new Rectangle(h,w,l,t);
+        return new Rectangle(h, w, l, t);
     }
 
     private int getAbsoluteOffsetLeft(IElement ele) {
@@ -39,5 +44,4 @@ public class RectangleFactory {
         }
         return offsetTop;
     }
-
 }

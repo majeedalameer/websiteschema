@@ -59,7 +59,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
         renOps.setWindowlessFlashSmoothScrolling(true);
         browser.setRenderingOptimizations(renOps);
 
-        browser.loadURL("http://localhost:8080/");
+        browser.loadURL("http://www.baidu.com/");
 
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(BorderLayout.CENTER, browser.getComponent());
@@ -120,6 +120,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
         jMenu2 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Simple Browser");
 
         jToolBar1.setRollover(true);
 
@@ -235,7 +236,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jInternalFrame1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(jTabbedPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 536, Short.MAX_VALUE)))
         );
 

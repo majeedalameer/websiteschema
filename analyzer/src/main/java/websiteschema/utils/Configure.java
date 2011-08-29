@@ -12,13 +12,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  *
@@ -169,7 +170,7 @@ public class Configure {
     public List<String> getListProperty(String field, String key) {
         String value = getProperty(field, key);
         if (null != value) {
-            return Arrays.asList(value.split(","));
+            return JSONArray.fromObject(value);
         } else {
             return null;
         }
@@ -182,9 +183,67 @@ public class Configure {
     public Set<String> getSetProperty(String field, String key) {
         String value = getProperty(field, key);
         if (null != value) {
-            return new HashSet<String>(Arrays.asList(value.split(",")));
+            return new HashSet<String>(getListProperty(field, key));
         } else {
             return null;
         }
+    }
+
+    public Map<String, String> getMapProperty(String key) {
+        return getMapProperty(Default_Field, key);
+    }
+
+    public Map<String, String> getMapProperty(String field, String key) {
+        String value = getProperty(field, key);
+        if (null != value) {
+            JSONObject json = JSONObject.fromObject(value);
+            return json;
+        } else {
+            return null;
+        }
+    }
+
+    public int getIntProperty(String key) {
+        return getIntProperty(Default_Field, key, 0);
+    }
+
+    public int getIntProperty(String field, String key) {
+        return getIntProperty(field, key, 0);
+    }
+
+    public int getIntProperty(String field, String key, int def) {
+        if (null == key || "".equals(key)) {
+            return def;
+        }
+        Map<String, String> map = properties.get(field.toLowerCase());
+        if (null != map) {
+            String ret = map.get(key.toLowerCase());
+            if (null != ret) {
+                return Integer.valueOf(ret);
+            }
+        }
+        return def;
+    }
+
+    public double getDoubleProperty(String key) {
+        return getDoubleProperty(Default_Field, key, 0.0);
+    }
+
+    public double getDoubleProperty(String field, String key) {
+        return getDoubleProperty(field, key, 0.0);
+    }
+
+    public double getDoubleProperty(String field, String key, double def) {
+        if (null == key || "".equals(key)) {
+            return def;
+        }
+        Map<String, String> map = properties.get(field.toLowerCase());
+        if (null != map) {
+            String ret = map.get(key.toLowerCase());
+            if (null != ret) {
+                return Double.valueOf(ret);
+            }
+        }
+        return def;
     }
 }
