@@ -23,10 +23,11 @@ public class ElementUtil {
 
     public void drawRectangleInPage(IElement ele) {
         String lastStyle = ele.getAttribute("style", 0);
+        String additionStyle = "border-style: solid; border-width: 3px;";
         if (null != lastStyle && !"".equals(lastStyle)) {
-            ele.setAttribute("style", lastStyle + ";border-style: solid; border-width: 5px;", 0);
+            ele.setAttribute("style", lastStyle + ";" + additionStyle, 0);
         } else {
-            ele.setAttribute("style", "border-style: solid; border-width: 5px;", 0);
+            ele.setAttribute("style", additionStyle, 0);
         }
     }
 

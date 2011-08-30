@@ -247,14 +247,21 @@ public class SimpleBrowser extends javax.swing.JFrame {
     private void goButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_goButtonActionPerformed
         // TODO add your handling code here:
         String url = urlTextField.getText();
-        browser.loadURL(url);
+        openUrl(url);
     }//GEN-LAST:event_goButtonActionPerformed
 
     private void urlTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_urlTextFieldActionPerformed
         // TODO add your handling code here:
         String url = urlTextField.getText();
-        browser.loadURL(url);
+        openUrl(url);
     }//GEN-LAST:event_urlTextFieldActionPerformed
+
+    private void openUrl(String url) {
+        if (!url.startsWith("http://")) {
+            url = "http://" + url;
+        }
+        browser.loadURL(url);
+    }
 
     /**
      * @param args the command line arguments

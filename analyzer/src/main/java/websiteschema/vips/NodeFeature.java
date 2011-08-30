@@ -7,7 +7,7 @@ package websiteschema.vips;
 import com.webrenderer.swing.dom.IElement;
 import com.webrenderer.swing.dom.IElementCollection;
 import java.util.Set;
-import org.w3c.dom.Node;
+import org.apache.log4j.Logger;
 import websiteschema.context.BrowserContext;
 import websiteschema.element.CSSProperties;
 import websiteschema.element.Rectangle;
@@ -22,6 +22,7 @@ import websiteschema.utils.Configure;
  */
 public class NodeFeature {
 
+    Logger l = Logger.getRootLogger();
     static final Set<String> inlineNodeSet = Configure.getDefaultConfigure().getSetProperty("VIPS", "InlineNodeName");
     static final RectangleFactory rectangleFactory = new RectangleFactory();
     static final StyleSheetFactory styleSheetFactory = new StyleSheetFactory();
@@ -59,6 +60,23 @@ public class NodeFeature {
     }
 
     /**
+     * A node that height is smaller than 30 and width is smaller than 400.
+     * @param ele
+     * @return
+     */
+    public boolean isSmallNode(IElement ele) {
+        Rectangle rect = rectangleFactory.create(ele);
+        if (rect.getHeight() != 0 || rect.getWidth() != 0) {
+            if (rect.getHeight() <= 30 && rect.getWidth() <= 400) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * A node has at least one valid child.
      * @param ele
      * @return
@@ -85,6 +103,24 @@ public class NodeFeature {
         if (null != children && children.length() > 0) {
             for (int i = 0; i < children.length(); i++) {
                 if (!isVirtualTextNode(children.item(i))) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Does all of child node are small node?
+     * @param ele
+     * @return
+     */
+    public boolean areChildrenSmallNode(IElement ele) {
+        IElementCollection children = ele.getChildElements();
+        if (null != children && children.length() > 0) {
+            for (int i = 0; i < children.length(); i++) {
+                if (!isSmallNode(children.item(i))) {
                     return false;
                 }
             }
@@ -232,7 +268,7 @@ public class NodeFeature {
 //            String tagName = ele.getTagName();
 //            Node node = ele.convertToW3CNode();
 //            int nodeType = node.getNodeType();
-//            System.out.println(tagName + " - " + nodeType);
+//            l.debug(tagName + " - " + nodeType);
             IElementCollection children = ele.getChildElements();
             if (null != children && children.length() > 0) {
                 for (int i = 0; i < children.length(); i++) {

@@ -56,7 +56,6 @@ public class DivideRuleFactory {
             rule = (DivideRule) obj;
         } catch (Exception ex) {
             ex.printStackTrace();
-            System.out.println("Can not init Function Block " + className);
         }
         return rule;
     }

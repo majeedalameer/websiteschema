@@ -48,7 +48,7 @@ public class SimpleMouseListener implements MouseListener {
             drawRectangleInPage(ele);
             Rectangle rect = new RectangleFactory().create(ele);
             String xpath = new XPathFactory().create(ele, attr);
-            l.debug("xpath: " + xpath);
+            l.debug("Elememnt Type: " + ele.getTagName());
             System.out.println("xpath: " + xpath);
             l.debug(rect);
             String referrer1 = context.getBrowser().getDocument().getReferrer();

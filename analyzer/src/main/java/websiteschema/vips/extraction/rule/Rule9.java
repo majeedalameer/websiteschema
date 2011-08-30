@@ -6,6 +6,7 @@
 package websiteschema.vips.extraction.rule;
 
 import com.webrenderer.swing.dom.IElement;
+import org.apache.log4j.Logger;
 import websiteschema.vips.extraction.BlockExtractor;
 
 /**
@@ -14,6 +15,7 @@ import websiteschema.vips.extraction.BlockExtractor;
  */
 public class Rule9 extends AbstractRule {
 
+    Logger l = Logger.getRootLogger();
     double pageSize;
     double threshold;
 
@@ -29,9 +31,9 @@ public class Rule9 extends AbstractRule {
     @Override
     public boolean match(IElement ele, int level) {
         double relativeSize = nodeFeature.getRelativeSize(ele, pageSize);
-        System.out.println("relativeSize: " + relativeSize + " PageSize: " + pageSize);
         if (relativeSize < threshold) {
             if (nodeFeature.hasTextOrVirtualTextNode(ele)) {
+                l.trace("relativeSize: " + relativeSize + " PageSize: " + pageSize);
                 return true;
             }
         }
