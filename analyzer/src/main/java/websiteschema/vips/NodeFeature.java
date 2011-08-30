@@ -42,7 +42,11 @@ public class NodeFeature {
      * @return
      */
     public boolean isInlineNode(IElement ele) {
-        return inlineNodeSet.contains(ele.getTagName());
+        if (null != ele) {
+            return inlineNodeSet.contains(ele.getTagName());
+        } else {
+            return false;
+        }
     }
 
     /**

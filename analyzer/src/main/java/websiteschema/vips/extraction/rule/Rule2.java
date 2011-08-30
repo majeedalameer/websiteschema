@@ -18,7 +18,7 @@ public class Rule2 extends AbstractRule {
         if (1 == nodeFeature.howManyChildren(ele)) {
             IElementCollection children = ele.getChildElements();
             IElement onlyChild = children.item(0);
-            if (!nodeFeature.isTextNode(onlyChild)) {
+            if (!nodeFeature.isVirtualTextNode(onlyChild)) {
                 return true;
             }
         }

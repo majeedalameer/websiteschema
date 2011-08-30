@@ -6,20 +6,23 @@ package websiteschema.vips;
 
 import com.webrenderer.swing.dom.IElement;
 import com.webrenderer.swing.dom.IElementCollection;
+import java.util.ArrayList;
+import java.util.List;
 import websiteschema.element.Rectangle;
 
 /**
  *
  * @author ray
  */
-public class SemanticBlock {
+public class VisionBlock {
 
     int DoC;
+    int level;
     Rectangle rect;
     IElement ele;
     IElementCollection elements;
-    SemanticBlock[] children;
-    SemanticBlock parent;
+    List<VisionBlock> children = new ArrayList<VisionBlock>();
+    VisionBlock parent;
 
     public int getDoC() {
         return DoC;
@@ -29,11 +32,11 @@ public class SemanticBlock {
         this.DoC = DoC;
     }
 
-    public SemanticBlock[] getChildren() {
+    public List<VisionBlock> getChildren() {
         return children;
     }
 
-    public void setChildren(SemanticBlock[] children) {
+    public void setChildren(List<VisionBlock> children) {
         this.children = children;
     }
 
@@ -53,11 +56,11 @@ public class SemanticBlock {
         this.elements = elements;
     }
 
-    public SemanticBlock getParent() {
+    public VisionBlock getParent() {
         return parent;
     }
 
-    public void setParent(SemanticBlock parent) {
+    public void setParent(VisionBlock parent) {
         this.parent = parent;
     }
 
@@ -69,5 +72,11 @@ public class SemanticBlock {
         this.rect = rect;
     }
 
-    
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
 }

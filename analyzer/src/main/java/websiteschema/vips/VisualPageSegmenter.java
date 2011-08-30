@@ -9,10 +9,10 @@ import com.webrenderer.swing.dom.IElement;
 import com.webrenderer.swing.dom.IElementCollection;
 import java.util.ArrayList;
 import java.util.List;
+import websiteschema.element.factory.XPathFactory;
 import websiteschema.utils.ElementUtil;
 import websiteschema.vips.extraction.BlockExtractor;
 import websiteschema.vips.extraction.rule.DivideRule;
-import websiteschema.vips.extraction.VipsBlockExtractor;
 
 /**
  *
@@ -24,10 +24,16 @@ public class VisualPageSegmenter {
     BlockPool pool = new BlockPool();
     BlockExtractor extractor = null;
 
-    public SemanticBlock pageSegment(IDocument document) {
-        initFirstBlock(document);
+    public VisionBlock pageSegment(IDocument document) {
+        initBlocks(document);
 
-        oneRound();
+        int times = 0;
+        do {
+            System.out.println("time: " + times);
+            oneRound();
+        } while (!meetGranularityNeed() && ++times < 3);
+
+        drawBorder();
 
         return pool.getRoot();
     }
@@ -36,37 +42,90 @@ public class VisualPageSegmenter {
         // Block Extraction
         int size = pool.getPool().size();
         for (int i = 0; i < size; i++) {
-            SemanticBlock block = pool.getPool().get(i);
-            divideDomTree(block.getEle(), 0);
+            VisionBlock block = pool.getPool().get(i);
+//            String xpath = XPathFactory.getInstance().create(block.getEle());
+//            System.out.println(xpath + " Level: " + block.getLevel() + " DoC:" + block.getDoC());
+            if (isLeafNode(block) && block.getDoC() < getPDoC()) {
+                divideDomTree(block.getEle(), 0, block);
+            }
         }
 
     }
 
-    private void initFirstBlock(IDocument document) {
-        IElement body = document.getBody();
-        SemanticBlock block = new SemanticBlock();
-        block.setEle(body);
-        pool.add(block);
+    private void drawBorder() {
+        int size = pool.getPool().size();
+        for (int i = 0; i < size; i++) {
+            VisionBlock block = pool.getPool().get(i);
+            ElementUtil.getInstance().drawRectangleInPage(block.getEle());
+        }
     }
 
-    private void divideDomTree(IElement ele, int level) {
-        DivideRule divide = dividable(ele, level);
-        if (BlockExtractor.Dividable == divide.dividable()) {
-            IElementCollection children = ele.getChildElements();
-            for (int i = 0; i < children.length(); i++) {
-                IElement child = children.item(i);
-                divideDomTree(child, level + 1);
+    private boolean meetGranularityNeed() {
+        int size = pool.getPool().size();
+        for (int i = 0; i < size; i++) {
+            VisionBlock block = pool.getPool().get(i);
+            if (isLeafNode(block)) {
+                if (!meetGranularityNeed(block)) {
+                    return false;
+                }
             }
-        } else if (BlockExtractor.UnDividable == divide.dividable()) {
-            SemanticBlock block = new SemanticBlock();
-            block.setEle(ele);
-            ElementUtil.getInstance().drawRectangleInPage(ele);
-            int DoC = divide.getDoC(ele, level);
-            block.setDoC(DoC);
-            pool.add(block);
-        } else {
-            // do nothing for cutting node
-            ElementUtil.getInstance().drawRectangleInPage(ele);
+        }
+        return true;
+    }
+
+    private boolean meetGranularityNeed(VisionBlock block) {
+        return block.getDoC() >= PDoC;
+    }
+
+    private boolean isLeafNode(VisionBlock block) {
+        return null == block.getChildren() || block.getChildren().isEmpty();
+    }
+
+    private void initBlocks(IDocument document) {
+        IElement body = document.getBody();
+        VisionBlock block = new VisionBlock();
+        block.setEle(body);
+        pool.add(block);
+//        IDocument[] childFrames = document.getChildFrames();
+//        if (null != childFrames) {
+//            for (IDocument doc : childFrames) {
+//                IElement ele = doc.getBody();
+//                if (null != ele) {
+//                    if (NodeFeature.getInstance().isValidNode(ele)) {
+//                        SemanticBlock b = new SemanticBlock();
+//                        b.setEle(ele);
+//                        pool.add(b);
+//                    }
+//                }
+//            }
+//        }
+    }
+
+    private void divideDomTree(IElement ele, int level, VisionBlock ancestor) {
+        DivideRule divide = dividable(ele, level);
+        if (null != divide) {
+            if (BlockExtractor.Dividable == divide.dividable()) {
+                IElementCollection children = ele.getChildElements();
+                for (int i = 0; i < children.length(); i++) {
+                    IElement child = children.item(i);
+                    divideDomTree(child, level + 1, ancestor);
+                }
+            } else if (BlockExtractor.UnDividable == divide.dividable()) {
+                VisionBlock block = new VisionBlock();
+                block.setEle(ele);
+                int DoC = divide.getDoC(ele, level);
+                block.setDoC(DoC);
+                block.setLevel(level);
+                // Add child to ancestor.
+                ancestor.getChildren().add(block);
+                pool.add(block);
+
+                String xpath = XPathFactory.getInstance().create(block.getEle());
+                System.out.println(xpath + " Level: " + block.getLevel() + " DoC:" + block.getDoC());
+            } else {
+                // do nothing for cutting node
+                ElementUtil.getInstance().drawRectangleInPage(ele);
+            }
         }
     }
 
@@ -92,17 +151,17 @@ public class VisualPageSegmenter {
 
     class BlockPool {
 
-        List<SemanticBlock> pool = new ArrayList<SemanticBlock>();
+        List<VisionBlock> pool = new ArrayList<VisionBlock>();
 
-        public void add(SemanticBlock block) {
+        public void add(VisionBlock block) {
             pool.add(block);
         }
 
-        public List<SemanticBlock> getPool() {
+        public List<VisionBlock> getPool() {
             return pool;
         }
 
-        public SemanticBlock getRoot() {
+        public VisionBlock getRoot() {
             return pool.get(0);
         }
     }

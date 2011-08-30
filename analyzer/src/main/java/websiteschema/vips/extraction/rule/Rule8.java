@@ -45,6 +45,11 @@ public class Rule8 extends AbstractRule {
         return BlockExtractor.UnDividable;
     }
 
+//    @Override
+//    public int getDoC(IElement ele, int level) {
+//        return 8;
+//    }
+
     public double getPageSize() {
         return pageSize;
     }

@@ -10,6 +10,8 @@ import com.webrenderer.swing.dom.IElement;
 import com.webrenderer.swing.dom.IStyleSheet;
 import com.webrenderer.swing.event.NetworkEvent;
 import com.webrenderer.swing.event.NetworkListener;
+import java.util.Timer;
+import java.util.TimerTask;
 import org.apache.log4j.Logger;
 import websiteschema.context.BrowserContext;
 import websiteschema.element.Rectangle;
@@ -31,6 +33,10 @@ public class SimpleNetworkListener implements NetworkListener {
     Logger l = Logger.getRootLogger();
     BrowserContext context;
     IBrowserCanvas browser;
+    int sec = 1000;
+    long delay = 30 * sec;
+    boolean started = false;
+    Timer timer = null;
 
     public SimpleNetworkListener(BrowserContext context) {
         this.context = context;
@@ -45,12 +51,31 @@ public class SimpleNetworkListener implements NetworkListener {
     @Override
     public void onDocumentLoad(NetworkEvent ne) {
         l.debug("onDocumentLoad ");
+        started = false;
+        timer = new Timer();
+        timer.schedule(new MyTimerTask(), delay);
     }
 
-    @Override
-    public void onDocumentComplete(NetworkEvent ne) {
-        l.debug("onDocumentComplete " + ne.getURL());
+    class MyTimerTask extends TimerTask {
 
+        @Override
+        public void run() {
+            if (couldProcess()) {
+                process();
+            }
+        }
+    }
+
+    public synchronized boolean couldProcess() {
+        if (!started) {
+            started = true;
+            return started;
+        } else {
+            return false;
+        }
+    }
+
+    public void process() {
         IDocument doc = context.getBrowser().getDocument();
         StyleSheet styleSheet = new StyleSheetFactory().createStyleSheet(doc);
         String referrer = doc.getReferrer();
@@ -61,6 +86,7 @@ public class SimpleNetworkListener implements NetworkListener {
         }
         // Creator VIPS Segmenter
         VisualPageSegmenter segmenter = new VisualPageSegmenter();
+        segmenter.setPDoC(context.getConfigure().getIntProperty("VIPS", "PDoC"));
         // Create extractor
         Rectangle rect = RectangleFactory.getInstance().create(doc.getBody());
         double pageSize = rect.getHeight() * rect.getWidth();
@@ -72,6 +98,17 @@ public class SimpleNetworkListener implements NetworkListener {
         // Set extractor
         segmenter.setExtractor(extractor);
         segmenter.pageSegment(doc);
+    }
+
+    @Override
+    public void onDocumentComplete(NetworkEvent ne) {
+        l.debug("onDocumentComplete " + ne.getURL());
+
+        timer.cancel();
+        timer = null;
+        if (couldProcess()) {
+            process();
+        }
     }
 
     @Override

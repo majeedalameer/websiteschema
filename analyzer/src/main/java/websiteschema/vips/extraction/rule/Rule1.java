@@ -17,6 +17,9 @@ public class Rule1 extends AbstractRule {
 
     @Override
     public boolean match(IElement ele, int level) {
+        if (!nodeFeature.isValidNode(ele)) {
+            return true;
+        }
         if (!nodeFeature.isTextNode(ele) && !nodeFeature.hasValidChildren(ele)) {
             return true;
         } else {
