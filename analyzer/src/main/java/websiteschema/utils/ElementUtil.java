@@ -6,6 +6,7 @@ package websiteschema.utils;
 
 import com.webrenderer.swing.dom.IDocument;
 import com.webrenderer.swing.dom.IElement;
+import com.webrenderer.swing.dom.IElementCollection;
 import org.w3c.dom.Node;
 import websiteschema.element.Rectangle;
 import websiteschema.element.factory.RectangleFactory;
@@ -40,6 +41,22 @@ public class ElementUtil {
         } else {
             return Double.POSITIVE_INFINITY;
         }
+    }
+
+    public String getText(IElement ele) {
+        StringBuilder sb = new StringBuilder();
+
+        IElementCollection children = ele.getChildElements();
+        for (int i = 0; i < children.length(); i++) {
+            IElement child = children.item(i);
+            if (child.isTextNode()) {
+                sb.append(child.getTextNodeText());
+            } else {
+                sb.append(getText(child));
+            }
+        }
+
+        return sb.toString();
     }
 
     public void printNodeType(IElement ele) {

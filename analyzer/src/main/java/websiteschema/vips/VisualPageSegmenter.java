@@ -23,6 +23,7 @@ public class VisualPageSegmenter {
     int PDoC;
     BlockPool pool = new BlockPool();
     BlockExtractor extractor = null;
+    int iterateTimes = 4;
 
     public VisionBlock pageSegment(IDocument document) {
         initBlocks(document);
@@ -31,7 +32,7 @@ public class VisualPageSegmenter {
         do {
             System.out.println("time: " + times);
             oneRound();
-        } while (!meetGranularityNeed() && ++times < 3);
+        } while (!meetGranularityNeed() && ++times < iterateTimes);
 
         drawBorder();
 
@@ -43,8 +44,7 @@ public class VisualPageSegmenter {
         int size = pool.getPool().size();
         for (int i = 0; i < size; i++) {
             VisionBlock block = pool.getPool().get(i);
-//            String xpath = XPathFactory.getInstance().create(block.getEle());
-//            System.out.println(xpath + " Level: " + block.getLevel() + " DoC:" + block.getDoC());
+//            System.out.println(XPathFactory.getInstance().create(block.getEle() + " Level: " + block.getLevel() + " DoC:" + block.getDoC());
             if (isLeafNode(block) && block.getDoC() < getPDoC()) {
                 divideDomTree(block.getEle(), 0, block);
             }
@@ -86,19 +86,19 @@ public class VisualPageSegmenter {
         VisionBlock block = new VisionBlock();
         block.setEle(body);
         pool.add(block);
-//        IDocument[] childFrames = document.getChildFrames();
-//        if (null != childFrames) {
-//            for (IDocument doc : childFrames) {
-//                IElement ele = doc.getBody();
-//                if (null != ele) {
-//                    if (NodeFeature.getInstance().isValidNode(ele)) {
-//                        SemanticBlock b = new SemanticBlock();
-//                        b.setEle(ele);
-//                        pool.add(b);
-//                    }
-//                }
-//            }
-//        }
+        IDocument[] childFrames = document.getChildFrames();
+        if (null != childFrames) {
+            for (IDocument doc : childFrames) {
+                IElement ele = doc.getBody();
+                if (null != ele) {
+                    if (NodeFeature.getInstance().isValidNode(ele)) {
+                        VisionBlock b = new VisionBlock();
+                        b.setEle(ele);
+                        pool.add(b);
+                    }
+                }
+            }
+        }
     }
 
     private void divideDomTree(IElement ele, int level, VisionBlock ancestor) {
