@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import org.apache.log4j.Logger;
 import websiteschema.context.BrowserContext;
 import websiteschema.element.CSSProperties;
 import websiteschema.element.Rectangle;
@@ -30,6 +31,7 @@ import websiteschema.vips.extraction.rule.DivideRuleFactory;
  */
 public class VipsBlockExtractor implements BlockExtractor {
 
+    Logger l = Logger.getRootLogger();
     private NodeFeature nodeFeature = NodeFeature.getInstance();
     private Configure configure;
     private Map<String, String> rules;
@@ -61,14 +63,14 @@ public class VipsBlockExtractor implements BlockExtractor {
 
         matchedRule = execute(ruleCode, ele, level);
 
-//        System.out.println("Rule Code: " + ruleCode);
+//        l.debug("Rule Code: " + ruleCode);
         if (matchedRule.dividable() == BlockExtractor.Dividable) {
             String xpath = XPathFactory.getInstance().create(ele);
             allDividableNode.add(xpath);
-            System.out.println("Dividable: " + xpath + " -- Element Type: " + ele.getTagName() + " -- Rule: " + matchedRule.getClass());
+            l.debug("Dividable: " + xpath + " -- Element Type: " + ele.getTagName() + " -- Rule: " + matchedRule.getClass());
         } else {
             String xpath = XPathFactory.getInstance().create(ele);
-            System.out.println("Undividable: " + xpath + " -- Element Type: " + ele.getTagName() + " -- Rule: " + matchedRule.getClass());
+            l.debug("Undividable: " + xpath + " -- Element Type: " + ele.getTagName() + " -- Rule: " + matchedRule.getClass());
         }
         return matchedRule;
     }
@@ -88,18 +90,18 @@ public class VipsBlockExtractor implements BlockExtractor {
     }
 
     public void analysisElement(IElement ele) {
-        System.out.println("is inline node: " + nodeFeature.isInlineNode(ele));
-        System.out.println("is valid node: " + nodeFeature.isValidNode(ele));
-        System.out.println("is text node: " + nodeFeature.isTextNode(ele));
-        System.out.println("is virtual text node: " + nodeFeature.isVirtualTextNode(ele));
-        System.out.println("has valid children: " + nodeFeature.hasValidChildren(ele));
-        System.out.println("how many children the element has: " + nodeFeature.howManyChildren(ele));
-        System.out.println("Does all of child node are virtual text node?: " + nodeFeature.areChildrenVirtualTextNode(ele));
-        System.out.println("one of child node is Line-Break node: " + nodeFeature.hasLineBreakChildNode(ele));
-        System.out.println("one of child node is <HR> tag: " + nodeFeature.isChildNodeHRTag(ele));
-        System.out.println("has differenc background: " + nodeFeature.hasDifferentBackgroundColorWithChild(ele, getContext(), getReferrer()));
-        System.out.println("relative size: " + nodeFeature.getRelativeSize(ele, getPageSize()));
-        System.out.println("has text or virtual text node: " + nodeFeature.hasTextOrVirtualTextNode(ele));
+        l.debug("is inline node: " + nodeFeature.isInlineNode(ele));
+        l.debug("is valid node: " + nodeFeature.isValidNode(ele));
+        l.debug("is text node: " + nodeFeature.isTextNode(ele));
+        l.debug("is virtual text node: " + nodeFeature.isVirtualTextNode(ele));
+        l.debug("has valid children: " + nodeFeature.hasValidChildren(ele));
+        l.debug("how many children the element has: " + nodeFeature.howManyChildren(ele));
+        l.debug("Does all of child node are virtual text node?: " + nodeFeature.areChildrenVirtualTextNode(ele));
+        l.debug("one of child node is Line-Break node: " + nodeFeature.hasLineBreakChildNode(ele));
+        l.debug("one of child node is <HR> tag: " + nodeFeature.isChildNodeHRTag(ele));
+        l.debug("has differenc background: " + nodeFeature.hasDifferentBackgroundColorWithChild(ele, getContext(), getReferrer()));
+        l.debug("relative size: " + nodeFeature.getRelativeSize(ele, getPageSize()));
+        l.debug("has text or virtual text node: " + nodeFeature.hasTextOrVirtualTextNode(ele));
         //hasTextOrVirtualTextNode
     }
 
