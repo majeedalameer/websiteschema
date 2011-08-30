@@ -27,4 +27,9 @@ public class Rule4 extends AbstractRule {
     public int dividable() {
         return BlockExtractor.UnDividable;
     }
+
+    @Override
+    public int getDoC(IElement ele, int level) {
+        return 9;
+    }
 }

@@ -43,6 +43,8 @@ public class SimpleBrowser extends javax.swing.JFrame {
     /** Creates new form SimpleAnalyzer */
     public SimpleBrowser() {
         initComponents();
+        //一打开窗口，就最大化
+//        setExtendedState(javax.swing.JFrame.MAXIMIZED_BOTH);
         console = new AWTConsole(consoleTextArea);
 
         //初始化Webrenderer
@@ -226,7 +228,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jInternalFrame1)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

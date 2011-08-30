@@ -53,19 +53,22 @@ public class XPathFactory {
             if (attr.isUsingPosition()) {
                 //按照元素的顺序生成XPath
                 IElement parent = ele.getParentElement();
-                IElementCollection siblings = parent.getChildElements();
-                if (1 < siblings.length()) {
-                    int pos = 1;
-                    for (int i = 0; i < siblings.length(); i++) {
-                        String siblingName = siblings.item(i).getTagName();
-                        if (ele.equals(siblings.item(i))) {
-                            if (pos > 1) {
-                                attrKeyValues = String.valueOf(pos);
+                //parent != null
+                if (null != parent) {
+                    IElementCollection siblings = parent.getChildElements();
+                    if (1 < siblings.length()) {
+                        int pos = 1;
+                        for (int i = 0; i < siblings.length(); i++) {
+                            String siblingName = siblings.item(i).getTagName();
+                            if (ele.equals(siblings.item(i))) {
+                                if (pos > 1) {
+                                    attrKeyValues = String.valueOf(pos);
+                                }
+                                break;
                             }
-                            break;
-                        }
-                        if (tagName.equals(siblingName)) {
-                            pos++;
+                            if (tagName.equals(siblingName)) {
+                                pos++;
+                            }
                         }
                     }
                 }

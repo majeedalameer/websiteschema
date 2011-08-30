@@ -26,4 +26,17 @@ public class Rule13 extends AbstractRule {
     public int dividable() {
         return BlockExtractor.UnDividable;
     }
+
+    @Override
+    public int getDoC(IElement ele, int level) {
+        int DoC = super.getDoC(ele, level);
+
+        DoC += 3;
+
+        if (DoC > 10) {
+            DoC = 10;
+        }
+
+        return DoC;
+    }
 }

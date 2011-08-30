@@ -47,30 +47,33 @@ public class VipsBlockExtractor implements BlockExtractor {
     public DivideRule dividable(IElement ele, int level) {
         DivideRule matchedRule = null;
 
-        String ruleCode = "";
-        if (NodeFeature.getInstance().isInlineNode(ele)) {
-            ruleCode = rules.get("InlineTextNode");
-        } else {
-            String tagName = ele.getTagName();
-            tagName = null != tagName ? tagName.toUpperCase() : "";
-            Set<String> set = rules.keySet();
-            if (set.contains(tagName)) {
-                ruleCode = rules.get(tagName.toUpperCase());
-            } else {
-                ruleCode = rules.get("OTHER");
-            }
-        }
+        if (null != ele) {
 
-        matchedRule = execute(ruleCode, ele, level);
+            String ruleCode = "";
+            if (NodeFeature.getInstance().isInlineNode(ele)) {
+                ruleCode = rules.get("InlineTextNode");
+            } else {
+                String tagName = ele.getTagName();
+                tagName = null != tagName ? tagName.toUpperCase() : "";
+                Set<String> set = rules.keySet();
+                if (set.contains(tagName)) {
+                    ruleCode = rules.get(tagName.toUpperCase());
+                } else {
+                    ruleCode = rules.get("OTHER");
+                }
+            }
+
+            matchedRule = execute(ruleCode, ele, level);
 
 //        l.debug("Rule Code: " + ruleCode);
-        if (matchedRule.dividable() == BlockExtractor.Dividable) {
-            String xpath = XPathFactory.getInstance().create(ele);
-            allDividableNode.add(xpath);
-            l.debug("Dividable: " + xpath + " -- Element Type: " + ele.getTagName() + " -- Rule: " + matchedRule.getClass());
-        } else {
-            String xpath = XPathFactory.getInstance().create(ele);
-            l.debug("Undividable: " + xpath + " -- Element Type: " + ele.getTagName() + " -- Rule: " + matchedRule.getClass());
+            if (matchedRule.dividable() == BlockExtractor.Dividable) {
+                String xpath = XPathFactory.getInstance().create(ele);
+                allDividableNode.add(xpath);
+                l.trace("Dividable: " + xpath + " -- Element Type: " + ele.getTagName() + " -- Rule: " + matchedRule.getClass());
+            } else {
+                String xpath = XPathFactory.getInstance().create(ele);
+                l.trace("Undividable: " + xpath + " -- Element Type: " + ele.getTagName() + " -- Rule: " + matchedRule.getClass());
+            }
         }
         return matchedRule;
     }

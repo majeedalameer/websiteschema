@@ -6,6 +6,7 @@ package websiteschema.utils;
 
 import com.webrenderer.swing.dom.IDocument;
 import com.webrenderer.swing.dom.IElement;
+import org.w3c.dom.Node;
 import websiteschema.element.Rectangle;
 import websiteschema.element.factory.RectangleFactory;
 
@@ -38,6 +39,53 @@ public class ElementUtil {
             return pageSize;
         } else {
             return Double.POSITIVE_INFINITY;
+        }
+    }
+
+    public void printNodeType(IElement ele) {
+        Node node = ele.convertToW3CNode();
+        int type = node.getNodeType();
+        printNodeType(type);
+    }
+
+    public void printNodeType(int type) {
+        switch (type) {
+            case Node.ATTRIBUTE_NODE:
+                System.out.println("ATTRIBUTE_NODE");
+                break;
+            case Node.CDATA_SECTION_NODE:
+                System.out.println("CDATA_SECTION_NODE");
+                break;
+            case Node.COMMENT_NODE:
+                System.out.println("COMMENT_NODE");
+                break;
+            case Node.DOCUMENT_FRAGMENT_NODE:
+                System.out.println("DOCUMENT_FRAGMENT_NODE");
+                break;
+            case Node.DOCUMENT_NODE:
+                System.out.println("DOCUMENT_NODE");
+                break;
+            case Node.DOCUMENT_TYPE_NODE:
+                System.out.println("DOCUMENT_TYPE_NODE");
+                break;
+            case Node.ELEMENT_NODE:
+                System.out.println("ELEMENT_NODE");
+                break;
+            case Node.ENTITY_NODE:
+                System.out.println("ENTITY_NODE");
+                break;
+            case Node.ENTITY_REFERENCE_NODE:
+                System.out.println("ENTITY_REFERENCE_NODE");
+                break;
+            case Node.NOTATION_NODE:
+                System.out.println("NOTATION_NODE");
+                break;
+            case Node.PROCESSING_INSTRUCTION_NODE:
+                System.out.println("PROCESSING_INSTRUCTION_NODE");
+                break;
+            case Node.TEXT_NODE:
+                System.out.println("TEXT_NODE");
+                break;
         }
     }
 }
