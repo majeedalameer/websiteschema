@@ -22,6 +22,7 @@ import websiteschema.analyzer.browser.listener.SimpleNetworkListener;
 import websiteschema.analyzer.browser.listener.SimplePromptListener;
 import websiteschema.analyzer.browser.listener.SimpleWindowListener;
 import websiteschema.context.BrowserContext;
+import websiteschema.utils.Configure;
 import websiteschema.vips.VipsCanvas;
 
 /**
@@ -36,21 +37,21 @@ public class SimpleBrowser extends javax.swing.JFrame {
     VipsCanvas vipsCanvas;
     BrowserContext context;
     boolean vips = false;
+    final String user = Configure.getDefaultConfigure().getProperty("Browser", "LicenseUser");
+    final String serial = Configure.getDefaultConfigure().getProperty("Browser", "LicenseSerial");
 
     /** Creates new form SimpleAnalyzer */
     public SimpleBrowser() {
         initComponents();
         console = new AWTConsole(consoleTextArea);
-        
+
         //初始化Webrenderer
         initBrowser();
         displayBrowserInfo();
     }
 
     private void initBrowser() {
-        //3O0N6H48EE721MIG4A31C21Q
-//        BrowserFactory.setLicenseData("30dtrial", "2PS4MACGJHK0T6JP5F1101Q8");
-        BrowserFactory.setLicenseData("30dtrial", "3O0N6H48EE721MIG4A31C21Q");
+        BrowserFactory.setLicenseData(user, serial);
 
         //Core function to create browser
         browser = BrowserFactory.spawnMozilla();
@@ -59,7 +60,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
         renOps.setWindowlessFlashSmoothScrolling(true);
         browser.setRenderingOptimizations(renOps);
 
-        browser.loadURL("http://www.baidu.com/");
+        browser.loadURL("http://localhost:8080/");
 
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(BorderLayout.CENTER, browser.getComponent());
