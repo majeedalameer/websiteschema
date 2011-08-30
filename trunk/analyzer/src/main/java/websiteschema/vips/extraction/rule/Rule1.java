@@ -17,10 +17,6 @@ public class Rule1 extends AbstractRule {
 
     @Override
     public boolean match(IElement ele, int level) {
-        String xpath = XPathFactory.getInstance().create(ele);
-        if("/HTML/BODY/DIV/P[4]".equals(xpath)) {
-            System.out.println(xpath);
-        }
         if (!nodeFeature.isTextNode(ele) && !nodeFeature.hasValidChildren(ele)) {
             return true;
         } else {

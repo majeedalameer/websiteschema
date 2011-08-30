@@ -229,10 +229,10 @@ public class NodeFeature {
         if (!isInlineNode(ele) && !isTextNode(ele)) {
             return false;
         } else {
-            String tagName = ele.getTagName();
-            Node node = ele.convertToW3CNode();
-            int nodeType = node.getNodeType();
-            System.out.println(tagName + " - " + nodeType);
+//            String tagName = ele.getTagName();
+//            Node node = ele.convertToW3CNode();
+//            int nodeType = node.getNodeType();
+//            System.out.println(tagName + " - " + nodeType);
             IElementCollection children = ele.getChildElements();
             if (null != children && children.length() > 0) {
                 for (int i = 0; i < children.length(); i++) {
