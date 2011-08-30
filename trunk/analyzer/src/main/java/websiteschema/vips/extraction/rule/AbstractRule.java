@@ -42,7 +42,7 @@ public abstract class AbstractRule implements DivideRule {
         if (relativeSize >= 1.0) {
             return 1;
         } else {
-            DoC = (int) ((1 - relativeSize) * 8);
+            DoC = (int) ((1 - relativeSize) * 10);
         }
         boolean hasSmallChildren = nodeFeature.areChildrenSmallNode(ele);
         if (hasSmallChildren) {

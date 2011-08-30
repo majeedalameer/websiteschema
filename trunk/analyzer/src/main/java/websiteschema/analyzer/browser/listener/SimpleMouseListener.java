@@ -18,6 +18,7 @@ import websiteschema.element.factory.RectangleFactory;
 import websiteschema.element.XPathAttributes;
 import websiteschema.element.factory.StyleSheetFactory;
 import websiteschema.element.factory.XPathFactory;
+import websiteschema.utils.ElementUtil;
 import websiteschema.vips.extraction.VipsBlockExtractor;
 
 /**
@@ -56,6 +57,8 @@ public class SimpleMouseListener implements MouseListener {
             CSSProperties css = new StyleSheetFactory().createCSSProperties(styleSheets, ele);
             l.debug("CSS Properties: " + css);
 
+//            String text = ElementUtil.getInstance().getText(ele);
+//            context.getConsole().log(text);
 
             VipsBlockExtractor be = new VipsBlockExtractor();
             be.setContext(context);
