@@ -207,6 +207,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
         jMenu3 = new javax.swing.JMenu();
         hideAnalysisMenu = new javax.swing.JCheckBoxMenuItem();
         hideConsoleMenu = new javax.swing.JCheckBoxMenuItem();
+        drawBorderMenu = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Simple Browser");
@@ -418,6 +419,14 @@ public class SimpleBrowser extends javax.swing.JFrame {
         });
         jMenu3.add(hideConsoleMenu);
 
+        drawBorderMenu.setText("显示所有块的边框");
+        drawBorderMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                drawBorderMenuActionPerformed(evt);
+            }
+        });
+        jMenu3.add(drawBorderMenu);
+
         jMenuBar1.add(jMenu3);
 
         setJMenuBar(jMenuBar1);
@@ -520,6 +529,13 @@ public class SimpleBrowser extends javax.swing.JFrame {
         this.consolePane.setVisible(this.hideConsoleMenu.isSelected());
     }//GEN-LAST:event_hideConsoleMenuActionPerformed
 
+    private void drawBorderMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_drawBorderMenuActionPerformed
+        // TODO add your handling code here:
+        if (null != vips) {
+            vips.getSegmenter().drawBorder();
+        }
+    }//GEN-LAST:event_drawBorderMenuActionPerformed
+
     private void openUrl(String url) {
         if (!url.startsWith("http://")) {
             url = "http://" + url;
@@ -549,6 +565,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
     private javax.swing.JButton clearButton;
     private javax.swing.JTabbedPane consolePane;
     private javax.swing.JTextArea consoleTextArea;
+    private javax.swing.JMenuItem drawBorderMenu;
     private javax.swing.JButton forwardButton;
     private javax.swing.JButton goButton;
     private javax.swing.JCheckBoxMenuItem hideAnalysisMenu;
