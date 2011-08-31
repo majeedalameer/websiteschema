@@ -59,10 +59,12 @@ public class VIPSImpl {
 
             // Set extractor
             segmenter.setExtractor(extractor);
-            segmenter.pageSegment(doc);
+            return segmenter.pageSegment(doc);
         } else {
             l.info("This is not a HTML page, ignore..." + doc.getReferrer());
+            return null;
         }
+    
     }
 
     public BrowserContext getContext() {
