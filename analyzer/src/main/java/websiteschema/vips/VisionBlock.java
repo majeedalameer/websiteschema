@@ -36,6 +36,18 @@ public class VisionBlock {
         return children;
     }
 
+    public VisionBlock getChild(int index){
+        return children.get(index);
+    }
+
+    public int getChildCount(){
+        return children.size();
+    }
+
+    public int getIndexOfChild(VisionBlock vb){
+        return children.indexOf(vb);
+    }
+
     public void setChildren(List<VisionBlock> children) {
         this.children = children;
     }
@@ -78,5 +90,9 @@ public class VisionBlock {
 
     public void setLevel(int level) {
         this.level = level;
+    }
+
+    public String toString(){
+        return "" + level;
     }
 }

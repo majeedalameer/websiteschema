@@ -32,6 +32,7 @@ import websiteschema.utils.Configure;
 import websiteschema.vips.VIPSImpl;
 import websiteschema.vips.VipsCanvas;
 import websiteschema.vips.VisionBasedPageSegmenter;
+import websiteschema.vips.VisionBlock;
 import websiteschema.vips.extraction.BlockExtractor;
 import websiteschema.vips.extraction.BlockExtractorFactory;
 
@@ -55,13 +56,36 @@ public class SimpleBrowser extends javax.swing.JFrame {
     /** Creates new form SimpleAnalyzer */
     public SimpleBrowser() {
         initComponents();
+
+        
         //一打开窗口，就最大化
 //        setExtendedState(javax.swing.JFrame.MAXIMIZED_BOTH);
         console = new AWTConsole(consoleTextArea);
 
+
         //初始化Webrenderer
         initBrowser();
+
+
         displayBrowserInfo();
+    }
+
+    private void initVipsTree(VisionBlock block){
+        vipsTree = new VipsTree(block);
+
+        vipsTreePane.setViewportView(vipsTree);
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(vipsTreePane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 185, Short.MAX_VALUE)
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(vipsTreePane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 505, Short.MAX_VALUE)
+        );
+
     }
 
     private void initBrowser() {
@@ -134,8 +158,6 @@ public class SimpleBrowser extends javax.swing.JFrame {
         analysisPane = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTree1 = new javax.swing.JTree();
         consolePane = new javax.swing.JTabbedPane();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -275,17 +297,15 @@ public class SimpleBrowser extends javax.swing.JFrame {
 
         analysisPane.addTab("基本分析", jPanel1);
 
-        jScrollPane1.setViewportView(jTree1);
-
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 185, Short.MAX_VALUE)
+            .addGap(0, 185, Short.MAX_VALUE)
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 505, Short.MAX_VALUE)
+            .addGap(0, 505, Short.MAX_VALUE)
         );
 
         analysisPane.addTab("VB树", jPanel4);
@@ -433,7 +453,11 @@ public class SimpleBrowser extends javax.swing.JFrame {
 
     private void vipsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_vipsButtonActionPerformed
         // TODO add your handling code here:
-        vips.segment(browser.getDocument());
+        VisionBlock block = vips.segment(browser.getDocument());
+        vipsTree = new VipsTree(block);
+
+        initVipsTree(block);
+
     }//GEN-LAST:event_vipsButtonActionPerformed
 
     private void homeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_homeButtonActionPerformed
@@ -465,6 +489,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
         if (!url.startsWith("http://")) {
             url = "http://" + url;
         }
+        url = "http://www.sohu.com";
         browser.loadURL(url);
     }
 
@@ -480,6 +505,8 @@ public class SimpleBrowser extends javax.swing.JFrame {
             }
         });
     }
+    private javax.swing.JScrollPane vipsTreePane = new javax.swing.JScrollPane();
+    private VipsTree vipsTree;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTabbedPane analysisPane;
     private javax.swing.JButton backButton;
@@ -500,14 +527,13 @@ public class SimpleBrowser extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JToolBar jToolBar2;
-    private javax.swing.JTree jTree1;
     private javax.swing.JButton refreshButton;
     private javax.swing.JButton stopButton;
     private javax.swing.JTextField urlTextField;
     private javax.swing.JButton vipsButton;
     // End of variables declaration//GEN-END:variables
+
 }
