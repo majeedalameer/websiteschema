@@ -75,6 +75,7 @@ public class SimpleNetworkListener implements NetworkListener {
     }
 
     private void process() {
+        context.getConsole().log("Referrer: " + context.getBrowser().getDocument().getReferrer());
 //        VIPSImpl vips = new VIPSImpl(context);
 //        vips.segment(context.getBrowser().getDocument());
     }
