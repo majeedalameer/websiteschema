@@ -136,5 +136,6 @@ public class VipsTreeModel implements TreeModel{
     public void valueForPathChanged(TreePath path, Object newValue) {
         System.out.println("*** valueForPathChanged : "
                            + path + " --> " + newValue);
+        
     }
 }
