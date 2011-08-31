@@ -5,6 +5,7 @@
 package websiteschema.vips.extraction.rule;
 
 import com.webrenderer.swing.dom.IElement;
+import com.webrenderer.swing.dom.IElementCollection;
 import websiteschema.element.Rectangle;
 import websiteschema.element.factory.RectangleFactory;
 import websiteschema.vips.extraction.BlockExtractor;
@@ -36,9 +37,8 @@ public abstract class AbstractRule implements DivideRule {
 
     private int getDoCBasedTagAndSize(IElement ele, int level) {
         int DoC = 0;
-        Rectangle rect = RectangleFactory.getInstance().create(ele);
-        int size = rect.getHeight() * rect.getWidth();
-        double relativeSize = (double)size / (double)standardPageSize;
+        int size = getElementSize(ele);
+        double relativeSize = (double) size / (double) standardPageSize;
         if (relativeSize >= 1.0) {
             return 1;
         } else {
@@ -56,5 +56,21 @@ public abstract class AbstractRule implements DivideRule {
 //            System.out.println("DoC = 0 ????");
 //        }
         return DoC;
+    }
+
+    private int getElementSize(IElement ele) {
+        Rectangle rectEle = RectangleFactory.getInstance().create(ele);
+        int size = rectEle.getHeight() * rectEle.getWidth();
+
+        IElementCollection children = ele.getChildElements();
+        int sumChildSize = 0;
+        for (int i = 0; i < children.length(); i++) {
+            IElement child = children.item(i);
+            Rectangle rectChild = RectangleFactory.getInstance().create(child);
+            int childSize = rectChild.getHeight() * rectChild.getWidth();
+            sumChildSize += childSize;
+        }
+
+        return size > sumChildSize ? size : sumChildSize;
     }
 }

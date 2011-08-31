@@ -48,10 +48,12 @@ public class VipsBlockExtractor implements BlockExtractor {
         DivideRule matchedRule = null;
 
         if (null != ele) {
-
+            String xpath = XPathFactory.getInstance().create(ele);
             String ruleCode = "";
             if (NodeFeature.getInstance().isInlineNode(ele)) {
                 ruleCode = rules.get("InlineTextNode");
+            } else if (NodeFeature.getInstance().isTextNode(ele)) {
+                ruleCode = rules.get("TextNode");
             } else {
                 String tagName = ele.getTagName();
                 tagName = null != tagName ? tagName.toUpperCase() : "";
@@ -63,16 +65,22 @@ public class VipsBlockExtractor implements BlockExtractor {
                 }
             }
 
+            if ("/HTML/BODY/DIV[6]/DIV/DIV[3]/text()".equals(xpath)) {
+                String text = ele.getTextNodeText();
+                if (null != text && !"".equals(text)) {
+                    System.out.println("for debug.");
+                }
+            }
             matchedRule = execute(ruleCode, ele, level);
 
 //        l.debug("Rule Code: " + ruleCode);
             if (matchedRule.dividable() == BlockExtractor.Dividable) {
-                String xpath = XPathFactory.getInstance().create(ele);
                 allDividableNode.add(xpath);
                 l.trace("Dividable: " + xpath + " -- Element Type: " + ele.getTagName() + " -- Rule: " + matchedRule.getClass());
-            } else {
-                String xpath = XPathFactory.getInstance().create(ele);
+            } else if (matchedRule.dividable() == BlockExtractor.UnDividable) {
                 l.trace("Undividable: " + xpath + " -- Element Type: " + ele.getTagName() + " -- Rule: " + matchedRule.getClass());
+            } else {
+                l.trace("Cut: " + xpath + " -- Element Type: " + ele.getTagName() + " -- Rule: " + matchedRule.getClass());
             }
         }
         return matchedRule;
