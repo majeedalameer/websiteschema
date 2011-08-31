@@ -18,7 +18,7 @@ import websiteschema.vips.extraction.rule.DivideRule;
  *
  * @author ray
  */
-public class VisualPageSegmenter {
+public class VisionBasedPageSegmenter {
 
     int PDoC;
     BlockPool pool = new BlockPool();
