@@ -35,7 +35,7 @@ public class VisionBasedPageSegmenter {
             oneRound();
         } while (!meetGranularityNeed() && ++times < iterateTimes);
 
-        drawBorder();
+        //drawBorder();
 
         return pool.getRoot();
     }
@@ -125,7 +125,7 @@ public class VisionBasedPageSegmenter {
                 System.out.println(xpath + " Level: " + block.getLevel() + " DoC:" + block.getDoC());
             } else {
                 // do nothing for cutting node
-                ElementUtil.getInstance().drawRectangleInPage(ele);
+                //ElementUtil.getInstance().drawRectangleInPage(ele);
             }
         }
     }

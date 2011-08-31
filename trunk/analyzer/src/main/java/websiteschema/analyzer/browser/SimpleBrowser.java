@@ -18,6 +18,7 @@ import com.webrenderer.swing.IBrowserCanvas;
 import com.webrenderer.swing.IMozillaBrowserCanvas;
 import com.webrenderer.swing.RenderingOptimization;
 import com.webrenderer.swing.dom.IDocument;
+import com.webrenderer.swing.dom.IElement;
 import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import javax.swing.event.TreeSelectionListener;
@@ -31,6 +32,7 @@ import websiteschema.element.StyleSheet;
 import websiteschema.element.factory.RectangleFactory;
 import websiteschema.element.factory.StyleSheetFactory;
 import websiteschema.utils.Configure;
+import websiteschema.utils.ElementUtil;
 import websiteschema.vips.VIPSImpl;
 import websiteschema.vips.VipsCanvas;
 import websiteschema.vips.VisionBasedPageSegmenter;
@@ -58,26 +60,19 @@ public class SimpleBrowser extends javax.swing.JFrame {
     /** Creates new form SimpleAnalyzer */
     public SimpleBrowser() {
         initComponents();
-
-
+        initVipsTree();
         //一打开窗口，就最大化
 //        setExtendedState(javax.swing.JFrame.MAXIMIZED_BOTH);
         console = new AWTConsole(consoleTextArea);
 
-
         //初始化Webrenderer
         initBrowser();
-
 
         displayBrowserInfo();
     }
 
-    private void initVipsTree(VisionBlock block) {
-        vipsTree = new VipsTree(block);
-        vipsTree.setContext(context);
-
-        vipsTreePane.setViewportView(vipsTree);
-
+    private void initVipsTree() {
+        vipsTreePane = new javax.swing.JScrollPane();
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
@@ -85,13 +80,48 @@ public class SimpleBrowser extends javax.swing.JFrame {
         jPanel4Layout.setVerticalGroup(
                 jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addComponent(vipsTreePane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 505, Short.MAX_VALUE));
 
-        vipsTree.addTreeSelectionListener(new TreeSelectionListener() {
+    }
 
-            @Override
-            public void valueChanged(TreeSelectionEvent e) {
-                System.out.println("selected: " + e.getPath());
-            }
-        });
+    private void setupVipsTree(VisionBlock block) {
+        if (null != vipsTree) {
+            vipsTree.removeAll();
+            vipsTree.setModel(new VipsTreeModel(block));
+        } else {
+            vipsTree = new VipsTree(block);
+            vipsTree.setContext(context);
+            vipsTreePane.setViewportView(vipsTree);
+            vipsTree.addTreeSelectionListener(new TreeSelectionListener() {
+
+                IElement lastClickedElement = null;
+                String lastStyle = null;
+
+                @Override
+                public void valueChanged(TreeSelectionEvent e) {
+                    VisionBlock vb = (VisionBlock) e.getPath().getLastPathComponent();
+                    drawRectangleInPage(vb.getEle());
+                    System.out.println("selected " + e.getPath());
+
+                }
+
+                private void drawRectangleInPage(IElement ele) {
+                    if (null != lastClickedElement) {
+                        if (null != lastStyle && !"".equals(lastStyle)) {
+                            lastClickedElement.setAttribute("style", lastStyle, 0);
+                        } else {
+                            lastClickedElement.removeAttribute("style", 0);
+                        }
+                    }
+                    lastStyle = ele.getAttribute("style", 0);
+                    if (null != lastStyle && !"".equals(lastStyle)) {
+                        ele.setAttribute("style", lastStyle + ";border-style: solid; border-width: 5px;", 0);
+                    } else {
+                        ele.setAttribute("style", "border-style: solid; border-width: 5px;", 0);
+                    }
+                    lastClickedElement = ele;
+                }
+            });
+        }
+
     }
 
     private void initBrowser() {
@@ -459,11 +489,10 @@ public class SimpleBrowser extends javax.swing.JFrame {
 
     private void vipsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_vipsButtonActionPerformed
         // TODO add your handling code here:
+        vips = null;
+        vips = new VIPSImpl(context);
         VisionBlock block = vips.segment(browser.getDocument());
-        vipsTree = new VipsTree(block);
-
-        initVipsTree(block);
-
+        setupVipsTree(block);
     }//GEN-LAST:event_vipsButtonActionPerformed
 
     private void homeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_homeButtonActionPerformed
@@ -510,8 +539,10 @@ public class SimpleBrowser extends javax.swing.JFrame {
             }
         });
     }
-    private javax.swing.JScrollPane vipsTreePane = new javax.swing.JScrollPane();
-    private VipsTree vipsTree;
+    private javax.swing.JScrollPane vipsTreePane;
+
+    ;
+    private VipsTree vipsTree = null;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTabbedPane analysisPane;
     private javax.swing.JButton backButton;
