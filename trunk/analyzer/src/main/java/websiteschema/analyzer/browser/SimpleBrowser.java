@@ -489,7 +489,6 @@ public class SimpleBrowser extends javax.swing.JFrame {
         if (!url.startsWith("http://")) {
             url = "http://" + url;
         }
-        url = "http://www.sohu.com";
         browser.loadURL(url);
     }
 
