@@ -5,9 +5,6 @@
 package websiteschema.analyzer.browser.listener;
 
 import com.webrenderer.swing.IBrowserCanvas;
-import com.webrenderer.swing.dom.IDocument;
-import com.webrenderer.swing.dom.IElement;
-import com.webrenderer.swing.dom.IStyleSheet;
 import com.webrenderer.swing.event.NetworkEvent;
 import com.webrenderer.swing.event.NetworkListener;
 import java.util.Timer;
@@ -15,15 +12,7 @@ import java.util.TimerTask;
 import javax.swing.JTextField;
 import org.apache.log4j.Logger;
 import websiteschema.context.BrowserContext;
-import websiteschema.element.Rectangle;
-import websiteschema.element.StyleSheet;
-import websiteschema.element.factory.RectangleFactory;
-import websiteschema.element.factory.StyleSheetFactory;
-import websiteschema.utils.Configure;
-import websiteschema.vips.VisualPageSegmenter;
-import websiteschema.vips.extraction.BlockExtractor;
-import websiteschema.vips.extraction.BlockExtractorFactory;
-import websiteschema.vips.extraction.VipsBlockExtractor;
+import websiteschema.vips.VIPSImpl;
 
 /**
  *
@@ -85,33 +74,9 @@ public class SimpleNetworkListener implements NetworkListener {
         }
     }
 
-    private void processVIPS() {
-        IDocument doc = context.getBrowser().getDocument();
-        StyleSheet styleSheet = new StyleSheetFactory().createStyleSheet(doc);
-        String referrer = doc.getReferrer();
-        context.setStyleSheet(referrer, styleSheet);
-
-        if (context.isUseVIPS()) {
-            context.getVipsCanvas().setDocument(browser.getDocument());
-        }
-        // Creator VIPS Segmenter
-        VisualPageSegmenter segmenter = new VisualPageSegmenter();
-        segmenter.setPDoC(context.getConfigure().getIntProperty("VIPS", "PDoC"));
-        // Create extractor
-        Rectangle rect = RectangleFactory.getInstance().create(doc.getBody());
-        double pageSize = rect.getHeight() * rect.getWidth();
-        context.getConsole().log("Page: " + rect + " Size: " + pageSize);
-        double threshold = context.getConfigure().getDoubleProperty("VIPS", "RelativeSizeThreshold", 0.1);
-        BlockExtractor extractor =
-                BlockExtractorFactory.getInstance().create(context, referrer, pageSize, threshold);
-
-        // Set extractor
-        segmenter.setExtractor(extractor);
-        segmenter.pageSegment(doc);
-    }
-
     private void process() {
-//        processVIPS();
+//        VIPSImpl vips = new VIPSImpl(context);
+//        vips.segment(context.getBrowser().getDocument());
     }
 
     @Override

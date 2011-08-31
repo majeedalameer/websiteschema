@@ -13,6 +13,7 @@ package websiteschema.analyzer.browser;
 import websiteschema.utils.Console;
 import websiteschema.utils.AWTConsole;
 import com.webrenderer.swing.BrowserFactory;
+import com.webrenderer.swing.IBrowserCanvas;
 import com.webrenderer.swing.IMozillaBrowserCanvas;
 import com.webrenderer.swing.RenderingOptimization;
 import com.webrenderer.swing.dom.IDocument;
@@ -28,8 +29,9 @@ import websiteschema.element.StyleSheet;
 import websiteschema.element.factory.RectangleFactory;
 import websiteschema.element.factory.StyleSheetFactory;
 import websiteschema.utils.Configure;
+import websiteschema.vips.VIPSImpl;
 import websiteschema.vips.VipsCanvas;
-import websiteschema.vips.VisualPageSegmenter;
+import websiteschema.vips.VisionBasedPageSegmenter;
 import websiteschema.vips.extraction.BlockExtractor;
 import websiteschema.vips.extraction.BlockExtractorFactory;
 
@@ -44,7 +46,9 @@ public class SimpleBrowser extends javax.swing.JFrame {
     VipsFrame vipsFrame;
     VipsCanvas vipsCanvas;
     BrowserContext context;
-    boolean vips = false;
+    VIPSImpl vips = null;
+    boolean doVIPS = false;
+    String homePage = "http://localhost:8080/";
     final String user = Configure.getDefaultConfigure().getProperty("Browser", "LicenseUser");
     final String serial = Configure.getDefaultConfigure().getProperty("Browser", "LicenseSerial");
 
@@ -70,7 +74,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
         renOps.setWindowlessFlashSmoothScrolling(true);
         browser.setRenderingOptimizations(renOps);
 
-        browser.loadURL("http://localhost:8080/");
+        browser.loadURL(homePage);
 
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(BorderLayout.CENTER, browser.getComponent());
@@ -78,7 +82,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
 
         //添加VIPS测试代码
         context = new BrowserContext();
-        context.setUseVIPS(vips);
+        context.setUseVIPS(doVIPS);
         if (context.isUseVIPS()) {
             vipsFrame = new VipsFrame();
             vipsCanvas = new VipsCanvas();
@@ -89,6 +93,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
         }
         context.setConsole(console);
         context.setBrowser(browser);
+        vips = new VIPSImpl(context);
 
         //添加Listener
         browser.addMouseListener(new SimpleMouseListener(context));
@@ -119,31 +124,37 @@ public class SimpleBrowser extends javax.swing.JFrame {
         jToolBar1 = new javax.swing.JToolBar();
         backButton = new javax.swing.JButton();
         forwardButton = new javax.swing.JButton();
+        refreshButton = new javax.swing.JButton();
+        homeButton = new javax.swing.JButton();
         urlTextField = new javax.swing.JTextField();
+        stopButton = new javax.swing.JButton();
         goButton = new javax.swing.JButton();
         vipsButton = new javax.swing.JButton();
-        jPanel2 = new javax.swing.JPanel();
-        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jInternalFrame1 = new javax.swing.JInternalFrame();
+        analysisPane = new javax.swing.JTabbedPane();
+        jPanel1 = new javax.swing.JPanel();
+        jPanel4 = new javax.swing.JPanel();
+        consolePane = new javax.swing.JTabbedPane();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         consoleTextArea = new javax.swing.JTextArea();
         jToolBar2 = new javax.swing.JToolBar();
         clearButton = new javax.swing.JButton();
-        jInternalFrame1 = new javax.swing.JInternalFrame();
-        jTabbedPane2 = new javax.swing.JTabbedPane();
-        jPanel1 = new javax.swing.JPanel();
-        jPanel4 = new javax.swing.JPanel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
+        jMenu3 = new javax.swing.JMenu();
+        hideAnalysisMenu = new javax.swing.JCheckBoxMenuItem();
+        hideConsoleMenu = new javax.swing.JCheckBoxMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Simple Browser");
 
         jToolBar1.setRollover(true);
 
-        backButton.setText("<<");
+        backButton.setText("<");
+        backButton.setToolTipText("Back");
         backButton.setFocusable(false);
         backButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         backButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -154,7 +165,8 @@ public class SimpleBrowser extends javax.swing.JFrame {
         });
         jToolBar1.add(backButton);
 
-        forwardButton.setText(">>");
+        forwardButton.setText(">");
+        forwardButton.setToolTipText("Forward");
         forwardButton.setFocusable(false);
         forwardButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         forwardButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -165,6 +177,30 @@ public class SimpleBrowser extends javax.swing.JFrame {
         });
         jToolBar1.add(forwardButton);
 
+        refreshButton.setText("刷");
+        refreshButton.setToolTipText("Refresh");
+        refreshButton.setFocusable(false);
+        refreshButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        refreshButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        refreshButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                refreshButtonActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(refreshButton);
+
+        homeButton.setText("H");
+        homeButton.setToolTipText("Home page");
+        homeButton.setFocusable(false);
+        homeButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        homeButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        homeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                homeButtonActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(homeButton);
+
         urlTextField.setText("about:blank");
         urlTextField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -173,7 +209,20 @@ public class SimpleBrowser extends javax.swing.JFrame {
         });
         jToolBar1.add(urlTextField);
 
-        goButton.setText("go");
+        stopButton.setText("X");
+        stopButton.setToolTipText("Stop loading");
+        stopButton.setFocusable(false);
+        stopButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        stopButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        stopButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                stopButtonActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(stopButton);
+
+        goButton.setText("Go");
+        goButton.setToolTipText("Load page");
         goButton.setFocusable(false);
         goButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         goButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -185,6 +234,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
         jToolBar1.add(goButton);
 
         vipsButton.setText("VIPS");
+        vipsButton.setToolTipText("Start VIPS");
         vipsButton.setFocusable(false);
         vipsButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         vipsButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -195,8 +245,48 @@ public class SimpleBrowser extends javax.swing.JFrame {
         });
         jToolBar1.add(vipsButton);
 
-        jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        jPanel2.setMaximumSize(new java.awt.Dimension(32767, 200));
+        jInternalFrame1.setVisible(true);
+
+        javax.swing.GroupLayout jInternalFrame1Layout = new javax.swing.GroupLayout(jInternalFrame1.getContentPane());
+        jInternalFrame1.getContentPane().setLayout(jInternalFrame1Layout);
+        jInternalFrame1Layout.setHorizontalGroup(
+            jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 581, Short.MAX_VALUE)
+        );
+        jInternalFrame1Layout.setVerticalGroup(
+            jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 354, Short.MAX_VALUE)
+        );
+
+        analysisPane.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 185, Short.MAX_VALUE)
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 505, Short.MAX_VALUE)
+        );
+
+        analysisPane.addTab("基本分析", jPanel1);
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 185, Short.MAX_VALUE)
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 505, Short.MAX_VALUE)
+        );
+
+        analysisPane.addTab("VB树", jPanel4);
+
+        consolePane.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         consoleTextArea.setColumns(20);
         consoleTextArea.setRows(5);
@@ -227,62 +317,10 @@ public class SimpleBrowser extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 82, Short.MAX_VALUE))
+                .addComponent(jScrollPane2))
         );
 
-        jTabbedPane1.addTab("console", jPanel3);
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 587, Short.MAX_VALUE)
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-        );
-
-        jInternalFrame1.setVisible(true);
-
-        javax.swing.GroupLayout jInternalFrame1Layout = new javax.swing.GroupLayout(jInternalFrame1.getContentPane());
-        jInternalFrame1.getContentPane().setLayout(jInternalFrame1Layout);
-        jInternalFrame1Layout.setHorizontalGroup(
-            jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 581, Short.MAX_VALUE)
-        );
-        jInternalFrame1Layout.setVerticalGroup(
-            jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 354, Short.MAX_VALUE)
-        );
-
-        jTabbedPane2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 185, Short.MAX_VALUE)
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 505, Short.MAX_VALUE)
-        );
-
-        jTabbedPane2.addTab("基本分析", jPanel1);
-
-        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-        jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 185, Short.MAX_VALUE)
-        );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 505, Short.MAX_VALUE)
-        );
-
-        jTabbedPane2.addTab("VB树", jPanel4);
+        consolePane.addTab("console", jPanel3);
 
         jMenu1.setText("文件");
 
@@ -300,6 +338,28 @@ public class SimpleBrowser extends javax.swing.JFrame {
         jMenu2.setText("编辑");
         jMenuBar1.add(jMenu2);
 
+        jMenu3.setText("视图");
+
+        hideAnalysisMenu.setSelected(true);
+        hideAnalysisMenu.setText("分析栏");
+        hideAnalysisMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                hideAnalysisMenuActionPerformed(evt);
+            }
+        });
+        jMenu3.add(hideAnalysisMenu);
+
+        hideConsoleMenu.setSelected(true);
+        hideConsoleMenu.setText("Console");
+        hideConsoleMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                hideConsoleMenuActionPerformed(evt);
+            }
+        });
+        jMenu3.add(hideConsoleMenu);
+
+        jMenuBar1.add(jMenu3);
+
         setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -308,11 +368,11 @@ public class SimpleBrowser extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 791, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addComponent(jTabbedPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(analysisPane, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jInternalFrame1)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(consolePane, javax.swing.GroupLayout.DEFAULT_SIZE, 591, Short.MAX_VALUE)
+                    .addComponent(jInternalFrame1)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -323,8 +383,9 @@ public class SimpleBrowser extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(jInternalFrame1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jTabbedPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 536, Short.MAX_VALUE)))
+                        .addComponent(consolePane, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(4, 4, 4))
+                    .addComponent(analysisPane, javax.swing.GroupLayout.DEFAULT_SIZE, 536, Short.MAX_VALUE)))
         );
 
         pack();
@@ -368,30 +429,33 @@ public class SimpleBrowser extends javax.swing.JFrame {
 
     private void vipsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_vipsButtonActionPerformed
         // TODO add your handling code here:
-        processVIPS();
+        vips.segment(browser.getDocument());
     }//GEN-LAST:event_vipsButtonActionPerformed
 
-    public void processVIPS() {
-        IDocument doc = context.getBrowser().getDocument();
-        StyleSheet styleSheet = new StyleSheetFactory().createStyleSheet(doc);
-        String referrer = doc.getReferrer();
-        context.setStyleSheet(referrer, styleSheet);
+    private void homeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_homeButtonActionPerformed
+        // TODO add your handling code here:
+        openUrl(homePage);
+    }//GEN-LAST:event_homeButtonActionPerformed
 
-        // Creator VIPS Segmenter
-        VisualPageSegmenter segmenter = new VisualPageSegmenter();
-        segmenter.setPDoC(context.getConfigure().getIntProperty("VIPS", "PDoC"));
-        // Create extractor
-        Rectangle rect = RectangleFactory.getInstance().create(doc.getBody());
-        double pageSize = rect.getHeight() * rect.getWidth();
-        context.getConsole().log("Page: " + rect + " Size: " + pageSize);
-        double threshold = context.getConfigure().getDoubleProperty("VIPS", "RelativeSizeThreshold", 0.1);
-        BlockExtractor extractor =
-                BlockExtractorFactory.getInstance().create(context, referrer, pageSize, threshold);
+    private void stopButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stopButtonActionPerformed
+        // TODO add your handling code here:
+        browser.stopLoad();
+    }//GEN-LAST:event_stopButtonActionPerformed
 
-        // Set extractor
-        segmenter.setExtractor(extractor);
-        segmenter.pageSegment(doc);
-    }
+    private void refreshButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshButtonActionPerformed
+        // TODO add your handling code here:
+        browser.reload(IBrowserCanvas.RELOAD_NORMAL);
+    }//GEN-LAST:event_refreshButtonActionPerformed
+
+    private void hideAnalysisMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hideAnalysisMenuActionPerformed
+        // TODO add your handling code here:
+        this.analysisPane.setVisible(this.hideAnalysisMenu.isSelected());
+    }//GEN-LAST:event_hideAnalysisMenuActionPerformed
+
+    private void hideConsoleMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hideConsoleMenuActionPerformed
+        // TODO add your handling code here:
+        this.consolePane.setVisible(this.hideConsoleMenu.isSelected());
+    }//GEN-LAST:event_hideConsoleMenuActionPerformed
 
     private void openUrl(String url) {
         if (!url.startsWith("http://")) {
@@ -413,25 +477,30 @@ public class SimpleBrowser extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTabbedPane analysisPane;
     private javax.swing.JButton backButton;
     private javax.swing.JButton clearButton;
+    private javax.swing.JTabbedPane consolePane;
     private javax.swing.JTextArea consoleTextArea;
     private javax.swing.JButton forwardButton;
     private javax.swing.JButton goButton;
+    private javax.swing.JCheckBoxMenuItem hideAnalysisMenu;
+    private javax.swing.JCheckBoxMenuItem hideConsoleMenu;
+    private javax.swing.JButton homeButton;
     private javax.swing.JInternalFrame jInternalFrame1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTabbedPane jTabbedPane2;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JToolBar jToolBar2;
+    private javax.swing.JButton refreshButton;
+    private javax.swing.JButton stopButton;
     private javax.swing.JTextField urlTextField;
     private javax.swing.JButton vipsButton;
     // End of variables declaration//GEN-END:variables
