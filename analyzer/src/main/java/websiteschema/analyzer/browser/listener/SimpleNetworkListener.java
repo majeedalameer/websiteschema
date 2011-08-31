@@ -12,6 +12,7 @@ import com.webrenderer.swing.event.NetworkEvent;
 import com.webrenderer.swing.event.NetworkListener;
 import java.util.Timer;
 import java.util.TimerTask;
+import javax.swing.JTextField;
 import org.apache.log4j.Logger;
 import websiteschema.context.BrowserContext;
 import websiteschema.element.Rectangle;
@@ -33,6 +34,7 @@ public class SimpleNetworkListener implements NetworkListener {
     Logger l = Logger.getRootLogger();
     BrowserContext context;
     IBrowserCanvas browser;
+    javax.swing.JTextField addressTextField;
     int sec = 1000;
     long delay = 30 * sec;
     boolean started = false;
@@ -41,6 +43,14 @@ public class SimpleNetworkListener implements NetworkListener {
     public SimpleNetworkListener(BrowserContext context) {
         this.context = context;
         this.browser = context.getBrowser();
+    }
+
+    public JTextField getAddressTextField() {
+        return addressTextField;
+    }
+
+    public void setAddressTextField(JTextField addressTextField) {
+        this.addressTextField = addressTextField;
     }
 
     @Override
@@ -75,7 +85,7 @@ public class SimpleNetworkListener implements NetworkListener {
         }
     }
 
-    public void process() {
+    private void processVIPS() {
         IDocument doc = context.getBrowser().getDocument();
         StyleSheet styleSheet = new StyleSheetFactory().createStyleSheet(doc);
         String referrer = doc.getReferrer();
@@ -100,9 +110,14 @@ public class SimpleNetworkListener implements NetworkListener {
         segmenter.pageSegment(doc);
     }
 
+    private void process() {
+//        processVIPS();
+    }
+
     @Override
     public void onDocumentComplete(NetworkEvent ne) {
         l.debug("onDocumentComplete " + ne.getURL());
+        addressTextField.setText(ne.getURL());
 
         timer.cancel();
         timer = null;

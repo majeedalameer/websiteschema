@@ -59,50 +59,52 @@ public class ElementUtil {
         return sb.toString();
     }
 
-    public void printNodeType(IElement ele) {
+    public String getNodeType(IElement ele) {
         Node node = ele.convertToW3CNode();
         int type = node.getNodeType();
-        printNodeType(type);
+        return getNodeType(type);
     }
 
-    public void printNodeType(int type) {
+    public String getNodeType(int type) {
+        String ret = null;
         switch (type) {
             case Node.ATTRIBUTE_NODE:
-                System.out.println("ATTRIBUTE_NODE");
+                ret = "ATTRIBUTE_NODE";
                 break;
             case Node.CDATA_SECTION_NODE:
-                System.out.println("CDATA_SECTION_NODE");
+                ret = "CDATA_SECTION_NODE";
                 break;
             case Node.COMMENT_NODE:
-                System.out.println("COMMENT_NODE");
+                ret = "COMMENT_NODE";
                 break;
             case Node.DOCUMENT_FRAGMENT_NODE:
-                System.out.println("DOCUMENT_FRAGMENT_NODE");
+                ret = "DOCUMENT_FRAGMENT_NODE";
                 break;
             case Node.DOCUMENT_NODE:
-                System.out.println("DOCUMENT_NODE");
+                ret = "DOCUMENT_NODE";
                 break;
             case Node.DOCUMENT_TYPE_NODE:
-                System.out.println("DOCUMENT_TYPE_NODE");
+                ret = "DOCUMENT_TYPE_NODE";
                 break;
             case Node.ELEMENT_NODE:
-                System.out.println("ELEMENT_NODE");
+                ret = "ELEMENT_NODE";
                 break;
             case Node.ENTITY_NODE:
-                System.out.println("ENTITY_NODE");
+                ret = "ENTITY_NODE";
                 break;
             case Node.ENTITY_REFERENCE_NODE:
-                System.out.println("ENTITY_REFERENCE_NODE");
+                ret = "ENTITY_REFERENCE_NODE";
                 break;
             case Node.NOTATION_NODE:
-                System.out.println("NOTATION_NODE");
+                ret = "NOTATION_NODE";
                 break;
             case Node.PROCESSING_INSTRUCTION_NODE:
-                System.out.println("PROCESSING_INSTRUCTION_NODE");
+                ret = "PROCESSING_INSTRUCTION_NODE";
                 break;
             case Node.TEXT_NODE:
-                System.out.println("TEXT_NODE");
+                ret = "TEXT_NODE";
                 break;
         }
+        return ret;
     }
 }

@@ -23,7 +23,7 @@ public class VisualPageSegmenter {
     int PDoC;
     BlockPool pool = new BlockPool();
     BlockExtractor extractor = null;
-    int iterateTimes = 4;
+    int iterateTimes = 5;
 
     public VisionBlock pageSegment(IDocument document) {
         initBlocks(document);
