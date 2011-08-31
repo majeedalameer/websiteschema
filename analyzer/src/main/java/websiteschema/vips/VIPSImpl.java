@@ -5,6 +5,8 @@
 package websiteschema.vips;
 
 import com.webrenderer.swing.dom.IDocument;
+import com.webrenderer.swing.dom.IElement;
+import org.apache.log4j.Logger;
 import websiteschema.context.BrowserContext;
 import websiteschema.element.Rectangle;
 import websiteschema.element.StyleSheet;
@@ -21,6 +23,7 @@ public class VIPSImpl {
 
     BrowserContext context = null;
     VisionBasedPageSegmenter segmenter = null;
+    Logger l = Logger.getRootLogger();
 
     public VIPSImpl(BrowserContext context) {
         this.context = context;
@@ -45,16 +48,21 @@ public class VIPSImpl {
         context.setStyleSheet(referrer, styleSheet);
 
         // Create extractor
-        Rectangle rect = RectangleFactory.getInstance().create(doc.getBody());
-        double pageSize = rect.getHeight() * rect.getWidth();
-        context.getConsole().log("Page: " + rect + " Size: " + pageSize);
-        double threshold = context.getConfigure().getDoubleProperty("VIPS", "RelativeSizeThreshold", 0.1);
-        BlockExtractor extractor =
-                BlockExtractorFactory.getInstance().create(context, referrer, pageSize, threshold);
+        IElement body = doc.getBody();
+        if (null != body) {
+            Rectangle rect = RectangleFactory.getInstance().create(body);
+            double pageSize = rect.getHeight() * rect.getWidth();
+            context.getConsole().log("Page: " + rect + " Size: " + pageSize);
+            double threshold = context.getConfigure().getDoubleProperty("VIPS", "RelativeSizeThreshold", 0.1);
+            BlockExtractor extractor =
+                    BlockExtractorFactory.getInstance().create(context, referrer, pageSize, threshold);
 
-        // Set extractor
-        segmenter.setExtractor(extractor);
-        segmenter.pageSegment(doc);
+            // Set extractor
+            segmenter.setExtractor(extractor);
+            segmenter.pageSegment(doc);
+        } else {
+            l.info("This is not a HTML page, ignore..." + doc.getReferrer());
+        }
     }
 
     public BrowserContext getContext() {
