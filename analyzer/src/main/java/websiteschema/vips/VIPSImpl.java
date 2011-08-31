@@ -30,8 +30,8 @@ public class VIPSImpl {
         init();
     }
 
-    public void segment(IDocument doc) {
-        processVIPS(doc);
+    public VisionBlock segment(IDocument doc) {
+        return processVIPS(doc);
     }
 
     /**
@@ -42,7 +42,7 @@ public class VIPSImpl {
         segmenter.setPDoC(context.getConfigure().getIntProperty("VIPS", "PDoC"));
     }
 
-    private void processVIPS(IDocument doc) {
+    private VisionBlock processVIPS(IDocument doc) {
         StyleSheet styleSheet = new StyleSheetFactory().createStyleSheet(doc);
         String referrer = doc.getReferrer();
         context.setStyleSheet(referrer, styleSheet);
