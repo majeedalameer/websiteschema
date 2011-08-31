@@ -10,6 +10,7 @@ import com.webrenderer.swing.dom.IElementCollection;
 import java.util.ArrayList;
 import java.util.List;
 import websiteschema.element.factory.XPathFactory;
+import websiteschema.utils.Configure;
 import websiteschema.utils.ElementUtil;
 import websiteschema.vips.extraction.BlockExtractor;
 import websiteschema.vips.extraction.rule.DivideRule;
@@ -23,7 +24,7 @@ public class VisionBasedPageSegmenter {
     int PDoC;
     BlockPool pool = new BlockPool();
     BlockExtractor extractor = null;
-    int iterateTimes = 5;
+    int iterateTimes = Configure.getDefaultConfigure().getIntProperty("VIPS", "IterateTimes", 5);
 
     public VisionBlock pageSegment(IDocument document) {
         initBlocks(document);

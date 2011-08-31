@@ -35,11 +35,15 @@ public class XPathFactory {
 
     private String getXPath(IElement ele, XPathAttributes attr) {
         IElement pEle = ele.getParentElement();
-        String xpath = getElementXPath(ele, attr);
-        if (pEle != null) {
+        String xpath = "";
+        if (ele.isTextNode()) {
+            xpath = "text()";
+        } else {
+            xpath = getElementXPath(ele, attr);
+        }
+        if (pEle != null && !pEle.isTextNode()) {
             xpath = getXPath(pEle, attr) + "/" + xpath;
         }
-
         return xpath;
     }
 

@@ -10,6 +10,7 @@
  */
 package websiteschema.analyzer.browser;
 
+import javax.swing.event.TreeSelectionEvent;
 import websiteschema.utils.Console;
 import websiteschema.utils.AWTConsole;
 import com.webrenderer.swing.BrowserFactory;
@@ -19,6 +20,7 @@ import com.webrenderer.swing.RenderingOptimization;
 import com.webrenderer.swing.dom.IDocument;
 import java.awt.BorderLayout;
 import javax.swing.JPanel;
+import javax.swing.event.TreeSelectionListener;
 import websiteschema.analyzer.browser.listener.SimpleMouseListener;
 import websiteschema.analyzer.browser.listener.SimpleNetworkListener;
 import websiteschema.analyzer.browser.listener.SimplePromptListener;
@@ -57,7 +59,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
     public SimpleBrowser() {
         initComponents();
 
-        
+
         //一打开窗口，就最大化
 //        setExtendedState(javax.swing.JFrame.MAXIMIZED_BOTH);
         console = new AWTConsole(consoleTextArea);
@@ -70,22 +72,26 @@ public class SimpleBrowser extends javax.swing.JFrame {
         displayBrowserInfo();
     }
 
-    private void initVipsTree(VisionBlock block){
+    private void initVipsTree(VisionBlock block) {
         vipsTree = new VipsTree(block);
+        vipsTree.setContext(context);
 
         vipsTreePane.setViewportView(vipsTree);
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(vipsTreePane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 185, Short.MAX_VALUE)
-        );
+                jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addComponent(vipsTreePane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 185, Short.MAX_VALUE));
         jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(vipsTreePane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 505, Short.MAX_VALUE)
-        );
+                jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addComponent(vipsTreePane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 505, Short.MAX_VALUE));
 
+        vipsTree.addTreeSelectionListener(new TreeSelectionListener() {
+
+            @Override
+            public void valueChanged(TreeSelectionEvent e) {
+                System.out.println("selected: " + e.getPath());
+            }
+        });
     }
 
     private void initBrowser() {
@@ -534,5 +540,4 @@ public class SimpleBrowser extends javax.swing.JFrame {
     private javax.swing.JTextField urlTextField;
     private javax.swing.JButton vipsButton;
     // End of variables declaration//GEN-END:variables
-
 }

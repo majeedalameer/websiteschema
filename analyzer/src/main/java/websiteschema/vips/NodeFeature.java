@@ -56,7 +56,7 @@ public class NodeFeature {
      */
     public boolean isValidNode(IElement ele) {
         if (ele.isTextNode()) {
-            return true;
+            return null != ele.getTextNodeText() && ele.getTextNodeText().trim().length() > 0;
         } else {
             Rectangle rect = rectangleFactory.create(ele);
             return rect.getHeight() != 0 || rect.getWidth() != 0;
@@ -71,7 +71,7 @@ public class NodeFeature {
     public boolean isSmallNode(IElement ele) {
         Rectangle rect = rectangleFactory.create(ele);
         if (rect.getHeight() != 0 || rect.getWidth() != 0) {
-            if (rect.getHeight() <= 30 && rect.getWidth() <= 400) {
+            if (rect.getHeight() <= 40 && rect.getWidth() <= 500) {
                 return true;
             } else {
                 return false;

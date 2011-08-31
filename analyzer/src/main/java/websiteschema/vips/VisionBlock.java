@@ -36,15 +36,15 @@ public class VisionBlock {
         return children;
     }
 
-    public VisionBlock getChild(int index){
+    public VisionBlock getChild(int index) {
         return children.get(index);
     }
 
-    public int getChildCount(){
+    public int getChildCount() {
         return children.size();
     }
 
-    public int getIndexOfChild(VisionBlock vb){
+    public int getIndexOfChild(VisionBlock vb) {
         return children.indexOf(vb);
     }
 
@@ -92,7 +92,8 @@ public class VisionBlock {
         this.level = level;
     }
 
-    public String toString(){
-        return "" + level;
+    @Override
+    public String toString() {
+        return "VB" + level + "(" + getDoC() + ")";
     }
 }

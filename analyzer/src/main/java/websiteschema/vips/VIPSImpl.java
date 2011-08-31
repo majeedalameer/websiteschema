@@ -21,9 +21,10 @@ import websiteschema.vips.extraction.BlockExtractorFactory;
  */
 public class VIPSImpl {
 
-    BrowserContext context = null;
-    VisionBasedPageSegmenter segmenter = null;
-    Logger l = Logger.getRootLogger();
+    private BrowserContext context = null;
+    private VisionBasedPageSegmenter segmenter = null;
+    private Logger l = Logger.getRootLogger();
+    private final static double standardPageSize = 1024 * 768;
 
     public VIPSImpl(BrowserContext context) {
         this.context = context;
@@ -55,7 +56,7 @@ public class VIPSImpl {
             context.getConsole().log("Page: " + rect + " Size: " + pageSize);
             double threshold = context.getConfigure().getDoubleProperty("VIPS", "RelativeSizeThreshold", 0.1);
             BlockExtractor extractor =
-                    BlockExtractorFactory.getInstance().create(context, referrer, pageSize, threshold);
+                    BlockExtractorFactory.getInstance().create(context, referrer, standardPageSize, threshold);
 
             // Set extractor
             segmenter.setExtractor(extractor);
