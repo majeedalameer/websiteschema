@@ -35,8 +35,6 @@ public class VisionBasedPageSegmenter {
             oneRound();
         } while (!meetGranularityNeed() && ++times < iterateTimes);
 
-        //drawBorder();
-
         return pool.getRoot();
     }
 
@@ -53,7 +51,7 @@ public class VisionBasedPageSegmenter {
 
     }
 
-    private void drawBorder() {
+    public void drawBorder() {
         int size = pool.getPool().size();
         for (int i = 0; i < size; i++) {
             VisionBlock block = pool.getPool().get(i);
