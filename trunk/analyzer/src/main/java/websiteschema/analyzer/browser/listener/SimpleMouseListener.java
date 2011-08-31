@@ -5,8 +5,6 @@
 package websiteschema.analyzer.browser.listener;
 
 import com.webrenderer.swing.dom.IElement;
-import com.webrenderer.swing.dom.IStyleRule;
-import com.webrenderer.swing.dom.IStyleSheet;
 import com.webrenderer.swing.event.MouseEvent;
 import com.webrenderer.swing.event.MouseListener;
 import org.apache.log4j.Logger;
@@ -50,7 +48,7 @@ public class SimpleMouseListener implements MouseListener {
             Rectangle rect = new RectangleFactory().create(ele);
             String xpath = new XPathFactory().create(ele, attr);
             l.debug("Elememnt Type: " + ele.getTagName());
-            System.out.println("xpath: " + xpath);
+            context.getConsole().log("Tag Name: " + ele.getTagName() + " -- Node Type: " + ElementUtil.getInstance().getNodeType(ele) + " -- XPath: " + xpath);
             l.debug(rect);
             String referrer1 = context.getBrowser().getDocument().getReferrer();
             StyleSheet styleSheets = context.getStyleSheet(referrer1);
