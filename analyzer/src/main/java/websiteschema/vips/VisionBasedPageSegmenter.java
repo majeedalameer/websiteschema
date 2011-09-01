@@ -44,7 +44,7 @@ public class VisionBasedPageSegmenter {
         for (int i = 0; i < size; i++) {
             VisionBlock block = pool.getPool().get(i);
 //            System.out.println(XPathFactory.getInstance().create(block.getEle() + " Level: " + block.getLevel() + " DoC:" + block.getDoC());
-            if (isLeafNode(block) && block.getDoC() < getPDoC()) {
+            if (isLeafNode(block) && !meetGranularityNeed(block)) {
                 divideDomTree(block.getEle(), 0, block);
             }
         }
@@ -55,7 +55,7 @@ public class VisionBasedPageSegmenter {
         int size = pool.getPool().size();
         for (int i = 0; i < size; i++) {
             VisionBlock block = pool.getPool().get(i);
-            ElementUtil.getInstance().drawRectangleInPage(block.getEle());
+            ElementUtil.getInstance().drawRectangleInPage(block.getEle(), "red");
         }
     }
 
@@ -63,10 +63,9 @@ public class VisionBasedPageSegmenter {
         int size = pool.getPool().size();
         for (int i = 0; i < size; i++) {
             VisionBlock block = pool.getPool().get(i);
-            if (isLeafNode(block)) {
-                if (!meetGranularityNeed(block)) {
-                    return false;
-                }
+            if (isLeafNode(block) && !meetGranularityNeed(block)) {
+//                System.out.println("doesn't meet granularity need. " + XPathFactory.getInstance().create(block.getEle()));
+                return false;
             }
         }
         return true;

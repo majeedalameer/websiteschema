@@ -9,6 +9,7 @@ import com.webrenderer.swing.event.NetworkEvent;
 import com.webrenderer.swing.event.NetworkListener;
 import java.util.Timer;
 import java.util.TimerTask;
+import javax.swing.JProgressBar;
 import javax.swing.JTextField;
 import org.apache.log4j.Logger;
 import websiteschema.context.BrowserContext;
@@ -28,6 +29,7 @@ public class SimpleNetworkListener implements NetworkListener {
     long delay = 30 * sec;
     boolean started = false;
     Timer timer = null;
+    javax.swing.JProgressBar progress;
 
     public SimpleNetworkListener(BrowserContext context) {
         this.context = context;
@@ -45,6 +47,8 @@ public class SimpleNetworkListener implements NetworkListener {
     @Override
     public void onProgressChange(NetworkEvent ne) {
         l.debug("onProgressChange" + ((float) ne.getCurrentProgress() / (float) ne.getMaximumProgress()));
+        float f = ((float) ne.getCurrentProgress() / (float) ne.getMaximumProgress());
+        progress.setValue((int) (progress.getMaximum() * f));
     }
 
     @Override
@@ -53,6 +57,8 @@ public class SimpleNetworkListener implements NetworkListener {
         started = false;
         timer = new Timer();
         timer.schedule(new MyTimerTask(), delay);
+        progress.setVisible(true);
+        progress.setValue(0);
     }
 
     class MyTimerTask extends TimerTask {
@@ -83,6 +89,8 @@ public class SimpleNetworkListener implements NetworkListener {
     @Override
     public void onDocumentComplete(NetworkEvent ne) {
         l.debug("onDocumentComplete " + ne.getURL());
+        progress.setValue(progress.getMaximum());
+        progress.setVisible(false);
         addressTextField.setText(ne.getURL());
 
         timer.cancel();
@@ -111,5 +119,13 @@ public class SimpleNetworkListener implements NetworkListener {
     public void onHTTPInterceptHeaders(NetworkEvent ne) {
         l.debug("onHTTPInterceptHeaders " + ne.getURL());
         l.trace("Send Request Header:\n" + ne.getMutableRequestHeaders());
+    }
+
+    public JProgressBar getProgress() {
+        return progress;
+    }
+
+    public void setProgress(JProgressBar progress) {
+        this.progress = progress;
     }
 }
