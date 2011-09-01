@@ -33,6 +33,20 @@ public class ElementUtil {
         }
     }
 
+    public void drawRectangleInPage(IElement ele, String color) {
+        String lastStyle = ele.getAttribute("style", 0);
+        String additionStyle = "border-style: solid; border-width: 3px;";
+        if(null != color && !"".equals(color)) {
+            additionStyle = "border-style: solid; border-width: 3px; border-color: " + color +";";
+        }
+        if (null != lastStyle && !"".equals(lastStyle)) {
+            ele.setAttribute("style", lastStyle + ";" + additionStyle, 0);
+        } else {
+            ele.setAttribute("style", additionStyle, 0);
+        }
+    }
+
+
     public double getPageSize(IDocument doc) {
         if (null != doc) {
             Rectangle rect = RectangleFactory.getInstance().create(doc.getBody());

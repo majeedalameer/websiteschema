@@ -113,9 +113,9 @@ public class SimpleBrowser extends javax.swing.JFrame {
                     }
                     lastStyle = ele.getAttribute("style", 0);
                     if (null != lastStyle && !"".equals(lastStyle)) {
-                        ele.setAttribute("style", lastStyle + ";border-style: solid; border-width: 5px;", 0);
+                        ele.setAttribute("style", lastStyle + ";border-style: solid; border-width: 5px; border-color: black;", 0);
                     } else {
-                        ele.setAttribute("style", "border-style: solid; border-width: 5px;", 0);
+                        ele.setAttribute("style", "border-style: solid; border-width: 5px; border-color: black;", 0);
                     }
                     lastClickedElement = ele;
                 }
@@ -160,6 +160,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
         browser.addPromptListener(new SimplePromptListener());
         SimpleNetworkListener snl = new SimpleNetworkListener(context);
         snl.setAddressTextField(urlTextField);
+        snl.setProgress(browserProgress);
         browser.addNetworkListener(snl);
 //        browser.addWindowListener(new SimpleWindowListener(context));
     }
@@ -190,6 +191,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
         stopButton = new javax.swing.JButton();
         goButton = new javax.swing.JButton();
         vipsButton = new javax.swing.JButton();
+        browserProgress = new javax.swing.JProgressBar();
         jInternalFrame1 = new javax.swing.JInternalFrame();
         analysisPane = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
@@ -305,6 +307,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
             }
         });
         jToolBar1.add(vipsButton);
+        jToolBar1.add(browserProgress);
 
         jInternalFrame1.setVisible(true);
 
@@ -316,7 +319,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
         );
         jInternalFrame1Layout.setVerticalGroup(
             jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 354, Short.MAX_VALUE)
+            .addGap(0, 362, Short.MAX_VALUE)
         );
 
         analysisPane.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -329,7 +332,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 505, Short.MAX_VALUE)
+            .addGap(0, 590, Short.MAX_VALUE)
         );
 
         analysisPane.addTab("基本分析", jPanel1);
@@ -342,7 +345,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 505, Short.MAX_VALUE)
+            .addGap(0, 590, Short.MAX_VALUE)
         );
 
         analysisPane.addTab("VB树", jPanel4);
@@ -370,15 +373,15 @@ public class SimpleBrowser extends javax.swing.JFrame {
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jToolBar2, javax.swing.GroupLayout.DEFAULT_SIZE, 582, Short.MAX_VALUE)
             .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 582, Short.MAX_VALUE)
+            .addComponent(jToolBar2, javax.swing.GroupLayout.DEFAULT_SIZE, 582, Short.MAX_VALUE)
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2))
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 159, Short.MAX_VALUE))
         );
 
         consolePane.addTab("console", jPanel3);
@@ -440,8 +443,8 @@ public class SimpleBrowser extends javax.swing.JFrame {
                 .addComponent(analysisPane, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(consolePane, javax.swing.GroupLayout.DEFAULT_SIZE, 591, Short.MAX_VALUE)
-                    .addComponent(jInternalFrame1)))
+                    .addComponent(jInternalFrame1)
+                    .addComponent(consolePane, javax.swing.GroupLayout.DEFAULT_SIZE, 591, Short.MAX_VALUE)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -452,9 +455,8 @@ public class SimpleBrowser extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(jInternalFrame1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(consolePane, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(4, 4, 4))
-                    .addComponent(analysisPane, javax.swing.GroupLayout.DEFAULT_SIZE, 536, Short.MAX_VALUE)))
+                        .addComponent(consolePane, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(analysisPane, javax.swing.GroupLayout.DEFAULT_SIZE, 621, Short.MAX_VALUE)))
         );
 
         pack();
@@ -562,6 +564,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTabbedPane analysisPane;
     private javax.swing.JButton backButton;
+    private javax.swing.JProgressBar browserProgress;
     private javax.swing.JButton clearButton;
     private javax.swing.JTabbedPane consolePane;
     private javax.swing.JTextArea consoleTextArea;

@@ -78,9 +78,9 @@ public class SimpleMouseListener implements MouseListener {
         }
         lastStyle = ele.getAttribute("style", 0);
         if (null != lastStyle && !"".equals(lastStyle)) {
-            ele.setAttribute("style", lastStyle + ";border-style: solid; border-width: 5px;", 0);
+            ele.setAttribute("style", lastStyle + ";border-style: solid; border-width: 5px; border-color: black;", 0);
         } else {
-            ele.setAttribute("style", "border-style: solid; border-width: 5px;", 0);
+            ele.setAttribute("style", "border-style: solid; border-width: 5px; border-color: black;", 0);
         }
         lastClickedElement = ele;
     }

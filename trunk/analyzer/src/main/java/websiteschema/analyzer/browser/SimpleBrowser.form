@@ -91,8 +91,8 @@
               <Component id="analysisPane" min="-2" pref="194" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="consolePane" pref="591" max="32767" attributes="0"/>
-                  <Component id="jInternalFrame1" alignment="0" max="32767" attributes="2"/>
+                  <Component id="jInternalFrame1" max="32767" attributes="2"/>
+                  <Component id="consolePane" alignment="0" pref="591" max="32767" attributes="0"/>
               </Group>
           </Group>
       </Group>
@@ -101,15 +101,14 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <Component id="jToolBar1" min="-2" pref="25" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="1" attributes="0">
                       <Component id="jInternalFrame1" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="consolePane" min="-2" pref="140" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="4" max="-2" attributes="0"/>
+                      <Component id="consolePane" min="-2" pref="221" max="-2" attributes="0"/>
                   </Group>
-                  <Component id="analysisPane" pref="536" max="32767" attributes="0"/>
+                  <Component id="analysisPane" pref="621" max="32767" attributes="0"/>
               </Group>
           </Group>
       </Group>
@@ -215,6 +214,8 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="vipsButtonActionPerformed"/>
           </Events>
         </Component>
+        <Component class="javax.swing.JProgressBar" name="browserProgress">
+        </Component>
       </SubComponents>
     </Container>
     <Container class="javax.swing.JInternalFrame" name="jInternalFrame1">
@@ -230,7 +231,7 @@
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
-              <EmptySpace min="0" pref="354" max="32767" attributes="0"/>
+              <EmptySpace min="0" pref="362" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
       </Layout>
@@ -263,7 +264,7 @@
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="505" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="590" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
           </Layout>
@@ -285,7 +286,7 @@
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="505" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="590" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
           </Layout>
@@ -315,16 +316,16 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jToolBar2" alignment="0" pref="582" max="32767" attributes="0"/>
                   <Component id="jScrollPane2" alignment="0" pref="582" max="32767" attributes="0"/>
+                  <Component id="jToolBar2" alignment="0" pref="582" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="jToolBar2" min="-2" pref="25" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" max="-2" attributes="0"/>
-                      <Component id="jScrollPane2" max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jScrollPane2" pref="159" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
