@@ -39,6 +39,18 @@
                 <version>6.0b3</version>
                 <classifier>linux64</classifier>
             </dependency>
+           <dependency>
+                <groupId>com.webrenderer</groupId>
+                <artifactId>corecomponents-swing</artifactId>
+                <version>6.0b3</version>
+                <classifier>windows64</classifier>
+            </dependency>
+            <dependency>
+                <groupId>com.webrenderer</groupId>
+                <artifactId>libwebrenderer</artifactId>
+                <version>6.0b3</version>
+                <classifier>windows64</classifier>
+            </dependency>
             <dependency>
                 <groupId>org.netlib</groupId>
                 <artifactId>mtj</artifactId>
