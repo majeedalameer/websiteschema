@@ -7,11 +7,9 @@ package websiteschema.context;
 import com.webrenderer.swing.IMozillaBrowserCanvas;
 import java.util.HashMap;
 import java.util.Map;
-import websiteschema.analyzer.browser.VipsFrame;
 import websiteschema.element.StyleSheet;
 import websiteschema.utils.Configure;
 import websiteschema.utils.Console;
-import websiteschema.vips.VipsCanvas;
 
 /**
  *
@@ -19,9 +17,6 @@ import websiteschema.vips.VipsCanvas;
  */
 public class BrowserContext {
 
-    VipsFrame vipsFrame;
-    VipsCanvas vipsCanvas;
-    boolean useVIPS = true;
     Console console;
     IMozillaBrowserCanvas browser = null;
     Configure configure = Configure.getDefaultConfigure();
@@ -33,30 +28,6 @@ public class BrowserContext {
 
     public void setConfigure(Configure configure) {
         this.configure = configure;
-    }
-
-    public VipsFrame getVipsFrame() {
-        return vipsFrame;
-    }
-
-    public void setVipsFrame(VipsFrame vips) {
-        this.vipsFrame = vips;
-    }
-
-    public VipsCanvas getVipsCanvas() {
-        return vipsCanvas;
-    }
-
-    public void setVipsCanvas(VipsCanvas vipsCanvas) {
-        this.vipsCanvas = vipsCanvas;
-    }
-
-    public boolean isUseVIPS() {
-        return useVIPS;
-    }
-
-    public void setUseVIPS(boolean useVIPS) {
-        this.useVIPS = useVIPS;
     }
 
     public Console getConsole() {

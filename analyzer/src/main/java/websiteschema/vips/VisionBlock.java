@@ -23,6 +23,7 @@ public class VisionBlock {
     IElementCollection elements;
     List<VisionBlock> children = new ArrayList<VisionBlock>();
     VisionBlock parent;
+    String name = "VB";
 
     public int getDoC() {
         return DoC;
@@ -92,8 +93,16 @@ public class VisionBlock {
         this.level = level;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @Override
     public String toString() {
-        return "VB" + level + "(" + getDoC() + ")";
+        return name + "_" + level + "(" + getDoC() + ")";
     }
 }
