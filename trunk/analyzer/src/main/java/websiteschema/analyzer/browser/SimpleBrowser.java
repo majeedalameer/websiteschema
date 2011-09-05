@@ -48,11 +48,8 @@ public class SimpleBrowser extends javax.swing.JFrame {
 
     IMozillaBrowserCanvas browser = null;
     Console console;
-    VipsFrame vipsFrame;
-    VipsCanvas vipsCanvas;
     BrowserContext context;
     VIPSImpl vips = null;
-    boolean doVIPS = false;
     String homePage = "http://localhost:8080/";
     final String user = Configure.getDefaultConfigure().getProperty("Browser", "LicenseUser");
     final String serial = Configure.getDefaultConfigure().getProperty("Browser", "LicenseSerial");
@@ -140,17 +137,8 @@ public class SimpleBrowser extends javax.swing.JFrame {
         panel.add(BorderLayout.CENTER, browser.getComponent());
         this.jInternalFrame1.setContentPane(panel);
 
-        //添加VIPS测试代码
+        //初始化BrowerContext
         context = new BrowserContext();
-        context.setUseVIPS(doVIPS);
-        if (context.isUseVIPS()) {
-            vipsFrame = new VipsFrame();
-            vipsCanvas = new VipsCanvas();
-            vipsFrame.setVisible(true);
-            context.setVipsFrame(vipsFrame);
-            context.setVipsCanvas(vipsCanvas);
-            vipsFrame.setCanvas(vipsCanvas);
-        }
         context.setConsole(console);
         context.setBrowser(browser);
         vips = new VIPSImpl(context);

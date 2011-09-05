@@ -246,4 +246,26 @@ public class Configure {
         }
         return def;
     }
+
+    public boolean getBooleanProperty(String key) {
+        return getBooleanProperty(Default_Field, key, false);
+    }
+
+    public boolean getBooleanProperty(String field, String key) {
+        return getBooleanProperty(field, key, false);
+    }
+
+    public boolean getBooleanProperty(String field, String key, boolean def) {
+        if (null == key || "".equals(key)) {
+            return def;
+        }
+        Map<String, String> map = properties.get(field.toLowerCase());
+        if (null != map) {
+            String ret = map.get(key.toLowerCase());
+            if (null != ret) {
+                return Boolean.valueOf(ret);
+            }
+        }
+        return def;
+    }
 }
