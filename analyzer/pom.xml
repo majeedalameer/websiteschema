@@ -13,6 +13,21 @@
     <packaging>jar</packaging>
     <name>websiteschema analyzer</name>
 
+    <profiles>
+        <profile>
+            <id>windows64</id>
+            <properties>
+                <webrenderer.classifier>windows64</webrenderer.classifier>
+            </properties>
+        </profile>
+        <profile>
+            <id>linux64</id>
+            <properties>
+                <webrenderer.classifier>linux64</webrenderer.classifier>
+            </properties>
+        </profile>
+    </profiles>
+
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -31,17 +46,16 @@
         <dependency>
             <groupId>com.webrenderer</groupId>
             <artifactId>corecomponents-swing</artifactId>
-            <classifier>linux64</classifier>
+            <classifier>${webrenderer.classifier}</classifier>
         </dependency>
         <dependency>
             <groupId>com.webrenderer</groupId>
             <artifactId>libwebrenderer</artifactId>
-            <classifier>linux64</classifier>
+            <classifier>${webrenderer.classifier}</classifier>
         </dependency>
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
-            <version>1.2.12</version>
         </dependency>
     </dependencies>
     <build>
