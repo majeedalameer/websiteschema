@@ -1,0 +1,21 @@
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>websiteschema</groupId>
+    <artifactId>reactor</artifactId>
+    <packaging>pom</packaging>
+    <name>reactor</name>
+    <version>1.0-SNAPSHOT</version>
+    <profiles>
+        <profile>
+            <id>all</id>
+            <modules>
+                <module>../lib-system-detection</module>
+                <module>../analyzer</module>
+                <module>../lib-data-model</module>
+                <module>../metadata-server</module>
+            </modules>
+        </profile>
+    </profiles>
+</project>

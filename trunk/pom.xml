@@ -8,8 +8,102 @@
     <packaging>pom</packaging>
     <name>websiteschema</name>
 
+    <properties>
+        <org.springframework.version>3.0.5.RELEASE</org.springframework.version>
+        <org.slf4j.version>1.5.10</org.slf4j.version>
+        <webrenderer.version>6.0b3</webrenderer.version>
+        <hive-version>0.7.1-cdh3u1</hive-version>
+        <hbase-version>0.90.3-cdh3u1</hbase-version>
+        <hadoop-version>0.20.2-cdh3u1</hadoop-version>
+    </properties>
+
     <dependencyManagement>
         <dependencies>
+            <!-- Child Module -->
+            <dependency>
+                <groupId>websiteschema</groupId>
+                <artifactId>lib-data-model</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>websiteschema</groupId>
+                <artifactId>lib-system.detection</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <!-- Hadoop -->
+            <dependency>
+                <groupId>org.apache.hadoop.hive</groupId>
+                <artifactId>hive-jdbc</artifactId>
+                <version>${hive-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.hadoop.hive</groupId>
+                <artifactId>hive-cli</artifactId>
+                <version>${hive-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.hbase</groupId>
+                <artifactId>hbase</artifactId>
+                <version>${hbase-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.hadoop</groupId>
+                <artifactId>hadoop-core</artifactId>
+                <version>${hadoop-version}</version>
+            </dependency>
+
+            <!-- Relational Database -->
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>5.1.14</version>
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mybatis</groupId>
+                <artifactId>mybatis</artifactId>
+                <version>3.0.5</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mybatis</groupId>
+                <artifactId>mybatis-spring</artifactId>
+                <version>1.0.1</version>
+            </dependency>
+
+            <!--  Spring -->
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context</artifactId>
+                <version>${org.springframework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-jdbc</artifactId>
+                <version>${org.springframework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-web</artifactId>
+                <version>${org.springframework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-test</artifactId>
+                <version>${org.springframework.version}</version>
+                <scope>test</scope>
+                <type>jar</type>
+            </dependency>
+            <!-- CGLIB (required for processing @Configuration classes -->
+            <dependency>
+                <groupId>cglib</groupId>
+                <artifactId>cglib-nodep</artifactId>
+                <version>2.1_3</version>
+            </dependency>
+            <dependency>
+                <groupId>cglib</groupId>
+                <artifactId>cglib</artifactId>
+                <version>2.2</version>
+            </dependency>
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
@@ -25,30 +119,30 @@
             <dependency>
                 <groupId>com.webrenderer</groupId>
                 <artifactId>webrenderer-swing</artifactId>
-                <version>6.0b3</version>
+                <version>${webrenderer.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.webrenderer</groupId>
                 <artifactId>corecomponents-swing</artifactId>
-                <version>6.0b3</version>
+                <version>${webrenderer.version}</version>
                 <classifier>linux64</classifier>
             </dependency>
             <dependency>
                 <groupId>com.webrenderer</groupId>
                 <artifactId>libwebrenderer</artifactId>
-                <version>6.0b3</version>
+                <version>${webrenderer.version}</version>
                 <classifier>linux64</classifier>
             </dependency>
-           <dependency>
+            <dependency>
                 <groupId>com.webrenderer</groupId>
                 <artifactId>corecomponents-swing</artifactId>
-                <version>6.0b3</version>
+                <version>${webrenderer.version}</version>
                 <classifier>windows64</classifier>
             </dependency>
             <dependency>
                 <groupId>com.webrenderer</groupId>
                 <artifactId>libwebrenderer</artifactId>
-                <version>6.0b3</version>
+                <version>${webrenderer.version}</version>
                 <classifier>windows64</classifier>
             </dependency>
             <dependency>
@@ -154,6 +248,24 @@
                 <version>3.6</version>
                 <scope>test</scope>
             </dependency>
+            <!-- Logging -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${org.slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jcl-over-slf4j</artifactId>
+                <version>${org.slf4j.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-log4j12</artifactId>
+                <version>${org.slf4j.version}</version>
+                <scope>runtime</scope>
+            </dependency>
             <dependency>
                 <groupId>log4j</groupId>
                 <artifactId>log4j</artifactId>
@@ -164,6 +276,28 @@
                 <artifactId>truezip</artifactId>
                 <version>6.0</version>
                 <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.quartz-scheduler</groupId>
+                <artifactId>quartz</artifactId>
+                <version>1.8.4</version>
+            </dependency>
+            <dependency>
+                <groupId>org.directwebremoting</groupId>
+                <artifactId>dwr</artifactId>
+                <version>2.0.1</version>
+            </dependency>
+            <dependency>
+                <groupId>bsf</groupId>
+                <artifactId>bsf</artifactId>
+                <version>2.3.0</version>
+            </dependency>
+            <dependency>
+                <groupId>javax</groupId>
+                <artifactId>javaee-web-api</artifactId>
+                <version>6.0</version>
+                <scope>provided</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
