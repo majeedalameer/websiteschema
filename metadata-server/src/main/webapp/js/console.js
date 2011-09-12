@@ -26,8 +26,11 @@ Console.actionData = [
                         {
                             text:"用户管理",id:"user-admin.task",title:"用户管理",cls:"cls",singleClickExpand:true,
                             children:[
-                                {href:"manager/user.jsp",text:"用户管理",id:"yhgl",title:"用户管理",cls:"cls",iconCls:"icon-cls",leaf:true}
+                                {href:"views/metadata/user",text:"用户管理",id:"yhgl",title:"用户管理",cls:"cls",iconCls:"icon-cls",leaf:true}
                             ]
+                        },
+                        {
+                            href:"views/personInfo", text:"个人信息",id:"personal-admin.task",title:"个人信息",cls:"cls",leaf:true
                         }
                     ]
        }
@@ -135,9 +138,9 @@ MainPanel = function(){
 
         items: {
             id: 'tab-welcome',
-            title: '首页',
+            title: '帮助',
             cls: 'cls',
-            autoLoad: {url: 'welcome.html', scope: this},
+            autoLoad: {url: '/views/main_page', scope: this, script: true},
             iconCls: 'icon-docs',
             closable: false,
             autoScroll: true
@@ -240,7 +243,7 @@ Ext.onReady(function(){
         }]
     });
 
-    leftPanel.expandPath('/root/kb');
+    leftPanel.expandPath('/root/dh');
 
     viewport.doLayout();
 
