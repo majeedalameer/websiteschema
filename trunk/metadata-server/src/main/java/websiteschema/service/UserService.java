@@ -10,6 +10,7 @@ import websiteschema.persistence.rdbms.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import websiteschema.utils.MD5;
 
 /**
  *
@@ -28,8 +29,17 @@ public class UserService {
         return listRange;
     }
 
+    public User getUserById(String id) {
+        return userMapper.getUserById(id);
+    }
+
     @Transactional
     public void insert(User user) {
+        String passwd = user.getPasswd();
+        if (null == passwd || !"".equals(passwd)) {
+            passwd = MD5.getMD5("123456".getBytes());
+            user.setPasswd(passwd);
+        }
         userMapper.insert(user);
     }
 
