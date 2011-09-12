@@ -10,6 +10,7 @@
 
     <properties>
         <org.springframework.version>3.0.5.RELEASE</org.springframework.version>
+        <spring-security.version>3.0.5.RELEASE</spring-security.version>
         <org.slf4j.version>1.5.10</org.slf4j.version>
         <webrenderer.version>6.0b3</webrenderer.version>
         <hive-version>0.7.1-cdh3u1</hive-version>
@@ -23,6 +24,11 @@
             <dependency>
                 <groupId>websiteschema</groupId>
                 <artifactId>lib-data-model</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>websiteschema</groupId>
+                <artifactId>lib-utils</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -88,10 +94,30 @@
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
+                <artifactId>spring-webmvc</artifactId>
+                <version>${org.springframework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
                 <artifactId>spring-test</artifactId>
                 <version>${org.springframework.version}</version>
                 <scope>test</scope>
                 <type>jar</type>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-core</artifactId>
+                <version>${spring-security.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-config</artifactId>
+                <version>${spring-security.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-taglibs</artifactId>
+                <version>${spring-security.version}</version>
             </dependency>
             <!-- CGLIB (required for processing @Configuration classes -->
             <dependency>

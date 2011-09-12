@@ -12,32 +12,50 @@
     </select>
 
     <select id="getUsers" resultType="websiteschema.model.domain.User">
-        select user_id userId, name, passwd, email
+        select user_id userId, id, name, passwd, email, role
         from
         User
     </select>
 
     <!-- 查询记录，根据id -->
-    <select id="getUserById" parameterType="long" resultType="websiteschema.model.domain.User">
-        select user_id userId, name, passwd, email
+    <select id="getUserByUserId" parameterType="long" resultType="websiteschema.model.domain.User">
+        select user_id userId, id, name, passwd, email, role
         from
         User
         where user_id = #{userId}
     </select>
 
+    <!-- 查询记录，根据Name -->
+    <select id="getUserByName" parameterType="String" resultType="websiteschema.model.domain.User">
+        select user_id userId, id, name, passwd, email, role
+        from
+        User
+        where name = #{name}
+    </select>
+
+    <!-- 查询记录，根据Id -->
+    <select id="getUserById" parameterType="String" resultType="websiteschema.model.domain.User">
+        select user_id userId, id, name, passwd, email, role
+        from
+        User
+        where id = #{id}
+    </select>
+
     <!-- 插入记录 -->
     <insert id="insert" parameterType="websiteschema.model.domain.User"
         useGeneratedKeys="true" keyProperty="user_id">
-        insert into User (name, email, passwd)
-        values (#{name},#{email},#{passwd})
+        insert into User (id, name, email, passwd, role)
+        values (#{id},#{name},#{email},#{passwd},#{role})
     </insert>
 
     <!-- 更新任务状态记录 -->
     <update id="update" parameterType="websiteschema.model.domain.User">
         update User set
+        id = #{id},
         name = #{name},
         email = #{email},
-        passwd = #{passwd}
+        passwd = #{passwd},
+        role = #{role}
         where user_id = #{userId}
     </update>
 

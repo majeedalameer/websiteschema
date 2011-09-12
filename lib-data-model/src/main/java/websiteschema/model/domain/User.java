@@ -11,9 +11,11 @@ package websiteschema.model.domain;
 public class User implements java.io.Serializable {
 
     long userId;
+    String id;
     String name;
     String passwd;
     String email;
+    String role;
 
     public String getEmail() {
         return email;
@@ -45,5 +47,21 @@ public class User implements java.io.Serializable {
 
     public void setUserId(long userId) {
         this.userId = userId;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

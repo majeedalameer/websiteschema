@@ -17,7 +17,11 @@ public interface UserMapper {
 
     public List<User> getUsers();
 
-    public User getUserById();
+    public User getUserByUserId(long userId);
+
+    public User getUserById(String id);
+
+    public User getUserByName(String name);
 
     public void update(User user);
 
