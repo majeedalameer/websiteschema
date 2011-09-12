@@ -15,6 +15,10 @@
     
     <dependencies>
         <dependency>
+            <groupId>websiteschema</groupId>
+            <artifactId>lib-utils</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.apache.hbase</groupId>
             <artifactId>hbase</artifactId>
 <!--            <exclusions>
