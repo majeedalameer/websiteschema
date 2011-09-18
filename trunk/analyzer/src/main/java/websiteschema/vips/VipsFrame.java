@@ -48,11 +48,12 @@ public class VipsFrame extends javax.swing.JFrame {
                 int value = e.getValue();
                 int abs = value - lastValue;
                 abs = abs > 0 ? abs : -abs;
-                if (abs > 50) {
+//                if (abs > 50) {
+                {
                     lastValue = value;
                     jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
                     jScrollPane1.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-                    System.out.println("reset scrollpane canvas.");
+//                    System.out.println("reset scrollpane canvas.");
                     jScrollPane1.setViewportView(canvas1);
                 }
             }
@@ -69,8 +70,6 @@ public class VipsFrame extends javax.swing.JFrame {
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        jToolBar1 = new javax.swing.JToolBar();
-        refreshButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("VIPS Frame (Red is separator, and black is vision block)");
@@ -78,41 +77,19 @@ public class VipsFrame extends javax.swing.JFrame {
         jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
         jScrollPane1.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 
-        jToolBar1.setRollover(true);
-
-        refreshButton.setText("Refresh");
-        refreshButton.setFocusable(false);
-        refreshButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        refreshButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        refreshButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                refreshButtonActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(refreshButton);
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 401, Short.MAX_VALUE)
             .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 401, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 270, Short.MAX_VALUE))
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 301, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void refreshButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshButtonActionPerformed
-        // TODO add your handling code here:
-        getCanvas().repaint();
-    }//GEN-LAST:event_refreshButtonActionPerformed
 //    public static void main(String args[]) {
 //        java.awt.EventQueue.invokeLater(new Runnable() {
 //
@@ -123,8 +100,6 @@ public class VipsFrame extends javax.swing.JFrame {
 //    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JToolBar jToolBar1;
-    private javax.swing.JButton refreshButton;
     // End of variables declaration//GEN-END:variables
     private Canvas canvas1 = null;
 

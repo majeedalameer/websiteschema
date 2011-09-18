@@ -4,11 +4,7 @@
  */
 package websiteschema.vips.extraction;
 
-import com.webrenderer.swing.dom.IDocument;
 import websiteschema.context.BrowserContext;
-import websiteschema.element.Rectangle;
-import websiteschema.element.factory.RectangleFactory;
-import websiteschema.utils.Configure;
 
 /**
  *
@@ -28,7 +24,7 @@ public class BlockExtractorFactory {
         extractor.setContext(context);
         extractor.setReferrer(referrer);
         extractor.setThreshold(threshold);
-        extractor.setConfigure(Configure.getDefaultConfigure());
+        extractor.setConfigure(BrowserContext.getConfigure());
         return extractor;
     }
 }

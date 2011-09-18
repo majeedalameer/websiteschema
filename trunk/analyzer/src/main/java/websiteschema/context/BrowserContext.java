@@ -7,6 +7,9 @@ package websiteschema.context;
 import com.webrenderer.swing.IMozillaBrowserCanvas;
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import websiteschema.analyzer.browser.AnalysisPanel;
 import websiteschema.element.StyleSheet;
 import websiteschema.utils.Configure;
 import websiteschema.utils.Console;
@@ -19,15 +22,17 @@ public class BrowserContext {
 
     Console console;
     IMozillaBrowserCanvas browser = null;
-    Configure configure = Configure.getDefaultConfigure();
+    private static final Configure configure = new Configure("configure-site.ini");
     Map<String, StyleSheet> styleSheets = new HashMap<String, StyleSheet>();
+    AnalysisPanel analysisPanel;
+    private static final ApplicationContext ctx = new ClassPathXmlApplicationContext("spring-beans.xml");
 
-    public Configure getConfigure() {
+    public static Configure getConfigure() {
         return configure;
     }
 
-    public void setConfigure(Configure configure) {
-        this.configure = configure;
+    public static ApplicationContext getSpringContext() {
+        return ctx;
     }
 
     public Console getConsole() {
@@ -52,5 +57,13 @@ public class BrowserContext {
 
     public StyleSheet getStyleSheet(String url) {
         return this.styleSheets.get(url);
+    }
+
+    public AnalysisPanel getAnalysisPanel() {
+        return analysisPanel;
+    }
+
+    public void setAnalysisPanel(AnalysisPanel analysisPanel) {
+        this.analysisPanel = analysisPanel;
     }
 }

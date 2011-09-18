@@ -5,7 +5,10 @@
 package websiteschema.vips;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import websiteschema.element.Rectangle;
 
 /**
  *
@@ -25,5 +28,21 @@ public class BlockPool {
 
     public VisionBlock getRoot() {
         return pool.get(0);
+    }
+
+    public boolean isLeafNode(VisionBlock block) {
+        return null == block.getChildren() || block.getChildren().isEmpty();
+    }
+
+    public List<VisionBlock> getLeafNodes() {
+        List<VisionBlock> leafs = new ArrayList<VisionBlock>();
+
+        for (VisionBlock blk : pool) {
+            if (isLeafNode(blk)) {
+                leafs.add(blk);
+            }
+        }
+
+        return leafs;
     }
 }

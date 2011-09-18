@@ -5,6 +5,8 @@
 package websiteschema.metadata.mvc;
 
 //import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
@@ -14,6 +16,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+import websiteschema.utils.Configure;
 
 /**
  *
@@ -37,10 +41,14 @@ public class MetadataController {
 //        return "metadata/user";
 //    }
     @RequestMapping(value = "/**", method = RequestMethod.GET)
-    public String view(HttpServletRequest request, HttpServletResponse response) {
+    public ModelAndView view(HttpServletRequest request, HttpServletResponse response) {
         String uri = request.getQueryString();
         String url = request.getPathInfo();
         l.trace("path:" + url + " uri: " + uri);
-        return url;
+        Map model = new HashMap();
+        if (null != url && !"".equals(url) && url.contains("metadata/site")) {
+            model.put("AnalyzerTips", Configure.getDefaultConfigure().getProperty("AnalyzerTips"));
+        }
+        return new ModelAndView(url, model);
     }
 }

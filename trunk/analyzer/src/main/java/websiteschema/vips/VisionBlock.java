@@ -20,7 +20,7 @@ public class VisionBlock {
     int level;
     Rectangle rect;
     IElement ele;
-    IElementCollection elements;
+//    IElementCollection elements;
     List<VisionBlock> children = new ArrayList<VisionBlock>();
     VisionBlock parent;
     String name = "VB";
@@ -59,14 +59,6 @@ public class VisionBlock {
 
     public void setEle(IElement ele) {
         this.ele = ele;
-    }
-
-    public IElementCollection getElements() {
-        return elements;
-    }
-
-    public void setElements(IElementCollection elements) {
-        this.elements = elements;
     }
 
     public VisionBlock getParent() {

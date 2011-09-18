@@ -12,5 +12,9 @@
         <create creator="spring" javascript="UserService" >
             <param name="beanName" value="userService"></param>
         </create>
+
+        <create creator="spring" javascript="SiteService" >
+            <param name="beanName" value="siteService"></param>
+        </create>
     </allow>
 </dwr>

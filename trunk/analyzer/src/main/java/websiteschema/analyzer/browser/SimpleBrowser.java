@@ -17,28 +17,19 @@ import com.webrenderer.swing.BrowserFactory;
 import com.webrenderer.swing.IBrowserCanvas;
 import com.webrenderer.swing.IMozillaBrowserCanvas;
 import com.webrenderer.swing.RenderingOptimization;
-import com.webrenderer.swing.dom.IDocument;
 import com.webrenderer.swing.dom.IElement;
+import com.webrenderer.swing.dom.IElementCollection;
 import java.awt.BorderLayout;
+import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.event.TreeSelectionListener;
-import websiteschema.analyzer.browser.listener.SimpleMouseListener;
-import websiteschema.analyzer.browser.listener.SimpleNetworkListener;
-import websiteschema.analyzer.browser.listener.SimplePromptListener;
-import websiteschema.analyzer.browser.listener.SimpleWindowListener;
+import websiteschema.analyzer.browser.listener.*;
 import websiteschema.context.BrowserContext;
-import websiteschema.element.Rectangle;
-import websiteschema.element.StyleSheet;
-import websiteschema.element.factory.RectangleFactory;
-import websiteschema.element.factory.StyleSheetFactory;
-import websiteschema.utils.Configure;
-import websiteschema.utils.ElementUtil;
+import websiteschema.model.domain.Site;
+import websiteschema.persistence.rdbms.SiteMapper;
+import websiteschema.persistence.rdbms.UserMapper;
 import websiteschema.vips.VIPSImpl;
-import websiteschema.vips.VipsCanvas;
-import websiteschema.vips.VisionBasedPageSegmenter;
 import websiteschema.vips.VisionBlock;
-import websiteschema.vips.extraction.BlockExtractor;
-import websiteschema.vips.extraction.BlockExtractorFactory;
 
 /**
  *
@@ -50,22 +41,58 @@ public class SimpleBrowser extends javax.swing.JFrame {
     Console console;
     BrowserContext context;
     VIPSImpl vips = null;
-    String homePage = "http://localhost:8080/";
-    final String user = Configure.getDefaultConfigure().getProperty("Browser", "LicenseUser");
-    final String serial = Configure.getDefaultConfigure().getProperty("Browser", "LicenseSerial");
+    String homePage = BrowserContext.getConfigure().getProperty("Browser", "HomePage");
+    String analysisURL = BrowserContext.getConfigure().getProperty("Analyzer", "AnalysisURL");
+    final String user = BrowserContext.getConfigure().getProperty("Browser", "LicenseUser");
+    final String serial = BrowserContext.getConfigure().getProperty("Browser", "LicenseSerial");
+    AnalysisPanel analysisPanel;
+    private javax.swing.JScrollPane vipsTreePane;
+    private VipsTree vipsTree = null;
 
     /** Creates new form SimpleAnalyzer */
     public SimpleBrowser() {
         initComponents();
-        initVipsTree();
-        //一打开窗口，就最大化
-//        setExtendedState(javax.swing.JFrame.MAXIMIZED_BOTH);
+        //初始化Context
+        context = new BrowserContext();
         console = new AWTConsole(consoleTextArea);
+        context.setConsole(console);
 
         //初始化Webrenderer
         initBrowser();
+        //初始化VIPS Tree控件
+        initVipsTree();
+        //初始化分析栏
+        initAnalysisPanel();
 
+        //关闭consolePane
+        this.consolePane.setVisible(this.hideConsoleMenu.isSelected());
+        //一打开窗口，就最大化
+        setExtendedState(javax.swing.JFrame.MAXIMIZED_BOTH);
+
+        //在console上显示浏览器信息
         displayBrowserInfo();
+    }
+
+    public void startAnalysis(String siteId) {
+        this.browserTab.setSelectedIndex(1);
+        SiteMapper siteMapper = BrowserContext.getSpringContext().getBean("siteMapper", SiteMapper.class);
+        Site site = siteMapper.getSiteBySiteId(siteId);
+        analysisPanel.setSiteId(siteId);
+        analysisPanel.startAnalysis(site);
+        String url = site.getUrl();
+        this.urlTextField.setText(url);
+        this.openUrl(url);
+    }
+
+    private void initAnalysisPanel() {
+        analysisPanel = new AnalysisPanel(context);
+        context.setAnalysisPanel(analysisPanel);
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+                jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addComponent(analysisPanel));
+        jPanel1Layout.setVerticalGroup(
+                jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addComponent(analysisPanel));
     }
 
     private void initVipsTree() {
@@ -91,30 +118,83 @@ public class SimpleBrowser extends javax.swing.JFrame {
 
                 IElement lastClickedElement = null;
                 String lastStyle = null;
+                VisionBlock lastSelectedVB = null;
+                String style = "border-style: solid; border-width: 5px; border-color: black;";
 
                 @Override
                 public void valueChanged(TreeSelectionEvent e) {
-                    VisionBlock vb = (VisionBlock) e.getPath().getLastPathComponent();
-                    drawRectangleInPage(vb.getEle());
                     System.out.println("selected " + e.getPath());
+                    VisionBlock vb = (VisionBlock) e.getPath().getLastPathComponent();
+//                    drawRectangleInPage(vb.getEle());
+                    undraw(lastSelectedVB);
+                    draw(vb);
+                    lastSelectedVB = vb;
+                }
 
+                private void draw(VisionBlock vb) {
+                    if (null != vb) {
+                        List<VisionBlock> children = vb.getChildren();
+                        if (null != children && children.size() > 0) {
+                            for (VisionBlock blk : children) {
+                                draw(blk);
+                            }
+                        } else {
+                            draw(vb.getEle());
+                        }
+                    }
+                }
+
+                private void undraw(VisionBlock vb) {
+                    if (null != vb) {
+                        List<VisionBlock> children = vb.getChildren();
+                        if (null != children && children.size() > 0) {
+                            for (VisionBlock blk : children) {
+                                undraw(blk);
+                            }
+                        } else {
+                            undraw(vb.getEle());
+                        }
+                    }
+                }
+
+                private void draw(IElement ele) {
+                    if (null != ele) {
+                        String oldStyle = ele.getAttribute("style", 0);
+                        if (null != oldStyle && !"".equals(oldStyle)) {
+                            ele.setAttribute("style", oldStyle + ";" + style, 0);
+                        } else {
+                            ele.setAttribute("style", style, 0);
+                        }
+                    }
+                }
+
+                private void undraw(IElement ele) {
+                    if (null != ele) {
+                        String oldStyle = ele.getAttribute("style", 0);
+                        if (null != oldStyle && !"".equals(oldStyle)) {
+                            String s = oldStyle.replaceAll(style, "");
+                            ele.setAttribute("style", s, 0);
+                        }
+                    }
                 }
 
                 private void drawRectangleInPage(IElement ele) {
-                    if (null != lastClickedElement) {
-                        if (null != lastStyle && !"".equals(lastStyle)) {
-                            lastClickedElement.setAttribute("style", lastStyle, 0);
-                        } else {
-                            lastClickedElement.removeAttribute("style", 0);
+                    if (null != ele) {
+                        if (null != lastClickedElement) {
+                            if (null != lastStyle && !"".equals(lastStyle)) {
+                                lastClickedElement.setAttribute("style", lastStyle, 0);
+                            } else {
+                                lastClickedElement.removeAttribute("style", 0);
+                            }
                         }
+                        lastStyle = ele.getAttribute("style", 0);
+                        if (null != lastStyle && !"".equals(lastStyle)) {
+                            ele.setAttribute("style", lastStyle + ";border-style: solid; border-width: 5px; border-color: black;", 0);
+                        } else {
+                            ele.setAttribute("style", "border-style: solid; border-width: 5px; border-color: black;", 0);
+                        }
+                        lastClickedElement = ele;
                     }
-                    lastStyle = ele.getAttribute("style", 0);
-                    if (null != lastStyle && !"".equals(lastStyle)) {
-                        ele.setAttribute("style", lastStyle + ";border-style: solid; border-width: 5px; border-color: black;", 0);
-                    } else {
-                        ele.setAttribute("style", "border-style: solid; border-width: 5px; border-color: black;", 0);
-                    }
-                    lastClickedElement = ele;
                 }
             });
         }
@@ -138,8 +218,6 @@ public class SimpleBrowser extends javax.swing.JFrame {
         this.jInternalFrame1.setContentPane(panel);
 
         //初始化BrowerContext
-        context = new BrowserContext();
-        context.setConsole(console);
         context.setBrowser(browser);
         vips = new VIPSImpl(context);
 
@@ -152,11 +230,16 @@ public class SimpleBrowser extends javax.swing.JFrame {
         browser.addNetworkListener(snl);
 //        browser.addWindowListener(new SimpleWindowListener(context));
 
+        //创建分析框
         IMozillaBrowserCanvas configBrowser = BrowserFactory.spawnMozilla();
         RenderingOptimization renOps2 = new RenderingOptimization();
         renOps2.setWindowlessFlashSmoothScrolling(true);
         configBrowser.setRenderingOptimizations(renOps2);
-        configBrowser.loadURL("http://localhost:9090/");
+        configBrowser.setCookie(analysisURL, "websiteschema=analyzer;");
+        configBrowser.loadURL(analysisURL);
+        AnalyzeEventListener ael = new AnalyzeEventListener(configBrowser);
+        ael.setSimpleBrowser(this);
+        configBrowser.addMouseListener(ael);
 
         JPanel panel2 = new JPanel(new BorderLayout());
         panel2.add(BorderLayout.CENTER, configBrowser.getComponent());
@@ -199,10 +282,9 @@ public class SimpleBrowser extends javax.swing.JFrame {
         consoleTextArea = new javax.swing.JTextArea();
         jToolBar2 = new javax.swing.JToolBar();
         clearButton = new javax.swing.JButton();
-        jTabbedPane1 = new javax.swing.JTabbedPane();
-        jInternalFrame1 = new javax.swing.JInternalFrame();
-        jPanel2 = new javax.swing.JPanel();
+        browserTab = new javax.swing.JTabbedPane();
         configFrame = new javax.swing.JInternalFrame();
+        jInternalFrame1 = new javax.swing.JInternalFrame();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -374,7 +456,18 @@ public class SimpleBrowser extends javax.swing.JFrame {
 
         consolePane.addTab("console", jPanel3);
 
-        jInternalFrame1.setVisible(true);
+        javax.swing.GroupLayout configFrameLayout = new javax.swing.GroupLayout(configFrame.getContentPane());
+        configFrame.getContentPane().setLayout(configFrameLayout);
+        configFrameLayout.setHorizontalGroup(
+            configFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 576, Short.MAX_VALUE)
+        );
+        configFrameLayout.setVerticalGroup(
+            configFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 335, Short.MAX_VALUE)
+        );
+
+        browserTab.addTab("Configure", configFrame);
 
         javax.swing.GroupLayout jInternalFrame1Layout = new javax.swing.GroupLayout(jInternalFrame1.getContentPane());
         jInternalFrame1.getContentPane().setLayout(jInternalFrame1Layout);
@@ -387,33 +480,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
             .addGap(0, 335, Short.MAX_VALUE)
         );
 
-        jTabbedPane1.addTab("Analyzer", jInternalFrame1);
-
-        configFrame.setVisible(true);
-
-        javax.swing.GroupLayout configFrameLayout = new javax.swing.GroupLayout(configFrame.getContentPane());
-        configFrame.getContentPane().setLayout(configFrameLayout);
-        configFrameLayout.setHorizontalGroup(
-            configFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 576, Short.MAX_VALUE)
-        );
-        configFrameLayout.setVerticalGroup(
-            configFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 335, Short.MAX_VALUE)
-        );
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(configFrame)
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(configFrame)
-        );
-
-        jTabbedPane1.addTab("Configure", jPanel2);
+        browserTab.addTab("Analyzer", jInternalFrame1);
 
         jMenu1.setText("文件");
 
@@ -442,7 +509,6 @@ public class SimpleBrowser extends javax.swing.JFrame {
         });
         jMenu3.add(hideAnalysisMenu);
 
-        hideConsoleMenu.setSelected(true);
         hideConsoleMenu.setText("Console");
         hideConsoleMenu.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -472,7 +538,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
                 .addComponent(analysisPane, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 591, Short.MAX_VALUE)
+                    .addComponent(browserTab, javax.swing.GroupLayout.DEFAULT_SIZE, 591, Short.MAX_VALUE)
                     .addComponent(consolePane, javax.swing.GroupLayout.DEFAULT_SIZE, 591, Short.MAX_VALUE)))
         );
         layout.setVerticalGroup(
@@ -482,7 +548,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 394, Short.MAX_VALUE)
+                        .addComponent(browserTab, javax.swing.GroupLayout.DEFAULT_SIZE, 394, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(consolePane, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(analysisPane, javax.swing.GroupLayout.DEFAULT_SIZE, 621, Short.MAX_VALUE)))
@@ -568,7 +634,9 @@ public class SimpleBrowser extends javax.swing.JFrame {
     }//GEN-LAST:event_drawBorderMenuActionPerformed
 
     private void openUrl(String url) {
-        if (!url.startsWith("http://")) {
+        if (url.startsWith("ftp://")) {
+            System.out.println("FTP URL: " + url);
+        } else if (!url.startsWith("http://")) {
             url = "http://" + url;
         }
         browser.loadURL(url);
@@ -586,14 +654,11 @@ public class SimpleBrowser extends javax.swing.JFrame {
             }
         });
     }
-    private javax.swing.JScrollPane vipsTreePane;
-
-    ;
-    private VipsTree vipsTree = null;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTabbedPane analysisPane;
     private javax.swing.JButton backButton;
     private javax.swing.JProgressBar browserProgress;
+    private javax.swing.JTabbedPane browserTab;
     private javax.swing.JButton clearButton;
     private javax.swing.JInternalFrame configFrame;
     private javax.swing.JTabbedPane consolePane;
@@ -611,11 +676,9 @@ public class SimpleBrowser extends javax.swing.JFrame {
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JToolBar jToolBar2;
     private javax.swing.JButton refreshButton;

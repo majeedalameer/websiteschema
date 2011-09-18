@@ -11,10 +11,11 @@
         User
     </select>
 
-    <select id="getUsers" resultType="websiteschema.model.domain.User">
+    <select id="getUsers" parameterType="websiteschema.model.domain.PageInfo" resultType="websiteschema.model.domain.User">
         select user_id userId, id, name, passwd, email, role
         from
         User
+        limit #{pageNum}, #{pageSize}
     </select>
 
     <!-- 查询记录，根据id -->
@@ -62,6 +63,11 @@
     <delete id="delete" parameterType="websiteschema.model.domain.User" >
         delete from User
         where user_id = #{userId}
+    </delete>
+
+    <delete id="deleteById" parameterType="String" >
+        delete from User
+        where id = #{id}
     </delete>
     
 </mapper>  
