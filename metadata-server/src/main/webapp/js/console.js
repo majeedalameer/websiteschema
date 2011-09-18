@@ -6,17 +6,12 @@ Console.actionData = [
        {
            text:"数据管理系统",id:"dh",title:"数据管理系统",cls:"cls",singleClickExpand:true,
            children:[
-//                        {
-//                            text:"网站管理",id:"dh.fetch",title:"网站管理",cls:"cls",singleClickExpand:true,
-//                            children:[
-//                            {
-//                                text:"抓取配置",id:"dh.crawler",title:"抓取配置",cls:"cls",singleClickExpand:true,
-//                                children:[
-//                                    {href:"manager/channel.jsp",text:"栏目配置",id:"channel",title:"栏目配置",cls:"cls",iconCls:"icon-cls",leaf:true},
-//                                    {href:"manager/url.jsp",text:"URL配置",id:"url",title:"URL配置",cls:"cls",iconCls:"icon-cls",leaf:true}
-//                                ]
-//                            }]
-//                        },
+                        {
+                            text:"数据管理",id:"dh.fetch",title:"数据管理",cls:"cls",singleClickExpand:true,
+                            children:[
+                                {href:"views/metadata/site",text:"网站配置",id:"site",title:"网站配置",cls:"cls",iconCls:"icon-cls",leaf:true}
+                            ]
+                        },
 //                        {
 //                            text:"采集管理",id:"meta-maintain.task",title:"采集管理",cls:"cls",singleClickExpand:true,
 //                            children:[
@@ -138,9 +133,9 @@ MainPanel = function(){
 
         items: {
             id: 'tab-welcome',
-            title: '帮助',
+            title: 'Websiteschema',
             cls: 'cls',
-            autoLoad: {url: '/views/main_page', scope: this, script: true},
+            autoLoad: {url: '/docs/introduce.html', scope: this, script: true},
             iconCls: 'icon-docs',
             closable: false,
             autoScroll: true

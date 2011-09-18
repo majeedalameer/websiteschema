@@ -10,6 +10,7 @@ import websiteschema.persistence.rdbms.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import websiteschema.model.domain.PageInfo;
 import websiteschema.utils.MD5;
 
 /**
@@ -24,7 +25,8 @@ public class UserService {
 
     public ListRange getUsers(int start, int count, String orderBy) {
         ListRange listRange = new ListRange();
-        listRange.setData(userMapper.getUsers().toArray());
+        PageInfo pageInfo = new PageInfo(start,count);
+        listRange.setData(userMapper.getUsers(pageInfo).toArray());
         listRange.setTotalSize(userMapper.getTotalResults());
         return listRange;
     }

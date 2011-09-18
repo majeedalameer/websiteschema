@@ -14,7 +14,6 @@ import websiteschema.element.Rectangle;
 import websiteschema.element.StyleSheet;
 import websiteschema.element.factory.RectangleFactory;
 import websiteschema.element.factory.StyleSheetFactory;
-import websiteschema.utils.Configure;
 
 /**
  *
@@ -23,7 +22,7 @@ import websiteschema.utils.Configure;
 public class NodeFeature {
 
     Logger l = Logger.getRootLogger();
-    static final Set<String> inlineNodeSet = Configure.getDefaultConfigure().getSetProperty("VIPS", "InlineNodeName");
+    static final Set<String> inlineNodeSet = BrowserContext.getConfigure().getSetProperty("VIPS", "InlineNodeName");
     static final RectangleFactory rectangleFactory = new RectangleFactory();
     static final StyleSheetFactory styleSheetFactory = new StyleSheetFactory();
     static final NodeFeature instance = new NodeFeature();

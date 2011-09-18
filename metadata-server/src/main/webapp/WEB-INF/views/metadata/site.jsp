@@ -2,6 +2,7 @@
 <%
             String path = request.getContextPath();
             String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
+            String analyzerTips = (String) request.getAttribute("AnalyzerTips");
 %>
 <html>
     <head>
@@ -15,7 +16,7 @@
         <script type="text/javascript" src="js/Ext.ux.ThemeCombo.js"></script>
         <script type="text/javascript" src="js/dwrproxy.js"></script>
         <script type="text/javascript" src="dwr/engine.js"></script>
-        <script type="text/javascript" src="dwr/interface/UserService.js"></script>
+        <script type="text/javascript" src="dwr/interface/SiteService.js"></script>
     </head>
 
     <body>
@@ -24,33 +25,60 @@
 
         <script type="text/javascript">
             var start = 0;
-            var pageSize = 10;
+            var pageSize = 20;
+            function getCookie(name)//取cookies函数
+            {
+                var arr = document.cookie.match(new RegExp("(^| )"+name+"=([^;]*)(;|$)"));
+                if(arr != null) return unescape(arr[2]); return null;
+
+            }
+            
             Ext.onReady(function(){
 
-                var proxy = new Ext.data.DWRProxy(UserService.getUsers, true);
+                var proxy = new Ext.data.DWRProxy(SiteService.getSites, true);
                 var recordType = new Ext.data.Record.create([
                     {
-                        name : 'userId',
+                        name : 'id',
                         type : 'long'
                     },
                     {
-                        name : 'id',
+                        name : 'siteId',
                         type : 'string'
                     },
                     {
-                        name : 'name',
+                        name : 'siteName',
                         type : 'string'
                     },
                     {
-                        name : 'email',
+                        name : 'siteDomain',
                         type : 'string'
                     },
                     {
-                        name : 'passwd',
+                        name : 'siteType',
                         type : 'string'
                     },
                     {
-                        name : 'role',
+                        name : 'parentId',
+                        type : 'long'
+                    },
+                    {
+                        name : 'url',
+                        type : 'string'
+                    },
+                    {
+                        name : 'createTime',
+                        type : 'date'
+                    },
+                    {
+                        name : 'createUser',
+                        type : 'string'
+                    },
+                    {
+                        name : 'updateTime',
+                        type : 'date'
+                    },
+                    {
+                        name : 'lastUpdateUser',
                         type : 'string'
                     }
                 ]);
@@ -58,7 +86,7 @@
                     proxy : proxy,
                     reader : new Ext.data.ListRangeReader(
                     {
-                        id : 'userId',
+                        id : 'id',
                         totalProperty : 'totalSize'
                     }, recordType
                 ),
@@ -76,46 +104,113 @@
                     //nm,
                     sm,
                     {
-                        header: 'USER_ID',
-                        dataIndex: 'userId',
-                        width: 100
-                    },
-                    {
                         header: 'id',
                         dataIndex: 'id',
+                        width: 30
+                    },
+                    {
+                        header: '网站ID',
+                        dataIndex: 'siteId',
+                        width: 150,
+                        editor: new fm.TextField({
+                            allowBlank: false
+                        })
+                    },
+                    {
+                        header: '网站名称',
+                        dataIndex: 'siteName',
+                        width: 60,
+                        editor: new fm.TextField({
+                            allowBlank: false
+                        })
+                    },
+                    {
+                        header: '网站域名',
+                        dataIndex: 'siteDomain',
                         width: 100,
                         editor: new fm.TextField({
                             allowBlank: false
                         })
                     },
                     {
-                        header: 'name',
-                        dataIndex: 'name',
-                        width: 100,
+                        header: '网站类型',
+                        dataIndex: 'siteType',
+                        width: 50,
                         editor: new fm.TextField({
                             allowBlank: false
                         })
                     },
                     {
-                        header: 'email',
-                        dataIndex: 'email',
-                        width: 100,
+                        header: '父网站',
+                        dataIndex: 'parentId',
+                        width: 50,
                         editor: new fm.TextField({
                             allowBlank: false
                         })
                     },
                     {
-                        header: 'passwd',
-                        dataIndex: 'passwd',
+                        header: 'URL',
+                        dataIndex: 'url',
                         width: 200,
                         editor: new fm.TextField({
                             allowBlank: false
                         })
                     },
                     {
-                        header: 'role',
-                        dataIndex: 'role',
-                        width: 250,
+                        header: '分析',
+                        width: 35,
+                        xtype: 'actioncolumn',
+                        items: [
+                            {
+                                icon   : 'resources/accept.gif',  // Use a URL in the icon config
+                                tooltip: '<%=analyzerTips%>', //这是analyzer用来触发分析事件的属性，需要特别的记住。
+                                handler: function(grid, rowIndex, colIndex) {
+                                    var cookie = getCookie("websiteschema");
+                                    if("analyzer" != cookie) {
+                                        Ext.Msg.show({
+                                            title:'Websiteschema',
+                                            msg: '您使用的浏览器不是websiteschema analyzer！',
+                                            buttons: Ext.Msg.OK
+                                        });
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        header: '创建时间',
+                        dataIndex: 'createTime',
+                        width: 200,
+                        hidden : true,
+                        editor: new fm.DateField({
+                            allowBlank: false,
+                            readOnly : true,
+                            format: 'Y-m-d H:i:s'
+                        })
+                    },
+                    {
+                        header: '创建人',
+                        dataIndex: 'createUser',
+                        width: 100,
+                        hidden : true,
+                        editor: new fm.TextField({
+                            allowBlank: false
+                        })
+                    },
+                    {
+                        header: '修改时间',
+                        dataIndex: 'updateTime',
+                        width: 130,
+                        editor: new fm.DateField({
+                            allowBlank: false,
+                            readOnly : true,
+                            format: 'Y-m-d H:i:s'
+                        })
+                    },
+                    {
+                        header: '修改人',
+                        dataIndex: 'lastUpdateUser',
+                        width: 100,
                         editor: new fm.TextField({
                             allowBlank: false
                         })
@@ -137,14 +232,14 @@
                     //el:'topic-grid',
                     renderTo: 'gridpanel',
                     width: '100%',
-                    height: 530,
+                    autoHeight: true,
                     clicksToEdit:1,
                     autoScroll: true,
                     //title: '分页和排序列表',
                     store: store,
                     trackMouseOver: false,
                     loadMask: true,
-                    enableHdMenu: false,
+                    enableHdMenu: true,
                     sm: sm,
                     cm: cm,
                     
@@ -169,6 +264,7 @@
                         }
                     ],
                     bbar: new Ext.PagingToolbar({
+                        height: '22',
                         pageSize: pageSize,
                         store: store,
                         displayInfo: true
@@ -180,13 +276,15 @@
                 function handleAdd(){
                     var p = new recordType();
                     grid.stopEditing();
-                    p.set("name","name");
-                    p.set("passwd","passwd");
-                    p.set("email","email@gmail.com");
-                    p.set("role","ROLE_USER");
+                    p.set("siteId","siteId_here");
+                    p.set("siteName","siteName_here");
+                    p.set("siteDomain","siteDomain_here");
+                    p.set("siteType","general");
+                    p.set("parentId","0");
+                    p.set("url","URL_here");
                     store.insert(0, p);
                     grid.startEditing(0, 0);
-                    UserService.insert(p.data);
+                    SiteService.insert(p.data);
                     store.reload();
                 }
 
@@ -196,7 +294,7 @@
                     var mr = store.getModifiedRecords();
                     Ext.MessageBox.alert("是否要继续更改？");
                     for(var i=0;i<mr.length;i++){
-                        UserService.update(mr[i].data);
+                        SiteService.update(mr[i].data);
                     }
                     store.reload();
                 }
@@ -206,11 +304,10 @@
                     var selections = grid.selModel.getSelections();
                     Ext.MessageBox.alert("是否要继续删除？");
                     for (var i = 0,len = selections.length; i < len; i++) {
-                        UserService.deleteUser(selections[i].data);
+                        SiteService.deleteSite(selections[i].data);
                     }
                     store.reload();
                 }
-
             });
         </script>
 

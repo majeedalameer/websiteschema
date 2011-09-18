@@ -113,7 +113,7 @@ public class Configure {
     }
 
     private void parseLine(String line) {
-        if (!line.startsWith("#")) {
+        if (!line.startsWith("#") && !line.startsWith(";")) {
             if (line.startsWith("[") && line.endsWith("]")) {
                 currentField = line.substring(1, line.length() - 1).trim().toLowerCase();
             } else if (line.indexOf("=") > 0) {
