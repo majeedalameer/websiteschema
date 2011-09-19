@@ -18,7 +18,6 @@ import com.webrenderer.swing.IBrowserCanvas;
 import com.webrenderer.swing.IMozillaBrowserCanvas;
 import com.webrenderer.swing.RenderingOptimization;
 import com.webrenderer.swing.dom.IElement;
-import com.webrenderer.swing.dom.IElementCollection;
 import java.awt.BorderLayout;
 import java.util.List;
 import javax.swing.JPanel;
@@ -27,7 +26,6 @@ import websiteschema.analyzer.browser.listener.*;
 import websiteschema.context.BrowserContext;
 import websiteschema.model.domain.Site;
 import websiteschema.persistence.rdbms.SiteMapper;
-import websiteschema.persistence.rdbms.UserMapper;
 import websiteschema.vips.VIPSImpl;
 import websiteschema.vips.VisionBlock;
 
@@ -116,10 +114,8 @@ public class SimpleBrowser extends javax.swing.JFrame {
             vipsTreePane.setViewportView(vipsTree);
             vipsTree.addTreeSelectionListener(new TreeSelectionListener() {
 
-                IElement lastClickedElement = null;
-                String lastStyle = null;
-                VisionBlock lastSelectedVB = null;
-                String style = "border-style: solid; border-width: 5px; border-color: black;";
+                private VisionBlock lastSelectedVB = null;
+                private String style = "border-style: solid; border-width: 5px; border-color: black;";
 
                 @Override
                 public void valueChanged(TreeSelectionEvent e) {
@@ -175,25 +171,6 @@ public class SimpleBrowser extends javax.swing.JFrame {
                             String s = oldStyle.replaceAll(style, "");
                             ele.setAttribute("style", s, 0);
                         }
-                    }
-                }
-
-                private void drawRectangleInPage(IElement ele) {
-                    if (null != ele) {
-                        if (null != lastClickedElement) {
-                            if (null != lastStyle && !"".equals(lastStyle)) {
-                                lastClickedElement.setAttribute("style", lastStyle, 0);
-                            } else {
-                                lastClickedElement.removeAttribute("style", 0);
-                            }
-                        }
-                        lastStyle = ele.getAttribute("style", 0);
-                        if (null != lastStyle && !"".equals(lastStyle)) {
-                            ele.setAttribute("style", lastStyle + ";border-style: solid; border-width: 5px; border-color: black;", 0);
-                        } else {
-                            ele.setAttribute("style", "border-style: solid; border-width: 5px; border-color: black;", 0);
-                        }
-                        lastClickedElement = ele;
                     }
                 }
             });

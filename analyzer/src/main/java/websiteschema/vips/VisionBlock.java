@@ -95,6 +95,6 @@ public class VisionBlock {
 
     @Override
     public String toString() {
-        return name + "_" + level + "(" + getDoC() + ")";
+        return name + "(" + getDoC() + ")";
     }
 }
