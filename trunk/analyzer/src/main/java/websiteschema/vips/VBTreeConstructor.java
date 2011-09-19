@@ -37,7 +37,23 @@ public class VBTreeConstructor {
         }
 
         addTextBlockIntoVBTree(pool);
+
+        setVisionBlockName(root, root.getName());
+
         return root;
+    }
+
+    private void setVisionBlockName(VisionBlock block, String name) {
+        if (block.getChildCount() > 0) {
+            List<VisionBlock> children = block.getChildren();
+            for (int i = 0; i < children.size(); i++) {
+                VisionBlock child = children.get(i);
+                child.setName(name + "_" + i);
+                setVisionBlockName(child, child.getName());
+            }
+        } else {
+//            block.setName(name + "_" + index);
+        }
     }
 
     private VisionBlock combine(Set<VisionBlock> blocks) {
