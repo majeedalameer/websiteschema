@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package websiteschema.persistence.hbase;
+package websiteschema.persistence.hbase.core;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Map;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
-import org.apache.hadoop.hbase.HColumnDescriptor;
-import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.MasterNotRunningException;
 import org.apache.hadoop.hbase.ZooKeeperConnectionException;
 import org.apache.hadoop.hbase.client.Delete;
@@ -31,23 +29,15 @@ import org.apache.log4j.Logger;
  *
  * @author ray
  */
-public class HBaseMapperImpl implements HBaseMapper {
+public class Mapper {
 
     Logger l = Logger.getRootLogger();
     String tableName;
     Configuration conf;
-    HBaseAdmin admin;
 
-    public HBaseMapperImpl(String tableName) {
+    public Mapper(String tableName) {
         this.tableName = tableName;
         conf = HBaseConfiguration.create();
-        try {
-            admin = new HBaseAdmin(conf);
-        } catch (MasterNotRunningException ex) {
-            l.error("MasterNotRunningException", ex);
-        } catch (ZooKeeperConnectionException ex) {
-            l.error("ZooKeeperConnectionException", ex);
-        }
     }
 
     public String getTableName() {
@@ -62,16 +52,6 @@ public class HBaseMapperImpl implements HBaseMapper {
             list.add(d1);
             table.delete(list);
             l.debug("删除表 " + getTableName() + ", 行 " + rowKey + " 成功！");
-        } catch (IOException ex) {
-            l.error("Table " + getTableName(), ex);
-        }
-    }
-
-    public void deleteTable() {
-        try {
-            admin.disableTable(getTableName());
-            admin.deleteTable(getTableName());
-            l.debug("删除表 " + getTableName() + " 成功！");
         } catch (IOException ex) {
             l.error("Table " + getTableName(), ex);
         }

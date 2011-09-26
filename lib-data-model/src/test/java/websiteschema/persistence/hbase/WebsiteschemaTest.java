@@ -4,6 +4,8 @@
  */
 package websiteschema.persistence.hbase;
 
+import websiteschema.persistence.hbase.core.HBaseMapperFactory;
+import websiteschema.persistence.hbase.core.HBaseMapper;
 import org.junit.Test;
 import websiteschema.model.domain.Websiteschema;
 
@@ -13,39 +15,38 @@ import websiteschema.model.domain.Websiteschema;
  */
 public class WebsiteschemaTest {
 
-    WebsiteschemaMapper<Websiteschema> mapper =
-            new WebsiteschemaMapper<Websiteschema>("websiteschema", Websiteschema.class);
+    HBaseMapper<Websiteschema> mapper =
+            HBaseMapperFactory.getInstance().create(Websiteschema.class);
     String rowKey = "test_sohu_com_2";
 
     @Test
     public void test() {
-        deleteTable();
-
-        mapper.createTableIfNotExists();
         put();
 
         get();
 
         delete();
+        
+//        deleteTable();
     }
 
     public void deleteTable() {
-        mapper.deleteTable();
+        HBaseMapperFactory.getInstance().deleteTable(mapper);
     }
 
     public void put() {
         Websiteschema record = new Websiteschema();
         record.setRowKey(rowKey);
-        record.setClassId("1");
+        record.setValid(false);
         mapper.put(record);
     }
 
     public void get() {
         Websiteschema record = mapper.get(rowKey);
         record.setRowKey(rowKey);
-        System.out.println(record.getRowKey());
-        System.out.println(record.getClassId());
-        System.out.println(record.getUpdateTime());
+        System.out.println("    " + record.getRowKey());
+        System.out.println("    " + record.isValid());
+        System.out.println("    " + record.getLastUpdateTime());
     }
 
     public void delete() {

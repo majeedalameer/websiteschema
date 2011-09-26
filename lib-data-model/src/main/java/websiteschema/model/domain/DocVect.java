@@ -2,15 +2,16 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package websiteschema.model.domain;
+
+import java.util.List;
 
 /**
  *
  * @author ray
  */
-public interface HBaseBean {
+public class DocVect {
 
-    public String getRowKey();
-
+    List<XPathDim> dims;
+    String url;
 }

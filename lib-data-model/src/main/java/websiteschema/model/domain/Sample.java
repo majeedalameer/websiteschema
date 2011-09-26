@@ -5,8 +5,6 @@
 package websiteschema.model.domain;
 
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
 import websiteschema.persistence.hbase.annotation.ColumnFamily;
 import websiteschema.persistence.hbase.annotation.RowKey;
 
@@ -14,23 +12,21 @@ import websiteschema.persistence.hbase.annotation.RowKey;
  *
  * @author ray
  */
-public class Websiteschema implements HBaseBean {
+public class Sample implements HBaseBean {
 
-    public final static int Analyzed = 0;
-    public final static int New = 0;
-    //SiteId
     @RowKey
     String rowKey;
+
     @ColumnFamily
-    Date lastUpdateTime = new Date();
+    String url;
     @ColumnFamily
-    Date createTime = null;
+    DocVect content;
     @ColumnFamily
-    boolean valid = true;
+    int httpStatus;
     @ColumnFamily
-    int status = New;
+    Date lastUpdateTime;
     @ColumnFamily
-    Map<String, Integer> dimension;
+    Date createTime;
 
     public String getRowKey() {
         return rowKey;
@@ -38,6 +34,30 @@ public class Websiteschema implements HBaseBean {
 
     public void setRowKey(String rowKey) {
         this.rowKey = rowKey;
+    }
+
+    public DocVect getContent() {
+        return content;
+    }
+
+    public void setContent(DocVect content) {
+        this.content = content;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public int getHttpStatus() {
+        return httpStatus;
+    }
+
+    public void setHttpStatus(int httpStatus) {
+        this.httpStatus = httpStatus;
     }
 
     public Date getLastUpdateTime() {
@@ -48,11 +68,12 @@ public class Websiteschema implements HBaseBean {
         this.lastUpdateTime = lastUpdateTime;
     }
 
-    public boolean isValid() {
-        return valid;
+    public String getUrl() {
+        return url;
     }
 
-    public void setValid(boolean valid) {
-        this.valid = valid;
+    public void setUrl(String url) {
+        this.url = url;
     }
+
 }
