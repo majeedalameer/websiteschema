@@ -33,7 +33,22 @@
             </dependency>
             <dependency>
                 <groupId>websiteschema</groupId>
-                <artifactId>lib-system.detection</artifactId>
+                <artifactId>lib-system-detection</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>websiteschema</groupId>
+                <artifactId>lib-cluster</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>websiteschema</groupId>
+                <artifactId>lib-crawler</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>websiteschema</groupId>
+                <artifactId>lib-func-blk</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <!-- Hadoop -->
@@ -57,7 +72,11 @@
                 <artifactId>hadoop-core</artifactId>
                 <version>${hadoop-version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>org.apache.avro</groupId>
+                <artifactId>avro</artifactId>
+                <version>1.5.4</version>
+            </dependency>
             <!-- Relational Database -->
             <dependency>
                 <groupId>mysql</groupId>
