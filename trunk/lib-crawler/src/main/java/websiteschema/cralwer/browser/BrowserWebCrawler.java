@@ -17,6 +17,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import websiteschema.cralwer.Crawler;
 import websiteschema.utils.Configure;
 import websiteschema.utils.UrlLinkUtil;
@@ -174,13 +176,17 @@ public class BrowserWebCrawler implements Crawler {
         return ret;
     }
 
-    public static void main(String[] args) throws InterruptedException {
-        String url = "http://localhost:8080/";
-        Crawler crawler = new BrowserWebCrawler();
-        Document[] docs = crawler.crawl(url);
-
-        while(!BrowserFactory.shutdownMozilla()){
-            Thread.sleep(1000);
+    public static void print(Node node) {
+        if(node.getNodeType() == Node.TEXT_NODE) {
+            System.out.println(node.getNodeValue());
+        } else {
+            if(node.hasChildNodes()) {
+                NodeList children = node.getChildNodes();
+                for(int i = 0; i < children.getLength(); i++) {
+                    Node child = children.item(i);
+                    print(child);
+                }
+            }
         }
     }
 }

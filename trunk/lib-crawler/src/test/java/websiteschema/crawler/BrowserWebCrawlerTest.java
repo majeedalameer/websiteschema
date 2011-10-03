@@ -20,17 +20,21 @@ import websiteschema.cralwer.browser.BrowserWebCrawler;
 public class BrowserWebCrawlerTest {
 
     @Test
-    public void test() {
+    public void test() throws InterruptedException {
         String url = "http://localhost:8080/";
         Crawler crawler = new BrowserWebCrawler();
         Document[] docs = crawler.crawl(url);
 
+        crawler = null;
+
+        //测试是否DOM对象已经被释放
+        Thread.sleep(5000);
+
+        Document doc = docs[0];
+        BrowserWebCrawler.print(doc);
+
         while(!BrowserFactory.shutdownMozilla()){
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ex) {
-                ex.printStackTrace();
-            }
+            Thread.sleep(1000);
         }
     }
 }
