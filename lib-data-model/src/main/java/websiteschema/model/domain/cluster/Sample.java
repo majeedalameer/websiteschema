@@ -2,9 +2,11 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package websiteschema.model.domain;
+package websiteschema.model.domain.cluster;
 
+import websiteschema.model.domain.cluster.DocUnits;
 import java.util.Date;
+import websiteschema.model.domain.HBaseBean;
 import websiteschema.persistence.hbase.annotation.ColumnFamily;
 import websiteschema.persistence.hbase.annotation.RowKey;
 
@@ -20,13 +22,23 @@ public class Sample implements HBaseBean {
     @ColumnFamily
     String url;
     @ColumnFamily
-    DocVect content;
+    DocUnits content;
     @ColumnFamily
     int httpStatus;
     @ColumnFamily
-    Date lastUpdateTime;
+    Date lastUpdateTime = new Date();
     @ColumnFamily
     Date createTime;
+    @ColumnFamily
+    String siteId;
+
+    public String getSiteId() {
+        return siteId;
+    }
+
+    public void setSiteId(String siteId) {
+        this.siteId = siteId;
+    }
 
     public String getRowKey() {
         return rowKey;
@@ -36,11 +48,11 @@ public class Sample implements HBaseBean {
         this.rowKey = rowKey;
     }
 
-    public DocVect getContent() {
+    public DocUnits getContent() {
         return content;
     }
 
-    public void setContent(DocVect content) {
+    public void setContent(DocUnits content) {
         this.content = content;
     }
 
