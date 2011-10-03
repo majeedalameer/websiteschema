@@ -18,7 +18,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.sf.json.JSONArray;
+import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
 /**
@@ -110,6 +113,11 @@ public class Configure {
                 }
             }
         }
+    }
+
+    private String readLine(BufferedReader br) {
+        StringBuilder sb = new StringBuilder();
+        return sb.toString();
     }
 
     private void parseLine(String line) {
@@ -267,5 +275,32 @@ public class Configure {
             }
         }
         return def;
+    }
+
+    public <T> T getBean(String field, String key, Class<T> clazz) {
+        String jsonText = getProperty(field, key);
+        if (null != jsonText) {
+            try {
+                return (T) JSONObject.toBean(JSONObject.fromObject(jsonText), clazz);
+            } catch (JSONException ex) {
+                if (int.class.equals(clazz) || Integer.class.equals(clazz)) {
+                    T ret = (T)  Integer.valueOf(getIntProperty(field, key));
+                    return ret;
+                } else if (double.class.equals(clazz) || Double.class.equals(clazz)) {
+                    T ret = (T) Double.valueOf(getDoubleProperty(field, key));
+                    return ret;
+                } else if (float.class.equals(clazz) || Float.class.equals(clazz)) {
+                    T ret = (T) new Float(getDoubleProperty(field, key));
+                    return ret;
+                } else if (boolean.class.equals(clazz) || Boolean.class.equals(clazz)) {
+                    T ret = (T) Boolean.valueOf(getBooleanProperty(field, key));
+                    return ret;
+                } else if (String.class.equals(clazz)) {
+                    T ret = (T) getProperty(field, key, null);
+                    return ret;
+                }
+            }
+        }
+        return null;
     }
 }
