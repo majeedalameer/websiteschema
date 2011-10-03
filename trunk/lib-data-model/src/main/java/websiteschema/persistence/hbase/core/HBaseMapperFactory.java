@@ -28,7 +28,6 @@ import websiteschema.model.domain.HBaseBean;
 public class HBaseMapperFactory {
 
     private static final HBaseMapperFactory instance = new HBaseMapperFactory();
-    private Map<Class, HBaseMapper> map = new HashMap<Class, HBaseMapper>();
     private Logger l = Logger.getLogger(HBaseMapperFactory.class);
     private HBaseAdmin admin;
 
@@ -47,18 +46,7 @@ public class HBaseMapperFactory {
         }
     }
 
-    public <T extends HBaseBean> HBaseMapper<T> create(Class<T> clazz) {
-        if (map.containsKey(clazz)) {
-            return map.get(clazz);
-        } else {
-            HBaseMapper<T> mapper = new HBaseMapper<T>(clazz);
-            createTableIfNotExists(mapper, clazz);
-            map.put(clazz, mapper);
-            return mapper;
-        }
-    }
-
-    private void createTableIfNotExists(HBaseMapper mapper, Class clazz) {
+    public void createTableIfNotExists(HBaseMapper mapper, Class clazz) {
         try {
             if (!admin.tableExists(mapper.getTableName())) {
 

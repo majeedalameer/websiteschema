@@ -37,6 +37,14 @@ public class HBaseMapper<T extends HBaseBean> extends Mapper {
         }
     }
 
+    public void scan(String start, Function<T> func) {
+        ResultScanner rs = scan(start);
+        for (Result r : rs) {
+            T obj = wrapper.getBean(r, clazz);
+            func.invoke(obj);
+        }
+    }
+
     public void put(T obj) {
         Map<String, String> record = wrapper.getMap(obj, clazz);
         write(obj.getRowKey(), record);

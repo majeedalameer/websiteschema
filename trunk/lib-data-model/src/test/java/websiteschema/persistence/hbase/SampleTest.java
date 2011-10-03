@@ -8,21 +8,24 @@ import websiteschema.persistence.hbase.core.HBaseMapperFactory;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import websiteschema.model.domain.Websiteschema;
+import websiteschema.model.domain.cluster.DocUnits;
+import websiteschema.model.domain.cluster.Sample;
+import websiteschema.model.domain.cluster.Unit;
 import websiteschema.persistence.hbase.core.Function;
 
 /**
  *
  * @author ray
  */
-public class WebsiteschemaTest {
+public class SampleTest {
 
     ApplicationContext ctx = new ClassPathXmlApplicationContext("spring-beans.xml");
-    WebsiteschemaMapper mapper = ctx.getBean("websiteschemaMapper", WebsiteschemaMapper.class);
-    String rowKey = "test_sohu_com_2";
+    SampleMapper mapper = ctx.getBean("sampleMapper", SampleMapper.class);
+    String rowKey = "test_sohu_com_2+http://www.sohu.com/";
 
     @Test
     public void test() {
+        HBaseMapperFactory.getInstance().createTableIfNotExists(mapper, Sample.class);
         put();
 
         get();
@@ -30,7 +33,7 @@ public class WebsiteschemaTest {
         scan();
 
         delete();
-        
+
 //        deleteTable();
     }
 
@@ -39,17 +42,27 @@ public class WebsiteschemaTest {
     }
 
     public void put() {
-        Websiteschema record = new Websiteschema();
+        Sample record = new Sample();
         record.setRowKey(rowKey);
-        record.setValid(false);
+        record.setUrl("http://www.sohu.com/");
+        {
+            DocUnits doc = new DocUnits();
+            Unit[] units = new Unit[1];
+            Unit u = new Unit();
+            u.text = "test";
+            u.xpath = "/html/body/text()";
+            units[0] = u;
+            doc.setUnits(units);
+            record.setContent(doc);
+        }
         mapper.put(record);
     }
 
     public void scan() {
         final String siteId = "sda";
-        mapper.scan(new Function<Websiteschema>() {
+        mapper.scan("test_sohu_com_2+", new Function<Sample>() {
 
-            public void invoke(Websiteschema arg) {
+            public void invoke(Sample arg) {
                 String rowKey = arg.getRowKey();
                 System.out.println(siteId + " " + rowKey);
             }
@@ -57,9 +70,10 @@ public class WebsiteschemaTest {
     }
 
     public void get() {
-        Websiteschema record = mapper.get(rowKey);
+        Sample record = mapper.get(rowKey);
         System.out.println("    " + record.getRowKey());
-        System.out.println("    " + record.isValid());
+        System.out.println("    " + record.getUrl());
+        System.out.println("    " + record.getContent().get(0).text);
         System.out.println("    " + record.getLastUpdateTime());
     }
 

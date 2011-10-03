@@ -55,4 +55,28 @@ public class Websiteschema implements HBaseBean {
     public void setValid(boolean valid) {
         this.valid = valid;
     }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Map<String, Integer> getDimension() {
+        return dimension;
+    }
+
+    public void setDimension(Map<String, Integer> dimension) {
+        this.dimension = dimension;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
 }

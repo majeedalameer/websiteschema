@@ -32,6 +32,8 @@ public class JavaBeanWrapper {
         try {
             T ret = clazz.newInstance();
             if (null != obj && !obj.isEmpty()) {
+                String rowKey = new String(obj.getRow());
+                ret.setRowKey(rowKey);
                 for (KeyValue kv : obj.raw()) {
                     String family = new String(kv.getFamily());
                     String value = new String(kv.getValue());
@@ -92,9 +94,6 @@ public class JavaBeanWrapper {
                 if (String.class.equals(arg)) {
                     Method method = clazz.getMethod(setterName, String.class);
                     method.invoke(obj, value);
-                } else if (Date.class.equals(arg)) {
-                    Method method = clazz.getMethod(setterName, Date.class);
-                    method.invoke(obj, new Date(Long.valueOf(value)));
                 } else if (double.class.equals(arg)) {
                     Method method = clazz.getMethod(setterName, double.class);
                     method.invoke(obj, Double.valueOf(value));
@@ -126,28 +125,25 @@ public class JavaBeanWrapper {
             for (Field field : fields) {
                 if (field.isAnnotationPresent(ColumnFamily.class)) {
                     String fieldName = field.getName();
-                    Class arg = field.getType();
+                    Class typo = field.getType();
                     String value = "";
                     String getterName = "get" + String.valueOf(fieldName.charAt(0)).toUpperCase() + fieldName.substring(1);
-                    if (String.class.equals(arg)) {
+                    if (String.class.equals(typo)) {
                         Method method = clazz.getMethod(getterName);
-                        value = method.invoke(obj).toString();
-                    } else if (Date.class.equals(arg)) {
-                        Method method = clazz.getMethod(getterName);
-                        value = String.valueOf(((Date) method.invoke(obj)).getTime());
-                    } else if (long.class.equals(arg)) {
+                        value = (String) method.invoke(obj);
+                    } else if (long.class.equals(typo)) {
                         Method method = clazz.getMethod(getterName);
                         value = String.valueOf(method.invoke(obj));
-                    } else if (int.class.equals(arg)) {
+                    } else if (int.class.equals(typo)) {
                         Method method = clazz.getMethod(getterName);
                         value = String.valueOf(method.invoke(obj));
-                    } else if (double.class.equals(arg)) {
+                    } else if (double.class.equals(typo)) {
                         Method method = clazz.getMethod(getterName);
                         value = String.valueOf(method.invoke(obj));
-                    } else if (float.class.equals(arg)) {
+                    } else if (float.class.equals(typo)) {
                         Method method = clazz.getMethod(getterName);
                         value = String.valueOf(method.invoke(obj));
-                    } else if (boolean.class.equals(arg)) {
+                    } else if (boolean.class.equals(typo)) {
                         getterName = getterName.replaceAll("^get", "is");
                         Method method = clazz.getMethod(getterName);
                         value = String.valueOf(method.invoke(obj));

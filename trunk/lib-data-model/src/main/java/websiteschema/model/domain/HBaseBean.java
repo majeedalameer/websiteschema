@@ -13,4 +13,6 @@ public interface HBaseBean {
 
     public String getRowKey();
 
+    public void setRowKey(String rowKey);
+
 }
