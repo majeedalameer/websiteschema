@@ -29,4 +29,7 @@ public interface Crawler {
     public void setLoadImage(boolean yes);
 
     public void setLoadEmbeddedFrame(boolean yes);
+
+    public void setAllowPopupWindow(boolean yes);
+
 }

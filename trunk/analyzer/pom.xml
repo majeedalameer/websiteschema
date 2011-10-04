@@ -32,6 +32,10 @@
         </dependency>
         <dependency>
             <groupId>websiteschema</groupId>
+            <artifactId>lib-cluster</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>websiteschema</groupId>
             <artifactId>lib-data-model</artifactId>
         </dependency>
         <dependency>

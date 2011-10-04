@@ -13,8 +13,6 @@ import com.webrenderer.swing.dom.IElement;
 import com.webrenderer.swing.dom.IElementCollection;
 import java.awt.BorderLayout;
 import java.net.URI;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -46,11 +44,14 @@ public class BrowserWebCrawler implements Crawler {
     JFrame frame;
     boolean loadImage = false;
     boolean loadEmbeddedFrame = false;
+    boolean allowPopupWindow = false;
     String url = null;
     String encoding = null;
     MyNetworkListener listener = new MyNetworkListener(this);
     IDocument document = null;
     Boolean lock = false;
+    int sec = 1000;
+    long delay = 30 * sec;
 
     @Override
     public void finalize() {
@@ -78,6 +79,7 @@ public class BrowserWebCrawler implements Crawler {
         panel.add(BorderLayout.CENTER, browser.getComponent());
 
         browser.addNetworkListener(listener);
+        browser.addPromptListener(new MyPromptListener());
         return panel;
     }
 
@@ -87,7 +89,7 @@ public class BrowserWebCrawler implements Crawler {
         try {
             synchronized (lock) {
                 System.out.println("wait");
-                lock.wait(30000);
+                lock.wait(delay);
             }
         } catch (InterruptedException ex) {
             ex.printStackTrace();
@@ -110,7 +112,6 @@ public class BrowserWebCrawler implements Crawler {
             frame.dispose();
         }
         return ret;
-//        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -188,5 +189,10 @@ public class BrowserWebCrawler implements Crawler {
                 }
             }
         }
+    }
+
+    @Override
+    public void setAllowPopupWindow(boolean yes) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

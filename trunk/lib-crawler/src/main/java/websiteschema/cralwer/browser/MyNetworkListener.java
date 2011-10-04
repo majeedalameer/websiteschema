@@ -4,11 +4,8 @@
  */
 package websiteschema.cralwer.browser;
 
-import com.webrenderer.swing.IBrowserCanvas;
 import com.webrenderer.swing.event.NetworkEvent;
 import com.webrenderer.swing.event.NetworkListener;
-import java.util.Timer;
-import java.util.TimerTask;
 import org.apache.log4j.Logger;
 
 /**
@@ -18,11 +15,6 @@ import org.apache.log4j.Logger;
 public class MyNetworkListener implements NetworkListener {
 
     Logger l = Logger.getLogger(MyNetworkListener.class);
-    IBrowserCanvas browser;
-    int sec = 1000;
-    long delay = 30 * sec;
-    boolean started = false;
-    Timer timer = null;
     boolean loadImage = false;
     boolean loadEmbeddedFrame = false;
     BrowserWebCrawler crawler;
@@ -34,34 +26,11 @@ public class MyNetworkListener implements NetworkListener {
     @Override
     public void onProgressChange(NetworkEvent ne) {
         l.debug("onProgressChange" + ((float) ne.getCurrentProgress() / (float) ne.getMaximumProgress()));
-        float f = ((float) ne.getCurrentProgress() / (float) ne.getMaximumProgress());
     }
 
     @Override
     public void onDocumentLoad(NetworkEvent ne) {
         l.debug("onDocumentLoad ");
-        started = false;
-        timer = new Timer();
-        timer.schedule(new MyTimerTask(), delay);
-    }
-
-    class MyTimerTask extends TimerTask {
-
-        @Override
-        public void run() {
-            if (couldProcess()) {
-                process();
-            }
-        }
-    }
-
-    public synchronized boolean couldProcess() {
-        if (!started) {
-            started = true;
-            return started;
-        } else {
-            return false;
-        }
     }
 
     private void process() {
@@ -74,14 +43,8 @@ public class MyNetworkListener implements NetworkListener {
     @Override
     public void onDocumentComplete(NetworkEvent ne) {
         l.debug("onDocumentComplete " + ne.getURL());
-
         crawler.setUrl(ne.getURL());
-
-        timer.cancel();
-        timer = null;
-        if (couldProcess()) {
-            process();
-        }
+        process();
     }
 
     @Override

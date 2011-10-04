@@ -24,6 +24,7 @@ import javax.swing.JPanel;
 import javax.swing.event.TreeSelectionListener;
 import websiteschema.analyzer.browser.listener.*;
 import websiteschema.context.BrowserContext;
+import websiteschema.element.XPathAttributes;
 import websiteschema.model.domain.Site;
 import websiteschema.persistence.rdbms.SiteMapper;
 import websiteschema.vips.VIPSImpl;
@@ -53,7 +54,10 @@ public class SimpleBrowser extends javax.swing.JFrame {
         //初始化Context
         context = new BrowserContext();
         console = new AWTConsole(consoleTextArea);
+        MessageDialog msgDialog = new MessageDialog(this, true);
+        context.setMsgDialog(msgDialog);
         context.setConsole(console);
+        context.setReference(homePage);
 
         //初始化Webrenderer
         initBrowser();
@@ -83,8 +87,8 @@ public class SimpleBrowser extends javax.swing.JFrame {
     }
 
     private void initAnalysisPanel() {
-        analysisPanel = new AnalysisPanel(context);
-        context.setAnalysisPanel(analysisPanel);
+        analysisPanel = new AnalysisPanel(context, this);
+//        context.setAnalysisPanel(analysisPanel);
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -199,7 +203,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
         vips = new VIPSImpl(context);
 
         //添加Listener
-        browser.addMouseListener(new SimpleMouseListener(context));
+        browser.addMouseListener(new SimpleMouseListener(context, this));
         browser.addPromptListener(new SimplePromptListener());
         SimpleNetworkListener snl = new SimpleNetworkListener(context);
         snl.setAddressTextField(urlTextField);
@@ -259,6 +263,24 @@ public class SimpleBrowser extends javax.swing.JFrame {
         consoleTextArea = new javax.swing.JTextArea();
         jToolBar2 = new javax.swing.JToolBar();
         clearButton = new javax.swing.JButton();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        defaultXPathField = new javax.swing.JTextField();
+        jButton1 = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
+        usePosCheckBox = new javax.swing.JCheckBox();
+        useIdCheckBox = new javax.swing.JCheckBox();
+        useClassCheckBox = new javax.swing.JCheckBox();
+        jLabel3 = new javax.swing.JLabel();
+        otherAttrTextField = new javax.swing.JTextField();
+        jLabel4 = new javax.swing.JLabel();
+        xpathField = new javax.swing.JTextField();
+        jButton2 = new javax.swing.JButton();
+        jPanel5 = new javax.swing.JPanel();
+        jLabel5 = new javax.swing.JLabel();
+        jTextField4 = new javax.swing.JTextField();
+        jLabel6 = new javax.swing.JLabel();
+        jCheckBox4 = new javax.swing.JCheckBox();
         browserTab = new javax.swing.JTabbedPane();
         configFrame = new javax.swing.JInternalFrame();
         jInternalFrame1 = new javax.swing.JInternalFrame();
@@ -431,7 +453,125 @@ public class SimpleBrowser extends javax.swing.JFrame {
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 159, Short.MAX_VALUE))
         );
 
-        consolePane.addTab("console", jPanel3);
+        consolePane.addTab("控制台", jPanel3);
+
+        jLabel1.setText("默认XPath:");
+
+        jButton1.setText("添加到剪切版");
+
+        jLabel2.setText("XPath属性:");
+
+        usePosCheckBox.setText("使用位置信息");
+
+        useIdCheckBox.setSelected(true);
+        useIdCheckBox.setText("使用ID");
+
+        useClassCheckBox.setSelected(true);
+        useClassCheckBox.setText("使用class");
+
+        jLabel3.setText("其他属性:");
+
+        jLabel4.setText("自定义XPath:");
+
+        jButton2.setText("添加到剪切板");
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addGap(2, 2, 2)
+                        .addComponent(defaultXPathField, javax.swing.GroupLayout.DEFAULT_SIZE, 374, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton1))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(usePosCheckBox)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(useIdCheckBox)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(useClassCheckBox)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(otherAttrTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 161, Short.MAX_VALUE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel4)
+                        .addGap(3, 3, 3)
+                        .addComponent(xpathField, javax.swing.GroupLayout.DEFAULT_SIZE, 360, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton2)))
+                .addContainerGap())
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(defaultXPathField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(usePosCheckBox)
+                    .addComponent(useIdCheckBox)
+                    .addComponent(useClassCheckBox)
+                    .addComponent(jLabel3)
+                    .addComponent(otherAttrTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(xpathField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton2))
+                .addContainerGap(97, Short.MAX_VALUE))
+        );
+
+        consolePane.addTab("节点信息", jPanel2);
+
+        jLabel5.setText("页面编码:");
+
+        jLabel6.setText("包含Frame: Yes");
+
+        jCheckBox4.setText("关闭Frame");
+
+        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+        jPanel5.setLayout(jPanel5Layout);
+        jPanel5Layout.setHorizontalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addComponent(jLabel5)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addComponent(jLabel6)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jCheckBox4)))
+                .addContainerGap(380, Short.MAX_VALUE))
+        );
+        jPanel5Layout.setVerticalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5)
+                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel6)
+                    .addComponent(jCheckBox4))
+                .addContainerGap(134, Short.MAX_VALUE))
+        );
+
+        consolePane.addTab("页面信息", jPanel5);
 
         javax.swing.GroupLayout configFrameLayout = new javax.swing.GroupLayout(configFrame.getContentPane());
         configFrame.getContentPane().setLayout(configFrameLayout);
@@ -574,7 +714,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
         // TODO add your handling code here:
         vips = null;
         vips = new VIPSImpl(context);
-        VisionBlock block = vips.segment(browser.getDocument());
+        VisionBlock block = vips.segment(browser.getDocument(), context.getReference());
         setupVipsTree(block);
     }//GEN-LAST:event_vipsButtonActionPerformed
 
@@ -616,7 +756,31 @@ public class SimpleBrowser extends javax.swing.JFrame {
         } else if (!url.startsWith("http://")) {
             url = "http://" + url;
         }
+        context.setReference(url);
         browser.loadURL(url);
+    }
+
+    public XPathAttributes getXPathAttr() {
+        XPathAttributes attr = new XPathAttributes();
+
+        attr.setUsingPosition(this.usePosCheckBox.isSelected());
+        attr.setUsingId(this.useIdCheckBox.isSelected());
+        attr.setUsingClass(this.useClassCheckBox.isSelected());
+        attr.setSpecifyAttr(this.otherAttrTextField.getText());
+
+        return attr;
+    }
+
+    public void setXPathAttr(XPathAttributes attr) {
+        this.usePosCheckBox.setSelected(attr.isUsingPosition());
+        this.useIdCheckBox.setSelected(attr.isUsingId());
+        this.useClassCheckBox.setSelected(attr.isUsingClass());
+        this.otherAttrTextField.setText(attr.getSpecifyAttr());
+    }
+
+    public void displaySelectedElement(String xpath1, String xpath2) {
+        this.defaultXPathField.setText(xpath1);
+        this.xpathField.setText(xpath2);
     }
 
     /**
@@ -640,27 +804,45 @@ public class SimpleBrowser extends javax.swing.JFrame {
     private javax.swing.JInternalFrame configFrame;
     private javax.swing.JTabbedPane consolePane;
     private javax.swing.JTextArea consoleTextArea;
+    private javax.swing.JTextField defaultXPathField;
     private javax.swing.JMenuItem drawBorderMenu;
     private javax.swing.JButton forwardButton;
     private javax.swing.JButton goButton;
     private javax.swing.JCheckBoxMenuItem hideAnalysisMenu;
     private javax.swing.JCheckBoxMenuItem hideConsoleMenu;
     private javax.swing.JButton homeButton;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JCheckBox jCheckBox4;
     private javax.swing.JInternalFrame jInternalFrame1;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTextField jTextField4;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JToolBar jToolBar2;
+    private javax.swing.JTextField otherAttrTextField;
     private javax.swing.JButton refreshButton;
     private javax.swing.JButton stopButton;
     private javax.swing.JTextField urlTextField;
+    private javax.swing.JCheckBox useClassCheckBox;
+    private javax.swing.JCheckBox useIdCheckBox;
+    private javax.swing.JCheckBox usePosCheckBox;
     private javax.swing.JButton vipsButton;
+    private javax.swing.JTextField xpathField;
     // End of variables declaration//GEN-END:variables
 }

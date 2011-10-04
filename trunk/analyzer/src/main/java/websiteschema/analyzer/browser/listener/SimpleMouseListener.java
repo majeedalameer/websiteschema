@@ -8,6 +8,7 @@ import com.webrenderer.swing.dom.IElement;
 import com.webrenderer.swing.event.MouseEvent;
 import com.webrenderer.swing.event.MouseListener;
 import org.apache.log4j.Logger;
+import websiteschema.analyzer.browser.SimpleBrowser;
 import websiteschema.context.BrowserContext;
 import websiteschema.element.CSSProperties;
 import websiteschema.element.Rectangle;
@@ -30,13 +31,15 @@ public class SimpleMouseListener implements MouseListener {
     BrowserContext context;
     IElement lastClickedElement;
     String lastStyle = null;
+    SimpleBrowser simpleBrowser = null;
 
-    public SimpleMouseListener(BrowserContext context) {
+    public SimpleMouseListener(BrowserContext context, SimpleBrowser simpleBrowser) {
         attr.setUsingClass(true);
         attr.setUsingId(true);
         attr.setSpecifyAttr("name");
         attr.setUsingPosition(true);
         this.context = context;
+        this.simpleBrowser = simpleBrowser;
     }
 
     @Override
@@ -46,7 +49,10 @@ public class SimpleMouseListener implements MouseListener {
             IElement ele = me.getTargetElement();
             drawRectangleInPage(ele);
             Rectangle rect = new RectangleFactory().create(ele);
-            String xpath = new XPathFactory().create(ele, attr);
+            String xpath = XPathFactory.getInstance().create(ele);
+            attr = simpleBrowser.getXPathAttr();
+            String xpath2 = XPathFactory.getInstance().create(ele, attr);
+            simpleBrowser.displaySelectedElement(xpath, xpath2);
             l.debug("Elememnt Type: " + ele.getTagName());
             context.getConsole().log("Tag Name: " + ele.getTagName() + " -- Node Type: " + ElementUtil.getInstance().getNodeType(ele) + " -- XPath: " + xpath);
             l.debug(rect);
