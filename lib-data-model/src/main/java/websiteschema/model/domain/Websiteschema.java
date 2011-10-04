@@ -7,6 +7,7 @@ package websiteschema.model.domain;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import websiteschema.element.XPathAttributes;
 import websiteschema.persistence.hbase.annotation.ColumnFamily;
 import websiteschema.persistence.hbase.annotation.RowKey;
 
@@ -31,6 +32,8 @@ public class Websiteschema implements HBaseBean {
     int status = New;
     @ColumnFamily
     Map<String, Integer> dimension;
+    @ColumnFamily
+    XPathAttributes xpathAttr;
 
     public String getRowKey() {
         return rowKey;
@@ -78,5 +81,13 @@ public class Websiteschema implements HBaseBean {
 
     public void setStatus(int status) {
         this.status = status;
+    }
+
+    public XPathAttributes getXpathAttr() {
+        return xpathAttr;
+    }
+
+    public void setXpathAttr(XPathAttributes xpathAttr) {
+        this.xpathAttr = xpathAttr;
     }
 }

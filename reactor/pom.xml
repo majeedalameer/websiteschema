@@ -15,6 +15,9 @@
                 <module>../analyzer</module>
                 <module>../lib-utils</module>
                 <module>../lib-data-model</module>
+                <module>../lib-func-blk</module>
+                <module>../lib-cluster</module>
+                <module>../lib-crawler</module>
                 <module>../metadata-server</module>
             </modules>
         </profile>

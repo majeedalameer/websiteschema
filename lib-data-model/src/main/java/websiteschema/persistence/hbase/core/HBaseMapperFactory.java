@@ -46,11 +46,11 @@ public class HBaseMapperFactory {
         }
     }
 
-    public void createTableIfNotExists(HBaseMapper mapper, Class clazz) {
+    public void createTableIfNotExists(String tableName, Class clazz) {
         try {
-            if (!admin.tableExists(mapper.getTableName())) {
+            if (!admin.tableExists(tableName)) {
 
-                HTableDescriptor tableDesc = new HTableDescriptor(mapper.getTableName());
+                HTableDescriptor tableDesc = new HTableDescriptor(tableName);
                 Field[] fields = clazz.getDeclaredFields();
                 for (Field field : fields) {
                     if (field.isAnnotationPresent(ColumnFamily.class)) {
@@ -58,16 +58,16 @@ public class HBaseMapperFactory {
                     }
                 }
                 admin.createTable(tableDesc);
-                l.debug("表 " + mapper.getTableName() + " 创建成功！");
+                l.debug("表 " + tableName + " 创建成功！");
             } else {
-                l.debug("表 " + mapper.getTableName() + " 已经存在！");
+                l.debug("表 " + tableName + " 已经存在！");
                 Field[] fields = clazz.getDeclaredFields();
-                HTableDescriptor tableDesc = admin.getTableDescriptor(Bytes.toBytes(mapper.getTableName()));
+                HTableDescriptor tableDesc = admin.getTableDescriptor(Bytes.toBytes(tableName));
                 for (Field field : fields) {
                     if (field.isAnnotationPresent(ColumnFamily.class)) {
                         if (!tableDesc.hasFamily(Bytes.toBytes(field.getName()))) {
-                            admin.addColumn(mapper.getTableName(), new HColumnDescriptor(field.getName()));
-                            l.debug("表 " + mapper.getTableName() + " 添加了列： " + field.getName());
+                            admin.addColumn(tableName, new HColumnDescriptor(field.getName()));
+                            l.debug("表 " + tableName + " 添加了列： " + field.getName());
                         }
                     }
                 }
