@@ -49,6 +49,9 @@ public class SiteService {
 
     @Transactional
     public void update(Site site) {
+        site.setUpdateTime(new Date());
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        site.setLastUpdateUser(userDetails.getUsername());
         siteMapper.update(site);
     }
 

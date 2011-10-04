@@ -94,6 +94,9 @@
         <Property name="text" type="java.lang.String" value="&#x81ea;&#x52a8;&#x6dfb;&#x52a0;&#x6837;&#x672c;"/>
         <Property name="toolTipText" type="java.lang.String" value="&#x5c06;&#x9875;&#x9762;&#x4e0a;&#x7684;&#x6240;&#x6709;&#x94fe;&#x63a5;&#x6dfb;&#x52a0;&#x4e3a;&#x6837;&#x672c;"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="addLinksButtonActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="viewCategoryButton">
       <Properties>

@@ -93,6 +93,18 @@
                     remoteSort: false
 
                 });
+
+                var site_type_store = new Ext.data.SimpleStore(
+                {
+                    fields :['name','value'],
+                    data:[
+                        ['门户','portal'],
+                        ['资讯','news'],
+                        ['博客','blog'],
+                        ['音乐','music'],
+                        ['团购','groupon']
+                    ]
+                });
          
                 // the column model has information about grid columns
                 // dataIndex maps the column to the specific data field in
@@ -136,9 +148,23 @@
                         header: '网站类型',
                         dataIndex: 'siteType',
                         width: 50,
-                        editor: new fm.TextField({
-                            allowBlank: false
-                        })
+                        editor: new fm.ComboBox({
+                                    store : site_type_store,
+                                    triggerAction: 'all',
+                                    allowBlank: false,
+                                    forceSelection: true,
+                                    mode: 'local',
+                                    displayField:'name',
+                                    valueField:'value'
+
+                                }),
+                        renderer: function(value,metadata,record){
+                            var index = site_type_store.find('value',value);
+                            if(index!=-1){
+                                return site_type_store.getAt(index).data.name;
+                            }
+                            return value;
+                        }
                     },
                     {
                         header: '父网站',

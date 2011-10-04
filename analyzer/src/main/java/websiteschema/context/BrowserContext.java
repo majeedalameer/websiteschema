@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import websiteschema.analyzer.browser.AnalysisPanel;
+import websiteschema.analyzer.browser.MessageDialog;
 import websiteschema.element.StyleSheet;
 import websiteschema.utils.Configure;
 import websiteschema.utils.Console;
@@ -21,11 +21,13 @@ import websiteschema.utils.Console;
 public class BrowserContext {
 
     Console console;
+    MessageDialog msgDialog;
     IMozillaBrowserCanvas browser = null;
     private static final Configure configure = new Configure("configure-site.ini");
     Map<String, StyleSheet> styleSheets = new HashMap<String, StyleSheet>();
-    AnalysisPanel analysisPanel;
+//    AnalysisPanel analysisPanel;
     private static final ApplicationContext ctx = new ClassPathXmlApplicationContext("spring-beans.xml");
+    private String reference = null;
 
     public static Configure getConfigure() {
         return configure;
@@ -59,11 +61,20 @@ public class BrowserContext {
         return this.styleSheets.get(url);
     }
 
-    public AnalysisPanel getAnalysisPanel() {
-        return analysisPanel;
+    public void setReference(String ref) {
+        this.reference = ref;
     }
 
-    public void setAnalysisPanel(AnalysisPanel analysisPanel) {
-        this.analysisPanel = analysisPanel;
+    public String getReference() {
+        return reference;
     }
+
+    public MessageDialog getMsgDialog() {
+        return msgDialog;
+    }
+
+    public void setMsgDialog(MessageDialog msgDialog) {
+        this.msgDialog = msgDialog;
+    }
+
 }

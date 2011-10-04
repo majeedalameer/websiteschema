@@ -8,11 +8,20 @@
  *
  * Created on Sep 13, 2011, 3:09:14 PM
  */
-
 package websiteschema.analyzer.browser;
 
+import com.webrenderer.swing.IMozillaBrowserCanvas;
+import com.webrenderer.swing.dom.IElement;
+import com.webrenderer.swing.dom.IElementCollection;
+import java.net.URI;
+import java.util.Date;
+import websiteschema.cluster.DocumentConvertor;
 import websiteschema.context.BrowserContext;
+import websiteschema.element.XPathAttributes;
 import websiteschema.model.domain.Site;
+import websiteschema.model.domain.cluster.Sample;
+import websiteschema.persistence.hbase.SampleMapper;
+import websiteschema.utils.UrlLinkUtil;
 
 /**
  *
@@ -21,11 +30,14 @@ import websiteschema.model.domain.Site;
 public class AnalysisPanel extends javax.swing.JPanel {
 
     BrowserContext context;
+    DocumentConvertor docConvertor = new DocumentConvertor();
+    SimpleBrowser simpleBrowser = null;
 
     /** Creates new form AnalysisPanel */
-    public AnalysisPanel(BrowserContext context) {
+    public AnalysisPanel(BrowserContext context, SimpleBrowser simpleBrowser) {
         initComponents();
         this.context = context;
+        this.simpleBrowser = simpleBrowser;
     }
 
     /** This method is called from within the constructor to
@@ -66,6 +78,11 @@ public class AnalysisPanel extends javax.swing.JPanel {
 
         addLinksButton.setText("自动添加样本");
         addLinksButton.setToolTipText("将页面上的所有链接添加为样本");
+        addLinksButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addLinksButtonActionPerformed(evt);
+            }
+        });
 
         viewCategoryButton.setText("查看分类");
         viewCategoryButton.setToolTipText("查看网站页面的分类");
@@ -114,14 +131,51 @@ public class AnalysisPanel extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_viewCategoryButtonActionPerformed
 
+    private void addLinksButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addLinksButtonActionPerformed
+        // TODO add your handling code here:
+        System.out.println("addLinksButtonActionPerformed");
+        IMozillaBrowserCanvas browser = context.getBrowser();
+        IElementCollection links = browser.getDocument().getLinks();
+        String pageUrl = context.getReference();
+        String siteId = getSiteId();
+        if (null != links && null != siteId && !"".equals(siteId)) {
+            for (int i = 0; i < links.length(); i++) {
+                IElement ele = links.item(i);
+                String href = ele.getAttribute("href", 0);
+                URI uri = UrlLinkUtil.getInstance().getURL(pageUrl, href);
+                if ("http".equals(uri.getScheme())) {
+                    context.getConsole().log("add sample: " + uri.getScheme() + ":" + uri.getSchemeSpecificPart());
+                    addSampleUrl(uri.getScheme() + ":" + uri.getSchemeSpecificPart());
+                }
+            }
+        } else {
+            context.getMsgDialog().msg("can not get links or siteId is invalid.");
+        }
+    }//GEN-LAST:event_addLinksButtonActionPerformed
+
+    private void addSampleUrl(String url) {
+//        XPathAttributes attr = this.simpleBorwser.getXPathAttr();
+//        this.docConvertor.setXpathAttr(attr);
+        SampleMapper mapper = BrowserContext.getSpringContext().getBean("sampleMapper", SampleMapper.class);
+        Sample sample = new Sample();
+        String rowKey = getSiteId() + "+" + url;
+        sample.setRowKey(rowKey);
+        sample.setUrl(url);
+        sample.setSiteId(getSiteId());
+        sample.setCreateTime(new Date());
+        mapper.put(sample);
+    }
+
     public void setSiteId(String siteId) {
         this.siteIdField.setText(siteId);
     }
 
-    public void startAnalysis(Site site) {
-
+    public String getSiteId() {
+        return this.siteIdField.getText().trim();
     }
 
+    public void startAnalysis(Site site) {
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addLinksButton;
     private javax.swing.JLabel jLabel1;
@@ -132,5 +186,4 @@ public class AnalysisPanel extends javax.swing.JPanel {
     private javax.swing.JButton viewCategoryButton;
     private javax.swing.JButton viewSampleButton;
     // End of variables declaration//GEN-END:variables
-
 }

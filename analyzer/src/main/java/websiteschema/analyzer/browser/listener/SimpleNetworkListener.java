@@ -89,6 +89,7 @@ public class SimpleNetworkListener implements NetworkListener {
     @Override
     public void onDocumentComplete(NetworkEvent ne) {
         l.debug("onDocumentComplete " + ne.getURL());
+        context.setReference(ne.getURL());
         progress.setValue(progress.getMaximum());
         progress.setVisible(false);
         addressTextField.setText(ne.getURL());

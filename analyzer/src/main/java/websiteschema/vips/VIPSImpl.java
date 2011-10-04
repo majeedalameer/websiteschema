@@ -31,8 +31,8 @@ public class VIPSImpl {
         init();
     }
 
-    public VisionBlock segment(IDocument doc) {
-        return processVIPS(doc);
+    public VisionBlock segment(IDocument doc, String url) {
+        return processVIPS(doc, url);
     }
 
     /**
@@ -40,13 +40,12 @@ public class VIPSImpl {
      */
     private void init() {
         segmenter = new VisionBasedPageSegmenter();
-        segmenter.setPDoC(context.getConfigure().getIntProperty("VIPS", "PDoC"));
+        segmenter.setPDoC(BrowserContext.getConfigure().getIntProperty("VIPS", "PDoC"));
     }
 
-    private VisionBlock processVIPS(IDocument doc) {
+    private VisionBlock processVIPS(IDocument doc, String url) {
         StyleSheet styleSheet = new StyleSheetFactory().createStyleSheet(doc);
-        String referrer = doc.getReferrer();
-        context.setStyleSheet(referrer, styleSheet);
+        context.setStyleSheet(url, styleSheet);
 
         // Create extractor
         IElement body = doc.getBody();
@@ -54,27 +53,27 @@ public class VIPSImpl {
             Rectangle rect = RectangleFactory.getInstance().create(body);
             double pageSize = rect.getHeight() * rect.getWidth();
             context.getConsole().log("Page: " + rect + " Size: " + pageSize);
-            double threshold = context.getConfigure().getDoubleProperty("VIPS", "RelativeSizeThreshold", 0.1);
+            double threshold = BrowserContext.getConfigure().getDoubleProperty("VIPS", "RelativeSizeThreshold", 0.1);
             BlockExtractor extractor =
-                    BlockExtractorFactory.getInstance().create(context, referrer, standardPageSize, threshold);
+                    BlockExtractorFactory.getInstance().create(context, url, standardPageSize, threshold);
 
             // Set extractor
             segmenter.setExtractor(extractor);
             return segmenter.pageSegment(doc);
         } else {
-            l.info("This is not a HTML page, ignore..." + doc.getReferrer());
+            l.info("This is not a HTML page, ignore... " + url);
             return null;
         }
     
     }
 
-    public BrowserContext getContext() {
-        return context;
-    }
-
-    public void setContext(BrowserContext context) {
-        this.context = context;
-    }
+//    public BrowserContext getContext() {
+//        return context;
+//    }
+//
+//    public void setContext(BrowserContext context) {
+//        this.context = context;
+//    }
 
     public VisionBasedPageSegmenter getSegmenter() {
         return segmenter;
