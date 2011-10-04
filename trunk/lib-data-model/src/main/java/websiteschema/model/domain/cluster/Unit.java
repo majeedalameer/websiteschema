@@ -13,6 +13,16 @@ public class Unit {
     public String xpath;
     public String text;
 
+    public Unit() {
+        xpath = null;
+        text = null;
+    }
+
+    public Unit(String xpath, String text) {
+        this.xpath = xpath;
+        this.text = text;
+    }
+
     public String getText() {
         return text;
     }

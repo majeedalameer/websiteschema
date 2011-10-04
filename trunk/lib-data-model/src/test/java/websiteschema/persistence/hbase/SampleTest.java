@@ -25,7 +25,7 @@ public class SampleTest {
 
     @Test
     public void test() {
-        HBaseMapperFactory.getInstance().createTableIfNotExists(mapper, Sample.class);
+        HBaseMapperFactory.getInstance().createTableIfNotExists(mapper.getTableName(), Sample.class);
         put();
 
         get();

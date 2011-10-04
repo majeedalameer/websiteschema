@@ -24,7 +24,7 @@ public class Sample implements HBaseBean {
     @ColumnFamily
     DocUnits content;
     @ColumnFamily
-    int httpStatus;
+    int httpStatus = 0;
     @ColumnFamily
     Date lastUpdateTime = new Date();
     @ColumnFamily
