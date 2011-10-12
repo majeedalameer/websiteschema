@@ -114,6 +114,7 @@ public class SimpleNetworkListener implements NetworkListener {
     @Override
     public void onHTTPResponse(NetworkEvent ne) {
 //        l.debug("onHTTPResponse\n" + ne.getResponseHeaders());
+        l.debug("onHTTPResponse\n" + ne.getURL() + " : " + ne.getStatus() + " : " + ne.getStatusText());
     }
 
     @Override

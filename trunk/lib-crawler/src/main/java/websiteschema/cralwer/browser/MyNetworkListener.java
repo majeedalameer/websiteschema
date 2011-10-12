@@ -18,6 +18,7 @@ public class MyNetworkListener implements NetworkListener {
     boolean loadImage = false;
     boolean loadEmbeddedFrame = false;
     BrowserWebCrawler crawler;
+    int count = 0;
 
     public MyNetworkListener(BrowserWebCrawler crawler) {
         this.crawler = crawler;
@@ -60,6 +61,10 @@ public class MyNetworkListener implements NetworkListener {
     @Override
     public void onHTTPResponse(NetworkEvent ne) {
 //        l.debug("onHTTPResponse\n" + ne.getResponseHeaders());
+        l.debug("onHTTPResponse\n" + ne.getURL() + " : " + ne.getStatusText() + " : " + ne.getStatus());
+        if (0 == count++) {
+            crawler.setHttpStatus(ne.getStatus());
+        }
     }
 
     @Override

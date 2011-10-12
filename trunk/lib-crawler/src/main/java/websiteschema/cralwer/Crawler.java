@@ -5,6 +5,7 @@
 package websiteschema.cralwer;
 
 import org.w3c.dom.Document;
+import websiteschema.model.domain.cralwer.CrawlerSettings;
 
 /**
  *
@@ -17,6 +18,8 @@ public interface Crawler {
     public void stopLoad();
 
     public String getUrl();
+
+    public int getHttpStatus();
 
     public String[] getLinks();
 
@@ -31,5 +34,7 @@ public interface Crawler {
     public void setLoadEmbeddedFrame(boolean yes);
 
     public void setAllowPopupWindow(boolean yes);
+
+    public void setCrawlerSettings(CrawlerSettings setting);
 
 }

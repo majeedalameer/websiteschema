@@ -47,6 +47,8 @@ public class Application implements Runnable {
                         FBInfo fbInfo = context.getFunctionBlockInfo(clazz);
                         String algorithm = fbInfo.getEIRelatedAlgorithm(ei);
                         fb.execute(algorithm);
+                    } else {
+                        fb.executeEvent(ei);
                     }
                 }
             } else {

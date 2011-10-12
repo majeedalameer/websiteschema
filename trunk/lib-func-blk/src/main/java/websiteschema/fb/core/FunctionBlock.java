@@ -47,29 +47,41 @@ public class FunctionBlock {
         this.context = context;
     }
 
-    public final void execute(ExecutionControl ec) {
-        throw new UnsupportedOperationException();
+    public final void executeEvent(String evt) {
+        ExecutionControl ec = ecc.getExecutionControl(evt);
+        String algorithm = ec.getAlgorithm();
+        boolean success = execute(algorithm);
+        if(success) {
+            ecc.setStatus(ec.getSuccess());
+        } else {
+            ecc.setStatus(ec.getFailure());
+        }
+
+        String eo = ec.getEo();
+        if(null != eo && !"".equals(eo)) {
+            triggerEvent(eo);
+        }
     }
 
-    public final void execute(String algorithm) {
+    public final boolean execute(String algorithm) {
         Method[] methods = this.getClass().getMethods();
+        boolean ret = true;
         for (Method method : methods) {
             if (method.isAnnotationPresent(Algorithm.class)) {
                 if (algorithm.equalsIgnoreCase(method.getAnnotation(Algorithm.class).name())) {
                     try {
                         method.invoke(this);
-                    } catch (IllegalAccessException ex) {
-                        l.error(ex);
-                    } catch (IllegalArgumentException ex) {
-                        l.error(ex);
-                    } catch (InvocationTargetException ex) {
+                    } catch (Exception ex) {
                         System.out.println(getName());
                         ex.printStackTrace();
                         l.error(ex);
+                        ret = false;
                     }
                 }
+                break;
             }
         }
+        return ret;
     }
 
     public boolean triggerEvent(String evt) {
