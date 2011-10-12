@@ -53,6 +53,10 @@ public class SimpleMouseListener implements MouseListener {
             attr = simpleBrowser.getXPathAttr();
             String xpath2 = XPathFactory.getInstance().create(ele, attr);
             simpleBrowser.displaySelectedElement(xpath, xpath2);
+
+            String text = ele.getInnerHTML();
+            simpleBrowser.displayNodeValue(text);
+
             l.debug("Elememnt Type: " + ele.getTagName());
             context.getConsole().log("Tag Name: " + ele.getTagName() + " -- Node Type: " + ElementUtil.getInstance().getNodeType(ele) + " -- XPath: " + xpath);
             l.debug(rect);

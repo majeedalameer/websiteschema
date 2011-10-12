@@ -62,6 +62,7 @@ public class HBaseMapperFactory {
             } else {
                 l.debug("表 " + tableName + " 已经存在！");
                 Field[] fields = clazz.getDeclaredFields();
+                admin.disableTable(tableName);
                 HTableDescriptor tableDesc = admin.getTableDescriptor(Bytes.toBytes(tableName));
                 for (Field field : fields) {
                     if (field.isAnnotationPresent(ColumnFamily.class)) {
@@ -71,6 +72,7 @@ public class HBaseMapperFactory {
                         }
                     }
                 }
+                admin.enableTable(tableName);
             }
 
         } catch (IOException ex) {

@@ -4,10 +4,10 @@
  */
 package websiteschema.model.domain;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 import websiteschema.element.XPathAttributes;
+import java.util.Date;
+import java.util.Map;
+import websiteschema.model.domain.cralwer.CrawlerSettings;
 import websiteschema.persistence.hbase.annotation.ColumnFamily;
 import websiteschema.persistence.hbase.annotation.RowKey;
 
@@ -17,7 +17,7 @@ import websiteschema.persistence.hbase.annotation.RowKey;
  */
 public class Websiteschema implements HBaseBean {
 
-    public final static int Analyzed = 0;
+    public final static int Analyzed = 1;
     public final static int New = 0;
     //SiteId
     @RowKey
@@ -34,6 +34,8 @@ public class Websiteschema implements HBaseBean {
     Map<String, Integer> dimension;
     @ColumnFamily
     XPathAttributes xpathAttr;
+    @ColumnFamily
+    CrawlerSettings crawlerSettings;
 
     public String getRowKey() {
         return rowKey;
@@ -89,5 +91,13 @@ public class Websiteschema implements HBaseBean {
 
     public void setXpathAttr(XPathAttributes xpathAttr) {
         this.xpathAttr = xpathAttr;
+    }
+
+    public CrawlerSettings getCrawlerSettings() {
+        return crawlerSettings;
+    }
+
+    public void setCrawlerSettings(CrawlerSettings crawlerSettings) {
+        this.crawlerSettings = crawlerSettings;
     }
 }

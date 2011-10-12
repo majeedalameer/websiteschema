@@ -18,6 +18,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import websiteschema.cralwer.Crawler;
+import websiteschema.model.domain.cralwer.CrawlerSettings;
 import websiteschema.utils.Configure;
 import websiteschema.utils.UrlLinkUtil;
 
@@ -29,7 +30,6 @@ public class BrowserWebCrawler implements Crawler {
 
     private static final String user = Configure.getDefaultConfigure().getProperty("Browser", "LicenseUser");
     private static final String serial = Configure.getDefaultConfigure().getProperty("Browser", "LicenseSerial");
-
 //    static {
 //        System.out.println("Add Shutdown Hook");
 //        Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -49,14 +49,20 @@ public class BrowserWebCrawler implements Crawler {
     String encoding = null;
     MyNetworkListener listener = new MyNetworkListener(this);
     IDocument document = null;
-    Boolean lock = false;
+    CrawlerSettings crawlerSettings;
+    final Boolean lock = false;
     int sec = 1000;
     long delay = 30 * sec;
+    int httpStatus = 0;
 
     @Override
     public void finalize() {
-        if (null != browser)BrowserFactory.destroyBrowser(browser);
-        if (null != frame) frame.dispose();
+        if (null != browser) {
+            BrowserFactory.destroyBrowser(browser);
+        }
+        if (null != frame) {
+            frame.dispose();
+        }
     }
 
     public BrowserWebCrawler() {
@@ -85,7 +91,9 @@ public class BrowserWebCrawler implements Crawler {
 
     @Override
     public Document[] crawl(String url) {
-        browser.loadURL(url);
+        System.out.println("start crawler.");
+        setUrl(url);
+        browser.loadURL(getUrl());
         try {
             synchronized (lock) {
                 System.out.println("wait");
@@ -96,6 +104,7 @@ public class BrowserWebCrawler implements Crawler {
         }
         System.out.println("after wait");
         document = browser.getDocument();
+        updateDocumentEncoding(encoding, document);
         IDocument frames[] = document.getChildFrames();
         Document[] ret = null;
         if (null != document) {
@@ -103,6 +112,7 @@ public class BrowserWebCrawler implements Crawler {
             ret = new Document[len];
             ret[0] = (Document) browser.getW3CDocument();
             for (int i = 1; i < len; i++) {
+                updateDocumentEncoding(encoding, frames[i - 1]);
                 IElement body = frames[i - 1].getBody();
                 ret[i] = (Document) body.getParentElement().convertToW3CNode();
             }
@@ -114,6 +124,18 @@ public class BrowserWebCrawler implements Crawler {
         return ret;
     }
 
+    private void updateDocumentEncoding(String encoding, IDocument doc) {
+        if (null != encoding && !"".equals(encoding)) {
+            IElementCollection all = null != doc ? doc.getAll() : null;
+            if (null != all) {
+                for (int i = 0; i < all.length(); i++) {
+                    IElement ele = all.item(i);
+                    ele.putLang(encoding);
+                }
+            }
+        }
+    }
+
     @Override
     public String getUrl() {
         return url;
@@ -121,6 +143,7 @@ public class BrowserWebCrawler implements Crawler {
 
     public void setUrl(String url) {
         this.url = url;
+        frame.setTitle(url);
     }
 
     @Override
@@ -178,12 +201,12 @@ public class BrowserWebCrawler implements Crawler {
     }
 
     public static void print(Node node) {
-        if(node.getNodeType() == Node.TEXT_NODE) {
+        if (node.getNodeType() == Node.TEXT_NODE) {
             System.out.println(node.getNodeValue());
         } else {
-            if(node.hasChildNodes()) {
+            if (node.hasChildNodes()) {
                 NodeList children = node.getChildNodes();
-                for(int i = 0; i < children.getLength(); i++) {
+                for (int i = 0; i < children.getLength(); i++) {
                     Node child = children.item(i);
                     print(child);
                 }
@@ -193,6 +216,22 @@ public class BrowserWebCrawler implements Crawler {
 
     @Override
     public void setAllowPopupWindow(boolean yes) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void setCrawlerSettings(CrawlerSettings setting) {
+        this.crawlerSettings = setting;
+        if (null == encoding || "".equals(encoding)) {
+            encoding = crawlerSettings.getEncoding();
+        }
+    }
+
+    @Override
+    public int getHttpStatus() {
+        return this.httpStatus;
+    }
+
+    public void setHttpStatus(int status) {
+        this.httpStatus = status;
     }
 }

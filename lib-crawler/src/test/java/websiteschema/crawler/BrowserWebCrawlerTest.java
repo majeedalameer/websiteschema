@@ -6,8 +6,6 @@
 package websiteschema.crawler;
 
 import com.webrenderer.swing.BrowserFactory;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import websiteschema.cralwer.Crawler;

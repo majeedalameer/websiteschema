@@ -30,8 +30,9 @@ public class JavaBeanWrapper {
 
     public <T extends HBaseBean> T getBean(Result obj, Class<T> clazz) {
         try {
-            T ret = clazz.newInstance();
+            T ret = null;
             if (null != obj && !obj.isEmpty()) {
+                ret = clazz.newInstance();
                 String rowKey = new String(obj.getRow());
                 ret.setRowKey(rowKey);
                 for (KeyValue kv : obj.raw()) {
@@ -60,8 +61,9 @@ public class JavaBeanWrapper {
 
     public <T extends HBaseBean> T getBean(Map<String, String> obj, Class<T> clazz) {
         try {
-            T ret = clazz.newInstance();
+            T ret = null;
             if (!obj.isEmpty()) {
+                ret = clazz.newInstance();
                 for (String family : obj.keySet()) {
                     String value = obj.get(family);
                     Field[] fields = clazz.getDeclaredFields();

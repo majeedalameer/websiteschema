@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     2011-9-13 10:01:59                           */
+/* Created on:     2011-10-6 17:19:39                           */
 /*==============================================================*/
 
 
@@ -28,7 +28,16 @@ create table Site
 );
 
 insert into Site(siteId,siteDomain,siteName,siteType,parentId,url,createTime,createUser,updateTime,lastUpdateUser) 
-values ('www_163_com_1','www.163.com','netease','general','0','http://www.163.com/',now(),'admin',now(),'admin');
+values ('www_163_com_1','www.163.com','netease','portal','0','http://www.163.com/',now(),'admin',now(),'admin');
+
+insert into Site(siteId,siteDomain,siteName,siteType,parentId,url,createTime,createUser,updateTime,lastUpdateUser) 
+values ('localhost:8080_2','localhost','tomcat','document','0','http://localhost:8080/',now(),'admin',now(),'admin');
+
+insert into Site(siteId,siteDomain,siteName,siteType,parentId,url,createTime,createUser,updateTime,lastUpdateUser) 
+values ('www_baidu_com_3','www.baidu.com','baidu','search engine','0','http://www.baidu.com/',now(),'admin',now(),'admin');
+
+insert into Site(siteId,siteDomain,siteName,siteType,parentId,url,createTime,createUser,updateTime,lastUpdateUser) 
+values ('baike_baidu_com_4','baike.baidu.com','baidu baike','wiki','3','http://baike.baidu.com/',now(),'admin',now(),'admin');
 
 /*==============================================================*/
 /* Table: User                                                  */

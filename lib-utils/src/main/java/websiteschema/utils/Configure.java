@@ -33,6 +33,7 @@ public class Configure {
     private static final String Default_Field = "default";
     private static final Configure root = new Configure();
     private String currentField = Default_Field;
+    private String namespace = "";
     private Map<String, Map<String, String>> properties = new HashMap<String, Map<String, String>>();
 
     private Configure() {
@@ -115,9 +116,13 @@ public class Configure {
         }
     }
 
+    /**
+     * Read multi-lines configuration.
+     * @param br
+     * @return
+     */
     private String readLine(BufferedReader br) {
-        StringBuilder sb = new StringBuilder();
-        return sb.toString();
+        throw new java.lang.UnsupportedOperationException();
     }
 
     private void parseLine(String line) {
@@ -128,8 +133,12 @@ public class Configure {
                 int eq = line.indexOf("=");
                 String key = line.substring(0, eq).trim().toLowerCase();
                 String value = line.substring(eq + 1, line.length());
-                putProperties(
-                        currentField, key.trim(), value.trim());
+                if ("namespace".equals(key) && Configure.Default_Field.equals(currentField)) {
+                    this.namespace = value;
+                } else {
+                    putProperties(
+                            currentField, key.trim(), value.trim());
+                }
             }
         }
     }
@@ -143,10 +152,18 @@ public class Configure {
         Map<String, String> map = properties.get(f);
         if (null == map) {
             map = new HashMap<String, String>();
-            properties.put(f, map);
+            properties.put(getNamespace() + f, map);
         }
         String k = key.toLowerCase();
         map.put(k, value);
+    }
+
+    private String getNamespace() {
+        if ("".equals(namespace)) {
+            return "";
+        } else {
+            return namespace + ".";
+        }
     }
 
     public String getProperty(String key) {
@@ -161,7 +178,7 @@ public class Configure {
         if (null == key || "".equals(key)) {
             return def;
         }
-        Map<String, String> map = properties.get(field.toLowerCase());
+        Map<String, String> map = properties.get(getNamespace() + field.toLowerCase());
         if (null != map) {
             String ret = map.get(key.toLowerCase());
             if (null != ret) {
@@ -223,12 +240,9 @@ public class Configure {
         if (null == key || "".equals(key)) {
             return def;
         }
-        Map<String, String> map = properties.get(field.toLowerCase());
-        if (null != map) {
-            String ret = map.get(key.toLowerCase());
-            if (null != ret) {
-                return Integer.valueOf(ret);
-            }
+        String value = getProperty(field, key);
+        if (null != value) {
+            return Integer.valueOf(value);
         }
         return def;
     }
@@ -245,12 +259,9 @@ public class Configure {
         if (null == key || "".equals(key)) {
             return def;
         }
-        Map<String, String> map = properties.get(field.toLowerCase());
-        if (null != map) {
-            String ret = map.get(key.toLowerCase());
-            if (null != ret) {
-                return Double.valueOf(ret);
-            }
+        String value = getProperty(field, key);
+        if (null != value) {
+            return Double.valueOf(value);
         }
         return def;
     }
@@ -267,12 +278,9 @@ public class Configure {
         if (null == key || "".equals(key)) {
             return def;
         }
-        Map<String, String> map = properties.get(field.toLowerCase());
-        if (null != map) {
-            String ret = map.get(key.toLowerCase());
-            if (null != ret) {
-                return Boolean.valueOf(ret);
-            }
+        String value = getProperty(field, key);
+        if (null != value) {
+            return Boolean.valueOf(value);
         }
         return def;
     }
@@ -284,7 +292,7 @@ public class Configure {
                 return (T) JSONObject.toBean(JSONObject.fromObject(jsonText), clazz);
             } catch (JSONException ex) {
                 if (int.class.equals(clazz) || Integer.class.equals(clazz)) {
-                    T ret = (T)  Integer.valueOf(getIntProperty(field, key));
+                    T ret = (T) Integer.valueOf(getIntProperty(field, key));
                     return ret;
                 } else if (double.class.equals(clazz) || Double.class.equals(clazz)) {
                     T ret = (T) Double.valueOf(getDoubleProperty(field, key));

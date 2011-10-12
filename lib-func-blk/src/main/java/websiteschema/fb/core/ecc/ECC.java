@@ -13,9 +13,23 @@ import java.util.*;
 public class ECC {
 
     public final static String START = "START";
+    public String status = START;
+    //Map<Status, Map<Event, ExecutionControl>>
+    Map<String, Map<String, ExecutionControl>> ecc = new HashMap<String, Map<String, ExecutionControl>>();
 
-    public String status;
-    Map<String, ExecutionControl> ecc = new HashMap<String, ExecutionControl>();
+    public ExecutionControl getExecutionControl(String evt) {
+        if (ecc.containsKey(getStatus())) {
+            Map<String, ExecutionControl> map = ecc.get(getStatus());
+            return map.get(evt);
+        }
+        return null;
+    }
 
-//    13520260727
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }
