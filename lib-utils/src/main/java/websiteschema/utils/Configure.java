@@ -30,9 +30,9 @@ import net.sf.json.JSONObject;
  */
 public class Configure {
 
-    private static final String Default_Field = "default";
+    private static final String DefaultField = "default";
     private static final Configure root = new Configure();
-    private String currentField = Default_Field;
+    private String currentField = DefaultField;
     private String namespace = "";
     private Map<String, Map<String, String>> properties = new HashMap<String, Map<String, String>>();
 
@@ -102,9 +102,12 @@ public class Configure {
             try {
                 br = new BufferedReader(
                         new InputStreamReader(is, "UTF-8"));
+                int count = 0;
                 String line = br.readLine();
                 while (null != line) {
-                    parseLine(line);
+                    if (!"".equals(line)) {
+                        parseLine(line, ++count);
+                    }
                     line = br.readLine();
                 }
             } catch (IOException ex) {
@@ -125,7 +128,7 @@ public class Configure {
         throw new java.lang.UnsupportedOperationException();
     }
 
-    private void parseLine(String line) {
+    private void parseLine(String line, int currentRowNumber) {
         if (!line.startsWith("#") && !line.startsWith(";")) {
             if (line.startsWith("[") && line.endsWith("]")) {
                 currentField = line.substring(1, line.length() - 1).trim().toLowerCase();
@@ -133,8 +136,12 @@ public class Configure {
                 int eq = line.indexOf("=");
                 String key = line.substring(0, eq).trim().toLowerCase();
                 String value = line.substring(eq + 1, line.length());
-                if ("namespace".equals(key) && Configure.Default_Field.equals(currentField)) {
-                    this.namespace = value;
+                if ("namespace".equals(key) && Configure.DefaultField.equals(currentField)) {
+                    if (1 == currentRowNumber) {
+                        this.namespace = value;
+                    } else {
+                        throw new RuntimeException("'namespace' must be declared at first line.");
+                    }
                 } else {
                     putProperties(
                             currentField, key.trim(), value.trim());
@@ -144,15 +151,21 @@ public class Configure {
     }
 
     public void putProperties(String key, String value) {
-        putProperties(Default_Field, key, value);
+        putProperties(DefaultField, key, value);
     }
 
     public void putProperties(String field, String key, String value) {
+        if (null == field) {
+            throw new RuntimeException("Field is null.");
+        }
         String f = field.toLowerCase();
+        if (!DefaultField.equals(f)) {
+            f = getNamespace() + f;
+        }
         Map<String, String> map = properties.get(f);
         if (null == map) {
             map = new HashMap<String, String>();
-            properties.put(getNamespace() + f, map);
+            properties.put(f, map);
         }
         String k = key.toLowerCase();
         map.put(k, value);
@@ -167,7 +180,7 @@ public class Configure {
     }
 
     public String getProperty(String key) {
-        return getProperty(Default_Field, key, null);
+        return getProperty(DefaultField, key, null);
     }
 
     public String getProperty(String field, String key) {
@@ -178,7 +191,13 @@ public class Configure {
         if (null == key || "".equals(key)) {
             return def;
         }
-        Map<String, String> map = properties.get(getNamespace() + field.toLowerCase());
+        Map<String, String> map = null;
+        String f = field.toLowerCase();
+        if (DefaultField.equals(f)) {
+            map = properties.get(f);
+        } else {
+            map = properties.get(getNamespace() + f);
+        }
         if (null != map) {
             String ret = map.get(key.toLowerCase());
             if (null != ret) {
@@ -189,7 +208,7 @@ public class Configure {
     }
 
     public List<String> getListProperty(String key) {
-        return getListProperty(Default_Field, key);
+        return getListProperty(DefaultField, key);
     }
 
     public List<String> getListProperty(String field, String key) {
@@ -202,7 +221,7 @@ public class Configure {
     }
 
     public Set<String> getSetProperty(String key) {
-        return getSetProperty(Default_Field, key);
+        return getSetProperty(DefaultField, key);
     }
 
     public Set<String> getSetProperty(String field, String key) {
@@ -215,7 +234,7 @@ public class Configure {
     }
 
     public Map<String, String> getMapProperty(String key) {
-        return getMapProperty(Default_Field, key);
+        return getMapProperty(DefaultField, key);
     }
 
     public Map<String, String> getMapProperty(String field, String key) {
@@ -229,7 +248,7 @@ public class Configure {
     }
 
     public int getIntProperty(String key) {
-        return getIntProperty(Default_Field, key, 0);
+        return getIntProperty(DefaultField, key, 0);
     }
 
     public int getIntProperty(String field, String key) {
@@ -248,7 +267,7 @@ public class Configure {
     }
 
     public double getDoubleProperty(String key) {
-        return getDoubleProperty(Default_Field, key, 0.0);
+        return getDoubleProperty(DefaultField, key, 0.0);
     }
 
     public double getDoubleProperty(String field, String key) {
@@ -267,7 +286,7 @@ public class Configure {
     }
 
     public boolean getBooleanProperty(String key) {
-        return getBooleanProperty(Default_Field, key, false);
+        return getBooleanProperty(DefaultField, key, false);
     }
 
     public boolean getBooleanProperty(String field, String key) {

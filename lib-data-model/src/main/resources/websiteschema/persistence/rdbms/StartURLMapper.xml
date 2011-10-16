@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="websiteschema.persistence.rdbms.StartURLMapper">
+
+    <cache />
+    
+    <select id="getTotalResults" resultType="long">
+        select count(*) from StartURL
+    </select>
+
+    <select id="getStartURLs" parameterType="websiteschema.model.domain.PageInfo" resultType="websiteschema.model.domain.StartURL">
+        select * from StartURL limit #{pageNum}, #{pageSize}
+    </select>
+
+    <!-- 查询记录，根据Id -->
+    <select id="getStartURLById" parameterType="long" resultType="websiteschema.model.domain.StartURL">
+        select * from StartURL
+        where id = #{id}
+    </select>
+
+    <select id="getStartURLByJobname" parameterType="long" resultType="websiteschema.model.domain.StartURL">
+        select * from StartURL
+        where jobname = #{jobname}
+    </select>
+
+    <!-- 插入记录 -->
+    <insert id="insert" parameterType="websiteschema.model.domain.StartURL"
+        useGeneratedKeys="true" keyProperty="id">
+        insert into StartURL (siteId, startURL, jobname, status, createTime, createUser, updateTime, lastUpdateUser)
+        values (#{siteId},#{startURL},#{jobname},#{status},#{createTime},#{createUser},#{updateTime},#{lastUpdateUser})
+    </insert>
+
+    <!-- 更新任务状态记录 -->
+    <update id="update" parameterType="websiteschema.model.domain.StartURL">
+        update StartURL set
+        siteId = #{siteId},
+        startURL = #{startURL},
+        jobname = #{jobname},
+        status = #{status},
+        createTime = #{createTime},
+        createUser = #{createUser},
+        updateTime = #{updateTime},
+        lastUpdateUser = #{lastUpdateUser}
+        where id = #{id}
+    </update>
+
+    <update id="updateStatus" parameterType="websiteschema.model.domain.StartURL">
+        update StartURL set
+        status = #{status}
+        where id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="websiteschema.model.domain.StartURL" >
+        delete from StartURL
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteByStartURLId" parameterType="long" >
+        delete from StartURL
+        where id = #{id}
+    </delete>
+    
+</mapper>  

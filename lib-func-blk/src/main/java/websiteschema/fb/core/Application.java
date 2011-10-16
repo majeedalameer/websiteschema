@@ -5,7 +5,7 @@
 package websiteschema.fb.core;
 
 import org.apache.log4j.Logger;
-import websiteschema.fb.CEASE;
+import websiteschema.fb.E_RESTART;
 import websiteschema.utils.Configure;
 
 /**
@@ -39,7 +39,7 @@ public class Application implements Runnable {
             if (null != evt) {
                 FunctionBlock fb = evt.fb;
                 String ei = evt.ei;
-                if (null == fb && ei.equals(CEASE.CEASE_COMMAND)) {
+                if (null == fb && ei.equals(E_RESTART.CEASE_COMMAND)) {
                     stop();
                 } else {
                     if (!fb.withECC) {

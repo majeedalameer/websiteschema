@@ -10,3 +10,5 @@ document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/resources/sty
 
 document.write("<script type=\"text/javascript\" src=\"js/ext-base.js\"></"+"script>");
 document.write("<script type=\"text/javascript\" src=\"js/ext-all-debug.js\"></"+"script>");
+document.write("<script type=\"text/javascript\" src=\"js/domain-record-type.js\"></"+"script>");
+document.write("<script type=\"text/javascript\" src=\"js/constant.js\"></"+"script>");

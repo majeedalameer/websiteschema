@@ -51,15 +51,15 @@ public class FunctionBlock {
         ExecutionControl ec = ecc.getExecutionControl(evt);
         String algorithm = ec.getAlgorithm();
         boolean success = execute(algorithm);
-        if(success) {
+        if (success) {
             ecc.setStatus(ec.getSuccess());
         } else {
             ecc.setStatus(ec.getFailure());
         }
 
         String eo = ec.getEo();
-        if(null != eo && !"".equals(eo)) {
-            triggerEvent(eo);
+        if (null != eo && !"".equals(eo)) {
+            trigger(eo);
         }
     }
 
@@ -85,6 +85,13 @@ public class FunctionBlock {
     }
 
     public boolean triggerEvent(String evt) {
+        if (!withECC) {
+            trigger(evt);
+        }
+        return true;
+    }
+
+    private void trigger(String evt) {
         l.trace(getName() + " trigger event: " + evt);
         sendRelativeData(evt, context);
         List<EventLink> evtLinks = context.getEventLinks(getName(), evt);
@@ -94,7 +101,6 @@ public class FunctionBlock {
                 context.addEvent(event);
             }
         }
-        return true;
     }
 
     /**

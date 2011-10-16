@@ -1,4 +1,4 @@
-namespace=fb
+namespace=fb.test
 
 StartFB=Start
 InitEvent=COLD
@@ -20,10 +20,7 @@ DI.INTERVAL=1000
 FBType=websiteschema.fb.STDOUT
 DI.STR=hello world
 
-[Cease]
-FBType=websiteschema.fb.CEASE
-
 [Threshold]
-FBType=websiteschema.fb.IF_GREAT
+FBType=websiteschema.fb.Compare
 DI.R=10
-EO.GT={"Cease":"STOP"}
+EO.EQ={"Start":"STOP"}

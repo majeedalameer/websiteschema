@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="websiteschema.persistence.rdbms.WrapperMapper">
+
+    <cache />
+
+    <sql id='wrapperColumns'>id, wrapperType, name, createTime, createUser, updateTime, lastUpdateUser</sql>
+
+    <select id="getTotalResults" resultType="long">
+        select count(*) from Wrapper
+    </select>
+
+    <select id="getWrappers" parameterType="websiteschema.model.domain.PageInfo" resultType="websiteschema.model.domain.Wrapper">
+        select <include refid="wrapperColumns"/> from Wrapper limit #{pageNum}, #{pageSize}
+    </select>
+
+    <!-- 查询记录，根据Id -->
+    <select id="getWrapperById" parameterType="long" resultType="websiteschema.model.domain.Wrapper">
+        select * from Wrapper
+        where id = #{id}
+    </select>
+
+    <select id="getWrapperByName" parameterType="long" resultType="websiteschema.model.domain.Wrapper">
+        select * from Wrapper
+        where name = #{name}
+    </select>
+
+    <!-- 插入记录 -->
+    <insert id="insert" parameterType="websiteschema.model.domain.Wrapper"
+        useGeneratedKeys="true" keyProperty="id">
+        insert into Wrapper (application, name, wrapperType, visualConfig, createTime, createUser, updateTime, lastUpdateUser)
+        values (#{application}, #{name},#{wrapperType},#{visualConfig},#{createTime},#{createUser},#{updateTime},#{lastUpdateUser})
+    </insert>
+
+    <!-- 更新任务状态记录 -->
+    <update id="update" parameterType="websiteschema.model.domain.Wrapper">
+        update Wrapper set
+        application = #{application},
+        wrapperType = #{wrapperType},
+        name = #{name},
+        visualConfig = #{visualConfig},
+        createTime = #{createTime},
+        createUser = #{createUser},
+        updateTime = #{updateTime},
+        lastUpdateUser = #{lastUpdateUser}
+        where id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="websiteschema.model.domain.Wrapper" >
+        delete from Wrapper
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteByWrapperId" parameterType="long" >
+        delete from Wrapper
+        where id = #{id}
+    </delete>
+    
+</mapper>  
