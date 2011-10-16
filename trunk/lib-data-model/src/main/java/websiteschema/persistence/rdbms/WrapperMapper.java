@@ -1,0 +1,32 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package websiteschema.persistence.rdbms;
+
+import java.util.List;
+import websiteschema.model.domain.PageInfo;
+import websiteschema.model.domain.Wrapper;
+
+/**
+ *
+ * @author ray
+ */
+public interface WrapperMapper {
+
+    public long getTotalResults();
+
+    public List<Wrapper> getWrappers(PageInfo pageInfo);
+
+    public Wrapper getById(long id);
+
+    public Wrapper getByName(String name);
+
+    public void update(Wrapper wrapper);
+
+    public void insert(Wrapper wrapper);
+
+    public void delete(Wrapper wrapper);
+
+    public void deleteById(long id);
+}

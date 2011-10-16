@@ -8,7 +8,7 @@
     <head>
         <base href="<%=basePath%>"/>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <title>Websiteschema User Management</title>
+        <title>Websiteschema Site Management</title>
 
         <link rel="stylesheet" type="text/css" href="resources/css/Ext.ux.form.LovCombo.css">
         <script type="text/javascript" src="js/packages.js"></script>
@@ -17,6 +17,7 @@
         <script type="text/javascript" src="js/dwrproxy.js"></script>
         <script type="text/javascript" src="dwr/engine.js"></script>
         <script type="text/javascript" src="dwr/interface/SiteService.js"></script>
+        <script type="text/javascript" src="dwr/interface/StartURLService.js"></script>
     </head>
 
     <body>
@@ -36,52 +37,10 @@
             Ext.onReady(function(){
 
                 var proxy = new Ext.data.DWRProxy(SiteService.getSites, true);
-                var recordType = new Ext.data.Record.create([
-                    {
-                        name : 'id',
-                        type : 'long'
-                    },
-                    {
-                        name : 'siteId',
-                        type : 'string'
-                    },
-                    {
-                        name : 'siteName',
-                        type : 'string'
-                    },
-                    {
-                        name : 'siteDomain',
-                        type : 'string'
-                    },
-                    {
-                        name : 'siteType',
-                        type : 'string'
-                    },
-                    {
-                        name : 'parentId',
-                        type : 'long'
-                    },
-                    {
-                        name : 'url',
-                        type : 'string'
-                    },
-                    {
-                        name : 'createTime',
-                        type : 'date'
-                    },
-                    {
-                        name : 'createUser',
-                        type : 'string'
-                    },
-                    {
-                        name : 'updateTime',
-                        type : 'date'
-                    },
-                    {
-                        name : 'lastUpdateUser',
-                        type : 'string'
-                    }
-                ]);
+                var recordType = new Ext.data.Record.create(siteRecordType);
+
+                var StartURLRecordType = new Ext.data.Record.create(startURLRecordType);
+
                 var store=new Ext.data.Store({
                     proxy : proxy,
                     reader : new Ext.data.ListRangeReader(
@@ -287,6 +246,12 @@
                             tooltip: '删除记录',
                             iconCls: 'icon-delete',
                             handler: handleDelete
+                        }, '-',
+                        {
+                            text: '添加起始URL',
+                            tooltip: '添加起始URL',
+                            iconCls: 'icon-add',
+                            handler: handleAddStartURL
                         }
                     ],
                     bbar: new Ext.PagingToolbar({
@@ -333,6 +298,21 @@
                         SiteService.deleteSite(selections[i].data);
                     }
                     store.reload();
+                }
+
+                function handleAddStartURL(){
+                    var selections = grid.selModel.getSelections();
+
+                    for (var i = 0,len = selections.length; i < len; i++) {
+                        var site = selections[i];
+                        var startURL = new StartURLRecordType();
+                        startURL.set("siteId", site.get("siteId"));
+                        startURL.set("jobname", site.get("siteId"));
+                        startURL.set("status","0");
+                        startURL.set("startURL",site.get("url"));
+                        StartURLService.insert(startURL.data);
+                    }
+                    Ext.MessageBox.alert("添加结束，点击“数据管理->起始URL地址”查看");
                 }
             });
         </script>

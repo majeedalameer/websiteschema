@@ -9,7 +9,11 @@ Console.actionData = [
                         {
                             text:"数据管理",id:"dh.fetch",title:"数据管理",cls:"cls",singleClickExpand:true,
                             children:[
-                                {href:"views/metadata/site",text:"网站配置",id:"site",title:"网站配置",cls:"cls",iconCls:"icon-cls",leaf:true}
+                                {href:"views/metadata/site",text:"网站配置",id:"site",title:"网站配置",cls:"cls",iconCls:"icon-cls",leaf:true},
+                                {href:"views/metadata/url",text:"起始URL地址",id:"url",title:"URL地址配置",cls:"cls",iconCls:"icon-cls",leaf:true},
+                                {href:"views/metadata/scheduler",text:"调度计划",id:"scheduler",title:"调度计划",cls:"cls",iconCls:"icon-cls",leaf:true},
+                                {href:"views/metadata/job",text:"任务配置",id:"job",title:"任务配置",cls:"cls",iconCls:"icon-cls",leaf:true},
+                                {href:"views/metadata/wrapper",text:"抽取器",id:"wrapper",title:"抽取器",cls:"cls",iconCls:"icon-cls",leaf:true}
                             ]
                         },
 //                        {

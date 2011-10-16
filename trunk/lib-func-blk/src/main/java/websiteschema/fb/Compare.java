@@ -16,18 +16,18 @@ import websiteschema.fb.core.FunctionBlock;
  */
 @EI(name = {"COMP:COMP"})
 @EO(name = {"GT", "LT", "EQ"})
-public class IF_GREAT extends FunctionBlock {
+public class Compare extends FunctionBlock {
 
     @DI(name = "R")
-    public int r = 0;
+    public int right = 0;
     @DI(name = "L")
-    public int l = 0;
+    public int left = 0;
 
     @Algorithm(name = "COMP")
     public void compare() {
-        if (l > r) {
+        if (left > right) {
             triggerEvent("GT");
-        } else if (l == r) {
+        } else if (left == right) {
             triggerEvent("EQ");
         } else {
             triggerEvent("LT");

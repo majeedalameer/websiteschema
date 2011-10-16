@@ -7,7 +7,7 @@
     <head>
         <base href="<%=basePath%>">
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <title>Websiteschema Start URL Management</title>
+        <title>Websiteschema Job Management</title>
 
         <link rel="stylesheet" type="text/css" href="resources/css/Ext.ux.form.LovCombo.css">
         <script type="text/javascript" src="js/packages.js"></script>
@@ -15,8 +15,7 @@
         <script type="text/javascript" src="js/Ext.ux.ThemeCombo.js"></script>
         <script type="text/javascript" src="js/dwrproxy.js"></script>
         <script type="text/javascript" src="dwr/engine.js"></script>
-        <script type="text/javascript" src="dwr/interface/StartURLService.js"></script>
-        <script type="text/javascript" src="dwr/interface/SchedulerService.js"></script>
+        <script type="text/javascript" src="dwr/interface/JobService.js"></script>
     </head>
 
     <body>
@@ -28,9 +27,8 @@
             var pageSize = 20;
             Ext.onReady(function(){
 
-                var proxy = new Ext.data.DWRProxy(StartURLService.getStartURLs, true);
-                var recordType = new Ext.data.Record.create(startURLRecordType);
-                var Scheduler = new Ext.data.Record.create(schedulerRecordType);
+                var proxy = new Ext.data.DWRProxy(JobService.getJobs, true);
+                var recordType = new Ext.data.Record.create(jobRecordType);
                 var store=new Ext.data.Store({
                     proxy : proxy,
                     reader : new Ext.data.ListRangeReader(
@@ -42,12 +40,12 @@
                     remoteSort: false
 
                 });
-                var url_status_store = new Ext.data.SimpleStore(
+                var type_store = new Ext.data.SimpleStore(
                 {
                     fields :['name','value'],
                     data:[
-                        ['有效',1],
-                        ['无效',0]
+                        ['v1','v1'],
+                        ['v2','v2']
                     ]
                 });
 
@@ -66,36 +64,20 @@
                         width: 50
                     },
                     {
-                        header: '起始URL',
-                        dataIndex: 'startURL',
+                        header: '配置',
+                        dataIndex: 'configure',
                         width: 300,
                         editor: new fm.TextField({
                             allowBlank: false
                         })
                     },
                     {
-                        header: '网站ID',
-                        dataIndex: 'siteId',
-                        width: 100,
-                        editor: new fm.TextField({
-                            allowBlank: false
-                        })
-                    },
-                    {
-                        header: '爬虫名称',
-                        dataIndex: 'jobname',
-                        width: 100,
-                        editor: new fm.TextField({
-                            allowBlank: false
-                        })
-                    },
-                    {
-                        header: '状态',
-                        dataIndex: 'status',
+                        header: '类型',
+                        dataIndex: 'jobType',
                         width: 50,
                         hidden : false,
                         editor: new fm.ComboBox({
-                            store : url_status_store,
+                            store : type_store,
                             triggerAction: 'all',
                             allowBlank: false,
                             forceSelection: true,
@@ -105,9 +87,9 @@
 
                         }),
                         renderer: function(value,metadata,record){
-                            var index = url_status_store.find('value',value);
+                            var index = type_store.find('value',value);
                             if(index!=-1){
-                                return url_status_store.getAt(index).data.name;
+                                return type_store.getAt(index).data.name;
                             }
                             return value;
                         }
@@ -196,12 +178,6 @@
                             tooltip: '删除记录',
                             iconCls: 'icon-delete',
                             handler: handleDelete
-                        }, '-',
-                        {
-                            text: '添加调度计划',
-                            tooltip: '添加调度计划',
-                            iconCls: 'icon-add',
-                            handler: handleAddScheduler
                         }
                     ],
                     bbar: new Ext.PagingToolbar({
@@ -217,13 +193,11 @@
                 function handleAdd(){
                     var p = new recordType();
                     grid.stopEditing();
-                    p.set("siteId","siteId_here");
-                    p.set("jobname","jobname_here");
-                    p.set("status","0");
-                    p.set("startURL","URL_here");
+                    p.set("configure","");
+                    p.set("jobType","v1");
                     store.insert(0, p);
                     grid.startEditing(0, 0);
-                    StartURLService.insert(p.data);
+                    JobService.insert(p.data);
                     store.reload();
                 }
 
@@ -231,8 +205,8 @@
 
                     var mr = store.getModifiedRecords();
                     for(var i=0;i<mr.length;i++){
-                        Ext.MessageBox.alert("是否要更改" + mr[i].data["jobname"]+ "的配置");
-                        StartURLService.update(mr[i].data);
+                        Ext.MessageBox.alert("是否要更改" + mr[i].data["id"]+ "的配置");
+                        JobService.update(mr[i].data);
                     }
                     
                 }
@@ -241,24 +215,11 @@
                 function handleDelete(){
                     var selections = grid.selModel.getSelections();
                     for (var i = 0,len = selections.length; i < len; i++) {
-                        StartURLService.deleteStartURL(selections[i].data);
+                        JobService.deleteJob(selections[i].data);
                     }
                     store.reload();
                 }
 
-                function handleAddScheduler(){
-                    var selections = grid.selModel.getSelections();
-
-                    for (var i = 0,len = selections.length; i < len; i++) {
-                        var url = selections[i];
-                        var sche = new Scheduler();
-                        sche.set("startURLId", url.get("id"));
-                        sche.set("jobId", "0");
-                        sche.set("schedule",defaultSchedule);
-                        SchedulerService.insert(sche.data);
-                    }
-                    Ext.MessageBox.alert("添加结束，点击“数据管理->调度计划”查看");
-                }
             });
         </script>
 

@@ -16,5 +16,21 @@
         <create creator="spring" javascript="SiteService" >
             <param name="beanName" value="siteService"></param>
         </create>
+
+        <create creator="spring" javascript="StartURLService" >
+            <param name="beanName" value="startURLService"></param>
+        </create>
+
+        <create creator="spring" javascript="JobService" >
+            <param name="beanName" value="jobService"></param>
+        </create>
+
+        <create creator="spring" javascript="SchedulerService" >
+            <param name="beanName" value="schedulerService"></param>
+        </create>
+
+        <create creator="spring" javascript="WrapperService" >
+            <param name="beanName" value="wrapperService"></param>
+        </create>
     </allow>
 </dwr>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="websiteschema.persistence.rdbms.SchedulerMapper">
+
+    <cache />
+    
+    <select id="getTotalResults" resultType="long">
+        select count(*) from Scheduler
+    </select>
+
+    <select id="getSchedulers" parameterType="websiteschema.model.domain.PageInfo" resultType="websiteschema.model.domain.Scheduler">
+        select * from Scheduler limit #{pageNum}, #{pageSize}
+    </select>
+
+    <select id="getAll" resultType="websiteschema.model.domain.Scheduler">
+        select * from Scheduler
+    </select>
+
+    <select id="getSchedulersByStartURL" parameterType="long" resultType="websiteschema.model.domain.Scheduler">
+        select * from Scheduler where startURLId = #{startURLId}
+    </select>
+
+    <!-- 查询记录，根据Id -->
+    <select id="getSchedulerById" parameterType="long" resultType="websiteschema.model.domain.Scheduler">
+        select * from Scheduler
+        where id = #{id}
+    </select>
+
+    <!-- 插入记录 -->
+    <insert id="insert" parameterType="websiteschema.model.domain.Scheduler"
+        useGeneratedKeys="true" keyProperty="id">
+        insert into Scheduler (startURLId, jobId, schedule, scheduleType, createTime)
+        values (#{startURLId},#{jobId},#{schedule},#{scheduleType},#{createTime})
+    </insert>
+
+    <!-- 更新任务状态记录 -->
+    <update id="update" parameterType="websiteschema.model.domain.Scheduler">
+        update Scheduler set
+        startURLId = #{startURLId},
+        jobId = #{jobId},
+        schedule = #{schedule},
+        scheduleType = #{scheduleType}
+        where id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="websiteschema.model.domain.Scheduler" >
+        delete from Scheduler
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteBySchedulerId" parameterType="long" >
+        delete from Scheduler
+        where id = #{id}
+    </delete>
+    
+</mapper>  
