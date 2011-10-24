@@ -30,4 +30,8 @@ public class FeatureStatInfo {
     public void setMapDim(Map<String, Integer> mapDim) {
         this.mapDim = mapDim;
     }
+
+    public FeatureInfo getFeatureInfo(String name) {
+        return mapDim.containsKey(name) ? list[mapDim.get(name)] : null;
+    }
 }

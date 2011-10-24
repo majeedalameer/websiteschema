@@ -9,8 +9,9 @@
         select count(*) from Scheduler
     </select>
 
-    <select id="getSchedulers" parameterType="websiteschema.model.domain.PageInfo" resultType="websiteschema.model.domain.Scheduler">
-        select * from Scheduler limit #{pageNum}, #{pageSize}
+    <select id="getSchedulers" parameterType="java.util.Map" resultType="websiteschema.model.domain.Scheduler">
+        select * from Scheduler
+        limit #{start}, #{limit}
     </select>
 
     <select id="getAll" resultType="websiteschema.model.domain.Scheduler">
@@ -22,7 +23,7 @@
     </select>
 
     <!-- 查询记录，根据Id -->
-    <select id="getSchedulerById" parameterType="long" resultType="websiteschema.model.domain.Scheduler">
+    <select id="getById" parameterType="long" resultType="websiteschema.model.domain.Scheduler">
         select * from Scheduler
         where id = #{id}
     </select>
@@ -49,7 +50,7 @@
         where id = #{id}
     </delete>
 
-    <delete id="deleteBySchedulerId" parameterType="long" >
+    <delete id="deleteById" parameterType="long" >
         delete from Scheduler
         where id = #{id}
     </delete>

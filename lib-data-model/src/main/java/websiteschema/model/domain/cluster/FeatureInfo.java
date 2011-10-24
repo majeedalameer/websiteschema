@@ -10,12 +10,29 @@ package websiteschema.model.domain.cluster;
  */
 public class FeatureInfo {
 
-    private String name;
-    private int totalTimes;
-    private int timesPerSample;
-    private int relatedSample;
-    private int weight;
-    private double similarity;
+    private String name = null;
+    private int totalCount = 0;
+    //Average frequence of each document
+    private int frequence = 0;
+    private int documentFrequence = 0;
+    private int weight = 0;
+    private double similarity = 0.0;
+
+    public int getDocumentFrequence() {
+        return documentFrequence;
+    }
+
+    public void setDocumentFrequence(int documentFrequence) {
+        this.documentFrequence = documentFrequence;
+    }
+
+    public int getFrequence() {
+        return frequence;
+    }
+
+    public void setFrequence(int frequence) {
+        this.frequence = frequence;
+    }
 
     public String getName() {
         return name;
@@ -33,20 +50,12 @@ public class FeatureInfo {
         this.similarity = similarity;
     }
 
-    public int getTimesPerSample() {
-        return timesPerSample;
+    public int getTotalCount() {
+        return totalCount;
     }
 
-    public void setTimesPerSample(int timesPerSample) {
-        this.timesPerSample = timesPerSample;
-    }
-
-    public int getTotalTimes() {
-        return totalTimes;
-    }
-
-    public void setTotalTimes(int totalTimes) {
-        this.totalTimes = totalTimes;
+    public void setTotalCount(int totalCount) {
+        this.totalCount = totalCount;
     }
 
     public int getWeight() {
@@ -57,11 +66,4 @@ public class FeatureInfo {
         this.weight = weight;
     }
 
-    public int getRelatedSample() {
-        return relatedSample;
-    }
-
-    public void setRelatedSample(int relatedSample) {
-        this.relatedSample = relatedSample;
-    }
 }

@@ -6,7 +6,7 @@
 package websiteschema.persistence.rdbms;
 
 import java.util.List;
-import websiteschema.model.domain.PageInfo;
+import java.util.Map;
 import websiteschema.model.domain.StartURL;
 
 /**
@@ -17,7 +17,7 @@ public interface StartURLMapper {
 
     public long getTotalResults();
 
-    public List<StartURL> getStartURLs(PageInfo pageInfo);
+    public List<StartURL> getStartURLs(Map params);
 
     public StartURL getById(long id);
 

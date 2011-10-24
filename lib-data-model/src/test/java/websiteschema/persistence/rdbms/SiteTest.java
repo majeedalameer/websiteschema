@@ -1,10 +1,12 @@
 package websiteschema.persistence.rdbms;
 
+import java.util.List;
 import java.util.Date;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import websiteschema.model.domain.Site;
+import static websiteschema.persistence.rdbms.utils.ParameterUtil.*;
 
 public class SiteTest {
 
@@ -12,6 +14,12 @@ public class SiteTest {
     SiteMapper siteMapper = ctx.getBean("siteMapper", SiteMapper.class);
 
     @Test
+    public void test() {
+        insert();
+        selectAndUpdate();
+        delete();
+    }
+
     public void insert() {
         Site site = new Site();
         site.setSiteId("test_www_sohu_com_2");
@@ -23,9 +31,13 @@ public class SiteTest {
         siteMapper.insert(site);
     }
 
-    @Test
     public void selectAndUpdate() {
-        Site site = siteMapper.getSiteBySiteId("test_www_sohu_com_2");
+        List<Site> sites = siteMapper.getSites(buildParam(0,10, "id desc", "com"));
+        for(Site site:sites) {
+            System.out.println(site.getSiteId());
+        }
+
+        Site site = siteMapper.getBySiteId("test_www_sohu_com_2");
 
         site.setUrl("http://www.sohu.com/");
         site.setLastUpdateUser("system");
@@ -33,9 +45,7 @@ public class SiteTest {
         siteMapper.update(site);
     }
 
-    @Test
     public void delete() {
-        Site site = siteMapper.getSiteBySiteId("test_www_sohu_com_2");
-        siteMapper.delete(site);
+        siteMapper.deleteBySiteId("test_www_sohu_com_2");
     }
 }

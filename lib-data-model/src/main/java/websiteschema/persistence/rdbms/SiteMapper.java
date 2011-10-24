@@ -5,7 +5,7 @@
 package websiteschema.persistence.rdbms;
 
 import java.util.List;
-import websiteschema.model.domain.PageInfo;
+import java.util.Map;
 import websiteschema.model.domain.Site;
 
 /**
@@ -14,15 +14,15 @@ import websiteschema.model.domain.Site;
  */
 public interface SiteMapper {
 
-    public long getTotalResults();
+    public long getTotalResults(Map params);
 
-    public List<Site> getSites(PageInfo pageInfo);
+    public List<Site> getSites(Map params);
 
-    public Site getSiteBySiteId(String siteId);
+    public Site getBySiteId(String siteId);
 
-    public Site getSiteById(long id);
+    public Site getById(long id);
 
-    public Site getSiteByName(String siteName);
+    public Site getByName(String siteName);
 
     public void update(Site site);
 

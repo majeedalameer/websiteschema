@@ -5,28 +5,48 @@
 
     <cache />
     
-    <select id="getTotalResults" resultType="long">
+    <select id="getTotalResults" resultType="long" parameterType="java.util.Map">
         select count(*) from Site
+        <trim prefix="WHERE" prefixOverrides="AND |OR ">
+            <if test="match != null">
+                siteId like CONCAT('%','${match}','%' )
+            </if>
+            <if test="siteType != null">
+                and siteType = #{siteType}
+            </if>
+        </trim>
     </select>
 
-    <select id="getSites" parameterType="websiteschema.model.domain.PageInfo" resultType="websiteschema.model.domain.Site">
-        select * from Site limit #{pageNum}, #{pageSize}
+    <select id="getSites" parameterType="java.util.Map" resultType="websiteschema.model.domain.Site">
+        select * from Site 
+        <trim prefix="WHERE" prefixOverrides="AND |OR ">
+            <if test="match != null">
+                siteId like CONCAT('%','${match}','%' )
+            </if>
+            <if test="siteType != null">
+                and siteType = #{siteType}
+            </if>
+        </trim>
+        <if test="sort != null">
+            order by ${sort}
+        </if>
+        limit #{start}, #{limit}
     </select>
 
     <!-- 查询记录，根据id -->
-    <select id="getSiteBySiteId" parameterType="long" resultType="websiteschema.model.domain.Site">
+    <select id="getBySiteId" parameterType="long" resultType="websiteschema.model.domain.Site">
         select * from Site
         where siteId = #{siteId}
     </select>
 
     <!-- 查询记录，根据Name -->
-    <select id="getSiteByName" parameterType="String" resultType="websiteschema.model.domain.Site">
+    <select id="getByName" parameterType="String" resultType="websiteschema.model.domain.Site">
         select * from Site
         where siteName = #{siteName}
     </select>
 
     <!-- 查询记录，根据Id -->
-    <select id="getSiteById" parameterType="String" resultType="websiteschema.model.domain.Site">
+    <select id="getById" parameterType="String" resultType="websiteschema.model.domain.Site">
         select * from Site
         where id = #{id}
     </select>

@@ -12,6 +12,8 @@ package websiteschema.model.domain;
 public class PageInfo implements java.io.Serializable{
     private Integer pageSize;
     private Integer pageNum;
+    private String orderBy;
+    private String match;
 
     public PageInfo(Integer start,Integer pageSize){
         this.pageNum = start;
@@ -33,5 +35,20 @@ public class PageInfo implements java.io.Serializable{
     public void setPageSize(Integer pageSize) {
         this.pageSize = pageSize;
     }
-    
+
+    public String getMatch() {
+        return match;
+    }
+
+    public void setMatch(String match) {
+        this.match = match;
+    }
+
+    public String getOrderBy() {
+        return orderBy;
+    }
+
+    public void setOrderBy(String orderBy) {
+        this.orderBy = orderBy;
+    }
 }
