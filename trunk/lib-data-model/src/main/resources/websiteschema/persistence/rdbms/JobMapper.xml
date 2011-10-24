@@ -9,12 +9,13 @@
         select count(*) from Job
     </select>
 
-    <select id="getJobs" parameterType="websiteschema.model.domain.PageInfo" resultType="websiteschema.model.domain.Job">
-        select * from Job limit #{pageNum}, #{pageSize}
+    <select id="getJobs" parameterType="java.util.Map" resultType="websiteschema.model.domain.Job">
+        select * from Job
+        limit #{start}, #{limit}
     </select>
 
     <!-- 查询记录，根据Id -->
-    <select id="getJobById" parameterType="long" resultType="websiteschema.model.domain.Job">
+    <select id="getById" parameterType="long" resultType="websiteschema.model.domain.Job">
         select * from Job
         where id = #{id}
     </select>
@@ -44,7 +45,7 @@
         where id = #{id}
     </delete>
 
-    <delete id="deleteByJobId" parameterType="long" >
+    <delete id="deleteById" parameterType="long" >
         delete from Job
         where id = #{id}
     </delete>

@@ -4,6 +4,8 @@
  */
 package websiteschema.model.domain.cluster;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -18,20 +20,6 @@ public class ClusterModel {
 
     public Cluster getCluster(int index) {
         return clusters[index];
-    }
-
-    public void addSample(Sample sample) {
-        throw new RuntimeException();
-    }
-
-    public void append(List<Cluster> array) {
-        int pos = this.clusters.length;
-        Cluster[] tmp = new Cluster[pos + array.size()];
-        System.arraycopy(this.clusters, 0, tmp, 0, pos);
-        for (int i = 0; i < array.size(); i++) {
-            tmp[pos + i] = array.get(i);
-        }
-        this.clusters = tmp;
     }
 
     public Cluster[] getClusters() {
@@ -56,5 +44,17 @@ public class ClusterModel {
 
     public void setTotalSamples(int totalSamples) {
         this.totalSamples = totalSamples;
+    }
+
+    public void printClusterInfo() {
+        if (null != clusters) {
+            for (int i = 0; i < clusters.length; i++) {
+                System.out.println("Cluster " + i);
+                List<String> sameKindInstancs = clusters[i].getSamples();
+                for (String sample : sameKindInstancs) {
+                    System.out.println(sample);
+                }
+            }
+        }
     }
 }

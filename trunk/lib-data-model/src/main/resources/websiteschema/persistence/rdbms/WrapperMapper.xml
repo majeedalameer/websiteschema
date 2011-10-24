@@ -11,17 +11,18 @@
         select count(*) from Wrapper
     </select>
 
-    <select id="getWrappers" parameterType="websiteschema.model.domain.PageInfo" resultType="websiteschema.model.domain.Wrapper">
-        select <include refid="wrapperColumns"/> from Wrapper limit #{pageNum}, #{pageSize}
+    <select id="getWrappers" parameterType="java.util.Map" resultType="websiteschema.model.domain.Wrapper">
+        select <include refid="wrapperColumns"/> from Wrapper
+        limit #{start}, #{limit}
     </select>
 
     <!-- 查询记录，根据Id -->
-    <select id="getWrapperById" parameterType="long" resultType="websiteschema.model.domain.Wrapper">
+    <select id="getById" parameterType="long" resultType="websiteschema.model.domain.Wrapper">
         select * from Wrapper
         where id = #{id}
     </select>
 
-    <select id="getWrapperByName" parameterType="long" resultType="websiteschema.model.domain.Wrapper">
+    <select id="getByName" parameterType="long" resultType="websiteschema.model.domain.Wrapper">
         select * from Wrapper
         where name = #{name}
     </select>
@@ -52,7 +53,7 @@
         where id = #{id}
     </delete>
 
-    <delete id="deleteByWrapperId" parameterType="long" >
+    <delete id="deleteById" parameterType="long" >
         delete from Wrapper
         where id = #{id}
     </delete>

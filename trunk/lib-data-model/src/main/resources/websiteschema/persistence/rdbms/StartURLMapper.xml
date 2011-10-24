@@ -9,17 +9,18 @@
         select count(*) from StartURL
     </select>
 
-    <select id="getStartURLs" parameterType="websiteschema.model.domain.PageInfo" resultType="websiteschema.model.domain.StartURL">
-        select * from StartURL limit #{pageNum}, #{pageSize}
+    <select id="getStartURLs" parameterType="java.util.Map" resultType="websiteschema.model.domain.StartURL">
+        select * from StartURL
+        limit #{start}, #{limit}
     </select>
 
     <!-- 查询记录，根据Id -->
-    <select id="getStartURLById" parameterType="long" resultType="websiteschema.model.domain.StartURL">
+    <select id="getById" parameterType="long" resultType="websiteschema.model.domain.StartURL">
         select * from StartURL
         where id = #{id}
     </select>
 
-    <select id="getStartURLByJobname" parameterType="long" resultType="websiteschema.model.domain.StartURL">
+    <select id="getByJobname" parameterType="long" resultType="websiteschema.model.domain.StartURL">
         select * from StartURL
         where jobname = #{jobname}
     </select>
@@ -56,7 +57,7 @@
         where id = #{id}
     </delete>
 
-    <delete id="deleteByStartURLId" parameterType="long" >
+    <delete id="deleteById" parameterType="long" >
         delete from StartURL
         where id = #{id}
     </delete>

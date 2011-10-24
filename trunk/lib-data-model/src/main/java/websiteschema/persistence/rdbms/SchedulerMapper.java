@@ -6,7 +6,7 @@
 package websiteschema.persistence.rdbms;
 
 import java.util.List;
-import websiteschema.model.domain.PageInfo;
+import java.util.Map;
 import websiteschema.model.domain.Scheduler;
 
 /**
@@ -17,7 +17,7 @@ public interface SchedulerMapper {
 
     public long getTotalResults();
 
-    public List<Scheduler> getSchedulers(PageInfo pageInfo);
+    public List<Scheduler> getSchedulers(Map params);
 
     public List<Scheduler> getAll();
 

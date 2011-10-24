@@ -16,9 +16,15 @@ public class DocVector {
     String name;
 
     public void append(List<Dimension> array) {
-        int pos = this.dims.length;
-        Dimension[] tmp = new Dimension[pos + array.size()];
-        System.arraycopy(this.dims, 0, tmp, 0, pos);
+        int pos = 0;
+        Dimension[] tmp = null;
+        if (null != dims) {
+            pos = this.dims.length;
+            tmp = new Dimension[pos + array.size()];
+            System.arraycopy(this.dims, 0, tmp, 0, pos);
+        } else {
+            tmp = new Dimension[array.size()];
+        }
         for (int i = 0; i < array.size(); i++) {
             tmp[pos + i] = array.get(i);
         }

@@ -51,7 +51,7 @@ public class HBaseMapper<T extends HBaseBean> extends Mapper {
     }
 
     public List<T> getList(String start) {
-        if (null != start && "".equals(start)) {
+        if (null != start && !"".equals(start)) {
             ResultScanner rs = scan(start);
             List<T> ret = new ArrayList<T>();
             for (Result r : rs) {

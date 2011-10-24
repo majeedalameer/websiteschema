@@ -14,9 +14,11 @@ public class Scheduler implements java.io.Serializable {
 
     public final static int CRON = 0;
     public final static int StartEndTimes = 1;
+    public final static int Invalid = -1;
     long id;
     long startURLId;
     long jobId;
+    long priority = 0;
     String schedule;
     int scheduleType = CRON;
     Date createTime = new Date();
@@ -67,5 +69,13 @@ public class Scheduler implements java.io.Serializable {
 
     public void setScheduleType(int scheduleType) {
         this.scheduleType = scheduleType;
+    }
+
+    public long getPriority() {
+        return priority;
+    }
+
+    public void setPriority(long priority) {
+        this.priority = priority;
     }
 }

@@ -6,24 +6,33 @@
     <cache />
     
     <select id="getTotalResults" resultType="long">
-        select count(*)
-        from
-        User
+        select count(*) from User
+        <trim prefix="WHERE" prefixOverrides="AND |OR ">
+            <if test="match != null">
+                user_id like CONCAT('%','${match}','%' )
+            </if>
+        </trim>
     </select>
 
-    <select id="getUsers" parameterType="websiteschema.model.domain.PageInfo" resultType="websiteschema.model.domain.User">
-        select user_id userId, id, name, passwd, email, role
-        from
-        User
-        limit #{pageNum}, #{pageSize}
+    <select id="getUsers" parameterType="java.util.Map" resultType="websiteschema.model.domain.User">
+        select user_id userId, id, name, passwd, email, role from User
+        <trim prefix="WHERE" prefixOverrides="AND |OR ">
+            <if test="match != null">
+                user_id like CONCAT('%','${match}','%' )
+            </if>
+        </trim>
+        <if test="sort != null">
+            order by ${sort}
+        </if>
+        limit #{start}, #{limit}
     </select>
 
     <!-- 查询记录，根据id -->
-    <select id="getUserByUserId" parameterType="long" resultType="websiteschema.model.domain.User">
+    <select id="getUserById" parameterType="long" resultType="websiteschema.model.domain.User">
         select user_id userId, id, name, passwd, email, role
         from
         User
-        where user_id = #{userId}
+        where id = #{id}
     </select>
 
     <!-- 查询记录，根据Name -->
@@ -35,39 +44,39 @@
     </select>
 
     <!-- 查询记录，根据Id -->
-    <select id="getUserById" parameterType="String" resultType="websiteschema.model.domain.User">
+    <select id="getUserByUserId" parameterType="String" resultType="websiteschema.model.domain.User">
         select user_id userId, id, name, passwd, email, role
         from
         User
-        where id = #{id}
+        where user_id = #{userId}
     </select>
 
     <!-- 插入记录 -->
     <insert id="insert" parameterType="websiteschema.model.domain.User"
-        useGeneratedKeys="true" keyProperty="user_id">
-        insert into User (id, name, email, passwd, role)
-        values (#{id},#{name},#{email},#{passwd},#{role})
+        useGeneratedKeys="true" keyProperty="id">
+        insert into User (user_id, name, email, passwd, role)
+        values (#{userId},#{name},#{email},#{passwd},#{role})
     </insert>
 
     <!-- 更新任务状态记录 -->
     <update id="update" parameterType="websiteschema.model.domain.User">
         update User set
-        id = #{id},
+        user_id = #{userId},
         name = #{name},
         email = #{email},
         passwd = #{passwd},
         role = #{role}
-        where user_id = #{userId}
+        where id = #{id}
     </update>
 
     <delete id="delete" parameterType="websiteschema.model.domain.User" >
         delete from User
-        where user_id = #{userId}
+        where id = #{id}
     </delete>
 
-    <delete id="deleteById" parameterType="String" >
+    <delete id="deleteByUserId" parameterType="String" >
         delete from User
-        where id = #{id}
+        where user_id = #{userId}
     </delete>
     
 </mapper>  

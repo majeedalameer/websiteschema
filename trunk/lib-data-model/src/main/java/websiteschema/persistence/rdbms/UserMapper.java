@@ -5,7 +5,7 @@
 package websiteschema.persistence.rdbms;
 
 import java.util.List;
-import websiteschema.model.domain.PageInfo;
+import java.util.Map;
 import websiteschema.model.domain.User;
 
 /**
@@ -16,11 +16,11 @@ public interface UserMapper {
 
     public long getTotalResults();
 
-    public List<User> getUsers(PageInfo pageInfo);
+    public List<User> getUsers(Map params);
 
-    public User getUserByUserId(long userId);
+    public User getUserById(long id);
 
-    public User getUserById(String id);
+    public User getUserByUserId(String userId);
 
     public User getUserByName(String name);
 
@@ -30,5 +30,5 @@ public interface UserMapper {
 
     public void delete(User user);
 
-    public void deleteById(String id);
+    public void deleteByUserId(String userId);
 }

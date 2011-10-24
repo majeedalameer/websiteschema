@@ -5,7 +5,7 @@
 package websiteschema.persistence.rdbms;
 
 import java.util.List;
-import websiteschema.model.domain.PageInfo;
+import java.util.Map;
 import websiteschema.model.domain.Wrapper;
 
 /**
@@ -16,7 +16,7 @@ public interface WrapperMapper {
 
     public long getTotalResults();
 
-    public List<Wrapper> getWrappers(PageInfo pageInfo);
+    public List<Wrapper> getWrappers(Map params);
 
     public Wrapper getById(long id);
 

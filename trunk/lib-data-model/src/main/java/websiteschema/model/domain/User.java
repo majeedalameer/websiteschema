@@ -10,8 +10,8 @@ package websiteschema.model.domain;
  */
 public class User implements java.io.Serializable {
 
-    long userId;
-    String id;
+    long id;
+    String userId;
     String name;
     String passwd;
     String email;
@@ -41,11 +41,11 @@ public class User implements java.io.Serializable {
         this.passwd = passwd;
     }
 
-    public long getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(long userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 
@@ -57,11 +57,11 @@ public class User implements java.io.Serializable {
         this.role = role;
     }
 
-    public String getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(long id) {
         this.id = id;
     }
 }

@@ -6,11 +6,12 @@
 package websiteschema.persistence.rdbms;
 
 import java.util.List;
+import java.util.Map;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import websiteschema.model.domain.PageInfo;
 import websiteschema.model.domain.StartURL;
+import static websiteschema.persistence.rdbms.utils.ParameterUtil.*;
 
 /**
  *
@@ -40,8 +41,8 @@ public class StartURLTest {
     }
 
     public void selectAndUpdate() {
-        PageInfo pageInfo = new PageInfo(1, 10);
-        List<StartURL> list = startURLMapper.getStartURLs(pageInfo);
+        Map params = buildParam(1,10);
+        List<StartURL> list = startURLMapper.getStartURLs(params);
         for(StartURL url : list) {
             System.out.println(url.getStartURL());
         }

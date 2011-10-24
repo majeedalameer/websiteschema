@@ -6,8 +6,8 @@
 package websiteschema.persistence.rdbms;
 
 import java.util.List;
+import java.util.Map;
 import websiteschema.model.domain.Job;
-import websiteschema.model.domain.PageInfo;
 
 /**
  *
@@ -17,7 +17,7 @@ public interface JobMapper {
 
     public long getTotalResults();
 
-    public List<Job> getJobs(PageInfo pageInfo);
+    public List<Job> getJobs(Map params);
 
     public Job getById(long id);
 
