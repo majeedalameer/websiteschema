@@ -19,8 +19,11 @@ public class ConcernedWeibo implements java.io.Serializable {
     String siteId;
     String weiboURL;
     String org;
+    String notes;
+    String certification;
     int fans = 0;
     int follow = 0;
+    int weibo = 0;
     Date createTime = new Date();
     String createUser = "system";
     Date updateTime = new Date();
@@ -52,6 +55,30 @@ public class ConcernedWeibo implements java.io.Serializable {
 
     public int getFollow() {
         return follow;
+    }
+
+    public String getCertification() {
+        return certification;
+    }
+
+    public void setCertification(String certification) {
+        this.certification = certification;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
+    public int getWeibo() {
+        return weibo;
+    }
+
+    public void setWeibo(int weibo) {
+        this.weibo = weibo;
     }
 
     public void setFollow(int follow) {

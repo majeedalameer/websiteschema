@@ -38,8 +38,8 @@
     <!-- 插入记录 -->
     <insert id="insert" parameterType="websiteschema.model.domain.weibo.ConcernedWeibo"
         useGeneratedKeys="true" keyProperty="id">
-        insert into ConcernedWeibo (name, objectType, title, siteId, weiboURL, org, fans, follow, createTime, createUser, updateTime, lastUpdateUser)
-        values (#{name},#{objectType},#{title},#{siteId},#{weiboURL},#{org},#{fans},#{follow},#{createTime},#{createUser},#{updateTime},#{lastUpdateUser})
+        insert into ConcernedWeibo (name, objectType, title, siteId, weiboURL, org, fans, follow, weibo, notes, certification, createTime, createUser, updateTime, lastUpdateUser)
+        values (#{name},#{objectType},#{title},#{siteId},#{weiboURL},#{org},#{fans},#{follow},#{weibo},#{notes},#{certification},#{createTime},#{createUser},#{updateTime},#{lastUpdateUser})
     </insert>
 
     <!-- 更新任务状态记录 -->
@@ -53,6 +53,9 @@
         org = #{org},
         fans = #{fans},
         follow = #{follow},
+        weibo = #{weibo},
+        notes = #{notes},
+        certification = #{certification},
         createTime = #{createTime},
         createUser = #{createUser},
         updateTime = #{updateTime},
