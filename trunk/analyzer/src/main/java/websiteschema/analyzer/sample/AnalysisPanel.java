@@ -10,6 +10,7 @@
  */
 package websiteschema.analyzer.sample;
 
+import websiteschema.cluster.WebsiteschemaCluster;
 import websiteschema.analyzer.sample.SampleCollectionFrame;
 import websiteschema.analyzer.sample.SampleFrame;
 import com.webrenderer.swing.IMozillaBrowserCanvas;
@@ -36,7 +37,9 @@ public class AnalysisPanel extends javax.swing.JPanel {
 
     BrowserContext context;
     SimpleBrowser simpleBrowser = null;
-    SampleFrame sf = new SampleFrame();;
+    SampleFrame sf = new SampleFrame();
+
+    ;
 
     /** Creates new form AnalysisPanel */
     public AnalysisPanel(BrowserContext context, SimpleBrowser simpleBrowser) {
@@ -239,7 +242,13 @@ public class AnalysisPanel extends javax.swing.JPanel {
             }
         });
 
-        trainButton.setText("开始训练");
+        trainButton.setText("查找结构");
+        trainButton.setToolTipText("通过聚类查找网站页面的布局结构");
+        trainButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                trainButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -356,6 +365,14 @@ public class AnalysisPanel extends javax.swing.JPanel {
         sf.setVisible(true);
         sf.loadData();
     }//GEN-LAST:event_viewSampleButtonActionPerformed
+
+    private void trainButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_trainButtonActionPerformed
+        // TODO add your handling code here:
+        WebsiteschemaCluster cluster = new WebsiteschemaCluster();
+        cluster.setSiteId(getSiteId());
+        cluster.setMapper(BrowserContext.getSpringContext().getBean("sampleMapper", SampleMapper.class));
+        new Thread(cluster).start();
+    }//GEN-LAST:event_trainButtonActionPerformed
 
     private void addSampleUrl(URI uri) {
 //        XPathAttributes attr = this.simpleBorwser.getXPathAttr();

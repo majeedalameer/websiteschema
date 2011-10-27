@@ -141,6 +141,8 @@ public class SampleFrame extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        setMinimumSize(new java.awt.Dimension(400, 300));
+
         sampleTable.setAutoCreateRowSorter(true);
         sampleTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -236,15 +238,15 @@ public class SampleFrame extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
-            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 774, Short.MAX_VALUE)
+            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 774, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 269, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 495, Short.MAX_VALUE))
         );
 
         pack();
@@ -303,6 +305,7 @@ public class SampleFrame extends javax.swing.JFrame {
         int selectRows = sampleTable.getSelectedRows().length;// 取得用户所选行的行数
         DefaultTableModel tableModel = (DefaultTableModel) sampleTable.getModel();
         if (selectRows == 1) {
+            this.contentTextArea.setText("");
             int rowId = sampleTable.getSelectedRow();
             String rowKey = (String) tableModel.getValueAt(rowId, 1);
             Sample sample = mapper.get(rowKey);
@@ -331,7 +334,7 @@ public class SampleFrame extends javax.swing.JFrame {
         Websiteschema w = wMapper.get(getSiteId());
         final SampleCrawler sc = new SampleCrawler();
         sc.setXPathAttributes(w.getXpathAttr());
-        
+
         int selectRows = sampleTable.getSelectedRows().length;// 取得用户所选行的行数
         final DefaultTableModel tableModel = (DefaultTableModel) sampleTable.getModel();
         if (selectRows == 1) {
@@ -383,10 +386,14 @@ public class SampleFrame extends javax.swing.JFrame {
             tableModel.removeRow(0);
         }
         int i = 0;
-        for (Sample sample : samples) {
-            tableModel.addRow(convert(++i, sample));
+        if (null != samples && !samples.isEmpty()) {
+            for (Sample sample : samples) {
+                tableModel.addRow(convert(++i, sample));
+            }
+            this.statusLabel.setText("Status: Completed.");
+        } else {
+            this.statusLabel.setText("Status: No Samples in Database.");
         }
-        this.statusLabel.setText("Status: Completed.");
     }
 
     class DataLoader extends Thread {

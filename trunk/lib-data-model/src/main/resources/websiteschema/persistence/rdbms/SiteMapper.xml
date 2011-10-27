@@ -14,6 +14,9 @@
             <if test="siteType != null">
                 and siteType = #{siteType}
             </if>
+            <if test="siteDomain != null">
+                and siteDomain like CONCAT('%','${siteDomain}','%' )
+            </if>
         </trim>
     </select>
 
@@ -25,6 +28,9 @@
             </if>
             <if test="siteType != null">
                 and siteType = #{siteType}
+            </if>
+            <if test="siteDomain != null">
+                and siteDomain like CONCAT('%','${siteDomain}','%' )
             </if>
         </trim>
         <if test="sort != null">

@@ -82,7 +82,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
     public void startAnalysis(String siteId) {
         this.browserTab.setSelectedIndex(1);
         SiteMapper siteMapper = BrowserContext.getSpringContext().getBean("siteMapper", SiteMapper.class);
-        Site site = siteMapper.getSiteBySiteId(siteId);
+        Site site = siteMapper.getBySiteId(siteId);
 
         WebsiteschemaMapper mapper = BrowserContext.getSpringContext().getBean("websiteschemaMapper", WebsiteschemaMapper.class);
         Websiteschema websiteschema = mapper.get(siteId);
