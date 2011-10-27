@@ -4,6 +4,7 @@
  */
 package websiteschema.service;
 
+import java.util.Map;
 import java.util.Date;
 import websiteschema.dwr.response.ListRange;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import websiteschema.model.domain.PageInfo;
 import websiteschema.model.domain.StartURL;
 import websiteschema.persistence.rdbms.StartURLMapper;
+import static websiteschema.persistence.rdbms.utils.ParameterUtil.*;
 
 /**
  *
@@ -25,15 +27,15 @@ public class StartURLService {
     @Autowired
     private StartURLMapper startURLMapper;
 
-    public ListRange getStartURLs(int start, int count, String orderBy) {
+    public ListRange getResults(Map map) {
         ListRange listRange = new ListRange();
-        PageInfo pageInfo = new PageInfo(start, count);
-        listRange.setData(startURLMapper.getStartURLs(pageInfo).toArray());
+        Map params = buildParamWithInt(map, "start", "limit");
+        listRange.setData(startURLMapper.getStartURLs(params).toArray());
         listRange.setTotalSize(startURLMapper.getTotalResults());
         return listRange;
     }
 
-    public StartURL getStartURLById(long id) {
+    public StartURL getById(long id) {
         return startURLMapper.getById(id);
     }
 
@@ -54,7 +56,7 @@ public class StartURLService {
     }
 
     @Transactional
-    public void deleteStartURL(StartURL url) {
+    public void deleteRecord(StartURL url) {
         startURLMapper.delete(url);
     }
 }

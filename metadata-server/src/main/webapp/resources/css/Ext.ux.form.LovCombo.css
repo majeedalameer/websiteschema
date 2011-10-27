@@ -5,7 +5,7 @@
  * @author    Ing.Jozef Sakáloš
  * @copyright (c) 2008, by Ing. Jozef Sakáloš
  * @date      5. April 2008
- * @version   $Id: Ext.ux.form.LovCombo.css 682 2009-04-17 01:35:14Z jozo $
+ * @version   $Id: Ext.ux.form.LovCombo.css 189 2008-04-16 21:01:06Z jozo $
  *
  * @license Ext.ux.form.LovCombo.css is licensed under the terms of the Open Source
  * LGPL 3.0 license. Commercial use is permitted to the extent that the 
@@ -23,22 +23,10 @@
 	background-repeat:no-repeat ! important;
 }
 .ux-lovcombo-icon-checked {
-	background: transparent url(../images/default/menu/checked.gif);
+	background: transparent url(/resources/images/default/menu/checked.gif);
 }
 .ux-lovcombo-icon-unchecked {
-	background: transparent url(../images/default/menu/unchecked.gif);
-}
-/* IE patch */
-.ext-ie .ux-lovcombo-item-text {
-	position:absolute;
-	left:16px;
-	top:3px;
-}
-.ext-ie .ux-lovcombo-icon {
-	float:none;
-}
-.ext-ie .x-combo-list-item {
-	position:relative;
+	background: transparent url(/resources/images/default/menu/unchecked.gif);
 }
  
 /* eof */

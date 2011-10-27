@@ -40,7 +40,7 @@ Ext.ux.ThemeCombo = Ext.extend(Ext.form.ComboBox, {
 	,themeGrayExtndText:'Gray-Extended Theme'
 	,lazyRender:true
 	,lazyInit:true
-	,cssPath:'../resources/css/' // mind the trailing slash
+	,cssPath:'../ext/resources/css/' // mind the trailing slash
 
 	// {{{
 	,initComponent:function() {

@@ -12,3 +12,4 @@ document.write("<script type=\"text/javascript\" src=\"js/ext-base.js\"></"+"scr
 document.write("<script type=\"text/javascript\" src=\"js/ext-all-debug.js\"></"+"script>");
 document.write("<script type=\"text/javascript\" src=\"js/domain-record-type.js\"></"+"script>");
 document.write("<script type=\"text/javascript\" src=\"js/constant.js\"></"+"script>");
+document.write("<script type=\"text/javascript\" src=\"js/utils.js\"></"+"script>");

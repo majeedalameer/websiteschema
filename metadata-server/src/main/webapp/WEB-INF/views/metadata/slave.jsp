@@ -197,8 +197,8 @@
                             handler: handleAdd
                         }, '-',
                         {
-                            text: '修改',
-                            tooltip: '修改记录',
+                            text: '提交',
+                            tooltip: '提交修改记录',
                             iconCls: 'icon-edit',
                             handler: handleEdit
                         }, '-',

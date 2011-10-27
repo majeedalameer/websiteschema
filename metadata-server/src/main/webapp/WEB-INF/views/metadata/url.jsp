@@ -28,7 +28,7 @@
             var pageSize = 20;
             Ext.onReady(function(){
 
-                var proxy = new Ext.data.DWRProxy(StartURLService.getStartURLs, true);
+                var proxy = new Ext.data.DWRProxy(StartURLService.getResults, true);
                 var recordType = new Ext.data.Record.create(startURLRecordType);
                 var Scheduler = new Ext.data.Record.create(schedulerRecordType);
                 var store=new Ext.data.Store({
@@ -186,8 +186,8 @@
                             handler: handleAdd
                         }, '-',
                         {
-                            text: '修改',
-                            tooltip: '修改记录',
+                            text: '提交',
+                            tooltip: '提交修改记录',
                             iconCls: 'icon-edit',
                             handler: handleEdit
                         }, '-',
@@ -202,6 +202,24 @@
                             tooltip: '添加调度计划',
                             iconCls: 'icon-add',
                             handler: handleAddScheduler
+                        }, '->',
+                        ' ', 'URL', ' ',
+                        {
+                            xtype: 'textfield',
+                            id: 'MATCH',
+                            initEvents : function(){
+                                var keyPressed = function(e) {
+                                    if(e.getKey()==e.ENTER){
+                                        handleQuery();
+                                    }
+                                };
+                                this.el.on("keypress", keyPressed, this);
+                            }
+                        }, ' ',
+                        {
+                            text: '检索',
+                            iconCls: 'icon-query',
+                            handler: handleQuery
                         }
                     ],
                     bbar: new Ext.PagingToolbar({
@@ -231,7 +249,6 @@
 
                     var mr = store.getModifiedRecords();
                     for(var i=0;i<mr.length;i++){
-                        Ext.MessageBox.alert("是否要更改" + mr[i].data["jobname"]+ "的配置");
                         StartURLService.update(mr[i].data);
                     }
                     
@@ -241,7 +258,7 @@
                 function handleDelete(){
                     var selections = grid.selModel.getSelections();
                     for (var i = 0,len = selections.length; i < len; i++) {
-                        StartURLService.deleteStartURL(selections[i].data);
+                        StartURLService.deleteRecord(selections[i].data);
                     }
                     store.reload();
                 }
@@ -258,6 +275,11 @@
                         SchedulerService.insert(sche.data);
                     }
                     Ext.MessageBox.alert("添加结束，点击“数据管理->调度计划”查看");
+                }
+
+                function handleQuery(){
+                    alert(Ext.getCmp('MATCH').getValue());
+                    store.reload();
                 }
             });
         </script>

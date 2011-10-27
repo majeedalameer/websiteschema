@@ -191,3 +191,177 @@ var siteRecordType = [
     type : 'string'
 }
 ];
+
+var keywordRecordType = [
+{
+    name : 'id',
+    type : 'long'
+},
+{
+    name : 'keywords',
+    type : 'string'
+},
+{
+    name : 'referrer',
+    type : 'string'
+},
+{
+    name : 'status',
+    type : 'int'
+},
+{
+    name : 'createTime',
+    type : 'date'
+},
+{
+    name : 'createUser',
+    type : 'string'
+},
+{
+    name : 'updateTime',
+    type : 'date'
+},
+{
+    name : 'lastUpdateUser',
+    type : 'string'
+}
+];
+
+
+var weiboRecordType = [
+{
+    name : 'id',
+    type : 'long'
+},
+{
+    name : 'userId',
+    type : 'string'
+},
+{
+    name : 'siteId',
+    type : 'string'
+},
+{
+    name : 'passwd',
+    type : 'string'
+},
+{
+    name : 'status',
+    type : 'int'
+},
+{
+    name : 'createTime',
+    type : 'date'
+},
+{
+    name : 'createUser',
+    type : 'string'
+},
+{
+    name : 'updateTime',
+    type : 'date'
+},
+{
+    name : 'lastUpdateUser',
+    type : 'string'
+}
+];
+
+
+var concernedWeiboRecordType = [
+{
+    name : 'id',
+    type : 'long'
+},
+{
+    name : 'name',
+    type : 'string'
+},
+{
+    name : 'objectType',
+    type : 'int'
+},
+{
+    name : 'title',
+    type : 'string'
+},
+{
+    name : 'siteId',
+    type : 'string'
+},
+{
+    name : 'weiboURL',
+    type : 'string'
+},
+{
+    name : 'org',
+    type : 'string'
+},
+{
+    name : 'fans',
+    type : 'int'
+},
+{
+    name : 'follow',
+    type : 'int'
+},
+{
+    name : 'weibo',
+    type : 'int'
+},
+{
+    name : 'notes',
+    type : 'string'
+},
+{
+    name : 'certification',
+    type : 'string'
+},
+{
+    name : 'createTime',
+    type : 'date'
+},
+{
+    name : 'createUser',
+    type : 'string'
+},
+{
+    name : 'updateTime',
+    type : 'date'
+},
+{
+    name : 'lastUpdateUser',
+    type : 'string'
+}
+];
+
+var followRecordType = [
+{
+    name : 'id',
+    type : 'long'
+},
+{
+    name : 'wid',
+    type : 'long'
+},
+{
+    name : 'cwid',
+    type : 'long'
+},
+{
+    name : 'weibo',
+    type : 'string'
+},
+{
+    name : 'concernedWeibo',
+    type : 'string'
+},
+{
+    name : 'status',
+    type : 'int'
+},
+{
+    name : 'createTime',
+    type : 'date'
+}
+];

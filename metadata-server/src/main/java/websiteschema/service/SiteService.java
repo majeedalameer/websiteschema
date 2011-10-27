@@ -4,6 +4,8 @@
  */
 package websiteschema.service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Date;
 import websiteschema.dwr.response.ListRange;
 import websiteschema.model.domain.Site;
@@ -14,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import websiteschema.model.domain.PageInfo;
+import static websiteschema.persistence.rdbms.utils.ParameterUtil.*;
 
 /**
  *
@@ -25,16 +28,26 @@ public class SiteService {
     @Autowired
     private SiteMapper siteMapper;
 
-    public ListRange getSites(int start, int count, String orderBy) {
+    public ListRange getResults(Map map) {
         ListRange listRange = new ListRange();
-        PageInfo pageInfo = new PageInfo(start, count);
-        listRange.setData(siteMapper.getSites(pageInfo).toArray());
-        listRange.setTotalSize(siteMapper.getTotalResults());
+//        PageInfo pageInfo = new PageInfo(start, count);
+//        pageInfo.setOrderBy(orderBy);
+//        pageInfo.setMatch(match);
+//        Map params = buildParam(pageInfo);
+        Map params = buildParamWithInt(map, "start", "limit");
+        System.out.println(params);
+//        params.put("start", 0);
+//        params.put("limit", 20);
+//        params.put("sort", "updateTime");
+//        params.put("match", "");
+        listRange.setData(siteMapper.getSites(params).toArray());
+        listRange.setTotalSize(siteMapper.getTotalResults(params));
+        System.out.println(listRange.getTotalSize());
         return listRange;
     }
 
-    public Site getSiteById(long id) {
-        return siteMapper.getSiteById(id);
+    public Site getById(long id) {
+        return siteMapper.getById(id);
     }
 
     @Transactional
@@ -56,7 +69,7 @@ public class SiteService {
     }
 
     @Transactional
-    public void deleteSite(Site site) {
+    public void deleteRecord(Site site) {
         siteMapper.delete(site);
     }
 }
