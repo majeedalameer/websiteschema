@@ -4,6 +4,7 @@
  */
 package websiteschema.service;
 
+import java.util.Map;
 import java.util.Date;
 import websiteschema.dwr.response.ListRange;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import websiteschema.model.domain.PageInfo;
 import websiteschema.model.domain.Wrapper;
 import websiteschema.persistence.rdbms.WrapperMapper;
+import static websiteschema.persistence.rdbms.utils.ParameterUtil.*;
 
 /**
  *
@@ -25,15 +27,15 @@ public class WrapperService {
     @Autowired
     private WrapperMapper wrapperMapper;
 
-    public ListRange getWrappers(int start, int count, String orderBy) {
+    public ListRange getResults(Map map) {
         ListRange listRange = new ListRange();
-        PageInfo pageInfo = new PageInfo(start, count);
-        listRange.setData(wrapperMapper.getWrappers(pageInfo).toArray());
+        Map params = buildParamWithInt(map, "start", "limit");
+        listRange.setData(wrapperMapper.getWrappers(params).toArray());
         listRange.setTotalSize(wrapperMapper.getTotalResults());
         return listRange;
     }
 
-    public Wrapper getWrapperById(long id) {
+    public Wrapper getById(long id) {
         return wrapperMapper.getById(id);
     }
 
@@ -54,7 +56,7 @@ public class WrapperService {
     }
 
     @Transactional
-    public void deleteWrapper(Wrapper wrapper) {
+    public void deleteRecord(Wrapper wrapper) {
         wrapperMapper.delete(wrapper);
     }
 }

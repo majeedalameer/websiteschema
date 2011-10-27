@@ -27,7 +27,7 @@
             var pageSize = 20;
             Ext.onReady(function(){
 
-                var proxy = new Ext.data.DWRProxy(WrapperService.getWrappers, true);
+                var proxy = new Ext.data.DWRProxy(WrapperService.getResults, true);
                 var recordType = new Ext.data.Record.create(wrapperRecordType);
                 var store=new Ext.data.Store({
                     proxy : proxy,
@@ -169,8 +169,8 @@
                             handler: handleAdd
                         }, '-',
                         {
-                            text: '修改',
-                            tooltip: '修改记录',
+                            text: '提交',
+                            tooltip: '提交修改记录',
                             iconCls: 'icon-edit',
                             handler: handleEdit
                         }, '-',
@@ -179,6 +179,24 @@
                             tooltip: '删除记录',
                             iconCls: 'icon-delete',
                             handler: handleDelete
+                        }, '->',
+                        ' ', 'Wrapper', ' ',
+                        {
+                            xtype: 'textfield',
+                            id: 'MATCH',
+                            initEvents : function(){
+                                var keyPressed = function(e) {
+                                    if(e.getKey()==e.ENTER){
+                                        handleQuery();
+                                    }
+                                };
+                                this.el.on("keypress", keyPressed, this);
+                            }
+                        }, ' ',
+                        {
+                            text: '检索',
+                            iconCls: 'icon-query',
+                            handler: handleQuery
                         }
                     ],
                     bbar: new Ext.PagingToolbar({
@@ -206,7 +224,6 @@
 
                     var mr = store.getModifiedRecords();
                     for(var i=0;i<mr.length;i++){
-                        Ext.MessageBox.alert("是否要更改" + mr[i].data["name"]+ "的配置");
                         WrapperService.update(mr[i].data);
                     }
                     
@@ -216,11 +233,15 @@
                 function handleDelete(){
                     var selections = grid.selModel.getSelections();
                     for (var i = 0,len = selections.length; i < len; i++) {
-                        WrapperService.deleteWrapper(selections[i].data);
+                        WrapperService.deleteRecord(selections[i].data);
                     }
                     store.reload();
                 }
 
+                function handleQuery(){
+                    alert(Ext.getCmp('MATCH').getValue());
+                    store.reload();
+                }
             });
         </script>
 

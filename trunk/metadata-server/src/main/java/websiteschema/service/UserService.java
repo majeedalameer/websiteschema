@@ -4,6 +4,7 @@
  */
 package websiteschema.service;
 
+import java.util.Map;
 import websiteschema.dwr.response.ListRange;
 import websiteschema.model.domain.User;
 import websiteschema.persistence.rdbms.UserMapper;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import websiteschema.model.domain.PageInfo;
 import websiteschema.utils.MD5;
+import static websiteschema.persistence.rdbms.utils.ParameterUtil.*;
 
 /**
  *
@@ -23,15 +25,19 @@ public class UserService {
     @Autowired
     private UserMapper userMapper;
 
-    public ListRange getUsers(int start, int count, String orderBy) {
+    public ListRange getResults(Map map) {
         ListRange listRange = new ListRange();
-        PageInfo pageInfo = new PageInfo(start,count);
-        listRange.setData(userMapper.getUsers(pageInfo).toArray());
+        Map params = buildParamWithInt(map, "start", "limit");
+        listRange.setData(userMapper.getUsers(params).toArray());
         listRange.setTotalSize(userMapper.getTotalResults());
         return listRange;
     }
 
-    public User getUserById(String id) {
+    public User getByUserId(String id) {
+        return userMapper.getUserByUserId(id);
+    }
+
+    public User getById(long id) {
         return userMapper.getUserById(id);
     }
 
@@ -51,7 +57,7 @@ public class UserService {
     }
 
     @Transactional
-    public void deleteUser(User user) {
+    public void deleteRecord(User user) {
         userMapper.delete(user);
     }
 }

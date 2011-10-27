@@ -32,8 +32,8 @@ public class MyUserDetailsService implements UserDetailsService {
     @Transactional(propagation = Propagation.SUPPORTS)
     public UserDetails loadUserByUsername(String username)
             throws DataAccessException {
-        User user = userMapper.getUserById(username);
-        System.out.println(user.getId() + " " + user.getRole());
+        User user = userMapper.getUserByUserId(username);
+        System.out.println(user.getUserId() + " " + user.getRole());
         if (null != user) {
 
             Set<GrantedAuthority> auth = new HashSet<GrantedAuthority>();
@@ -44,7 +44,7 @@ public class MyUserDetailsService implements UserDetailsService {
             }
 
             return new org.springframework.security.core.userdetails.User(
-                    user.getId(),
+                    user.getUserId(),
                     user.getPasswd(),
                     true,
                     true,

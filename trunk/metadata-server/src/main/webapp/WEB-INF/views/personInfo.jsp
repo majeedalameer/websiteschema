@@ -121,8 +121,7 @@
 
 
             Ext.onReady(function(){
-                //                alert(username);
-                UserService.getUserById(username, callback);
+                UserService.getByUserId(username, callback);
             });
         </script>
     </body>

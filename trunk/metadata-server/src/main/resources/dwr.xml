@@ -32,5 +32,20 @@
         <create creator="spring" javascript="WrapperService" >
             <param name="beanName" value="wrapperService"></param>
         </create>
+
+        <create creator="spring" javascript="KeywordService" >
+            <param name="beanName" value="keywordService"></param>
+        </create>
+
+        <create creator="spring" javascript="WeiboService" >
+            <param name="beanName" value="weiboService"></param>
+        </create>
+
+        <create creator="spring" javascript="ConcernedWeiboService" >
+            <param name="beanName" value="concernedWeiboService"></param>
+        </create>
+        <create creator="spring" javascript="FollowService" >
+            <param name="beanName" value="followService"></param>
+        </create>
     </allow>
 </dwr>

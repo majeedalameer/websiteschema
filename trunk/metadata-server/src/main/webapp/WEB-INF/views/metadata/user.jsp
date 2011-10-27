@@ -27,15 +27,15 @@
             var pageSize = 10;
             Ext.onReady(function(){
 
-                var proxy = new Ext.data.DWRProxy(UserService.getUsers, true);
+                var proxy = new Ext.data.DWRProxy(UserService.getResults, true);
                 var recordType = new Ext.data.Record.create([
                     {
                         name : 'userId',
-                        type : 'long'
+                        type : 'string'
                     },
                     {
                         name : 'id',
-                        type : 'string'
+                        type : 'long'
                     },
                     {
                         name : 'name',
@@ -58,14 +58,24 @@
                     proxy : proxy,
                     reader : new Ext.data.ListRangeReader(
                     {
-                        id : 'userId',
+                        id : 'id',
                         totalProperty : 'totalSize'
                     }, recordType
                 ),
                     remoteSort: false
 
                 });
-         
+
+                var role_type_store = new Ext.data.SimpleStore(
+                {
+                    fields :['name','value'],
+                    data:[
+                        ['管理员','ROLE_ADMIN'],
+                        ['普通用户','ROLE_USER'],
+                        ['采集专家','ROLE_CRAWLER']
+                    ]
+                });
+
                 // the column model has information about grid columns
                 // dataIndex maps the column to the specific data field in
                 // the data store
@@ -76,13 +86,13 @@
                     //nm,
                     sm,
                     {
-                        header: 'USER_ID',
-                        dataIndex: 'userId',
+                        header: 'id',
+                        dataIndex: 'id',
                         width: 100
                     },
                     {
-                        header: 'id',
-                        dataIndex: 'id',
+                        header: 'USER_ID',
+                        dataIndex: 'userId',
                         width: 100,
                         editor: new fm.TextField({
                             allowBlank: false
@@ -116,8 +126,19 @@
                         header: 'role',
                         dataIndex: 'role',
                         width: 250,
-                        editor: new fm.TextField({
-                            allowBlank: false
+                        editor: new Ext.ux.form.LovCombo({
+                            store : role_type_store,
+                            allowBlank: false,
+                            valueField: 'value',
+                            displayField: 'name',
+                            hideOnSelect: false,
+                            selectOnFocus: true,
+                            editable: false,
+                            mode: 'local',
+                            forceSelection: true,
+                            typeAhead: true,
+                            triggerAction: 'all',
+                            assertValue:Ext.emptyFn //修复LovCombo无法保存修改的问题
                         })
                     }
                 ]);
@@ -156,8 +177,8 @@
                             handler: handleAdd
                         }, '-',
                         {
-                            text: '修改',
-                            tooltip: '修改记录',
+                            text: '提交',
+                            tooltip: '提交修改记录',
                             iconCls: 'icon-edit',
                             handler: handleEdit
                         }, '-',
@@ -166,6 +187,24 @@
                             tooltip: '删除记录',
                             iconCls: 'icon-delete',
                             handler: handleDelete
+                        }, '->',
+                        ' ', '用户名', ' ',
+                        {
+                            xtype: 'textfield',
+                            id: 'MATCH',
+                            initEvents : function(){
+                                var keyPressed = function(e) {
+                                    if(e.getKey()==e.ENTER){
+                                        handleQuery();
+                                    }
+                                };
+                                this.el.on("keypress", keyPressed, this);
+                            }
+                        }, ' ',
+                        {
+                            text: '检索',
+                            iconCls: 'icon-query',
+                            handler: handleQuery
                         }
                     ],
                     bbar: new Ext.PagingToolbar({
@@ -194,7 +233,6 @@
                 function handleEdit(){
 
                     var mr = store.getModifiedRecords();
-                    Ext.MessageBox.alert("是否要继续更改？");
                     for(var i=0;i<mr.length;i++){
                         UserService.update(mr[i].data);
                     }
@@ -206,8 +244,12 @@
                     var selections = grid.selModel.getSelections();
                     Ext.MessageBox.alert("是否要继续删除？");
                     for (var i = 0,len = selections.length; i < len; i++) {
-                        UserService.deleteUser(selections[i].data);
+                        UserService.deleteRecord(selections[i].data);
                     }
+                    store.reload();
+                }
+
+                function handleQuery(){
                     store.reload();
                 }
 

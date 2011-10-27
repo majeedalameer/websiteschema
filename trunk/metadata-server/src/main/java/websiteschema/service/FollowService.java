@@ -5,13 +5,14 @@
 package websiteschema.service;
 
 import java.util.Map;
+import java.util.Date;
 import websiteschema.dwr.response.ListRange;
+import websiteschema.model.domain.weibo.Follow;
+import websiteschema.persistence.rdbms.FollowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import websiteschema.model.domain.PageInfo;
-import websiteschema.model.domain.Scheduler;
-import websiteschema.persistence.rdbms.SchedulerMapper;
 import static websiteschema.persistence.rdbms.utils.ParameterUtil.*;
 
 /**
@@ -19,36 +20,36 @@ import static websiteschema.persistence.rdbms.utils.ParameterUtil.*;
  * @author ray
  */
 @Service
-public class SchedulerService {
+public class FollowService {
 
     @Autowired
-    private SchedulerMapper schedulerMapper;
+    private FollowMapper followMapper;
 
     public ListRange getResults(Map map) {
         ListRange listRange = new ListRange();
         Map params = buildParamWithInt(map, "start", "limit");
-        listRange.setData(schedulerMapper.getSchedulers(params).toArray());
-        listRange.setTotalSize(schedulerMapper.getTotalResults());
+        listRange.setData(followMapper.getResults(params).toArray());
+        listRange.setTotalSize(followMapper.getTotalResults(params));
         return listRange;
     }
 
-    public Scheduler getById(long id) {
-        return schedulerMapper.getById(id);
+    public Follow getById(long id) {
+        return followMapper.getById(id);
     }
 
     @Transactional
-    public void insert(Scheduler sche) {
-        schedulerMapper.insert(sche);
+    public void insert(Follow obj) {
+        obj.setCreateTime(new Date());
+        followMapper.insert(obj);
     }
 
     @Transactional
-    public void update(Scheduler sche) {
-        schedulerMapper.update(sche);
+    public void update(Follow obj) {
+        followMapper.update(obj);
     }
 
     @Transactional
-    public void deleteRecord(Scheduler sche) {
-        System.out.println("delete " + sche.getId());
-        schedulerMapper.delete(sche);
+    public void deleteRecord(Follow obj) {
+        followMapper.delete(obj);
     }
 }

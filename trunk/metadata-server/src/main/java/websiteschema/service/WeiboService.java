@@ -7,14 +7,14 @@ package websiteschema.service;
 import java.util.Map;
 import java.util.Date;
 import websiteschema.dwr.response.ListRange;
+import websiteschema.model.domain.weibo.Weibo;
+import websiteschema.persistence.rdbms.WeiboMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import websiteschema.model.domain.Job;
 import websiteschema.model.domain.PageInfo;
-import websiteschema.persistence.rdbms.JobMapper;
 import static websiteschema.persistence.rdbms.utils.ParameterUtil.*;
 
 /**
@@ -22,41 +22,43 @@ import static websiteschema.persistence.rdbms.utils.ParameterUtil.*;
  * @author ray
  */
 @Service
-public class JobService {
+public class WeiboService {
 
     @Autowired
-    private JobMapper jobMapper;
+    private WeiboMapper weiboMapper;
 
     public ListRange getResults(Map map) {
         ListRange listRange = new ListRange();
         Map params = buildParamWithInt(map, "start", "limit");
-        listRange.setData(jobMapper.getJobs(params).toArray());
-        listRange.setTotalSize(jobMapper.getTotalResults());
+        listRange.setData(weiboMapper.getResults(params).toArray());
+        listRange.setTotalSize(weiboMapper.getTotalResults(params));
         return listRange;
     }
 
-    public Job getById(long id) {
-        return jobMapper.getById(id);
+    public Weibo getById(long id) {
+        return weiboMapper.getById(id);
     }
 
     @Transactional
-    public void insert(Job job) {
+    public void insert(Weibo obj) {
+        obj.setCreateTime(new Date());
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        job.setCreateUser(userDetails.getUsername());
-        job.setLastUpdateUser(job.getCreateUser());
-        jobMapper.insert(job);
+        obj.setCreateUser(userDetails.getUsername());
+        obj.setUpdateTime(obj.getCreateTime());
+        obj.setLastUpdateUser(obj.getCreateUser());
+        weiboMapper.insert(obj);
     }
 
     @Transactional
-    public void update(Job job) {
-        job.setUpdateTime(new Date());
+    public void update(Weibo obj) {
+        obj.setUpdateTime(new Date());
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        job.setLastUpdateUser(userDetails.getUsername());
-        jobMapper.update(job);
+        obj.setLastUpdateUser(userDetails.getUsername());
+        weiboMapper.update(obj);
     }
 
     @Transactional
-    public void deleteRecord(Job job) {
-        jobMapper.delete(job);
+    public void deleteRecord(Weibo obj) {
+        weiboMapper.delete(obj);
     }
 }

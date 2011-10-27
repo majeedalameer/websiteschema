@@ -6,22 +6,22 @@ Ext.data.DWRProxy = function(dwrCall, pagingAndSort){
 
 Ext.extend(Ext.data.DWRProxy, Ext.data.DataProxy, {
     load : function(params, reader, callback, scope, arg) {
-        if(this.fireEvent("beforeload", this, params) !== false) {
-            var sort;
-            if(params.sort && params.dir) sort = params.sort + ' ' + params.dir;
-            else sort = '';
+        if(this.fireEvent("beforeload", this, params)) {
+            if(!params.sort) params.sort =  '';
+            if(!params.match) params.match = '';
             var delegate = this.loadResponse.createDelegate(this, [reader, callback, scope, arg], 1);
             var callParams = new Array();
-            if(arg.arg) {
-                callParams = arg.arg.slice();
-            }
-
             if(this.pagingAndSort) {
-                callParams.push(params.start);
-                callParams.push(params.limit);
-                callParams.push(sort);
+                for(var name in params) {
+//                    callParams.push(params[name]);
+//                    alert(name + " " +params[name]);
+                }
             }
-
+//            if(arg.arg) {
+//                callParams = callParams.concat(arg.arg);
+//            }
+//            alert(params);
+            callParams.push(params);
             callParams.push(delegate);
             this.dwrCall.apply(this, callParams);
         } else {

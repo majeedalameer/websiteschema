@@ -4,24 +4,37 @@ Console = {};
 
 Console.actionData = [
        {
-           text:"数据管理系统",id:"dh",title:"数据管理系统",cls:"cls",singleClickExpand:true,
+           text:"聚宝盆",id:"dh",title:"聚宝盆",cls:"cls",singleClickExpand:true,
            children:[
                         {
-                            text:"数据管理",id:"dh.fetch",title:"数据管理",cls:"cls",singleClickExpand:true,
+                            text:"数据管理",id:"dh-fetch",title:"数据管理",cls:"cls",singleClickExpand:true,
                             children:[
                                 {href:"views/metadata/site",text:"网站配置",id:"site",title:"网站配置",cls:"cls",iconCls:"icon-cls",leaf:true},
+                                {href:"views/metadata/keyword",text:"关键词管理",id:"keyword",title:"关键词管理",cls:"cls",iconCls:"icon-cls",leaf:true}
+                            ]
+                        },
+                        {
+                            text:"采集设置",id:"extractor-admin",title:"采集设置",cls:"cls",singleClickExpand:true,
+                            children:[
                                 {href:"views/metadata/url",text:"起始URL地址",id:"url",title:"URL地址配置",cls:"cls",iconCls:"icon-cls",leaf:true},
                                 {href:"views/metadata/scheduler",text:"调度计划",id:"scheduler",title:"调度计划",cls:"cls",iconCls:"icon-cls",leaf:true},
                                 {href:"views/metadata/job",text:"任务配置",id:"job",title:"任务配置",cls:"cls",iconCls:"icon-cls",leaf:true},
                                 {href:"views/metadata/wrapper",text:"抽取器",id:"wrapper",title:"抽取器",cls:"cls",iconCls:"icon-cls",leaf:true}
                             ]
                         },
-//                        {
-//                            text:"采集管理",id:"meta-maintain.task",title:"采集管理",cls:"cls",singleClickExpand:true,
-//                            children:[
-//                                {href:"metadata/ipoxg.jsp",text:"IPO新股",id:"ipoxg",title:"IPO新股 - 投资逻辑和主要产品",cls:"cls",iconCls:"icon-cls",leaf:true}
-//                            ]
-//                        },
+                        {
+                            text:"社交网络",id:"sn-admin",title:"社交网络",cls:"cls",singleClickExpand:true,
+                            children:[
+                                {
+                                    text:"微博",id:"weibo-admin",title:"微博",cls:"cls",singleClickExpand:true,
+                                    children:[
+                                        {href:"views/metadata/weibo/myWeibo",text:"我的微博",id:"weibo",title:"我的微博",cls:"cls",iconCls:"icon-cls",leaf:true},
+                                        {href:"views/metadata/weibo/concernedWeibo",text:"微博主",id:"concernedWeibo",title:"微博主",cls:"cls",iconCls:"icon-cls",leaf:true},
+                                        {href:"views/metadata/weibo/follow",text:"加关注",id:"follow",title:"加关注",cls:"cls",iconCls:"icon-cls",leaf:true}
+                                    ]
+                                }
+                            ]
+                        },
                         {
                             text:"用户管理",id:"user-admin.task",title:"用户管理",cls:"cls",singleClickExpand:true,
                             children:[
