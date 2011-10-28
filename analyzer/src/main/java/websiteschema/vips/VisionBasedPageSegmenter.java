@@ -10,7 +10,7 @@ import com.webrenderer.swing.dom.IElementCollection;
 import org.apache.log4j.Logger;
 import websiteschema.context.BrowserContext;
 import websiteschema.element.factory.RectangleFactory;
-import websiteschema.element.factory.XPathFactory;
+import websiteschema.element.factory.XPathAttrFactory;
 import websiteschema.utils.ElementUtil;
 import websiteschema.vips.extraction.BlockExtractor;
 import websiteschema.vips.extraction.rule.DivideRule;
@@ -109,7 +109,7 @@ public class VisionBasedPageSegmenter {
         for (int i = 0; i < size; i++) {
             VisionBlock block = pool.getPool().get(i);
             if (pool.isLeafNode(block) && !meetGranularityNeed(block)) {
-                l.trace("doesn't meet granularity need. " + XPathFactory.getInstance().create(block.getEle()));
+                l.trace("doesn't meet granularity need. " + XPathAttrFactory.getInstance().create(block.getEle()));
                 return false;
             }
         }
@@ -165,7 +165,7 @@ public class VisionBasedPageSegmenter {
                 ancestor.getChildren().add(block);
                 pool.add(block);
 
-                String xpath = XPathFactory.getInstance().create(block.getEle());
+                String xpath = XPathAttrFactory.getInstance().create(block.getEle());
                 l.debug(xpath + " Level: " + block.getLevel() + " DoC:" + block.getDoC());
             } else {
                 // do nothing for cutting node

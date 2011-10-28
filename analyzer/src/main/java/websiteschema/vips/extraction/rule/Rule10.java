@@ -7,7 +7,7 @@ package websiteschema.vips.extraction.rule;
 import com.webrenderer.swing.dom.IElement;
 import com.webrenderer.swing.dom.IElementCollection;
 import java.util.Set;
-import websiteschema.element.factory.XPathFactory;
+import websiteschema.element.factory.XPathAttrFactory;
 import websiteschema.vips.extraction.BlockExtractor;
 
 /**
@@ -24,7 +24,7 @@ public class Rule10 extends AbstractRule {
         if(null != parent) {
             IElementCollection children = parent.getChildElements();
             IElement silbling = children.item(0);
-            String xpath = XPathFactory.getInstance().create(silbling);
+            String xpath = XPathAttrFactory.getInstance().create(silbling);
             return !allDividableNode.contains(xpath);
         }
         return false;

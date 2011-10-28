@@ -10,6 +10,7 @@
  */
 package websiteschema.analyzer.browser;
 
+import java.util.Iterator;
 import websiteschema.analyzer.sample.AnalysisPanel;
 import javax.swing.event.TreeSelectionEvent;
 import websiteschema.utils.Console;
@@ -18,11 +19,18 @@ import com.webrenderer.swing.BrowserFactory;
 import com.webrenderer.swing.IBrowserCanvas;
 import com.webrenderer.swing.IMozillaBrowserCanvas;
 import com.webrenderer.swing.RenderingOptimization;
+import com.webrenderer.swing.dom.IDocument;
 import com.webrenderer.swing.dom.IElement;
 import java.awt.BorderLayout;
 import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.event.TreeSelectionListener;
+import javax.xml.XMLConstants;
+import javax.xml.namespace.NamespaceContext;
+import org.w3c.dom.*;
+import javax.xml.parsers.*;
+import javax.xml.xpath.*;
+import static websiteschema.element.DocumentUtil.*;
 import websiteschema.analyzer.browser.listener.*;
 import websiteschema.context.BrowserContext;
 import websiteschema.element.XPathAttributes;
@@ -292,7 +300,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
         xpathField = new javax.swing.JTextField();
-        jButton3 = new javax.swing.JButton();
+        XQueryButton = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         nodeValueTextArea = new javax.swing.JTextArea();
         jPanel5 = new javax.swing.JPanel();
@@ -496,7 +504,12 @@ public class SimpleBrowser extends javax.swing.JFrame {
 
         jButton2.setText("添加到剪切板");
 
-        jButton3.setText("查询");
+        XQueryButton.setText("查询");
+        XQueryButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                XQueryButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
@@ -529,7 +542,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
                                 .addComponent(xpathField, javax.swing.GroupLayout.DEFAULT_SIZE, 582, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton3)
+                                .addComponent(XQueryButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jButton2)))))
                 .addContainerGap())
@@ -554,7 +567,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
                     .addComponent(jLabel4)
                     .addComponent(jButton2)
                     .addComponent(xpathField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton3)))
+                    .addComponent(XQueryButton)))
         );
 
         nodeValueTextArea.setColumns(20);
@@ -795,6 +808,74 @@ public class SimpleBrowser extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_drawBorderMenuActionPerformed
 
+    private void XQueryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_XQueryButtonActionPerformed
+        // TODO add your handling code here:
+        String xpathStr = this.xpathField.getText();
+        Document doc1 = (Document) context.getBrowser().getW3CDocument();
+        XPathFactory factory = XPathFactory.newInstance();
+        XPath xpath = factory.newXPath();
+        try {
+            Document doc = getCopy(doc1);
+
+            String prefixNS = null;
+            NodeList chlNodes = doc.getChildNodes();
+            if (chlNodes.getLength() == 1) {
+                Node n = chlNodes.item(0);
+                if ("HTML".equalsIgnoreCase(n.getNodeName())) {
+                    prefixNS = n.getNamespaceURI();
+                }
+            }
+            if (null != prefixNS) {
+                xpath.setNamespaceContext(new MyNamespaceContext(prefixNS));
+            }
+
+            XPathExpression expr = xpath.compile(buildXPath(xpathStr, prefixNS != null ? "pre" : null));
+
+            Object result = expr.evaluate(doc, XPathConstants.NODESET);
+            org.w3c.dom.NodeList nodes = (NodeList) result;
+            this.nodeValueTextArea.setText("");
+            System.out.println("Nodes length: " + nodes.getLength());
+            for (int i = 0; i < nodes.getLength(); i++) {
+                this.nodeValueTextArea.append(nodes.item(i).getNodeName());
+                this.nodeValueTextArea.append(nodes.item(i).getNodeValue());
+                this.nodeValueTextArea.append("\n");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_XQueryButtonActionPerformed
+
+    class MyNamespaceContext implements NamespaceContext {
+
+        String prefixNS;
+
+        MyNamespaceContext(String prefixNS) {
+            this.prefixNS = prefixNS;
+        }
+
+        @Override
+        public String getNamespaceURI(String prefix) {
+            if (prefix == null) {
+                throw new NullPointerException("Null prefix");
+            } else if ("pre".equals(prefix)) {
+                return prefixNS;
+            } else if ("xml".equals(prefix)) {
+                return XMLConstants.XML_NS_URI;
+            }
+            return XMLConstants.NULL_NS_URI;
+        }
+
+        @Override
+        public String getPrefix(String namespaceURI) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public Iterator getPrefixes(String namespaceURI) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+    }
+
     private void openUrl(String url) {
         if (url.startsWith("ftp://")) {
             System.out.println("FTP URL: " + url);
@@ -847,6 +928,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton XQueryButton;
     private javax.swing.JTabbedPane analysisPane;
     private javax.swing.JButton backButton;
     private javax.swing.JProgressBar browserProgress;
@@ -864,7 +946,6 @@ public class SimpleBrowser extends javax.swing.JFrame {
     private javax.swing.JButton homeButton;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
     private javax.swing.JCheckBox jCheckBox4;
     private javax.swing.JInternalFrame jInternalFrame1;
     private javax.swing.JLabel jLabel1;

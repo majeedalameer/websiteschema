@@ -5,7 +5,7 @@
 package websiteschema.vips.extraction.rule;
 
 import com.webrenderer.swing.dom.IElement;
-import websiteschema.element.factory.XPathFactory;
+import websiteschema.element.factory.XPathAttrFactory;
 import websiteschema.vips.extraction.BlockExtractor;
 
 /**

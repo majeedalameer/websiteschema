@@ -16,7 +16,7 @@ import websiteschema.element.StyleSheet;
 import websiteschema.element.factory.RectangleFactory;
 import websiteschema.element.XPathAttributes;
 import websiteschema.element.factory.StyleSheetFactory;
-import websiteschema.element.factory.XPathFactory;
+import websiteschema.element.factory.XPathAttrFactory;
 import websiteschema.utils.ElementUtil;
 import websiteschema.vips.extraction.VipsBlockExtractor;
 
@@ -49,9 +49,9 @@ public class SimpleMouseListener implements MouseListener {
             IElement ele = me.getTargetElement();
             drawRectangleInPage(ele);
             Rectangle rect = new RectangleFactory().create(ele);
-            String xpath = XPathFactory.getInstance().create(ele);
+            String xpath = XPathAttrFactory.getInstance().create(ele);
             attr = simpleBrowser.getXPathAttr();
-            String xpath2 = XPathFactory.getInstance().create(ele, attr);
+            String xpath2 = XPathAttrFactory.getInstance().create(ele, attr);
             simpleBrowser.displaySelectedElement(xpath, xpath2);
 
             String text = ele.getInnerHTML();
