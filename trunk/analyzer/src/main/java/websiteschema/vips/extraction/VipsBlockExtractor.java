@@ -21,7 +21,7 @@ import websiteschema.element.StyleSheet;
 import websiteschema.element.XPathAttributes;
 import websiteschema.element.factory.RectangleFactory;
 import websiteschema.element.factory.StyleSheetFactory;
-import websiteschema.element.factory.XPathFactory;
+import websiteschema.element.factory.XPathAttrFactory;
 import websiteschema.utils.Configure;
 import websiteschema.vips.extraction.rule.DivideRuleFactory;
 
@@ -48,7 +48,7 @@ public class VipsBlockExtractor implements BlockExtractor {
         DivideRule matchedRule = null;
 
         if (null != ele) {
-            String xpath = XPathFactory.getInstance().create(ele);
+            String xpath = XPathAttrFactory.getInstance().create(ele);
             String ruleCode = "";
             if (NodeFeature.getInstance().isInlineNode(ele)) {
                 ruleCode = rules.get("InlineTextNode");

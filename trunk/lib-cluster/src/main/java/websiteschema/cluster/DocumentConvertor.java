@@ -11,7 +11,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import websiteschema.element.XPathAttributes;
-import websiteschema.element.factory.XPathFactory;
+import websiteschema.element.factory.XPathAttrFactory;
 import websiteschema.model.domain.cluster.DocUnits;
 import websiteschema.model.domain.cluster.Unit;
 
@@ -43,7 +43,7 @@ public class DocumentConvertor {
 
     private void traversal(Element ele, List<Unit> units) {
         StringBuilder text = new StringBuilder();
-        String xpath = XPathFactory.getInstance().create(ele, xpathAttr);
+        String xpath = XPathAttrFactory.getInstance().create(ele, xpathAttr);
         NodeList children = ele.getChildNodes();
         if (null != children) {
             for (int i = 0; i < children.getLength(); i++) {

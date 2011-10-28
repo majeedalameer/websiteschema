@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import org.apache.log4j.Logger;
 import websiteschema.element.Rectangle;
-import websiteschema.element.factory.XPathFactory;
+import websiteschema.element.factory.XPathAttrFactory;
 
 /**
  *
@@ -298,7 +298,7 @@ public class SeparatorList {
 //                caculateWeightOfSeparator(sep);
             }
         } else {
-            String xpath = XPathFactory.getInstance().create(block.getEle());
+            String xpath = XPathAttrFactory.getInstance().create(block.getEle());
             log.debug(xpath + "  ---  is not leaf node.");
         }
     }
