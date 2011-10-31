@@ -30,16 +30,7 @@ public class SiteService {
 
     public ListRange getResults(Map map) {
         ListRange listRange = new ListRange();
-//        PageInfo pageInfo = new PageInfo(start, count);
-//        pageInfo.setOrderBy(orderBy);
-//        pageInfo.setMatch(match);
-//        Map params = buildParam(pageInfo);
         Map params = buildParamWithInt(map, "start", "limit");
-        System.out.println(params);
-//        params.put("start", 0);
-//        params.put("limit", 20);
-//        params.put("sort", "updateTime");
-//        params.put("match", "");
         listRange.setData(siteMapper.getSites(params).toArray());
         listRange.setTotalSize(siteMapper.getTotalResults(params));
         System.out.println(listRange.getTotalSize());

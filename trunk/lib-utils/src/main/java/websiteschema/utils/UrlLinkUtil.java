@@ -6,11 +6,7 @@ package websiteschema.utils;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -50,7 +46,7 @@ public class UrlLinkUtil {
             String host = uri.getHost();
             String query = uri.getQuery();
             String path = uri.getPath();
-            String date = DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss");
+            String date = DateUtil.format(new Date(), "yyyy-MM-dd HH:mm");
 
             host = (new StringBuilder(host)).reverse().toString();
 

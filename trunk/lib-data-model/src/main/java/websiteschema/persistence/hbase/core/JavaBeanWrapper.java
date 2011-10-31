@@ -11,6 +11,7 @@ import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.Result;
@@ -113,8 +114,13 @@ public class JavaBeanWrapper {
                     method.invoke(obj, Boolean.valueOf(value));
                 } else {
                     Method method = clazz.getMethod(setterName, arg);
-                    Object param = JSONObject.toBean(JSONObject.fromObject(value), arg);
-                    method.invoke(obj, param);
+                    if (!arg.isArray()) {
+                        Object param = JSONObject.toBean(JSONObject.fromObject(value), arg);
+                        method.invoke(obj, param);
+                    } else {
+                        Object param = JSONArray.toArray(JSONArray.fromObject(value), arg.getComponentType());
+                        method.invoke(obj, param);
+                    }
                 }
             }
         }
@@ -151,7 +157,12 @@ public class JavaBeanWrapper {
                         value = String.valueOf(method.invoke(obj));
                     } else {
                         Method method = clazz.getMethod(getterName);
-                        value = JSONObject.fromObject(method.invoke(obj)).toString();
+                        Class retType = method.getReturnType();
+                        if (!retType.isArray()) {
+                            value = JSONObject.fromObject(method.invoke(obj)).toString();
+                        } else {
+                            value = JSONArray.fromObject(method.invoke(obj)).toString();
+                        }
                     }
                     if (null != value) {
                         ret.put(fieldName, value);
