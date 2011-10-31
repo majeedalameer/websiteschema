@@ -25,6 +25,7 @@ import websiteschema.model.domain.Site;
 import websiteschema.model.domain.Websiteschema;
 import websiteschema.model.domain.cluster.Sample;
 import websiteschema.model.domain.cralwer.CrawlerSettings;
+import websiteschema.persistence.hbase.ClusterModelMapper;
 import websiteschema.persistence.hbase.SampleMapper;
 import websiteschema.persistence.hbase.WebsiteschemaMapper;
 import websiteschema.utils.UrlLinkUtil;
@@ -312,6 +313,8 @@ public class AnalysisPanel extends javax.swing.JPanel {
 
     private void viewCategoryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewCategoryButtonActionPerformed
         // TODO add your handling code here:
+        ClusterFrame cf = new ClusterFrame(getSiteId());
+        cf.setVisible(true);
     }//GEN-LAST:event_viewCategoryButtonActionPerformed
 
     private void addLinksButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addLinksButtonActionPerformed
@@ -370,7 +373,8 @@ public class AnalysisPanel extends javax.swing.JPanel {
         // TODO add your handling code here:
         WebsiteschemaCluster cluster = new WebsiteschemaCluster();
         cluster.setSiteId(getSiteId());
-        cluster.setMapper(BrowserContext.getSpringContext().getBean("sampleMapper", SampleMapper.class));
+        cluster.setSampleMapper(BrowserContext.getSpringContext().getBean("sampleMapper", SampleMapper.class));
+        cluster.setCmMapper(BrowserContext.getSpringContext().getBean("clusterModelMapper", ClusterModelMapper.class));
         new Thread(cluster).start();
     }//GEN-LAST:event_trainButtonActionPerformed
 

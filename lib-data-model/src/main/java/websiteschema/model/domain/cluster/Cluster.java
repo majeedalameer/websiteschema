@@ -12,19 +12,10 @@ import java.util.List;
  */
 public class Cluster {
 
-    String rowKey;
     List<String> samples;
     DocVector centralPoint;
     double threshold;
     String siteId;
-
-    public String getRowKey() {
-        return rowKey;
-    }
-
-    public void setRowKey(String rowKey) {
-        this.rowKey = rowKey;
-    }
 
     public DocVector getCentralPoint() {
         return centralPoint;

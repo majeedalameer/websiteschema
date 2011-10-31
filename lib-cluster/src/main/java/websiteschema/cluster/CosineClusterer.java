@@ -14,10 +14,12 @@ import websiteschema.model.domain.cluster.*;
  */
 public class CosineClusterer extends Clusterer {
 
+    String siteId = "";
     double threshold = 0.9;
     Logger l = Logger.getLogger(CosineClusterer.class);
 
-    CosineClusterer() {
+    CosineClusterer(String siteId) {
+        this.siteId = siteId;
     }
 
     private ClusterModel clustering(List<DocVector> space) {
@@ -34,6 +36,7 @@ public class CosineClusterer extends Clusterer {
         model.setClusters(listCluster.toArray(new Cluster[0]));
         model.setTotalSamples(space.size());
         model.setStatInfo(statInfo);
+        model.setRowKey(siteId);
         return model;
     }
 
@@ -62,6 +65,7 @@ public class CosineClusterer extends Clusterer {
 
     private Cluster createCluster(DocVector vect) {
         Cluster cluster = new Cluster();
+        cluster.setSiteId(siteId);
         cluster.setCentralPoint(vect);
         cluster.setThreshold(threshold);
         List<String> sameKindInstancs = new ArrayList<String>();
