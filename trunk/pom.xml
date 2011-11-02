@@ -376,6 +376,11 @@
                 <artifactId>jackson-core-asl</artifactId>
                 <version>1.5.2</version>
             </dependency>
+            <dependency>
+                <groupId>org.codehaus.jackson</groupId>
+                <artifactId>jackson-mapper-asl</artifactId>
+                <version>1.5.5</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     <build>

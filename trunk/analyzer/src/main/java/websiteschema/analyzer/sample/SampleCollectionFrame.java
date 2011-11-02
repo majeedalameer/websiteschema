@@ -10,6 +10,7 @@
  */
 package websiteschema.analyzer.sample;
 
+import java.util.Date;
 import java.util.List;
 import websiteschema.cluster.DocumentConvertor;
 import websiteschema.context.BrowserContext;
@@ -17,6 +18,7 @@ import websiteschema.model.domain.Websiteschema;
 import websiteschema.model.domain.cluster.Sample;
 import websiteschema.persistence.hbase.SampleMapper;
 import websiteschema.persistence.hbase.WebsiteschemaMapper;
+import websiteschema.utils.DateUtil;
 
 /**
  *
@@ -165,8 +167,9 @@ public class SampleCollectionFrame extends javax.swing.JFrame {
             SampleCrawler sc = new SampleCrawler();
             sc.setXPathAttributes(w.getXpathAttr());
             start = true;
-
-            List<Sample> samples = mapper.getList(getSiteId());
+            String now = DateUtil.format(new Date(), "yyyy-MM-dd HH:mm");
+            String end = getSiteId() + "+" + now;
+            List<Sample> samples = mapper.getList(getSiteId(), end);
             for (Sample sample : samples) {
                 if (isRunning()) {
                     count();

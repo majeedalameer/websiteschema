@@ -31,7 +31,7 @@ public class Configure {
     private static final String DefaultField = "default";
     private static final Configure root = new Configure();
     private String currentField = DefaultField;
-    private String namespace = "";
+    private String namespace = null;
     private Map<String, Map<String, String>> properties = new HashMap<String, Map<String, String>>();
 
     private Configure() {
@@ -141,8 +141,7 @@ public class Configure {
                         throw new RuntimeException("'namespace' must be declared at first line.");
                     }
                 } else {
-                    putProperties(
-                            currentField, key.trim(), value.trim());
+                    putProperties(currentField, key.trim(), value.trim());
                 }
             }
         }
@@ -153,12 +152,16 @@ public class Configure {
     }
 
     public void putProperties(String field, String key, String value) {
+        putProperties(getNamespace(), field, key, value);
+    }
+
+    public void putProperties(String ns, String field, String key, String value) {
         if (null == field) {
             throw new RuntimeException("Field is null.");
         }
         String f = field.toLowerCase();
-        if (!DefaultField.equals(f)) {
-            f = getNamespace() + f;
+        if (null != ns) {
+            f = ns + "." + f;
         }
         Map<String, String> map = properties.get(f);
         if (null == map) {
@@ -173,7 +176,7 @@ public class Configure {
         if ("".equals(namespace)) {
             return "";
         } else {
-            return namespace + ".";
+            return this.namespace;
         }
     }
 
@@ -186,15 +189,19 @@ public class Configure {
     }
 
     public String getProperty(String field, String key, String def) {
+        return getProperty(getNamespace(), field, key, def);
+    }
+
+    public String getProperty(String ns, String field, String key, String def) {
         if (null == key || "".equals(key)) {
             return def;
         }
         Map<String, String> map = null;
         String f = field.toLowerCase();
-        if (DefaultField.equals(f)) {
+        if (null == ns || DefaultField.equals(f)) {
             map = properties.get(f);
         } else {
-            map = properties.get(getNamespace() + f);
+            map = properties.get(ns + "." + f);
         }
         if (null != map) {
             String ret = map.get(key.toLowerCase());
@@ -210,7 +217,11 @@ public class Configure {
     }
 
     public List<String> getListProperty(String field, String key) {
-        String value = getProperty(field, key);
+        return getListProperty(getNamespace(), field, key);
+    }
+
+    public List<String> getListProperty(String ns, String field, String key) {
+        String value = getProperty(ns, field, key, null);
         if (null != value) {
             return JSONArray.fromObject(value);
         } else {
@@ -223,7 +234,11 @@ public class Configure {
     }
 
     public Set<String> getSetProperty(String field, String key) {
-        String value = getProperty(field, key);
+        return getSetProperty(getNamespace(), field, key);
+    }
+
+    public Set<String> getSetProperty(String ns, String field, String key) {
+        String value = getProperty(ns, field, key, null);
         if (null != value) {
             return new HashSet<String>(getListProperty(field, key));
         } else {
@@ -236,7 +251,11 @@ public class Configure {
     }
 
     public Map<String, String> getMapProperty(String field, String key) {
-        String value = getProperty(field, key);
+        return getMapProperty(getNamespace(), field, key);
+    }
+
+    public Map<String, String> getMapProperty(String ns, String field, String key) {
+        String value = getProperty(ns, field, key, null);
         if (null != value) {
             JSONObject json = JSONObject.fromObject(value);
             return json;
@@ -254,10 +273,14 @@ public class Configure {
     }
 
     public int getIntProperty(String field, String key, int def) {
+        return getIntProperty(getNamespace(), field, key, def);
+    }
+
+    public int getIntProperty(String ns, String field, String key, int def) {
         if (null == key || "".equals(key)) {
             return def;
         }
-        String value = getProperty(field, key);
+        String value = getProperty(ns, field, key, null);
         if (null != value) {
             return Integer.valueOf(value);
         }
@@ -273,10 +296,14 @@ public class Configure {
     }
 
     public double getDoubleProperty(String field, String key, double def) {
+        return getDoubleProperty(getNamespace(), field, key, def);
+    }
+
+    public double getDoubleProperty(String ns, String field, String key, double def) {
         if (null == key || "".equals(key)) {
             return def;
         }
-        String value = getProperty(field, key);
+        String value = getProperty(ns, field, key, null);
         if (null != value) {
             return Double.valueOf(value);
         }
@@ -292,6 +319,10 @@ public class Configure {
     }
 
     public boolean getBooleanProperty(String field, String key, boolean def) {
+        return getBooleanProperty(getNamespace(), field, key, def);
+    }
+
+    public boolean getBooleanProperty(String ns, String field, String key, boolean def) {
         if (null == key || "".equals(key)) {
             return def;
         }
@@ -303,7 +334,11 @@ public class Configure {
     }
 
     public <T> T getBean(String field, String key, Class<T> clazz) {
-        String jsonText = getProperty(field, key);
+        return getBean(getNamespace(), field, key, clazz);
+    }
+
+    public <T> T getBean(String ns, String field, String key, Class<T> clazz) {
+        String jsonText = getProperty(ns, field, key, null);
         if (null != jsonText) {
             try {
                 return (T) JSONObject.toBean(JSONObject.fromObject(jsonText), clazz);

@@ -15,6 +15,8 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.Result;
+import org.codehaus.jackson.map.ObjectMapper;
+import static websiteschema.utils.PojoMapper.*;
 import websiteschema.model.domain.HBaseBean;
 
 /**
@@ -114,12 +116,24 @@ public class JavaBeanWrapper {
                     method.invoke(obj, Boolean.valueOf(value));
                 } else {
                     Method method = clazz.getMethod(setterName, arg);
-                    if (!arg.isArray()) {
-                        Object param = JSONObject.toBean(JSONObject.fromObject(value), arg);
+//                    if (!arg.isArray()) {
+//                        try {
+//                            Object param = JSONObject.toBean(JSONObject.fromObject(value), arg);
+//                            method.invoke(obj, param);
+//                        } catch (Exception e) {
+//                            System.out.println("json-lib error: " + e);
+//                            System.out.println(arg);
+//                            System.out.println(value);
+//                        }
+//                    } else {
+//                        Object param = JSONArray.toArray(JSONArray.fromObject(value), arg.getComponentType());
+//                        method.invoke(obj, param);
+//                    }
+                    try {
+                        Object param = fromJson(value, arg);
                         method.invoke(obj, param);
-                    } else {
-                        Object param = JSONArray.toArray(JSONArray.fromObject(value), arg.getComponentType());
-                        method.invoke(obj, param);
+                    } catch (Exception ex) {
+                        System.out.println("jackson fromJSON error: " + ex);
                     }
                 }
             }
@@ -156,13 +170,24 @@ public class JavaBeanWrapper {
                         Method method = clazz.getMethod(getterName);
                         value = String.valueOf(method.invoke(obj));
                     } else {
+                        //获取其他类型数据
                         Method method = clazz.getMethod(getterName);
-                        Class retType = method.getReturnType();
-                        if (!retType.isArray()) {
-                            value = JSONObject.fromObject(method.invoke(obj)).toString();
-                        } else {
-                            value = JSONArray.fromObject(method.invoke(obj)).toString();
+                        try {
+                            Object getter = method.invoke(obj);
+                            if (null != getter) {
+                                value = toJson(getter);
+                            } else {
+                                value = null;
+                            }
+                        } catch (Exception ex) {
+                            System.out.println("jackson toJSON error: " + ex);
                         }
+//                        Class retType = method.getReturnType();
+//                        if (!retType.isArray()) {
+//                            value = JSONObject.fromObject(method.invoke(obj)).toString();
+//                        } else {
+//                            value = JSONArray.fromObject(method.invoke(obj)).toString();
+//                        }
                     }
                     if (null != value) {
                         ret.put(fieldName, value);

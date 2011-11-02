@@ -6,7 +6,6 @@ package websiteschema.persistence.hbase.core;
 
 import java.util.ArrayList;
 import java.util.List;
-import websiteschema.persistence.hbase.core.Mapper;
 import java.util.Map;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
@@ -50,9 +49,9 @@ public class HBaseMapper<T extends HBaseBean> extends Mapper {
         }
     }
 
-    public List<T> getList(String start) {
+    public List<T> getList(String start, String end) {
         if (null != start && !"".equals(start)) {
-            ResultScanner rs = scan(start);
+            ResultScanner rs = scan(start, end);
             List<T> ret = new ArrayList<T>();
             for (Result r : rs) {
                 T obj = wrapper.getBean(r, clazz);
