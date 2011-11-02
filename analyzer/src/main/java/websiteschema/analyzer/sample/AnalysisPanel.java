@@ -40,8 +40,6 @@ public class AnalysisPanel extends javax.swing.JPanel {
     SimpleBrowser simpleBrowser = null;
     SampleFrame sf = new SampleFrame();
 
-    ;
-
     /** Creates new form AnalysisPanel */
     public AnalysisPanel(BrowserContext context, SimpleBrowser simpleBrowser) {
         initComponents();

@@ -379,7 +379,9 @@ public class SampleFrame extends javax.swing.JFrame {
     private synchronized void load() {
         this.statusLabel.setText("Status: Loading...");
         final SampleMapper mapper = BrowserContext.getSpringContext().getBean("sampleMapper", SampleMapper.class);
-        List<Sample> samples = mapper.getList(getSiteId());
+        String now = DateUtil.format(new Date(), "yyyy-MM-dd HH:mm");
+        String end = getSiteId() + "+" + now;
+        List<Sample> samples = mapper.getList(getSiteId(), end);
         DefaultTableModel tableModel = (DefaultTableModel) sampleTable.getModel();
         int rows = sampleTable.getRowCount();
         for (int i = 0; i < rows; i++) {

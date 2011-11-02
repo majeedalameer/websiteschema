@@ -8,6 +8,7 @@ import java.util.*;
 import websiteschema.model.domain.cluster.*;
 import websiteschema.persistence.hbase.ClusterModelMapper;
 import websiteschema.persistence.hbase.SampleMapper;
+import websiteschema.utils.DateUtil;
 
 /**
  *
@@ -22,7 +23,9 @@ public class WebsiteschemaCluster implements Runnable {
 
     @Override
     public void run() {
-        List<Sample> samples = mapper.getList(siteId);
+        String now = DateUtil.format(new Date(), "yyyy-MM-dd HH:mm");
+        String end = siteId + "+" + now;
+        List<Sample> samples = mapper.getList(siteId, end);
         if (null != samples && !samples.isEmpty()) {
             Clusterer cc = new CosineClusterer(siteId);
             cc.appendSample(samples);
