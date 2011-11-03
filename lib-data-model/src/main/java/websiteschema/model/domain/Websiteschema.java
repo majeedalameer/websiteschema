@@ -36,6 +36,8 @@ public class Websiteschema implements HBaseBean {
     XPathAttributes xpathAttr;
     @ColumnFamily
     CrawlerSettings crawlerSettings;
+    @ColumnFamily
+    Map<String, String> properties;
 
     public String getRowKey() {
         return rowKey;
@@ -99,5 +101,13 @@ public class Websiteschema implements HBaseBean {
 
     public void setCrawlerSettings(CrawlerSettings crawlerSettings) {
         this.crawlerSettings = crawlerSettings;
+    }
+
+    public Map<String, String> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Map<String, String> properties) {
+        this.properties = properties;
     }
 }

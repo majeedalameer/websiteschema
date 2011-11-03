@@ -16,6 +16,8 @@ public class Cluster {
     DocVector centralPoint;
     double threshold;
     String siteId;
+    String type;
+    String customName;
 
     public DocVector getCentralPoint() {
         return centralPoint;
@@ -47,5 +49,21 @@ public class Cluster {
 
     public void setThreshold(double threshold) {
         this.threshold = threshold;
+    }
+
+    public String getCustomName() {
+        return customName;
+    }
+
+    public void setCustomName(String customName) {
+        this.customName = customName;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

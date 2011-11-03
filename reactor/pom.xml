@@ -18,6 +18,7 @@
                 <module>../lib-func-blk</module>
                 <module>../lib-cluster</module>
                 <module>../lib-crawler</module>
+                <module>../lib-conf</module>
                 <module>../metadata-server</module>
             </modules>
         </profile>

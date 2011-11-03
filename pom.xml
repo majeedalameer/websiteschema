@@ -30,6 +30,11 @@
             </dependency>
             <dependency>
                 <groupId>websiteschema</groupId>
+                <artifactId>lib-conf</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>websiteschema</groupId>
                 <artifactId>lib-utils</artifactId>
                 <version>${project.version}</version>
             </dependency>
