@@ -198,10 +198,12 @@ public class Configure {
         }
         Map<String, String> map = null;
         String f = field.toLowerCase();
-        if (null == ns || DefaultField.equals(f)) {
-            map = properties.get(f);
-        } else {
+        boolean nsNotNull = false;
+        if (null != ns && !"".equals(ns)) {
             map = properties.get(ns + "." + f);
+            nsNotNull = true;
+        } else {
+            map = properties.get(f);
         }
         if (null != map) {
             String ret = map.get(key.toLowerCase());
@@ -209,6 +211,16 @@ public class Configure {
                 return ret;
             }
         }
+        if (nsNotNull) {
+            map = properties.get(f);
+            if (null != map) {
+                String ret = map.get(key.toLowerCase());
+                if (null != ret) {
+                    return ret;
+                }
+            }
+        }
+
         return def;
     }
 
