@@ -19,6 +19,10 @@
             <artifactId>lib-data-model</artifactId>
         </dependency>
         <dependency>
+            <groupId>websiteschema</groupId>
+            <artifactId>lib-conf</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
             <scope>test</scope>

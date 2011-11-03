@@ -18,7 +18,13 @@ import com.webrenderer.swing.dom.IElement;
 import com.webrenderer.swing.dom.IElementCollection;
 import java.net.URI;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
+import javax.swing.table.DefaultTableModel;
 import websiteschema.analyzer.browser.SimpleBrowser;
+import websiteschema.cluster.analyzer.NewsClusterAnalyzer;
 import websiteschema.context.BrowserContext;
 import websiteschema.element.XPathAttributes;
 import websiteschema.model.domain.Site;
@@ -28,6 +34,7 @@ import websiteschema.model.domain.cralwer.CrawlerSettings;
 import websiteschema.persistence.hbase.ClusterModelMapper;
 import websiteschema.persistence.hbase.SampleMapper;
 import websiteschema.persistence.hbase.WebsiteschemaMapper;
+import websiteschema.persistence.rdbms.SiteMapper;
 import websiteschema.utils.UrlLinkUtil;
 
 /**
@@ -76,6 +83,10 @@ public class AnalysisPanel extends javax.swing.JPanel {
         jLabel8 = new javax.swing.JLabel();
         maxDateField = new javax.swing.JTextField();
         saveSettingsButton = new javax.swing.JButton();
+        jPanel3 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        propTable = new javax.swing.JTable();
+        addPropButton = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         viewCategoryButton = new javax.swing.JButton();
         collectSampleButton = new javax.swing.JButton();
@@ -129,6 +140,37 @@ public class AnalysisPanel extends javax.swing.JPanel {
             }
         });
 
+        propTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "属性名称", "属性值"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+        });
+        jScrollPane1.setViewportView(propTable);
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 175, Short.MAX_VALUE)
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE)
+        );
+
+        addPropButton.setText("添加");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -169,8 +211,14 @@ public class AnalysisPanel extends javax.swing.JPanel {
                 .addComponent(maxDateField, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(38, 38, 38))
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(saveSettingsButton)
+                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(21, 21, 21)
+                .addComponent(addPropButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(saveSettingsButton)
+                .addContainerGap(34, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -203,8 +251,11 @@ public class AnalysisPanel extends javax.swing.JPanel {
                     .addComponent(jLabel8)
                     .addComponent(maxDateField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(saveSettingsButton)
-                .addContainerGap(122, Short.MAX_VALUE))
+                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(12, 12, 12)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(addPropButton)
+                    .addComponent(saveSettingsButton)))
         );
 
         jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -373,6 +424,11 @@ public class AnalysisPanel extends javax.swing.JPanel {
         cluster.setSiteId(getSiteId());
         cluster.setSampleMapper(BrowserContext.getSpringContext().getBean("sampleMapper", SampleMapper.class));
         cluster.setCmMapper(BrowserContext.getSpringContext().getBean("clusterModelMapper", ClusterModelMapper.class));
+        cluster.setWebsiteschemaMapper(BrowserContext.getSpringContext().getBean("websiteschemaMapper", WebsiteschemaMapper.class));
+//        SiteMapper siteMapper = BrowserContext.getSpringContext().getBean("siteMapper", SiteMapper.class);
+//        Site site = siteMapper.getBySiteId(getSiteId());
+//        if siteType == news
+        cluster.setAnalyzer(new NewsClusterAnalyzer());
         new Thread(cluster).start();
     }//GEN-LAST:event_trainButtonActionPerformed
 
@@ -403,6 +459,7 @@ public class AnalysisPanel extends javax.swing.JPanel {
         if (null != websiteschema) {
             CrawlerSettings settings = websiteschema.getCrawlerSettings();
             setCrawlerSettings(settings);
+            setProperties(websiteschema.getProperties());
         }
     }
 
@@ -425,6 +482,36 @@ public class AnalysisPanel extends javax.swing.JPanel {
         settings.setMaxDate(Integer.valueOf(this.maxDateField.getText().trim()));
 
         return settings;
+    }
+
+    public Map<String, String> getProperties() {
+        Map<String, String> prop = new HashMap<String, String>();
+
+        DefaultTableModel tableModel = (DefaultTableModel) propTable.getModel();
+        int count = tableModel.getColumnCount();
+        for (int i = 0; i < count; i++) {
+            String key = (String) tableModel.getValueAt(i, 0);
+            String value = (String) tableModel.getValueAt(i, 1);
+            prop.put(key, value);
+        }
+
+        return prop;
+    }
+
+    public void setProperties(Map<String, String> prop) {
+        if(null != prop) {
+            Set<String> keySet = prop.keySet();
+            DefaultTableModel tableModel = (DefaultTableModel) propTable.getModel();
+            for(String key : keySet) {
+                String value = prop.get(key);
+                if(null != value) {
+                    Vector row = new Vector(2);
+                    row.add(key);
+                    row.add(value);
+                    tableModel.addRow(row);
+                }
+            }
+        }
     }
 
     public void setCrawlerSettings(CrawlerSettings settings) {
@@ -456,6 +543,7 @@ public class AnalysisPanel extends javax.swing.JPanel {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addLinksButton;
+    private javax.swing.JButton addPropButton;
     private javax.swing.JButton collectSampleButton;
     private javax.swing.JTextField depthField;
     private javax.swing.JTextField dontHaveField;
@@ -470,11 +558,14 @@ public class AnalysisPanel extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JTextField maxDateField;
     private javax.swing.JTextField minDateField;
     private javax.swing.JTextField mustHaveField;
     private javax.swing.JTextField pageTypeField;
+    private javax.swing.JTable propTable;
     private javax.swing.JDialog sampleDialog;
     private javax.swing.JButton saveSettingsButton;
     private javax.swing.JTextField siteIdField;

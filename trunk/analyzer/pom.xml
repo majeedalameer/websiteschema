@@ -28,6 +28,10 @@
     <dependencies>
         <dependency>
             <groupId>websiteschema</groupId>
+            <artifactId>lib-conf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>websiteschema</groupId>
             <artifactId>lib-utils</artifactId>
         </dependency>
         <dependency>

@@ -16,10 +16,6 @@
     <dependencies>
         <dependency>
             <groupId>websiteschema</groupId>
-            <artifactId>lib-utils</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>websiteschema</groupId>
             <artifactId>lib-data-model</artifactId>
         </dependency>
         <dependency>
