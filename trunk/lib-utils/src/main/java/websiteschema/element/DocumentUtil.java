@@ -47,7 +47,7 @@ public class DocumentUtil {
                 t.transform(new DOMSource(document.getDocumentElement()),
                         strResult);
             } catch (Exception e) {
-                System.err.println("XML.toString(Document): " + e);
+                System.err.println("DocumentUtil.toString(Document): " + e);
             }
             result = strResult.getWriter().toString();
         }
