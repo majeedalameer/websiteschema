@@ -37,12 +37,20 @@ public class XPathAttrFactory {
         return getXPath(ele, attr);
     }
 
+    public String create(Node node, XPathAttributes attr) {
+        return getXPath(node, attr);
+    }
+
     public String create(IElement ele) {
         return getXPath(ele, attr);
     }
 
     public String create(Element ele) {
         return getXPath(ele, attr);
+    }
+
+    public String create(Node node) {
+        return getXPath(node, attr);
     }
 
     private String getXPath(IElement ele, XPathAttributes attr) {
@@ -100,39 +108,41 @@ public class XPathAttrFactory {
                 }
             } else {
                 NamedNodeMap attrs = ele.getAttributes();
-                if (attr.isUsingClass()) {
-                    //将class属性增加到XPath中
+                if (attrs != null) {
+                    if (attr.isUsingClass()) {
+                        //将class属性增加到XPath中
 //                    String className = ele.getAttribute("class");
-                    Node n = attrs.getNamedItem("class");
-                    String className = null != n ? n.getNodeValue() : null;
-                    if (null != className && !"".equals(className)) {
-                        attrKeyValues += " @class='" + className + "'";
-                    }
-                }
-                if (attr.isUsingId()) {
-                    //将id属性增加到XPath中
-//                    String id = ele.getAttribute("id");
-                    Node n = attrs.getNamedItem("id");
-                    String id = null != n ? n.getNodeValue() : null;
-                    if (null != id && !"".equals(id)) {
-                        if (!"".equals(attrKeyValues)) {
-                            attrKeyValues += " and @id='" + id + "'";
-                        } else {
-                            attrKeyValues += " @id='" + id + "'";
+                        Node n = attrs.getNamedItem("class");
+                        String className = null != n ? n.getNodeValue() : null;
+                        if (null != className && !"".equals(className)) {
+                            attrKeyValues += " @class='" + className + "'";
                         }
                     }
-                }
-                String specifyAttr = attr.getSpecifyAttr();
-                if (null != specifyAttr && !"".equals(specifyAttr)) {
-                    //将指定的属性增加到XPath中
+                    if (attr.isUsingId()) {
+                        //将id属性增加到XPath中
+//                    String id = ele.getAttribute("id");
+                        Node n = attrs.getNamedItem("id");
+                        String id = null != n ? n.getNodeValue() : null;
+                        if (null != id && !"".equals(id)) {
+                            if (!"".equals(attrKeyValues)) {
+                                attrKeyValues += " and @id='" + id + "'";
+                            } else {
+                                attrKeyValues += " @id='" + id + "'";
+                            }
+                        }
+                    }
+                    String specifyAttr = attr.getSpecifyAttr();
+                    if (null != specifyAttr && !"".equals(specifyAttr)) {
+                        //将指定的属性增加到XPath中
 //                    String attrValue = ele.getAttribute(specifyAttr);
-                    Node n = attrs.getNamedItem(specifyAttr);
-                    String attrValue = null != n ? n.getNodeValue() : null;
-                    if (null != attrValue && !"".equals(attrValue)) {
-                        if (!"".equals(attrKeyValues)) {
-                            attrKeyValues += " and @" + specifyAttr + "='" + attrValue + "'";
-                        } else {
-                            attrKeyValues += " @" + specifyAttr + "='" + attrValue + "'";
+                        Node n = attrs.getNamedItem(specifyAttr);
+                        String attrValue = null != n ? n.getNodeValue() : null;
+                        if (null != attrValue && !"".equals(attrValue)) {
+                            if (!"".equals(attrKeyValues)) {
+                                attrKeyValues += " and @" + specifyAttr + "='" + attrValue + "'";
+                            } else {
+                                attrKeyValues += " @" + specifyAttr + "='" + attrValue + "'";
+                            }
                         }
                     }
                 }

@@ -23,9 +23,12 @@ import java.util.Set;
 import java.util.Vector;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import org.w3c.dom.Document;
 import websiteschema.analyzer.browser.SimpleBrowser;
 import websiteschema.cluster.analyzer.NewsClusterAnalyzer;
 import websiteschema.context.BrowserContext;
+import websiteschema.crawler.fb.FBDOMExtractor;
+import websiteschema.element.DocumentUtil;
 import websiteschema.element.XPathAttributes;
 import websiteschema.model.domain.Site;
 import websiteschema.model.domain.Websiteschema;
@@ -63,7 +66,9 @@ public class AnalysisPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        sampleDialog = new javax.swing.JDialog();
+        WrapperTestingDialog = new javax.swing.JDialog();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        resultArea = new javax.swing.JTextArea();
         jLabel1 = new javax.swing.JLabel();
         siteIdField = new javax.swing.JTextField();
         jSeparator2 = new javax.swing.JSeparator();
@@ -88,20 +93,28 @@ public class AnalysisPanel extends javax.swing.JPanel {
         addLinksButton = new javax.swing.JButton();
         viewSampleButton = new javax.swing.JButton();
         trainButton = new javax.swing.JButton();
+        testButton = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         propTable = new javax.swing.JTable();
         saveSettingsButton = new javax.swing.JButton();
         addPropButton = new javax.swing.JButton();
 
-        javax.swing.GroupLayout sampleDialogLayout = new javax.swing.GroupLayout(sampleDialog.getContentPane());
-        sampleDialog.getContentPane().setLayout(sampleDialogLayout);
-        sampleDialogLayout.setHorizontalGroup(
-            sampleDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+        WrapperTestingDialog.setMinimumSize(new java.awt.Dimension(600, 300));
+
+        resultArea.setColumns(20);
+        resultArea.setLineWrap(true);
+        resultArea.setRows(5);
+        jScrollPane2.setViewportView(resultArea);
+
+        javax.swing.GroupLayout WrapperTestingDialogLayout = new javax.swing.GroupLayout(WrapperTestingDialog.getContentPane());
+        WrapperTestingDialog.getContentPane().setLayout(WrapperTestingDialogLayout);
+        WrapperTestingDialogLayout.setHorizontalGroup(
+            WrapperTestingDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 588, Short.MAX_VALUE)
         );
-        sampleDialogLayout.setVerticalGroup(
-            sampleDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+        WrapperTestingDialogLayout.setVerticalGroup(
+            WrapperTestingDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
         );
 
         jLabel1.setText("网站ID : ");
@@ -236,6 +249,13 @@ public class AnalysisPanel extends javax.swing.JPanel {
             }
         });
 
+        testButton.setText("测试抽取");
+        testButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                testButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -243,31 +263,34 @@ public class AnalysisPanel extends javax.swing.JPanel {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(trainButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(viewCategoryButton))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(viewSampleButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(addLinksButton))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(92, 92, 92)
-                        .addComponent(collectSampleButton)))
+                        .addComponent(collectSampleButton))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(trainButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(viewCategoryButton))
+                    .addComponent(testButton))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+            .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(viewSampleButton)
                     .addComponent(addLinksButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(collectSampleButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 7, Short.MAX_VALUE)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(trainButton)
-                    .addComponent(viewCategoryButton)))
+                    .addComponent(viewCategoryButton))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(testButton))
         );
 
         propTable.setModel(new javax.swing.table.DefaultTableModel(
@@ -303,6 +326,7 @@ public class AnalysisPanel extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 194, Short.MAX_VALUE)
                     .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 194, Short.MAX_VALUE)
@@ -311,7 +335,6 @@ public class AnalysisPanel extends javax.swing.JPanel {
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(siteIdField, javax.swing.GroupLayout.DEFAULT_SIZE, 129, Short.MAX_VALUE))
-                    .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addGap(31, 31, 31)
                         .addComponent(addPropButton)
@@ -332,12 +355,12 @@ public class AnalysisPanel extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 181, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 143, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(addPropButton)
                     .addComponent(saveSettingsButton))
-                .addGap(12, 12, 12))
+                .addGap(20, 20, 20))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -375,7 +398,7 @@ public class AnalysisPanel extends javax.swing.JPanel {
         WebsiteschemaMapper mapper = BrowserContext.getSpringContext().getBean("websiteschemaMapper", WebsiteschemaMapper.class);
         Websiteschema websiteschema = mapper.get(getSiteId());
         CrawlerSettings settings = getCrawlerSettings();
-        Map<String,String> prop = getProperties();
+        Map<String, String> prop = getProperties();
         XPathAttributes attr = this.simpleBrowser.getXPathAttr();
         if (null != settings && null != websiteschema) {
             websiteschema.setCrawlerSettings(settings);
@@ -416,6 +439,35 @@ public class AnalysisPanel extends javax.swing.JPanel {
         clusterer.setPanel(this);
         new Thread(clusterer).start();
     }//GEN-LAST:event_trainButtonActionPerformed
+
+    private void testButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_testButtonActionPerformed
+        // TODO add your handling code here:
+
+
+        WebsiteschemaMapper mapper = BrowserContext.getSpringContext().getBean("websiteschemaMapper", WebsiteschemaMapper.class);
+        Websiteschema websiteschema = mapper.get(getSiteId());
+
+        FBDOMExtractor extractor = new FBDOMExtractor();
+        Document source = (Document) context.getBrowser().getW3CDocument();
+//        String xml = DocumentUtil.getXMLString(source);
+        extractor.in = source;
+        extractor.prop = getProperties();
+        extractor.xpathAttr = websiteschema.getXpathAttr();
+
+        extractor.extract();
+        Document result = extractor.out;
+        if (null != result) {
+            this.resultArea.setText(DocumentUtil.getXMLString(result));
+            int screenWidth = ((int) java.awt.Toolkit.getDefaultToolkit().getScreenSize().width);
+            int screenHeight = ((int) java.awt.Toolkit.getDefaultToolkit().getScreenSize().height);
+            int sizeWidth = WrapperTestingDialog.getWidth();
+            int sizeHeight = WrapperTestingDialog.getHeight();
+            WrapperTestingDialog.setLocation((screenWidth - sizeWidth) / 2, (screenHeight - sizeHeight) / 2);
+            this.WrapperTestingDialog.setVisible(true);
+        } else {
+            JOptionPane.showMessageDialog(this, "无法抽取出数据！");
+        }
+    }//GEN-LAST:event_testButtonActionPerformed
 
     private void addSampleUrl(URI uri) {
 //        XPathAttributes attr = this.simpleBorwser.getXPathAttr();
@@ -473,7 +525,7 @@ public class AnalysisPanel extends javax.swing.JPanel {
         Map<String, String> prop = new HashMap<String, String>();
 
         DefaultTableModel tableModel = (DefaultTableModel) propTable.getModel();
-        int count = tableModel.getColumnCount();
+        int count = propTable.getRowCount();
         for (int i = 0; i < count; i++) {
             String key = (String) tableModel.getValueAt(i, 0);
             String value = (String) tableModel.getValueAt(i, 1);
@@ -485,15 +537,17 @@ public class AnalysisPanel extends javax.swing.JPanel {
 
     public void setProperties(Map<String, String> prop) {
         DefaultTableModel tableModel = (DefaultTableModel) propTable.getModel();
-        for (int i = 0; i < tableModel.getRowCount(); i++) {
-            tableModel.removeRow(i);
+        int rows = propTable.getRowCount();
+//        System.out.println("------------- row count: " + rows);
+        for (int i = 0; i < rows; i++) {
+            tableModel.removeRow(0);
         }
-        if(null != prop) {
-            
+        if (null != prop) {
+
             Set<String> keySet = prop.keySet();
-            for(String key : keySet) {
+            for (String key : keySet) {
                 String value = prop.get(key);
-                if(null != value) {
+                if (null != value) {
                     Vector row = new Vector(2);
                     row.add(key);
                     row.add(value);
@@ -531,6 +585,7 @@ public class AnalysisPanel extends javax.swing.JPanel {
         return ret;
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JDialog WrapperTestingDialog;
     private javax.swing.JButton addLinksButton;
     private javax.swing.JButton addPropButton;
     private javax.swing.JButton collectSampleButton;
@@ -548,15 +603,17 @@ public class AnalysisPanel extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JTextField maxDateField;
     private javax.swing.JTextField minDateField;
     private javax.swing.JTextField mustHaveField;
     private javax.swing.JTextField pageTypeField;
     private javax.swing.JTable propTable;
-    private javax.swing.JDialog sampleDialog;
+    private javax.swing.JTextArea resultArea;
     private javax.swing.JButton saveSettingsButton;
     private javax.swing.JTextField siteIdField;
+    private javax.swing.JButton testButton;
     private javax.swing.JButton trainButton;
     private javax.swing.JButton viewCategoryButton;
     private javax.swing.JButton viewSampleButton;
