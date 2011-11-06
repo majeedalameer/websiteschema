@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package websiteschema.cralwer;
+package websiteschema.crawler;
 
 import org.w3c.dom.Document;
 import websiteschema.model.domain.cralwer.CrawlerSettings;

@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package websiteschema.cralwer.browser;
+package websiteschema.crawler.browser;
 
 import com.webrenderer.swing.BrowserFactory;
 import com.webrenderer.swing.IMozillaBrowserCanvas;
@@ -22,7 +22,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import websiteschema.cralwer.Crawler;
+import websiteschema.crawler.Crawler;
 import websiteschema.model.domain.cralwer.CrawlerSettings;
 import websiteschema.utils.Configure;
 import websiteschema.utils.UrlLinkUtil;

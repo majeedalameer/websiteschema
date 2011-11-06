@@ -4,8 +4,10 @@
  */
 package websiteschema.model.domain.cluster;
 
+import java.util.ArrayList;
 import websiteschema.model.domain.cluster.DocUnits;
 import java.util.Date;
+import java.util.List;
 import websiteschema.model.domain.HBaseBean;
 import websiteschema.persistence.hbase.annotation.ColumnFamily;
 import websiteschema.persistence.hbase.annotation.RowKey;
@@ -18,7 +20,6 @@ public class Sample implements HBaseBean {
 
     @RowKey
     String rowKey;
-
     @ColumnFamily
     String url;
     @ColumnFamily
@@ -88,4 +89,16 @@ public class Sample implements HBaseBean {
         this.url = url;
     }
 
+    public Unit[] getUnits(String xpath) {
+        List<Unit> ret = new ArrayList<Unit>();
+
+        Unit[] units = getContent().getUnits();
+        for (Unit unit : units) {
+            if (xpath.equals(unit.getXpath())) {
+                ret.add(unit);
+            }
+        }
+
+        return ret.toArray(new Unit[0]);
+    }
 }

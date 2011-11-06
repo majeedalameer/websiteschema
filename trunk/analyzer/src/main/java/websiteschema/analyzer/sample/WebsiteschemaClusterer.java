@@ -2,9 +2,13 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package websiteschema.cluster;
+package websiteschema.analyzer.sample;
 
+import java.awt.Component;
 import java.util.*;
+import javax.swing.JOptionPane;
+import websiteschema.cluster.Clusterer;
+import websiteschema.cluster.CosineClusterer;
 import websiteschema.cluster.analyzer.ClusterAnalyzer;
 import websiteschema.model.domain.Websiteschema;
 import websiteschema.model.domain.cluster.*;
@@ -17,7 +21,7 @@ import websiteschema.utils.DateUtil;
  *
  * @author ray
  */
-public class WebsiteschemaCluster implements Runnable {
+public class WebsiteschemaClusterer implements Runnable {
 
     String siteId;
     SampleMapper sampleMapper;
@@ -25,6 +29,8 @@ public class WebsiteschemaCluster implements Runnable {
     WebsiteschemaMapper websiteschemaMapper;
     ClusterModel model;
     ClusterAnalyzer analyzer;
+    Component parentComponent;
+    AnalysisPanel panel;
 
     @Override
     public void run() {
@@ -48,6 +54,10 @@ public class WebsiteschemaCluster implements Runnable {
                     websiteschemaMapper.put(schema);
                 }
             }
+            this.panel.setSiteId(siteId);
+            JOptionPane.showMessageDialog(parentComponent, "聚类分析完成");
+        } else {
+            JOptionPane.showMessageDialog(parentComponent, "样本集为空");
         }
     }
 
@@ -69,5 +79,13 @@ public class WebsiteschemaCluster implements Runnable {
 
     public void setWebsiteschemaMapper(WebsiteschemaMapper websiteschemaMapper) {
         this.websiteschemaMapper = websiteschemaMapper;
+    }
+
+    public void setParentComponent(Component parentComponent) {
+        this.parentComponent = parentComponent;
+    }
+
+    public void setPanel(AnalysisPanel panel) {
+        this.panel = panel;
     }
 }

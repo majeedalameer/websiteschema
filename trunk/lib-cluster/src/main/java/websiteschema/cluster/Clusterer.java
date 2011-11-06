@@ -16,10 +16,17 @@ public abstract class Clusterer {
     Cluster[] clusters = null;
     List<Sample> samples = new ArrayList<Sample>();
     FeatureStatInfo statInfo;
+    String siteId = "";
+
+    public Clusterer(String siteId) {
+        this.siteId = siteId;
+    }
 
     public abstract ClusterModel clustering();
 
     public abstract Cluster classify(Sample sample);
+
+    public abstract double membershipDegree(DocVector v1, DocVector v2);
 
     public void appendCluster(List<Cluster> list) {
         int pos = this.clusters.length;
@@ -37,6 +44,14 @@ public abstract class Clusterer {
 
     public void statFeature() {
         statInfo = featureInfoStatistic(samples);
+    }
+
+    public String getSiteId() {
+        return siteId;
+    }
+
+    public void setSiteId(String siteId) {
+        this.siteId = siteId;
     }
 
     private FeatureStatInfo featureInfoStatistic(List<Sample> samples) {

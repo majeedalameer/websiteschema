@@ -5,7 +5,6 @@
 package websiteschema.model.domain.cluster;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import websiteschema.model.domain.HBaseBean;
 import websiteschema.persistence.hbase.annotation.ColumnFamily;
@@ -25,6 +24,8 @@ public class ClusterModel implements HBaseBean {
     FeatureStatInfo statInfo = null;
     @ColumnFamily
     int totalSamples = 0;
+    @ColumnFamily
+    String clustererType;
 
     public Cluster getCluster(int index) {
         return clusters[index];
@@ -76,19 +77,23 @@ public class ClusterModel implements HBaseBean {
 
     public void delete(String cp) {
         if (null != clusters) {
-            List<Cluster> list = Arrays.asList(clusters);
-            int index = -1;
-            for (int i = 0; i < list.size(); i++) {
-                Cluster c = list.get(i);
-                if (cp.equals(c.getCentralPoint().getName())) {
-                    index = i;
-                    break;
+            List<Cluster> list = new ArrayList<Cluster>();
+            for (int i = 0; i < clusters.length; i++) {
+                Cluster c = clusters[i];
+                if (!cp.equals(c.getCentralPoint().getName())) {
+                    list.add(c);
                 }
             }
-            if (index >= 0) {
-                list.remove(index);
-                clusters = list.toArray(new Cluster[0]);
-            }
+
+            clusters = list.toArray(new Cluster[0]);
         }
+    }
+
+    public String getClustererType() {
+        return clustererType;
+    }
+
+    public void setClustererType(String clustererType) {
+        this.clustererType = clustererType;
     }
 }
