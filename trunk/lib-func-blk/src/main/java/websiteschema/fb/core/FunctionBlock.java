@@ -93,12 +93,14 @@ public class FunctionBlock {
 
     private void trigger(String evt) {
         l.trace(getName() + " trigger event: " + evt);
-        sendRelativeData(evt, context);
-        List<EventLink> evtLinks = context.getEventLinks(getName(), evt);
-        if (null != evtLinks) {
-            for (EventLink evtLink : evtLinks) {
-                Event event = new Event(context.getFunctionBlockByName(evtLink.dest), evtLink.eventInput);
-                context.addEvent(event);
+        if (null != context) {
+            sendRelativeData(evt, context);
+            List<EventLink> evtLinks = context.getEventLinks(getName(), evt);
+            if (null != evtLinks) {
+                for (EventLink evtLink : evtLinks) {
+                    Event event = new Event(context.getFunctionBlockByName(evtLink.dest), evtLink.eventInput);
+                    context.addEvent(event);
+                }
             }
         }
     }
