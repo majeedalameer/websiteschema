@@ -66,8 +66,6 @@ public class SimpleBrowser extends javax.swing.JFrame {
         //初始化Context
         context = new BrowserContext();
         console = new AWTConsole(consoleTextArea);
-        MessageDialog msgDialog = new MessageDialog(this, true);
-        context.setMsgDialog(msgDialog);
         context.setConsole(console);
         context.setReference(homePage);
 
@@ -206,6 +204,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
     }
 
     private void initBrowser() {
+        context.getConsole().log(user + " : " + serial);
         BrowserFactory.setLicenseData(user, serial);
 
         //Core function to create browser
@@ -424,7 +423,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 185, Short.MAX_VALUE)
+            .addGap(0, 214, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -437,7 +436,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 185, Short.MAX_VALUE)
+            .addGap(0, 214, Short.MAX_VALUE)
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -469,8 +468,8 @@ public class SimpleBrowser extends javax.swing.JFrame {
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 877, Short.MAX_VALUE)
-            .addComponent(jToolBar2, javax.swing.GroupLayout.DEFAULT_SIZE, 877, Short.MAX_VALUE)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 848, Short.MAX_VALUE)
+            .addComponent(jToolBar2, javax.swing.GroupLayout.DEFAULT_SIZE, 848, Short.MAX_VALUE)
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -520,7 +519,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(defaultXPathField, javax.swing.GroupLayout.DEFAULT_SIZE, 661, Short.MAX_VALUE)
+                        .addComponent(defaultXPathField, javax.swing.GroupLayout.DEFAULT_SIZE, 632, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton1))
                     .addGroup(jPanel6Layout.createSequentialGroup()
@@ -535,12 +534,12 @@ public class SimpleBrowser extends javax.swing.JFrame {
                                 .addComponent(useIdCheckBox)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(useClassCheckBox)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 216, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 202, Short.MAX_VALUE)
                                 .addComponent(jLabel3)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(otherAttrTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 233, Short.MAX_VALUE))
+                                .addComponent(otherAttrTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 218, Short.MAX_VALUE))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
-                                .addComponent(xpathField, javax.swing.GroupLayout.DEFAULT_SIZE, 582, Short.MAX_VALUE)
+                                .addComponent(xpathField, javax.swing.GroupLayout.DEFAULT_SIZE, 553, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(XQueryButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -580,7 +579,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 877, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 848, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -613,7 +612,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
                         .addComponent(jLabel6)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jCheckBox4)))
-                .addContainerGap(675, Short.MAX_VALUE))
+                .addContainerGap(646, Short.MAX_VALUE))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -635,7 +634,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
         configFrame.getContentPane().setLayout(configFrameLayout);
         configFrameLayout.setHorizontalGroup(
             configFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 871, Short.MAX_VALUE)
+            .addGap(0, 842, Short.MAX_VALUE)
         );
         configFrameLayout.setVerticalGroup(
             configFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -648,7 +647,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
         jInternalFrame1.getContentPane().setLayout(jInternalFrame1Layout);
         jInternalFrame1Layout.setHorizontalGroup(
             jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 871, Short.MAX_VALUE)
+            .addGap(0, 842, Short.MAX_VALUE)
         );
         jInternalFrame1Layout.setVerticalGroup(
             jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -710,11 +709,11 @@ public class SimpleBrowser extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 1086, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addComponent(analysisPane, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(analysisPane, javax.swing.GroupLayout.PREFERRED_SIZE, 223, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(browserTab, javax.swing.GroupLayout.DEFAULT_SIZE, 886, Short.MAX_VALUE)
-                    .addComponent(consolePane)))
+                    .addComponent(browserTab, javax.swing.GroupLayout.DEFAULT_SIZE, 857, Short.MAX_VALUE)
+                    .addComponent(consolePane, javax.swing.GroupLayout.DEFAULT_SIZE, 857, Short.MAX_VALUE)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -722,7 +721,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
                 .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addGroup(layout.createSequentialGroup()
                         .addComponent(browserTab, javax.swing.GroupLayout.DEFAULT_SIZE, 394, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(consolePane, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE))

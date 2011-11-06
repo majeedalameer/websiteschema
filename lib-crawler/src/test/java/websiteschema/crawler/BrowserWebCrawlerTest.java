@@ -8,8 +8,7 @@ package websiteschema.crawler;
 import com.webrenderer.swing.BrowserFactory;
 import org.junit.Test;
 import org.w3c.dom.Document;
-import websiteschema.cralwer.Crawler;
-import websiteschema.cralwer.browser.BrowserWebCrawler;
+import websiteschema.crawler.browser.BrowserWebCrawler;
 
 /**
  *

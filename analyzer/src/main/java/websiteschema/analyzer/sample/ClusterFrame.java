@@ -10,12 +10,14 @@
  */
 package websiteschema.analyzer.sample;
 
+import java.lang.reflect.Constructor;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 import javax.swing.table.DefaultTableModel;
+import websiteschema.cluster.Clusterer;
 import websiteschema.context.BrowserContext;
 import websiteschema.model.domain.cluster.Cluster;
 import websiteschema.model.domain.cluster.ClusterModel;
@@ -61,8 +63,10 @@ public class ClusterFrame extends javax.swing.JFrame {
     }
 
     private void load() {
+        this.statusLabel.setText("Status: Start Loading...");
         cm = cmMapper.get(siteId);
         showClusterModel();
+        this.statusLabel.setText("Status: Load Compeleted");
     }
 
     private void showClusterModel() {
@@ -86,6 +90,8 @@ public class ClusterFrame extends javax.swing.JFrame {
     private Vector convert(int id, Cluster cluster) {
         Vector vect = new Vector();
         vect.add(id);
+        vect.add(cluster.getCustomName());
+        vect.add(cluster.getType());
         vect.add(cluster.getCentralPoint().getName());
         vect.add(null != cluster.getSamples() ? cluster.getSamples().size() : 0);
         vect.add(cluster.getThreshold());
@@ -124,6 +130,8 @@ public class ClusterFrame extends javax.swing.JFrame {
         mergeClusterButton = new javax.swing.JButton();
         deleteClusterButton = new javax.swing.JButton();
         saveButton = new javax.swing.JButton();
+        refreshButton = new javax.swing.JButton();
+        statusLabel = new javax.swing.JLabel();
 
         viewSimDialog.setMinimumSize(new java.awt.Dimension(217, 120));
         viewSimDialog.setResizable(false);
@@ -186,20 +194,20 @@ public class ClusterFrame extends javax.swing.JFrame {
 
         table.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
             },
             new String [] {
-                "序号", "中心点", "样本数", "阈值"
+                "序号", "名称", "类型", "中心点", "样本数", "阈值"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.Integer.class, java.lang.Double.class
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Double.class
             };
             boolean[] canEdit = new boolean [] {
-                false, true, false, true
+                false, true, true, false, false, true
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -212,8 +220,12 @@ public class ClusterFrame extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(table);
         table.getColumnModel().getColumn(0).setMaxWidth(30);
-        table.getColumnModel().getColumn(2).setMaxWidth(100);
-        table.getColumnModel().getColumn(3).setMaxWidth(100);
+        table.getColumnModel().getColumn(1).setPreferredWidth(50);
+        table.getColumnModel().getColumn(1).setMaxWidth(50);
+        table.getColumnModel().getColumn(2).setPreferredWidth(50);
+        table.getColumnModel().getColumn(2).setMaxWidth(50);
+        table.getColumnModel().getColumn(4).setMaxWidth(100);
+        table.getColumnModel().getColumn(5).setMaxWidth(100);
 
         jToolBar1.setRollover(true);
 
@@ -243,6 +255,11 @@ public class ClusterFrame extends javax.swing.JFrame {
         mergeClusterButton.setFocusable(false);
         mergeClusterButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         mergeClusterButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        mergeClusterButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mergeClusterButtonActionPerformed(evt);
+            }
+        });
         jToolBar1.add(mergeClusterButton);
 
         deleteClusterButton.setText("删除所选类");
@@ -267,6 +284,20 @@ public class ClusterFrame extends javax.swing.JFrame {
         });
         jToolBar1.add(saveButton);
 
+        refreshButton.setText("刷新");
+        refreshButton.setFocusable(false);
+        refreshButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        refreshButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        refreshButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                refreshButtonActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(refreshButton);
+
+        statusLabel.setText("Status: Load Compeleted");
+        jToolBar1.add(statusLabel);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -287,8 +318,36 @@ public class ClusterFrame extends javax.swing.JFrame {
 
     private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
         // TODO add your handling code here:
+        DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
+        int num = tableModel.getRowCount();
+        for (int i = 0; i < num; i++) {
+            Cluster cluster = cm.getCluster(i);
+            cluster.setCustomName(getClusterName(i));
+            cluster.setType(getType(i));
+            cluster.setThreshold(getThreshold(i));
+        }
         cmMapper.put(cm);
     }//GEN-LAST:event_saveButtonActionPerformed
+
+    private String getClusterName(int i) {
+        DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
+        return (String) tableModel.getValueAt(i, 1);
+    }
+
+    private String getType(int i) {
+        DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
+        return (String) tableModel.getValueAt(i, 2);
+    }
+
+    private String getCentralPoint(int i) {
+        DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
+        return (String) tableModel.getValueAt(i, 3);
+    }
+
+    private double getThreshold(int i) {
+        DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
+        return (Double) tableModel.getValueAt(i, 5);
+    }
 
     private void deleteClusterButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteClusterButtonActionPerformed
         // TODO add your handling code here:
@@ -300,55 +359,17 @@ public class ClusterFrame extends javax.swing.JFrame {
 
             for (int i = 0; i < selRowIndexs.length; i++) {
                 // 用tableModel.getValueAt(row, column)取单元格数据
-                String cp = (String) tableModel.getValueAt(selRowIndexs[i], 1);
+                String cp = getCentralPoint(selRowIndexs[i]);
                 System.out.println(cp);
                 cm.delete(cp);
+                cmMapper.put(cm);
             }
             for (int i = 0; i < selRowIndexs.length; i++) {
-                tableModel.removeRow(selRowIndexs[0]);
+                tableModel.removeRow(selRowIndexs[i]);
             }
         }
+        loadData();
     }//GEN-LAST:event_deleteClusterButtonActionPerformed
-
-    private double cosine(DocVector v1, DocVector v2) {
-        double d = 0.0;
-
-        d = dot(v1, v2) / (abs(v1) * abs(v2));
-
-        return d;
-    }
-
-    private double abs(DocVector v) {
-        double d = 0.0;
-        for (Dimension dim : v.getDims()) {
-            d += dim.getValue() * dim.getValue();
-        }
-        d = Math.sqrt(d);
-        return d;
-    }
-
-    private double dot(DocVector v1, DocVector v2) {
-        Dimension[] dims1 = v1.getDims();
-        Dimension[] dims2 = v2.getDims();
-        if (dims2.length > dims1.length) {
-            Dimension[] dims = dims1;
-            dims1 = dims2;
-            dims2 = dims;
-        }
-        Map<Integer, Integer> mapV1 = new HashMap<Integer, Integer>();
-        for (int i = 0; i < dims1.length; i++) {
-            Dimension dim = dims1[i];
-            mapV1.put(dim.getId(), dim.getValue());
-        }
-        double d = 0.0;
-        for (int i = 0; i < dims2.length; i++) {
-            Dimension dim2 = dims2[i];
-            int value2 = dim2.getValue();
-            int value1 = mapV1.containsKey(dim2.getId()) ? mapV1.get(dim2.getId()) : 0;
-            d += value1 * value2;
-        }
-        return d;
-    }
 
     private void checkButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkButtonActionPerformed
         // TODO add your handling code here:
@@ -360,11 +381,22 @@ public class ClusterFrame extends javax.swing.JFrame {
 
             Cluster c1 = cm.getCluster(index1);
             Cluster c2 = cm.getCluster(index2);
-            double sim = cosine(c1.getCentralPoint(), c2.getCentralPoint());
-            DecimalFormat df = new DecimalFormat("######0.0000");
-            this.simLabel.setText(df.format(sim));
-            this.viewSimDialog.setVisible(true);
-            this.viewSimDialog.setTitle("相似度计算结果");
+            String clustererType = cm.getClustererType();
+            try {
+                //Create Clusterer
+                Class cls = Class.forName(clustererType);
+                Class[] paramDef = new Class[]{String.class};
+                Constructor constructor = cls.getConstructor(paramDef);
+                Object[] param = new Object[]{siteId};
+                Clusterer clusterer = (Clusterer) constructor.newInstance(param);
+                double sim = clusterer.membershipDegree(c1.getCentralPoint(), c2.getCentralPoint());
+                DecimalFormat df = new DecimalFormat("######0.0000");
+                this.simLabel.setText(df.format(sim));
+                this.viewSimDialog.setVisible(true);
+                this.viewSimDialog.setTitle("相似度计算结果");
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
     }//GEN-LAST:event_checkButtonActionPerformed
 
@@ -383,7 +415,7 @@ public class ClusterFrame extends javax.swing.JFrame {
             Cluster c = cm.getCluster(selRowIndex);
             List<String> samples = c.getSamples();
             this.sampleTextArea.setText("");
-            for(String sample : samples) {
+            for (String sample : samples) {
                 this.sampleTextArea.append(sample + "\n");
             }
             this.sampleViewDialog.setTitle(c.getCentralPoint().getName());
@@ -397,6 +429,46 @@ public class ClusterFrame extends javax.swing.JFrame {
         this.sampleViewDialog.setVisible(true);
     }//GEN-LAST:event_viewClusterButtonActionPerformed
 
+    private void mergeClusterButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mergeClusterButtonActionPerformed
+        // TODO add your handling code here:
+        int selectRows = table.getSelectedRows().length;// 取得用户所选行的行数
+        if (selectRows == 2) {
+            int[] selRowIndexs = table.getSelectedRows();// 用户所选行的序列
+            int index1 = selRowIndexs[0];
+            int index2 = selRowIndexs[1];
+
+            Cluster[] clusters = cm.getClusters();
+
+            Cluster c1 = clusters[index1];
+            Cluster c2 = clusters[index2];
+
+            if (c1.getSamples().size() < c2.getSamples().size()) {
+                Cluster tmp = c1;
+                c1 = c2;
+                c2 = tmp;
+                index2 = index1;
+            }
+
+            c1.getSamples().addAll(c2.getSamples());
+            Cluster[] array = new Cluster[clusters.length - 1];
+            int pos = 0;
+            for (int i = 0; i < clusters.length; i++) {
+                if (i != index2) {
+                    array[pos++] = clusters[i];
+                }
+            }
+            cm.setClusters(array);
+            this.cmMapper.put(cm);
+            this.loadData();
+        } else if (selectRows > 2) {
+            this.statusLabel.setText("Status: 不能合并超过两个类。");
+        }
+    }//GEN-LAST:event_mergeClusterButtonActionPerformed
+
+    private void refreshButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshButtonActionPerformed
+        // TODO add your handling code here:
+        loadData();
+    }//GEN-LAST:event_refreshButtonActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton checkButton;
     private javax.swing.JButton deleteClusterButton;
@@ -406,10 +478,12 @@ public class ClusterFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JButton mergeClusterButton;
+    private javax.swing.JButton refreshButton;
     private javax.swing.JTextArea sampleTextArea;
     private javax.swing.JDialog sampleViewDialog;
     private javax.swing.JButton saveButton;
     private javax.swing.JLabel simLabel;
+    private javax.swing.JLabel statusLabel;
     private javax.swing.JTable table;
     private javax.swing.JButton viewClusterButton;
     private javax.swing.JDialog viewSimDialog;

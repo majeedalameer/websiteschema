@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import websiteschema.analyzer.browser.MessageDialog;
 import websiteschema.element.StyleSheet;
 import websiteschema.utils.Configure;
 import websiteschema.utils.Console;
@@ -21,7 +20,6 @@ import websiteschema.utils.Console;
 public class BrowserContext {
 
     Console console;
-    MessageDialog msgDialog;
     IMozillaBrowserCanvas browser = null;
     private static final Configure configure = new Configure("configure-site.ini");
     Map<String, StyleSheet> styleSheets = new HashMap<String, StyleSheet>();
@@ -67,14 +65,6 @@ public class BrowserContext {
 
     public String getReference() {
         return reference;
-    }
-
-    public MessageDialog getMsgDialog() {
-        return msgDialog;
-    }
-
-    public void setMsgDialog(MessageDialog msgDialog) {
-        this.msgDialog = msgDialog;
     }
 
 }

@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package websiteschema.cralwer.browser;
+package websiteschema.crawler.browser;
 
 import com.webrenderer.swing.event.PromptEvent;
 import com.webrenderer.swing.event.PromptListener;

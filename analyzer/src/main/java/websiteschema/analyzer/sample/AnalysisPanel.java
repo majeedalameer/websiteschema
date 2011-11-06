@@ -10,7 +10,6 @@
  */
 package websiteschema.analyzer.sample;
 
-import websiteschema.cluster.WebsiteschemaCluster;
 import websiteschema.analyzer.sample.SampleCollectionFrame;
 import websiteschema.analyzer.sample.SampleFrame;
 import com.webrenderer.swing.IMozillaBrowserCanvas;
@@ -22,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import websiteschema.analyzer.browser.SimpleBrowser;
 import websiteschema.cluster.analyzer.NewsClusterAnalyzer;
@@ -82,17 +82,16 @@ public class AnalysisPanel extends javax.swing.JPanel {
         minDateField = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
         maxDateField = new javax.swing.JTextField();
-        saveSettingsButton = new javax.swing.JButton();
-        jPanel3 = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        propTable = new javax.swing.JTable();
-        addPropButton = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         viewCategoryButton = new javax.swing.JButton();
         collectSampleButton = new javax.swing.JButton();
         addLinksButton = new javax.swing.JButton();
         viewSampleButton = new javax.swing.JButton();
         trainButton = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        propTable = new javax.swing.JTable();
+        saveSettingsButton = new javax.swing.JButton();
+        addPropButton = new javax.swing.JButton();
 
         javax.swing.GroupLayout sampleDialogLayout = new javax.swing.GroupLayout(sampleDialog.getContentPane());
         sampleDialog.getContentPane().setLayout(sampleDialogLayout);
@@ -105,11 +104,7 @@ public class AnalysisPanel extends javax.swing.JPanel {
             .addGap(0, 300, Short.MAX_VALUE)
         );
 
-        setMaximumSize(new java.awt.Dimension(185, 32767));
-
         jLabel1.setText("网站ID : ");
-
-        jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         jLabel2.setText("必须包含 :");
 
@@ -133,44 +128,6 @@ public class AnalysisPanel extends javax.swing.JPanel {
 
         maxDateField.setText("3");
 
-        saveSettingsButton.setText("保存");
-        saveSettingsButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                saveSettingsButtonActionPerformed(evt);
-            }
-        });
-
-        propTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "属性名称", "属性值"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-        });
-        jScrollPane1.setViewportView(propTable);
-
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 175, Short.MAX_VALUE)
-        );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE)
-        );
-
-        addPropButton.setText("添加");
-
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -178,47 +135,31 @@ public class AnalysisPanel extends javax.swing.JPanel {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(mustHaveField, javax.swing.GroupLayout.DEFAULT_SIZE, 104, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(mustHaveField, javax.swing.GroupLayout.DEFAULT_SIZE, 123, Short.MAX_VALUE))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(dontHaveField, javax.swing.GroupLayout.DEFAULT_SIZE, 104, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(dontHaveField, javax.swing.GroupLayout.DEFAULT_SIZE, 123, Short.MAX_VALUE))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(pageTypeField, javax.swing.GroupLayout.DEFAULT_SIZE, 104, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(pageTypeField, javax.swing.GroupLayout.DEFAULT_SIZE, 123, Short.MAX_VALUE))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jLabel5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(encodingField, javax.swing.GroupLayout.DEFAULT_SIZE, 104, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(encodingField, javax.swing.GroupLayout.DEFAULT_SIZE, 123, Short.MAX_VALUE))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jLabel6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(depthField, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(78, 78, 78))
+                .addComponent(depthField, javax.swing.GroupLayout.DEFAULT_SIZE, 123, Short.MAX_VALUE))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jLabel7)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(minDateField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(37, 37, 37))
+                .addComponent(minDateField, javax.swing.GroupLayout.DEFAULT_SIZE, 71, Short.MAX_VALUE))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jLabel8)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(maxDateField, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(38, 38, 38))
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(21, 21, 21)
-                .addComponent(addPropButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(saveSettingsButton)
-                .addContainerGap(34, Short.MAX_VALUE))
+                .addComponent(maxDateField, javax.swing.GroupLayout.DEFAULT_SIZE, 71, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -250,12 +191,7 @@ public class AnalysisPanel extends javax.swing.JPanel {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel8)
                     .addComponent(maxDateField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(12, 12, 12)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(addPropButton)
-                    .addComponent(saveSettingsButton)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -276,7 +212,7 @@ public class AnalysisPanel extends javax.swing.JPanel {
             }
         });
 
-        addLinksButton.setText("自动添加样本");
+        addLinksButton.setText("添加样本");
         addLinksButton.setToolTipText("将页面上的所有链接添加为样本");
         addLinksButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -305,14 +241,19 @@ public class AnalysisPanel extends javax.swing.JPanel {
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addComponent(trainButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(viewCategoryButton))
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addComponent(viewSampleButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(collectSampleButton))
-            .addComponent(addLinksButton)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(trainButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(viewCategoryButton))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(viewSampleButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(addLinksButton))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(92, 92, 92)
+                        .addComponent(collectSampleButton)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -320,29 +261,62 @@ public class AnalysisPanel extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(viewSampleButton)
-                    .addComponent(collectSampleButton))
+                    .addComponent(addLinksButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(addLinksButton)
+                .addComponent(collectSampleButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 7, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(trainButton)
                     .addComponent(viewCategoryButton)))
         );
 
+        propTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "属性名称", "属性值"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+        });
+        jScrollPane1.setViewportView(propTable);
+
+        saveSettingsButton.setText("保存");
+        saveSettingsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveSettingsButtonActionPerformed(evt);
+            }
+        });
+
+        addPropButton.setText("添加");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.LEADING, 0, 184, Short.MAX_VALUE)
-                    .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 194, Short.MAX_VALUE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 194, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addGap(2, 2, 2)
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(siteIdField, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(siteIdField, javax.swing.GroupLayout.DEFAULT_SIZE, 129, Short.MAX_VALUE))
+                    .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addGap(31, 31, 31)
+                        .addComponent(addPropButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(saveSettingsButton)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -356,7 +330,14 @@ public class AnalysisPanel extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 181, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(addPropButton)
+                    .addComponent(saveSettingsButton))
+                .addGap(12, 12, 12))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -383,9 +364,9 @@ public class AnalysisPanel extends javax.swing.JPanel {
                     addSampleUrl(uri);
                 }
             }
-            context.getMsgDialog().msg("添加链接完毕！");
+            JOptionPane.showMessageDialog(this, "添加链接完毕！");
         } else {
-            context.getMsgDialog().msg("无法获取链接或者siteId是空或无效！");
+            JOptionPane.showMessageDialog(this, "无法获取链接或者siteId是空或无效！");
         }
     }//GEN-LAST:event_addLinksButtonActionPerformed
 
@@ -394,14 +375,16 @@ public class AnalysisPanel extends javax.swing.JPanel {
         WebsiteschemaMapper mapper = BrowserContext.getSpringContext().getBean("websiteschemaMapper", WebsiteschemaMapper.class);
         Websiteschema websiteschema = mapper.get(getSiteId());
         CrawlerSettings settings = getCrawlerSettings();
+        Map<String,String> prop = getProperties();
         XPathAttributes attr = this.simpleBrowser.getXPathAttr();
         if (null != settings && null != websiteschema) {
             websiteschema.setCrawlerSettings(settings);
             websiteschema.setXpathAttr(attr);
             websiteschema.setLastUpdateTime(new Date());
+            websiteschema.setProperties(prop);
             mapper.put(websiteschema);
         }
-        context.getMsgDialog().msg("Crawler设置保存成功！");
+        JOptionPane.showMessageDialog(this, "Crawler设置保存成功！");
     }//GEN-LAST:event_saveSettingsButtonActionPerformed
 
     private void collectSampleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_collectSampleButtonActionPerformed
@@ -420,16 +403,18 @@ public class AnalysisPanel extends javax.swing.JPanel {
 
     private void trainButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_trainButtonActionPerformed
         // TODO add your handling code here:
-        WebsiteschemaCluster cluster = new WebsiteschemaCluster();
-        cluster.setSiteId(getSiteId());
-        cluster.setSampleMapper(BrowserContext.getSpringContext().getBean("sampleMapper", SampleMapper.class));
-        cluster.setCmMapper(BrowserContext.getSpringContext().getBean("clusterModelMapper", ClusterModelMapper.class));
-        cluster.setWebsiteschemaMapper(BrowserContext.getSpringContext().getBean("websiteschemaMapper", WebsiteschemaMapper.class));
+        WebsiteschemaClusterer clusterer = new WebsiteschemaClusterer();
+        clusterer.setSiteId(getSiteId());
+        clusterer.setParentComponent(this);
+        clusterer.setSampleMapper(BrowserContext.getSpringContext().getBean("sampleMapper", SampleMapper.class));
+        clusterer.setCmMapper(BrowserContext.getSpringContext().getBean("clusterModelMapper", ClusterModelMapper.class));
+        clusterer.setWebsiteschemaMapper(BrowserContext.getSpringContext().getBean("websiteschemaMapper", WebsiteschemaMapper.class));
 //        SiteMapper siteMapper = BrowserContext.getSpringContext().getBean("siteMapper", SiteMapper.class);
 //        Site site = siteMapper.getBySiteId(getSiteId());
 //        if siteType == news
-        cluster.setAnalyzer(new NewsClusterAnalyzer());
-        new Thread(cluster).start();
+        clusterer.setAnalyzer(new NewsClusterAnalyzer());
+        clusterer.setPanel(this);
+        new Thread(clusterer).start();
     }//GEN-LAST:event_trainButtonActionPerformed
 
     private void addSampleUrl(URI uri) {
@@ -499,9 +484,13 @@ public class AnalysisPanel extends javax.swing.JPanel {
     }
 
     public void setProperties(Map<String, String> prop) {
+        DefaultTableModel tableModel = (DefaultTableModel) propTable.getModel();
+        for (int i = 0; i < tableModel.getRowCount(); i++) {
+            tableModel.removeRow(i);
+        }
         if(null != prop) {
+            
             Set<String> keySet = prop.keySet();
-            DefaultTableModel tableModel = (DefaultTableModel) propTable.getModel();
             for(String key : keySet) {
                 String value = prop.get(key);
                 if(null != value) {
@@ -558,7 +547,6 @@ public class AnalysisPanel extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JTextField maxDateField;
