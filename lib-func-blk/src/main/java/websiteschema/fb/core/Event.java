@@ -14,6 +14,7 @@ public class Event {
 
     public FunctionBlock fb;
     public String ei;
+    public final static String CEASE_COMMAND = "stop";
 
     public Event(){
         fb = null;
@@ -25,4 +26,7 @@ public class Event {
         this.ei = ei;
     }
 
+    public static Event CeaseEvent() {
+        return new Event(null, CEASE_COMMAND);
+    }
 }
