@@ -99,4 +99,14 @@ public class SinaSearchOperations implements SearchOperations {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
+    public Trends getCurrentTrends() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public Trends getCurrentTrends(boolean bln) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
 }
