@@ -65,6 +65,7 @@ public class SampleCollectionFrame extends javax.swing.JFrame {
         exitButton = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         countLabel = new javax.swing.JLabel();
+        crawlerComboBox = new javax.swing.JComboBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
@@ -89,6 +90,8 @@ public class SampleCollectionFrame extends javax.swing.JFrame {
 
         countLabel.setText("0");
 
+        crawlerComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "HtmlUnit", "Firefox" }));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -99,15 +102,18 @@ public class SampleCollectionFrame extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(statusLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 376, Short.MAX_VALUE)
                         .addContainerGap())
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(startButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(exitButton)
-                        .addGap(142, 142, 142))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(countLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 336, Short.MAX_VALUE))))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(76, 76, 76)
+                .addComponent(crawlerComboBox, 0, 110, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(startButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(exitButton)
+                .addGap(76, 76, 76))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -120,9 +126,10 @@ public class SampleCollectionFrame extends javax.swing.JFrame {
                 .addComponent(statusLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(exitButton)
                     .addComponent(startButton)
-                    .addComponent(exitButton))
-                .addContainerGap(16, Short.MAX_VALUE))
+                    .addComponent(crawlerComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
 
         pack();
@@ -130,7 +137,14 @@ public class SampleCollectionFrame extends javax.swing.JFrame {
 
     private void startButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startButtonActionPerformed
         // TODO add your handling code here:
-        Thread t = new Thread(new SampleCollector());
+        String clazzName = "websiteschema.crawler.browser.BrowserWebCrawler";
+        String selected = (String) this.crawlerComboBox.getSelectedItem();
+        if("HtmlUnit".equalsIgnoreCase(selected)) {
+            clazzName = "websiteschema.crawler.htmlunit.HtmlUnitWebCrawler";
+        } else if("Firefox".equalsIgnoreCase(selected)) {
+            clazzName = "websiteschema.crawler.browser.BrowserWebCrawler";
+        }
+        Thread t = new Thread(new SampleCollector(clazzName));
         t.start();
     }//GEN-LAST:event_startButtonActionPerformed
 
@@ -155,9 +169,16 @@ public class SampleCollectionFrame extends javax.swing.JFrame {
     public void exit() {
         this.dispose();
         start = false;
+        System.gc();
     }
 
     class SampleCollector implements Runnable {
+
+        String crawlerClazzName;
+
+        SampleCollector(String clazzName) {
+            crawlerClazzName = clazzName;
+        }
 
         @Override
         public void run() {
@@ -165,6 +186,7 @@ public class SampleCollectionFrame extends javax.swing.JFrame {
             final WebsiteschemaMapper wMapper = BrowserContext.getSpringContext().getBean("websiteschemaMapper", WebsiteschemaMapper.class);
             Websiteschema w = wMapper.get(getSiteId());
             SampleCrawler sc = new SampleCrawler();
+            sc.setCrawlerClazzName(crawlerClazzName);
             sc.setXPathAttributes(w.getXpathAttr());
             start = true;
             String now = DateUtil.format(new Date(), "yyyy-MM-dd HH:mm");
@@ -186,6 +208,7 @@ public class SampleCollectionFrame extends javax.swing.JFrame {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel countLabel;
+    private javax.swing.JComboBox crawlerComboBox;
     private javax.swing.JButton exitButton;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JButton startButton;

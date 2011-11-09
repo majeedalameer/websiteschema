@@ -4,7 +4,13 @@
  */
 package websiteschema.element;
 
+import java.io.IOException;
+import javax.xml.parsers.ParserConfigurationException;
+import org.w3c.dom.Document;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import org.junit.Test;
+import org.xml.sax.SAXException;
 import static websiteschema.element.DocumentUtil.*;
 import static org.junit.Assert.*;
 
@@ -29,5 +35,13 @@ public class DocumentTest {
         assertEquals(buildXPath("/html/META[@id='abc']/text()", "pre"), "/pre:html/pre:META[@id='abc']/text()");
         assertEquals(buildXPath("HTML/BODY/DIV[@id='wrapper']/DIV[@id='container']/DIV[@class='area']/DIV[@class='content focusnews']/DL/DD/DIV[@class='leftCont leftContMain']/UL[@class='hotnews' @id='hotnews']/LI[@class='top']/A[@class='a3']/FONT/text()", "pre"),
                 "pre:HTML/pre:BODY/pre:DIV[@id='wrapper']/pre:DIV[@id='container']/pre:DIV[@class='area']/pre:DIV[@class='content focusnews']/pre:DL/pre:DD/pre:DIV[@class='leftCont leftContMain']/pre:UL[@class='hotnews' @id='hotnews']/pre:LI[@class='top']/pre:A[@class='a3']/pre:FONT/text()");
+    }
+
+    @Test
+    public void testGetCopy() throws ParserConfigurationException, SAXException, IOException {
+        DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
+        domFactory.setNamespaceAware(true); // never forget this!
+        DocumentBuilder builder = domFactory.newDocumentBuilder();
+//        Document ret = builder.parse(DocumentTest.class.getClassLoader().getResourceAsStream("test.xml"));
     }
 }

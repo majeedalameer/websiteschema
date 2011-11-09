@@ -59,6 +59,7 @@ public class WebsiteschemaClusterer implements Runnable {
         } else {
             JOptionPane.showMessageDialog(parentComponent, "样本集为空");
         }
+        System.gc();
     }
 
     public void setSiteId(String siteId) {

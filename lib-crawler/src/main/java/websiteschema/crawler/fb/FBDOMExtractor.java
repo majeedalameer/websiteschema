@@ -4,6 +4,8 @@
  */
 package websiteschema.crawler.fb;
 
+import websiteschema.common.base.Function;
+import java.util.HashSet;
 import websiteschema.element.factory.XPathAttrFactory;
 import websiteschema.element.XPathAttributes;
 import org.w3c.dom.Element;
@@ -15,7 +17,6 @@ import websiteschema.fb.annotation.DO;
 import java.util.Set;
 import java.util.Map;
 import org.w3c.dom.Document;
-import websiteschema.persistence.hbase.core.Function;
 import websiteschema.fb.annotation.Algorithm;
 import websiteschema.fb.annotation.DI;
 import websiteschema.fb.annotation.EI;
@@ -47,13 +48,24 @@ public class FBDOMExtractor extends FunctionBlock {
             Set<String> validNodes = null != vnode ? (Set<String>) fromJson(vnode, Set.class) : null;
             String ivnode = prop.get("InvalidNodes");
             Set<String> invalidNodes = null != vnode ? (Set<String>) fromJson(ivnode, Set.class) : null;
-
+            toUppercase(validNodes);
+            toUppercase(invalidNodes);
             out = extract(validNodes, invalidNodes);
             this.triggerEvent("EO");
         } catch (Exception ex) {
             ex.printStackTrace();
             l.error(ex);
         }
+    }
+
+    public Set<String> toUppercase(Set<String> set) {
+        Set<String> tmp = new HashSet<String>();
+        for(String str : set) {
+            tmp.add(str.toUpperCase());
+        }
+        set.clear();
+        set.addAll(tmp);
+        return set;
     }
 
     private boolean isTextNode(Node node) {
@@ -70,7 +82,7 @@ public class FBDOMExtractor extends FunctionBlock {
 //                    System.out.println("----" + XPathAttrFactory.getInstance().create(node, xpathAttr));
                     if (isTextNode(node)) {
                         Node father = node.getParentNode();
-                        String xpath = XPathAttrFactory.getInstance().create(father, xpathAttr);
+                        String xpath = XPathAttrFactory.getInstance().create(father, xpathAttr).toUpperCase();
                         if (!invalidNodes.contains(xpath)) {
                             if (validNodes.contains(xpath)) {
                                 String nodeName = father.getNodeName();
@@ -82,6 +94,11 @@ public class FBDOMExtractor extends FunctionBlock {
                                     }
                                 }
                             }
+                        }
+                    } else {
+                        String nodeName = node.getNodeName();
+                        if("BR".equalsIgnoreCase(nodeName)) {
+                            content.append("\n");
                         }
                     }
                 }

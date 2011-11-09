@@ -8,8 +8,8 @@ import websiteschema.persistence.hbase.core.HBaseMapperFactory;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import websiteschema.common.base.Function;
 import websiteschema.model.domain.Websiteschema;
-import websiteschema.persistence.hbase.core.Function;
 
 /**
  *
@@ -17,7 +17,7 @@ import websiteschema.persistence.hbase.core.Function;
  */
 public class WebsiteschemaTest {
 
-    ApplicationContext ctx = new ClassPathXmlApplicationContext("spring-beans.xml");
+    ApplicationContext ctx = new ClassPathXmlApplicationContext("spring-hbase-beans.xml");
     WebsiteschemaMapper mapper = ctx.getBean("websiteschemaMapper", WebsiteschemaMapper.class);
     String rowKey = "test_sohu_com_2";
 

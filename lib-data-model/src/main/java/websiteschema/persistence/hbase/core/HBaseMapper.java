@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
+import websiteschema.common.base.Function;
 import websiteschema.model.domain.HBaseBean;
 
 /**

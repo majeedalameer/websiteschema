@@ -14,5 +14,5 @@ import websiteschema.fb.core.FunctionBlock;
  */
 @EO(name = {"SUCCESS", "FAILURE"})
 @EI(name = {"INIT:INIT"})
-public class FBSimpleCrawler extends FunctionBlock {
+public class FBWebCrawler extends FunctionBlock {
 }

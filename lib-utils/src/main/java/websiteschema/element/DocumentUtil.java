@@ -20,6 +20,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import websiteschema.common.base.Function;
 
 /**
  *
@@ -63,6 +64,36 @@ public class DocumentUtil {
 
         return ret;
     }
+
+    /**
+     * 复制一个仅包含标签、属性、文本的Document
+     * @param xpath
+     * @param pre
+     * @return
+     */
+    public static Document clone(Document doc)
+            throws ParserConfigurationException, SAXException, IOException {
+        DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
+        domFactory.setNamespaceAware(true); // never forget this!
+        DocumentBuilder builder = domFactory.newDocumentBuilder();
+        Document ret = builder.newDocument();
+
+        return ret;
+    }
+
+    public void traversal(Node ele, Function<Node> func) {
+        if (null != ele) {
+            func.invoke(ele);
+            NodeList children = ele.getChildNodes();
+            if (null != children) {
+                for (int i = 0; i < children.getLength(); i++) {
+                    Node child = children.item(i);
+                    traversal(child, func);
+                }
+            }
+        }
+    }
+
 
     /**
      * 为XPATH增加pre namespace，实现简单，如果需要完全正确的结果，需要做XPATH的词法分析，这里还暂不支持//p[b='xy']这种格式。

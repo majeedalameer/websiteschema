@@ -21,16 +21,17 @@ public class BrowserWebCrawlerTest {
         String url = "http://localhost:8080/";
         Crawler crawler = new BrowserWebCrawler();
         Document[] docs = crawler.crawl(url);
-
+        System.out.println("----"+System.currentTimeMillis());
         crawler = null;
 
         //测试是否DOM对象已经被释放
         Thread.sleep(5000);
 
         Document doc = docs[0];
-        BrowserWebCrawler.print(doc);
+//        BrowserWebCrawler.print(doc);
 
         while(!BrowserFactory.shutdownMozilla()){
+            System.out.println("-----"+System.currentTimeMillis());
             Thread.sleep(1000);
         }
     }
