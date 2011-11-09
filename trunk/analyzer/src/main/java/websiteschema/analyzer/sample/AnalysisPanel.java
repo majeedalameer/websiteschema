@@ -69,6 +69,12 @@ public class AnalysisPanel extends javax.swing.JPanel {
         WrapperTestingDialog = new javax.swing.JDialog();
         jScrollPane2 = new javax.swing.JScrollPane();
         resultArea = new javax.swing.JTextArea();
+        propEditDialog = new javax.swing.JDialog();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        propTextArea = new javax.swing.JTextArea();
+        jToolBar1 = new javax.swing.JToolBar();
+        savePropButton = new javax.swing.JButton();
+        reloadPropButton = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         siteIdField = new javax.swing.JTextField();
         jSeparator2 = new javax.swing.JSeparator();
@@ -98,6 +104,7 @@ public class AnalysisPanel extends javax.swing.JPanel {
         propTable = new javax.swing.JTable();
         saveSettingsButton = new javax.swing.JButton();
         addPropButton = new javax.swing.JButton();
+        editButton = new javax.swing.JButton();
 
         WrapperTestingDialog.setMinimumSize(new java.awt.Dimension(600, 300));
 
@@ -115,6 +122,52 @@ public class AnalysisPanel extends javax.swing.JPanel {
         WrapperTestingDialogLayout.setVerticalGroup(
             WrapperTestingDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
+        );
+
+        propEditDialog.setMinimumSize(new java.awt.Dimension(600, 300));
+
+        propTextArea.setColumns(20);
+        propTextArea.setLineWrap(true);
+        propTextArea.setRows(5);
+        jScrollPane3.setViewportView(propTextArea);
+
+        jToolBar1.setRollover(true);
+
+        savePropButton.setText("确定");
+        savePropButton.setFocusable(false);
+        savePropButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        savePropButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        savePropButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                savePropButtonActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(savePropButton);
+
+        reloadPropButton.setText("还原");
+        reloadPropButton.setFocusable(false);
+        reloadPropButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        reloadPropButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        reloadPropButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                reloadPropButtonActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(reloadPropButton);
+
+        javax.swing.GroupLayout propEditDialogLayout = new javax.swing.GroupLayout(propEditDialog.getContentPane());
+        propEditDialog.getContentPane().setLayout(propEditDialogLayout);
+        propEditDialogLayout.setHorizontalGroup(
+            propEditDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 629, Short.MAX_VALUE)
+            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 629, Short.MAX_VALUE)
+        );
+        propEditDialogLayout.setVerticalGroup(
+            propEditDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(propEditDialogLayout.createSequentialGroup()
+                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 284, Short.MAX_VALUE))
         );
 
         jLabel1.setText("网站ID : ");
@@ -320,6 +373,13 @@ public class AnalysisPanel extends javax.swing.JPanel {
 
         addPropButton.setText("添加");
 
+        editButton.setText("编辑");
+        editButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -335,10 +395,11 @@ public class AnalysisPanel extends javax.swing.JPanel {
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(siteIdField, javax.swing.GroupLayout.DEFAULT_SIZE, 129, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addGap(31, 31, 31)
+                    .addGroup(layout.createSequentialGroup()
                         .addComponent(addPropButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(editButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 8, Short.MAX_VALUE)
                         .addComponent(saveSettingsButton)))
                 .addContainerGap())
         );
@@ -358,8 +419,9 @@ public class AnalysisPanel extends javax.swing.JPanel {
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 143, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(saveSettingsButton)
                     .addComponent(addPropButton)
-                    .addComponent(saveSettingsButton))
+                    .addComponent(editButton))
                 .addGap(20, 20, 20))
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -395,6 +457,10 @@ public class AnalysisPanel extends javax.swing.JPanel {
 
     private void saveSettingsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveSettingsButtonActionPerformed
         // TODO add your handling code here:
+        save();
+    }//GEN-LAST:event_saveSettingsButtonActionPerformed
+
+    private void save() {
         WebsiteschemaMapper mapper = BrowserContext.getSpringContext().getBean("websiteschemaMapper", WebsiteschemaMapper.class);
         Websiteschema websiteschema = mapper.get(getSiteId());
         CrawlerSettings settings = getCrawlerSettings();
@@ -408,7 +474,7 @@ public class AnalysisPanel extends javax.swing.JPanel {
             mapper.put(websiteschema);
         }
         JOptionPane.showMessageDialog(this, "Crawler设置保存成功！");
-    }//GEN-LAST:event_saveSettingsButtonActionPerformed
+    }
 
     private void collectSampleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_collectSampleButtonActionPerformed
         // TODO add your handling code here:
@@ -468,6 +534,46 @@ public class AnalysisPanel extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(this, "无法抽取出数据！");
         }
     }//GEN-LAST:event_testButtonActionPerformed
+
+    private void editButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editButtonActionPerformed
+        // TODO add your handling code here:
+        DefaultTableModel tableModel = (DefaultTableModel) propTable.getModel();
+        int row = propTable.getSelectedRow();
+
+        String propName = (String) tableModel.getValueAt(row, 0);
+        String propValue = (String) tableModel.getValueAt(row, 1);
+        if (null != propValue) {
+            propEditDialog.setTitle(propName);
+            this.propTextArea.setText(propValue);
+            int screenWidth = ((int) java.awt.Toolkit.getDefaultToolkit().getScreenSize().width);
+            int screenHeight = ((int) java.awt.Toolkit.getDefaultToolkit().getScreenSize().height);
+            int sizeWidth = propEditDialog.getWidth();
+            int sizeHeight = propEditDialog.getHeight();
+            propEditDialog.setLocation((screenWidth - sizeWidth) / 2, (screenHeight - sizeHeight) / 2);
+            this.propEditDialog.setVisible(true);
+        } else {
+            JOptionPane.showMessageDialog(this, "选择了错误的数据！");
+        }
+    }//GEN-LAST:event_editButtonActionPerformed
+
+    private void savePropButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_savePropButtonActionPerformed
+        // TODO add your handling code here:
+        Map<String, String> prop = getProperties();
+        String name = this.propEditDialog.getTitle();
+        String value = this.propTextArea.getText();
+        prop.put(name, value);
+        setProperties(prop);
+        save();
+        propEditDialog.setVisible(false);
+    }//GEN-LAST:event_savePropButtonActionPerformed
+
+    private void reloadPropButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reloadPropButtonActionPerformed
+        // TODO add your handling code here:
+        String name = this.propEditDialog.getTitle();
+        Map<String, String> prop = getProperties();
+        String value = prop.get(name);
+        this.propTextArea.setText(value);
+    }//GEN-LAST:event_reloadPropButtonActionPerformed
 
     private void addSampleUrl(URI uri) {
 //        XPathAttributes attr = this.simpleBorwser.getXPathAttr();
@@ -591,6 +697,7 @@ public class AnalysisPanel extends javax.swing.JPanel {
     private javax.swing.JButton collectSampleButton;
     private javax.swing.JTextField depthField;
     private javax.swing.JTextField dontHaveField;
+    private javax.swing.JButton editButton;
     private javax.swing.JTextField encodingField;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -604,13 +711,19 @@ public class AnalysisPanel extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JSeparator jSeparator2;
+    private javax.swing.JToolBar jToolBar1;
     private javax.swing.JTextField maxDateField;
     private javax.swing.JTextField minDateField;
     private javax.swing.JTextField mustHaveField;
     private javax.swing.JTextField pageTypeField;
+    private javax.swing.JDialog propEditDialog;
     private javax.swing.JTable propTable;
+    private javax.swing.JTextArea propTextArea;
+    private javax.swing.JButton reloadPropButton;
     private javax.swing.JTextArea resultArea;
+    private javax.swing.JButton savePropButton;
     private javax.swing.JButton saveSettingsButton;
     private javax.swing.JTextField siteIdField;
     private javax.swing.JButton testButton;

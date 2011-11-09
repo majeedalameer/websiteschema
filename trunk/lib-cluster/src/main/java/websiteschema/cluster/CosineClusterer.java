@@ -23,9 +23,10 @@ public class CosineClusterer extends Clusterer {
 
     private ClusterModel clustering(List<DocVector> space) {
         List<Cluster> listCluster = new ArrayList<Cluster>();
-        if (null != clusters) {
-            listCluster.addAll(Arrays.asList(clusters));
-        }
+        // 增量聚类（包含历史数据的聚类）
+//        if (null != clusters) {
+//            listCluster.addAll(Arrays.asList(clusters));
+//        }
 
         for (DocVector vect : space) {
             add(vect, listCluster);

@@ -8,10 +8,10 @@ import websiteschema.persistence.hbase.core.HBaseMapperFactory;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import websiteschema.common.base.Function;
 import websiteschema.model.domain.cluster.DocUnits;
 import websiteschema.model.domain.cluster.Sample;
 import websiteschema.model.domain.cluster.Unit;
-import websiteschema.persistence.hbase.core.Function;
 
 /**
  *
@@ -19,7 +19,7 @@ import websiteschema.persistence.hbase.core.Function;
  */
 public class SampleTest {
 
-    ApplicationContext ctx = new ClassPathXmlApplicationContext("spring-beans.xml");
+    ApplicationContext ctx = new ClassPathXmlApplicationContext("spring-hbase-beans.xml");
     SampleMapper mapper = ctx.getBean("sampleMapper", SampleMapper.class);
     String rowKey = "test_sohu_com_2+http://www.sohu.com/";
 

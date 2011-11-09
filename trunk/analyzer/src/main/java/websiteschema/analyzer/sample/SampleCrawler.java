@@ -23,9 +23,23 @@ public class SampleCrawler {
 
     final DocumentConvertor docConvertor = new DocumentConvertor();
     final SampleMapper mapper = BrowserContext.getSpringContext().getBean("sampleMapper", SampleMapper.class);
+    String crawlerClazzName;
 
     public void setXPathAttributes(XPathAttributes attr) {
         this.docConvertor.setXpathAttr(attr);
+    }
+
+    public Crawler createCrawler() {
+        if (null != crawlerClazzName) {
+            Crawler c = null;
+            try {
+                c = (Crawler) Class.forName(crawlerClazzName).newInstance();
+            } catch (Exception ex) {
+            }
+            return c;
+        } else {
+            return new BrowserWebCrawler();
+        }
     }
 
     public void fetch(Sample sample) {
@@ -33,17 +47,19 @@ public class SampleCrawler {
         System.out.println("fetch: " + url);
 
         if (shouldCrawl(sample)) {
-            final Crawler crawler = new BrowserWebCrawler();
+            final Crawler crawler = createCrawler();
             crawler.setLoadImage(false);
             Document[] docs = crawler.crawl(url);
-            Document doc = docs[0];
-            System.out.println("start convert");
-            DocUnits units = docConvertor.convertDocument(doc);
-            System.out.println("end convert");
-            sample.setContent(units);
-            sample.setHttpStatus(crawler.getHttpStatus());
-            sample.setLastUpdateTime(new Date());
-            mapper.put(sample);
+            Document doc = null != docs ? docs[0] : null;
+            if (null != doc) {
+                System.out.println("start convert");
+                DocUnits units = docConvertor.convertDocument(doc);
+                System.out.println("end convert");
+                sample.setContent(units);
+                sample.setHttpStatus(crawler.getHttpStatus());
+                sample.setLastUpdateTime(new Date());
+                mapper.put(sample);
+            }
         }
     }
 
@@ -61,5 +77,9 @@ public class SampleCrawler {
             }
         }
         return false;
+    }
+
+    public void setCrawlerClazzName(String crawlerClazzName) {
+        this.crawlerClazzName = crawlerClazzName;
     }
 }
