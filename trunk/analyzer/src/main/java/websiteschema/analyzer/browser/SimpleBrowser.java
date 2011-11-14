@@ -809,71 +809,20 @@ public class SimpleBrowser extends javax.swing.JFrame {
 
     private void XQueryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_XQueryButtonActionPerformed
         // TODO add your handling code here:
-        String xpathStr = this.xpathField.getText();
+        String xpathExpr = this.xpathField.getText();
         Document doc1 = (Document) context.getBrowser().getW3CDocument();
-        XPathFactory factory = XPathFactory.newInstance();
-        XPath xpath = factory.newXPath();
         try {
-            Document doc = getCopy(doc1);
-
-            String prefixNS = null;
-            NodeList chlNodes = doc.getChildNodes();
-            if (chlNodes.getLength() == 1) {
-                Node n = chlNodes.item(0);
-                if ("HTML".equalsIgnoreCase(n.getNodeName())) {
-                    prefixNS = n.getNamespaceURI();
-                }
-            }
-            if (null != prefixNS) {
-                xpath.setNamespaceContext(new MyNamespaceContext(prefixNS));
-            }
-
-            XPathExpression expr = xpath.compile(buildXPath(xpathStr, prefixNS != null ? "pre" : null));
-
-            Object result = expr.evaluate(doc, XPathConstants.NODESET);
-            org.w3c.dom.NodeList nodes = (NodeList) result;
+            List<Node> nodes = getByXPath(doc1, xpathExpr);
             this.nodeValueTextArea.setText("");
-            System.out.println("Nodes length: " + nodes.getLength());
-            for (int i = 0; i < nodes.getLength(); i++) {
-                this.nodeValueTextArea.append(nodes.item(i).getNodeName());
-                this.nodeValueTextArea.append(nodes.item(i).getNodeValue());
+            for (Node node : nodes) {
+                this.nodeValueTextArea.append(node.getNodeName());
+                this.nodeValueTextArea.append(node.getNodeValue());
                 this.nodeValueTextArea.append("\n");
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }//GEN-LAST:event_XQueryButtonActionPerformed
-
-    class MyNamespaceContext implements NamespaceContext {
-
-        String prefixNS;
-
-        MyNamespaceContext(String prefixNS) {
-            this.prefixNS = prefixNS;
-        }
-
-        @Override
-        public String getNamespaceURI(String prefix) {
-            if (prefix == null) {
-                throw new NullPointerException("Null prefix");
-            } else if ("pre".equals(prefix)) {
-                return prefixNS;
-            } else if ("xml".equals(prefix)) {
-                return XMLConstants.XML_NS_URI;
-            }
-            return XMLConstants.NULL_NS_URI;
-        }
-
-        @Override
-        public String getPrefix(String namespaceURI) {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
-
-        @Override
-        public Iterator getPrefixes(String namespaceURI) {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
-    }
 
     private void openUrl(String url) {
         if (url.startsWith("ftp://")) {

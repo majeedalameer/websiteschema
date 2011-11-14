@@ -4,6 +4,10 @@
  */
 package websiteschema.element;
 
+import org.w3c.dom.Node;
+import java.util.List;
+import java.io.ByteArrayInputStream;
+import websiteschema.utils.FileUtil;
 import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
@@ -21,7 +25,7 @@ import static org.junit.Assert.*;
 public class DocumentTest {
 
     @Test
-    public void testXPath() {
+    public void testXPath1() {
         assertEquals(buildXPath("//html", "pre"), "//pre:html");
         assertEquals(buildXPath("html", "pre"), "pre:html");
         assertEquals(buildXPath("html[@id='attr']/meta", "pre"), "pre:html[@id='attr']/pre:meta");
@@ -38,10 +42,16 @@ public class DocumentTest {
     }
 
     @Test
-    public void testGetCopy() throws ParserConfigurationException, SAXException, IOException {
+    public void testXPath2() throws ParserConfigurationException, IOException, SAXException {
+        String content = FileUtil.readResource("book.xml");
         DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
         domFactory.setNamespaceAware(true); // never forget this!
         DocumentBuilder builder = domFactory.newDocumentBuilder();
-//        Document ret = builder.parse(DocumentTest.class.getClassLoader().getResourceAsStream("test.xml"));
+        Document doc = builder.parse(new ByteArrayInputStream(content.getBytes()));
+        List<Node> nodes = getByXPath(doc, "//publisher");
+        assert(nodes.size() == 3);
+        for(Node node : nodes) {
+            System.out.println(node.getNodeName() + " : " + node.getNodeValue() + " " + node.getTextContent());
+        }
     }
 }

@@ -4,6 +4,7 @@
  */
 package websiteschema.fb.core;
 
+import java.io.InputStream;
 import java.util.*;
 import org.apache.log4j.Logger;
 import websiteschema.fb.utils.FBUtil;
@@ -24,6 +25,12 @@ public class RuntimeContext {
     private Map<String, Map<String, List<EventLink>>> evtLinks = new HashMap<String, Map<String, List<EventLink>>>();
 
     public void loadConfigure(String cp) {
+        config = new Configure(cp);
+        String startFB = config.getProperty("StartFB");
+        loadFunctionBlock(startFB);
+    }
+
+    public void loadConfigure(InputStream cp) {
         config = new Configure(cp);
         String startFB = config.getProperty("StartFB");
         loadFunctionBlock(startFB);
