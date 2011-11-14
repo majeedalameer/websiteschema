@@ -18,7 +18,7 @@ import java.util.concurrent.ThreadFactory;
  *
  * @author ray
  */
-public class ApplicationManager {
+public class ApplicationManager implements ApplicationService {
 
     public static final long MaxTaskNumber = 100;
     List<Future> fList = new ArrayList<Future>();
@@ -86,5 +86,9 @@ public class ApplicationManager {
 
     public boolean isShutdown() {
         return pool.isShutdown();
+    }
+
+    public boolean startup(Application app) {
+        return addTask(app);
     }
 }

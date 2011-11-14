@@ -75,6 +75,12 @@ public class AnalysisPanel extends javax.swing.JPanel {
         jToolBar1 = new javax.swing.JToolBar();
         savePropButton = new javax.swing.JButton();
         reloadPropButton = new javax.swing.JButton();
+        propAddDialog = new javax.swing.JDialog();
+        propNameTextField = new javax.swing.JTextField();
+        propValueTextField = new javax.swing.JTextField();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        confirmAddButton = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         siteIdField = new javax.swing.JTextField();
         jSeparator2 = new javax.swing.JSeparator();
@@ -168,6 +174,50 @@ public class AnalysisPanel extends javax.swing.JPanel {
                 .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 284, Short.MAX_VALUE))
+        );
+
+        propAddDialog.setMinimumSize(new java.awt.Dimension(371, 135));
+
+        jLabel9.setText("属性名称：");
+
+        jLabel10.setText("属性值：");
+
+        confirmAddButton.setText("确认");
+
+        javax.swing.GroupLayout propAddDialogLayout = new javax.swing.GroupLayout(propAddDialog.getContentPane());
+        propAddDialog.getContentPane().setLayout(propAddDialogLayout);
+        propAddDialogLayout.setHorizontalGroup(
+            propAddDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(propAddDialogLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(propAddDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(propAddDialogLayout.createSequentialGroup()
+                        .addGroup(propAddDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel10)
+                            .addComponent(jLabel9))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(propAddDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(propValueTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 270, Short.MAX_VALUE)
+                            .addComponent(propNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 270, Short.MAX_VALUE))
+                        .addContainerGap())
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, propAddDialogLayout.createSequentialGroup()
+                        .addComponent(confirmAddButton)
+                        .addGap(149, 149, 149))))
+        );
+        propAddDialogLayout.setVerticalGroup(
+            propAddDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(propAddDialogLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(propAddDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel9)
+                    .addComponent(propNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(propAddDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel10)
+                    .addComponent(propValueTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(confirmAddButton)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jLabel1.setText("网站ID : ");
@@ -372,6 +422,11 @@ public class AnalysisPanel extends javax.swing.JPanel {
         });
 
         addPropButton.setText("添加");
+        addPropButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addPropButtonActionPerformed(evt);
+            }
+        });
 
         editButton.setText("编辑");
         editButton.addActionListener(new java.awt.event.ActionListener() {
@@ -575,6 +630,16 @@ public class AnalysisPanel extends javax.swing.JPanel {
         this.propTextArea.setText(value);
     }//GEN-LAST:event_reloadPropButtonActionPerformed
 
+    private void addPropButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addPropButtonActionPerformed
+        // TODO add your handling code here:
+        int screenWidth = ((int) java.awt.Toolkit.getDefaultToolkit().getScreenSize().width);
+        int screenHeight = ((int) java.awt.Toolkit.getDefaultToolkit().getScreenSize().height);
+        int sizeWidth = propAddDialog.getWidth();
+        int sizeHeight = propAddDialog.getHeight();
+        propAddDialog.setLocation((screenWidth - sizeWidth) / 2, (screenHeight - sizeHeight) / 2);
+        this.propAddDialog.setVisible(true);
+    }//GEN-LAST:event_addPropButtonActionPerformed
+
     private void addSampleUrl(URI uri) {
 //        XPathAttributes attr = this.simpleBorwser.getXPathAttr();
 //        this.docConvertor.setXpathAttr(attr);
@@ -695,11 +760,13 @@ public class AnalysisPanel extends javax.swing.JPanel {
     private javax.swing.JButton addLinksButton;
     private javax.swing.JButton addPropButton;
     private javax.swing.JButton collectSampleButton;
+    private javax.swing.JButton confirmAddButton;
     private javax.swing.JTextField depthField;
     private javax.swing.JTextField dontHaveField;
     private javax.swing.JButton editButton;
     private javax.swing.JTextField encodingField;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -707,6 +774,7 @@ public class AnalysisPanel extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
@@ -718,9 +786,12 @@ public class AnalysisPanel extends javax.swing.JPanel {
     private javax.swing.JTextField minDateField;
     private javax.swing.JTextField mustHaveField;
     private javax.swing.JTextField pageTypeField;
+    private javax.swing.JDialog propAddDialog;
     private javax.swing.JDialog propEditDialog;
+    private javax.swing.JTextField propNameTextField;
     private javax.swing.JTable propTable;
     private javax.swing.JTextArea propTextArea;
+    private javax.swing.JTextField propValueTextField;
     private javax.swing.JButton reloadPropButton;
     private javax.swing.JTextArea resultArea;
     private javax.swing.JButton savePropButton;

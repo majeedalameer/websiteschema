@@ -80,7 +80,12 @@ public class XPathAttrFactory {
         String xpath = "";
         String tagName = ele.getNodeName();
         if (null != tagName) {
-            xpath = "" + tagName;
+            String ns = ele.getPrefix();
+            if (null != ns) {
+                xpath = ns + ":" + tagName.toLowerCase();
+            } else {
+                xpath = tagName.toLowerCase();
+            }
             String attrKeyValues = "";
             //如果要用位置来表示XPATH上的节点，则就没有必要使用Id和Class了。
             if (attr.isUsingPosition()) {

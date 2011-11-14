@@ -11,7 +11,6 @@ import websiteschema.element.XPathAttributes;
 import org.w3c.dom.Element;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 import websiteschema.fb.annotation.DO;
 import java.util.Set;
@@ -23,6 +22,7 @@ import websiteschema.fb.annotation.EI;
 import websiteschema.fb.annotation.EO;
 import websiteschema.fb.core.FunctionBlock;
 import static websiteschema.utils.PojoMapper.*;
+import static websiteschema.common.base.Traversal.*;
 
 /**
  *
@@ -121,16 +121,16 @@ public class FBDOMExtractor extends FunctionBlock {
         return null;
     }
 
-    private void traversal(Node ele, Function<Node> func) {
-        if (null != ele) {
-            func.invoke(ele);
-            NodeList children = ele.getChildNodes();
-            if (null != children) {
-                for (int i = 0; i < children.getLength(); i++) {
-                    Node child = children.item(i);
-                    traversal(child, func);
-                }
-            }
-        }
-    }
+//    private void traversal(Node ele, Function<Node> func) {
+//        if (null != ele) {
+//            func.invoke(ele);
+//            NodeList children = ele.getChildNodes();
+//            if (null != children) {
+//                for (int i = 0; i < children.getLength(); i++) {
+//                    Node child = children.item(i);
+//                    traversal(child, func);
+//                }
+//            }
+//        }
+//    }
 }

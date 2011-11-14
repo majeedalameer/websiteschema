@@ -4,6 +4,10 @@
  */
 package websiteschema.element;
 
+import org.jaxen.SimpleNamespaceContext;
+import java.util.List;
+import org.jaxen.dom.DOMXPath;
+import org.w3c.dom.NamedNodeMap;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -18,9 +22,6 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import websiteschema.common.base.Function;
 
 /**
  *
@@ -35,6 +36,7 @@ public class DocumentUtil {
     static private String toString(Document document) {
         String result = null;
         if (document != null) {
+            verifyDocument(document);
             StringWriter strWtr = new StringWriter();
             StreamResult strResult = new StreamResult(strWtr);
             TransformerFactory tfac = TransformerFactory.newInstance();
@@ -65,35 +67,47 @@ public class DocumentUtil {
         return ret;
     }
 
+    public static List<Node> getByXPath(Document doc, String xpathExpr) {
+        List<Node> nodes = null;
+        try {
+            String ns = doc.getDocumentElement().getNamespaceURI();
+            DOMXPath xpath = new DOMXPath(buildXPath(xpathExpr, ns != null ? "pre" : null));
+            if (null != ns) {
+                SimpleNamespaceContext nsContext = new SimpleNamespaceContext();
+                nsContext.addNamespace("pre", ns);
+                xpath.setNamespaceContext(nsContext);
+            }
+            nodes = xpath.selectNodes(doc);
+        } catch (Exception ex) {
+        }
+        return nodes;
+    }
+
     /**
-     * 复制一个仅包含标签、属性、文本的Document
+     * 剔除属性值为空的属性
      * @param xpath
      * @param pre
      * @return
      */
-    public static Document clone(Document doc)
-            throws ParserConfigurationException, SAXException, IOException {
-        DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
-        domFactory.setNamespaceAware(true); // never forget this!
-        DocumentBuilder builder = domFactory.newDocumentBuilder();
-        Document ret = builder.newDocument();
-
-        return ret;
+    public static void verifyDocument(Document doc) {
+        verifyDocument(doc.getDocumentElement());
     }
 
-    public void traversal(Node ele, Function<Node> func) {
-        if (null != ele) {
-            func.invoke(ele);
-            NodeList children = ele.getChildNodes();
-            if (null != children) {
-                for (int i = 0; i < children.getLength(); i++) {
-                    Node child = children.item(i);
-                    traversal(child, func);
+    private static void verifyDocument(Node node) {
+        NamedNodeMap nodeMap = node.getAttributes();
+        if (null != nodeMap) {
+            for (int i = 0; i < nodeMap.getLength(); i++) {
+                Node attr = nodeMap.item(i);
+                String name = attr.getNodeName();
+                String value = attr.getNodeValue();
+                if ("".equals(value)) {
+                    nodeMap.removeNamedItem(name);
+                    break;
                 }
             }
         }
-    }
 
+    }
 
     /**
      * 为XPATH增加pre namespace，实现简单，如果需要完全正确的结果，需要做XPATH的词法分析，这里还暂不支持//p[b='xy']这种格式。
