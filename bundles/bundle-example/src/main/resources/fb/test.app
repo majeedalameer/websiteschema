@@ -17,7 +17,7 @@ DO.TIMES={"Not":"IN","Threshold":"L"}
 DI.INTERVAL=1000
 
 [Not]
-FBType=websiteschema.crawler.fb.Not
+FBType=websiteschema.example.fb.Not
 EO.EO={"Console":"PRINT"}
 DO.OUT={"Console":"STR"}
 
