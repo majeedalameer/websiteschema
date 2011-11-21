@@ -17,8 +17,9 @@ import websiteschema.model.domain.Websiteschema;
  */
 public class WebsiteschemaTest {
 
-    ApplicationContext ctx = new ClassPathXmlApplicationContext("spring-hbase-beans.xml");
-    WebsiteschemaMapper mapper = ctx.getBean("websiteschemaMapper", WebsiteschemaMapper.class);
+//    ApplicationContext ctx = new ClassPathXmlApplicationContext("spring-hbase-beans.xml");
+//    WebsiteschemaMapper mapper = ctx.getBean("websiteschemaMapper", WebsiteschemaMapper.class);
+    WebsiteschemaMapper mapper = new WebsiteschemaMapper();
     String rowKey = "test_sohu_com_2";
 
     @Test

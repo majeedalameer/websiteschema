@@ -4,6 +4,7 @@
  */
 package websiteschema.crawler.fb;
 
+import websiteschema.model.domain.Websiteschema;
 import websiteschema.common.base.Function;
 import java.util.HashSet;
 import websiteschema.element.factory.XPathAttrFactory;
@@ -32,18 +33,20 @@ import static websiteschema.common.base.Traversal.*;
 @EI(name = {"EXTRACT:EXT"})
 public class FBDOMExtractor extends FunctionBlock {
 
-    @DI(name = "DocIn")
+    private Map<String, String> prop;
+    private XPathAttributes xpathAttr;
+    @DI(name = "IN")
     public Document in;
-    @DI(name = "Prop")
-    public Map<String, String> prop;
-    @DI(name = "XPathAttr")
-    public XPathAttributes xpathAttr;
-    @DO(name = "DocOut", relativeEvents = {"EO"})
+    @DI(name = "SCHEMA")
+    public Websiteschema schema;
+    @DO(name = "OUT", relativeEvents = {"EO"})
     public Document out;
 
     @Algorithm(name = "EXT")
     public void extract() {
         try {
+            prop = schema.getProperties();
+            xpathAttr = schema.getXpathAttr();
             String vnode = prop.get("ValidNodes");
             Set<String> validNodes = null != vnode ? (Set<String>) fromJson(vnode, Set.class) : null;
             String ivnode = prop.get("InvalidNodes");
@@ -60,7 +63,7 @@ public class FBDOMExtractor extends FunctionBlock {
 
     public Set<String> toUppercase(Set<String> set) {
         Set<String> tmp = new HashSet<String>();
-        for(String str : set) {
+        for (String str : set) {
             tmp.add(str.toUpperCase());
         }
         set.clear();
@@ -97,7 +100,7 @@ public class FBDOMExtractor extends FunctionBlock {
                         }
                     } else {
                         String nodeName = node.getNodeName();
-                        if("BR".equalsIgnoreCase(nodeName)) {
+                        if ("BR".equalsIgnoreCase(nodeName)) {
                             content.append("\n");
                         }
                     }
@@ -120,17 +123,4 @@ public class FBDOMExtractor extends FunctionBlock {
         }
         return null;
     }
-
-//    private void traversal(Node ele, Function<Node> func) {
-//        if (null != ele) {
-//            func.invoke(ele);
-//            NodeList children = ele.getChildNodes();
-//            if (null != children) {
-//                for (int i = 0; i < children.getLength(); i++) {
-//                    Node child = children.item(i);
-//                    traversal(child, func);
-//                }
-//            }
-//        }
-//    }
 }

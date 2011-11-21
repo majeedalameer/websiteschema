@@ -38,6 +38,8 @@ public class Mapper {
     public Mapper(String tableName) {
         this.tableName = tableName;
         conf = HBaseConfiguration.create();
+//        conf.setQuietMode(false);
+//        conf.setClassLoader(Configuration.class.getClassLoader());
     }
 
     public String getTableName() {

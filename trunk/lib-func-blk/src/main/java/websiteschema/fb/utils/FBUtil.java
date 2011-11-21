@@ -66,6 +66,7 @@ public class FBUtil {
                 return fb;
             }
         } catch (Exception ex) {
+            ex.printStackTrace();
             l.error(ex);
         }
         return null;

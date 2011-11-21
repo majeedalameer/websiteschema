@@ -5,7 +5,7 @@
 package websiteschema.fb.core;
 
 import org.apache.log4j.Logger;
-import websiteschema.utils.Configure;
+import websiteschema.conf.Configure;
 
 /**
  *
@@ -45,7 +45,7 @@ public class Application implements Runnable {
                         Class clazz = fb.getClass();
                         FBInfo fbInfo = context.getFunctionBlockInfo(clazz);
                         String algorithm = fbInfo.getEIRelatedAlgorithm(ei);
-                        fb.execute(algorithm);
+                        fb.execute(algorithm, ei);
                     } else {
                         fb.executeEvent(ei);
                     }

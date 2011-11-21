@@ -51,6 +51,7 @@ public class DocumentUtil {
                         strResult);
             } catch (Exception e) {
                 System.err.println("DocumentUtil.toString(Document): " + e);
+                e.printStackTrace();
             }
             result = strResult.getWriter().toString();
         }

@@ -515,6 +515,21 @@ public class AnalysisPanel extends javax.swing.JPanel {
         save();
     }//GEN-LAST:event_saveSettingsButtonActionPerformed
 
+    private Websiteschema getWebsiteschema() {
+        WebsiteschemaMapper mapper = BrowserContext.getSpringContext().getBean("websiteschemaMapper", WebsiteschemaMapper.class);
+        Websiteschema websiteschema = mapper.get(getSiteId());
+        CrawlerSettings settings = getCrawlerSettings();
+        Map<String, String> prop = getProperties();
+        XPathAttributes attr = this.simpleBrowser.getXPathAttr();
+        if (null != settings && null != websiteschema) {
+            websiteschema.setCrawlerSettings(settings);
+            websiteschema.setXpathAttr(attr);
+            websiteschema.setLastUpdateTime(new Date());
+            websiteschema.setProperties(prop);
+        }
+        return websiteschema;
+    }
+
     private void save() {
         WebsiteschemaMapper mapper = BrowserContext.getSpringContext().getBean("websiteschemaMapper", WebsiteschemaMapper.class);
         Websiteschema websiteschema = mapper.get(getSiteId());
@@ -572,8 +587,7 @@ public class AnalysisPanel extends javax.swing.JPanel {
         Document source = (Document) context.getBrowser().getW3CDocument();
 //        String xml = DocumentUtil.getXMLString(source);
         extractor.in = source;
-        extractor.prop = getProperties();
-        extractor.xpathAttr = websiteschema.getXpathAttr();
+        extractor.schema = websiteschema;
 
         extractor.extract();
         Document result = extractor.out;

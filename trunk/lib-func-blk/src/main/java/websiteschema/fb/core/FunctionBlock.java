@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 import websiteschema.fb.annotation.Algorithm;
 import websiteschema.fb.annotation.DI;
 import websiteschema.fb.annotation.DO;
+import websiteschema.fb.annotation.EVT;
 
 /**
  *
@@ -50,7 +51,7 @@ public class FunctionBlock {
     public final void executeEvent(String evt) {
         ExecutionControl ec = ecc.getExecutionControl(evt);
         String algorithm = ec.getAlgorithm();
-        boolean success = execute(algorithm);
+        boolean success = execute(algorithm, evt);
         if (success) {
             ecc.setStatus(ec.getSuccess());
         } else {
@@ -63,14 +64,27 @@ public class FunctionBlock {
         }
     }
 
-    public final boolean execute(String algorithm) {
+    public final boolean execute(String algorithm, String ei) {
+        l.debug("FB: " + getName() + " receive event: " + ei + " and execute algorithm: " + algorithm);
         Method[] methods = this.getClass().getMethods();
         boolean ret = true;
         for (Method method : methods) {
             if (method.isAnnotationPresent(Algorithm.class)) {
                 if (algorithm.equalsIgnoreCase(method.getAnnotation(Algorithm.class).name())) {
                     try {
-                        method.invoke(this);
+                        Class[] params = method.getParameterTypes();
+                        if (null != params && params.length > 0) {
+                            // Method Parameter has Annotation EVT Present.
+                            if (params.length == 1) {
+                                Class param = params[0];
+                                if (param.isAnnotationPresent(EVT.class)) {
+                                    method.invoke(this, ei);
+                                }
+                            }
+                        } else {
+                            // Method has no parameter.
+                            method.invoke(this);
+                        }
                     } catch (Exception ex) {
                         System.out.println(getName());
                         ex.printStackTrace();
@@ -116,8 +130,10 @@ public class FunctionBlock {
 
         for (String dataOutput : dataOutputs) {
             List<DataLink> dataLinks = context.getDataLinks(getName(), dataOutput);
-            for (DataLink dLink : dataLinks) {
-                sendData(dLink, context);
+            if (null != dataLinks) {
+                for (DataLink dLink : dataLinks) {
+                    sendData(dLink, context);
+                }
             }
         }
     }
@@ -170,27 +186,29 @@ public class FunctionBlock {
      * @param context
      */
     private void setData(String name, String dataInput, Object data, RuntimeContext context) {
-        Object obj = context.getFunctionBlockByName(name);
-        if (null != obj) {
-            Field[] fields = obj.getClass().getFields();
-            for (Field field : fields) {
-                if (field.isAnnotationPresent(DI.class)) {
-                    String dataInputName = field.getAnnotation(DI.class).name();
-                    if (dataInput.equalsIgnoreCase(dataInputName)) {
-                        try {
-                            Class typo = field.getType();
-                            if (typo.equals(data.getClass())) {
-                                field.set(obj, data);
-                            } else if (String.class.equals(typo)) {
-                                field.set(obj, data.toString());
-                            } else {
-                                field.set(obj, data);
+        if (null != data) {
+            Object obj = context.getFunctionBlockByName(name);
+            if (null != obj) {
+                Field[] fields = obj.getClass().getFields();
+                for (Field field : fields) {
+                    if (field.isAnnotationPresent(DI.class)) {
+                        String dataInputName = field.getAnnotation(DI.class).name();
+                        if (dataInput.equalsIgnoreCase(dataInputName)) {
+                            try {
+                                Class typo = field.getType();
+                                if (typo.equals(data.getClass())) {
+                                    field.set(obj, data);
+                                } else if (String.class.equals(typo)) {
+                                    field.set(obj, data.toString());
+                                } else {
+                                    field.set(obj, data);
+                                }
+                                return;
+                            } catch (IllegalAccessException ex) {
+                                l.error(ex);
+                            } catch (IllegalArgumentException ex) {
+                                l.error(ex);
                             }
-                            return;
-                        } catch (IllegalAccessException ex) {
-                            l.error(ex);
-                        } catch (IllegalArgumentException ex) {
-                            l.error(ex);
                         }
                     }
                 }

@@ -24,6 +24,7 @@ public class ApplicationManager implements ApplicationService {
     List<Future> fList = new ArrayList<Future>();
     private int poolSize = 5;
     private ExecutorService pool = null;
+    private ClassLoader classLoader = ApplicationManager.class.getClassLoader();
 
     public ApplicationManager() {
         init(poolSize);
@@ -35,6 +36,7 @@ public class ApplicationManager implements ApplicationService {
             public Thread newThread(Runnable r) {
                 Thread t = new Thread(r);
                 t.setDaemon(true);
+                t.setContextClassLoader(classLoader);
                 return t;
             }
         });
