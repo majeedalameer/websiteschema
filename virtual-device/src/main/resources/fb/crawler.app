@@ -3,6 +3,9 @@ namespace=fb.crawler
 StartFB=Start
 InitEvent=COLD
 
+[Bean]
+SpringBeans=spring-beans.xml
+
 [Start]
 FBType=websiteschema.fb.E_RESTART
 EO.COLD={"WebsiteschemaFactory":"INIT"}
