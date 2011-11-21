@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import websiteschema.fb.utils.FBUtil;
 import websiteschema.conf.Configure;
+import static websiteschema.fb.core.spring.SpringBeanFactory.getBeanFactory;
 
 /**
  *
@@ -26,6 +27,10 @@ public class RuntimeContext {
     private Map<String, Map<String, List<EventLink>>> evtLinks = new HashMap<String, Map<String, List<EventLink>>>();
 
     public ApplicationContext getSpringBeanFactory() {
+        String bean = config.getProperty("Bean", "SpringBeans");
+        if(null != bean) {
+            return getBeanFactory(bean);
+        }
         return null;
     }
 
