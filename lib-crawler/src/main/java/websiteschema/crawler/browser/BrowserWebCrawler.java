@@ -24,7 +24,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import websiteschema.crawler.Crawler;
 import websiteschema.model.domain.cralwer.CrawlerSettings;
-import websiteschema.utils.Configure;
+import websiteschema.conf.Configure;
 import websiteschema.utils.UrlLinkUtil;
 
 /**

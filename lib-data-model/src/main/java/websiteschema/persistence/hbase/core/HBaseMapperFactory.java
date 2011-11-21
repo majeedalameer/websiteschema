@@ -4,12 +4,9 @@
  */
 package websiteschema.persistence.hbase.core;
 
-import websiteschema.persistence.hbase.core.HBaseMapper;
 import websiteschema.persistence.hbase.annotation.ColumnFamily;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HColumnDescriptor;

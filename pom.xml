@@ -85,9 +85,23 @@
                 <version>${hbase-version}</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.hbase</groupId>
+                <artifactId>hbase</artifactId>
+                <version>${hbase-version}</version>
+                <classifier>sources</classifier>
+                <optional>true</optional>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.hadoop</groupId>
                 <artifactId>hadoop-core</artifactId>
                 <version>${hadoop-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.hadoop</groupId>
+                <artifactId>hadoop-core</artifactId>
+                <version>${hadoop-version}</version>
+                <classifier>sources</classifier>
+                <optional>true</optional>
             </dependency>
             <dependency>
                 <groupId>org.apache.avro</groupId>

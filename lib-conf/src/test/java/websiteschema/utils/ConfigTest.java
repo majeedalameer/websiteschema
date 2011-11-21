@@ -5,6 +5,7 @@
 
 package websiteschema.utils;
 
+import websiteschema.conf.Configure;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

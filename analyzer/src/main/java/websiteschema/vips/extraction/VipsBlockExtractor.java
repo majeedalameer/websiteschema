@@ -22,7 +22,7 @@ import websiteschema.element.XPathAttributes;
 import websiteschema.element.factory.RectangleFactory;
 import websiteschema.element.factory.StyleSheetFactory;
 import websiteschema.element.factory.XPathAttrFactory;
-import websiteschema.utils.Configure;
+import websiteschema.conf.Configure;
 import websiteschema.vips.extraction.rule.DivideRuleFactory;
 
 /**

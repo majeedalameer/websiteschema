@@ -10,7 +10,7 @@ import java.util.Map;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import websiteschema.element.StyleSheet;
-import websiteschema.utils.Configure;
+import websiteschema.conf.Configure;
 import websiteschema.utils.Console;
 
 /**

@@ -7,8 +7,9 @@ package websiteschema.fb.core;
 import java.io.InputStream;
 import java.util.*;
 import org.apache.log4j.Logger;
+import org.springframework.context.ApplicationContext;
 import websiteschema.fb.utils.FBUtil;
-import websiteschema.utils.Configure;
+import websiteschema.conf.Configure;
 
 /**
  *
@@ -23,6 +24,10 @@ public class RuntimeContext {
     private Configure config = null;
     private Map<String, Map<String, List<DataLink>>> dataLinks = new HashMap<String, Map<String, List<DataLink>>>();
     private Map<String, Map<String, List<EventLink>>> evtLinks = new HashMap<String, Map<String, List<EventLink>>>();
+
+    public ApplicationContext getSpringBeanFactory() {
+        return null;
+    }
 
     public void loadConfigure(String cp) {
         config = new Configure(cp);

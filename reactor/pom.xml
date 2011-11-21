@@ -20,6 +20,7 @@
                 <module>../lib-crawler</module>
                 <module>../lib-conf</module>
                 <module>../metadata-server</module>
+                <module>../virtual-device</module>
             </modules>
         </profile>
     </profiles>
