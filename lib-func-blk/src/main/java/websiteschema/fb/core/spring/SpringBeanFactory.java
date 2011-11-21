@@ -18,9 +18,9 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
 public class SpringBeanFactory {
 
     private static Map<String, ApplicationContext> storage = new HashMap<String, ApplicationContext>();
-    static final Boolean lock = false;
+    private static final Boolean lock = false;
 
-    public ApplicationContext getBeanFactory(String context) {
+    public static ApplicationContext getBeanFactory(String context) {
         if (storage.containsKey(context)) {
             return storage.get(context);
         } else {
