@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package websiteschema.crawler.fb;
+package websiteschema.example.fb;
 
 import websiteschema.fb.annotation.Algorithm;
 import websiteschema.fb.annotation.DI;

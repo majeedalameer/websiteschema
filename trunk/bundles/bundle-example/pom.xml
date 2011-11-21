@@ -42,11 +42,6 @@ under the License.
             <version>1.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>websiteschema</groupId>
-            <artifactId>lib-crawler</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -70,7 +65,7 @@ under the License.
                         <Import-Package>
                             !*,
                             org.osgi.framework;version="1.6",
-                            websiteschema.utils,
+                            websiteschema.conf,
                             websiteschema.fb.core,
                             websiteschema.fb.utils,
                             websiteschema.fb.factory,
