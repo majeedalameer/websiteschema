@@ -15,6 +15,7 @@
         <script type="text/javascript" src="js/Ext.ux.ThemeCombo.js"></script>
         <script type="text/javascript" src="js/dwrproxy.js"></script>
         <script type="text/javascript" src="dwr/engine.js"></script>
+        <script type="text/javascript" src="js/wrapper/WrapperEditorPanel.js"></script>
         <script type="text/javascript" src="dwr/interface/WrapperService.js"></script>
     </head>
 
@@ -38,7 +39,10 @@
                     }, recordType
                 ),
                     remoteSort: false
-
+                });
+                proxy.on('beforeload', function(thiz, params) {
+                    params.match = Ext.getCmp('MATCH').getValue();
+                    params.sort = 'updateTime desc';
                 });
                 var type_store = new Ext.data.SimpleStore(
                 {
@@ -67,7 +71,7 @@
                     {
                         header: '名称',
                         dataIndex: 'name',
-                        width: 300,
+                        width: 150,
                         editor: new fm.TextField({
                             allowBlank: false
                         })
@@ -94,6 +98,18 @@
                             }
                             return value;
                         }
+                    },
+                    {
+                        header: '编辑',
+                        width: 35,
+                        xtype: 'actioncolumn',
+                        items: [
+                            {
+                                icon   : 'resources/accept.gif',  // Use a URL in the icon config
+                                tooltip: '编辑抽取器',
+                                handler: editApplication
+                            }
+                        ]
                     },
                     {
                         header: '创建时间',
@@ -137,14 +153,6 @@
 
                 // by default columns are sortable
                 cm.defaultSortable = false;
-
-                // trigger the data store load
-                store.load({params : {
-                        start : start,
-                        limit : pageSize
-                    },
-                    arg : []});
-
                 
                 var grid = new Ext.grid.EditorGridPanel({
                     //el:'topic-grid',
@@ -209,6 +217,17 @@
 
                 // render it
                 grid.render();
+
+                // trigger the data store load
+                store.load(
+                {
+                    params :
+                        {
+                        start : start,
+                        limit : pageSize
+                    }
+                });
+                
                 function handleAdd(){
                     var p = new recordType();
                     grid.stopEditing();
@@ -224,7 +243,13 @@
 
                     var mr = store.getModifiedRecords();
                     for(var i=0;i<mr.length;i++){
-                        WrapperService.update(mr[i].data);
+                        if(i == mr.length - 1) {
+                            WrapperService.update(mr[i].data, function(){
+                                store.reload();
+                            });
+                        } else {
+                            WrapperService.update(mr[i].data);
+                        }
                     }
                     
                 }
@@ -233,14 +258,57 @@
                 function handleDelete(){
                     var selections = grid.selModel.getSelections();
                     for (var i = 0,len = selections.length; i < len; i++) {
-                        WrapperService.deleteRecord(selections[i].data);
+                        if(i == len - 1) {
+                            WrapperService.deleteRecord(selections[i].data, function(){
+                                store.reload();
+                            });
+                        } else {
+                            WrapperService.deleteRecord(selections[i].data);
+                        }
                     }
-                    store.reload();
                 }
 
                 function handleQuery(){
                     alert(Ext.getCmp('MATCH').getValue());
                     store.reload();
+                }
+
+                function editApplication(grid, rowIndex, colIndex) {
+                    var record= grid.getStore().getAt(rowIndex);
+                    if(null != record) {
+                        var id = record.data.id;
+                        WrapperService.getById(id, function(data){
+                            var editPanel = new WrapperEditorFormPanel();
+                            Ext.getCmp('fp_name').setValue(data.name);
+                            Ext.getCmp('fp_wrapperType').setValue(data.wrapperType);
+                            Ext.getCmp('fp_application').setValue(data.application);
+                            var AddWin = new Ext.Window({
+                                title: '新建记录',
+                                width: 800,
+                                height: 500,
+                                plain: true,
+                                items: editPanel,
+                                buttons: [{
+                                        text: '保存',
+                                        handler: function(){
+                                            data.name = editPanel.getComponent('fp_name').getValue();
+                                            data.wrapperType = editPanel.getComponent('fp_wrapperType').getValue();
+                                            data.application = editPanel.getComponent('fp_application').getValue();
+                                            WrapperService.update(data, function(){
+                                                store.reload();
+                                            });
+                                            AddWin.close();
+                                        }
+                                    }, {
+                                        text: '取消',
+                                        handler: function(){
+                                            AddWin.close();
+                                        }
+                                    }]
+                            });
+                            AddWin.show(this);
+                        });
+                    }
                 }
             });
         </script>

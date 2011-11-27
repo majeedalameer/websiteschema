@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="websiteschema.persistence.rdbms.ScheduleMapper">
+
+    <sql id='scheduleColumns'>s.id id, s.startURLId startURLId, s.jobId jobId, s.schedule schedule, s.scheduleType scheduleType, s.createTime createTime, u.startURL startURL</sql>
+    
+    <select id="getTotalResults" resultType="long" parameterType="java.util.Map">
+        select count(*) from Schedule s
+        left join StartURL u on s.startURLId = u.id
+        <trim prefix="WHERE" prefixOverrides="AND |OR ">
+            <if test="match != null">
+                u.siteId like CONCAT('%','${match}','%' )
+            </if>
+        </trim>
+    </select>
+
+    <select id="getSchedules" parameterType="java.util.Map" resultType="websiteschema.model.domain.Schedule">
+        select 
+        <include refid="scheduleColumns"/>
+        from Schedule s
+        left join StartURL u on s.startURLId = u.id
+        <trim prefix="WHERE" prefixOverrides="AND |OR ">
+            <if test="match != null">
+                u.siteId like CONCAT('%','${match}','%' )
+            </if>
+        </trim>
+        <if test="sort != null">
+            order by ${sort}
+        </if>
+        limit #{start}, #{limit}
+    </select>
+
+    <select id="getAll" resultType="websiteschema.model.domain.Schedule">
+        select * from Schedule
+    </select>
+
+    <select id="getSchedulesByStartURL" parameterType="long" resultType="websiteschema.model.domain.Schedule">
+        select
+        <include refid="scheduleColumns"/>
+        from Schedule s
+        left join StartURL u on s.startURLId = u.id
+        where s.startURLId = #{startURLId}
+    </select>
+
+    <!-- 查询记录，根据Id -->
+    <select id="getById" parameterType="long" resultType="websiteschema.model.domain.Schedule">
+        select
+        <include refid="scheduleColumns"/>
+        from Schedule s
+        left join StartURL u on s.startURLId = u.id
+        where id = #{id}
+    </select>
+
+    <!-- 插入记录 -->
+    <insert id="insert" parameterType="websiteschema.model.domain.Schedule"
+        useGeneratedKeys="true" keyProperty="id">
+        insert into Schedule (startURLId, jobId, schedule, scheduleType, createTime)
+        values (#{startURLId},#{jobId},#{schedule},#{scheduleType},#{createTime})
+    </insert>
+
+    <!-- 更新任务状态记录 -->
+    <update id="update" parameterType="websiteschema.model.domain.Schedule">
+        update Schedule set
+        startURLId = #{startURLId},
+        jobId = #{jobId},
+        schedule = #{schedule},
+        scheduleType = #{scheduleType}
+        where id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="websiteschema.model.domain.Schedule" >
+        delete from Schedule
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteById" parameterType="long" >
+        delete from Schedule
+        where id = #{id}
+    </delete>
+    
+</mapper>  

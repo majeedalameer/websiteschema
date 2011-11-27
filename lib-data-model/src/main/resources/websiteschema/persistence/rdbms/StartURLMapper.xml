@@ -3,14 +3,27 @@
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="websiteschema.persistence.rdbms.StartURLMapper">
 
-    <cache />
+<!--    <cache />-->
     
-    <select id="getTotalResults" resultType="long">
+    <select id="getTotalResults" resultType="long" parameterType="java.util.Map">
         select count(*) from StartURL
+        <trim prefix="WHERE" prefixOverrides="AND |OR ">
+            <if test="match != null">
+                siteId like CONCAT('%','${match}','%' )
+            </if>
+        </trim>
     </select>
 
     <select id="getStartURLs" parameterType="java.util.Map" resultType="websiteschema.model.domain.StartURL">
         select * from StartURL
+        <trim prefix="WHERE" prefixOverrides="AND |OR ">
+            <if test="match != null">
+                siteId like CONCAT('%','${match}','%' )
+            </if>
+        </trim>
+        <if test="sort != null">
+            order by ${sort}
+        </if>
         limit #{start}, #{limit}
     </select>
 

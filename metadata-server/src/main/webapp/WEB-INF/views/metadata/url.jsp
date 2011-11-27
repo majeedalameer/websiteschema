@@ -16,7 +16,10 @@
         <script type="text/javascript" src="js/dwrproxy.js"></script>
         <script type="text/javascript" src="dwr/engine.js"></script>
         <script type="text/javascript" src="dwr/interface/StartURLService.js"></script>
-        <script type="text/javascript" src="dwr/interface/SchedulerService.js"></script>
+        <script type="text/javascript" src="dwr/interface/ScheduleService.js"></script>
+        <script type="text/javascript" src="dwr/interface/WrapperService.js"></script>
+        <script type="text/javascript" src="dwr/interface/JobService.js"></script>
+        <script type="text/javascript" src="js/wrapper/AddSchedulePanel.js"></script>
     </head>
 
     <body>
@@ -30,7 +33,7 @@
 
                 var proxy = new Ext.data.DWRProxy(StartURLService.getResults, true);
                 var recordType = new Ext.data.Record.create(startURLRecordType);
-                var Scheduler = new Ext.data.Record.create(schedulerRecordType);
+                var Scheduler = new Ext.data.Record.create(scheduleRecordType);
                 var store=new Ext.data.Store({
                     proxy : proxy,
                     reader : new Ext.data.ListRangeReader(
@@ -41,6 +44,10 @@
                 ),
                     remoteSort: false
 
+                });
+                proxy.on('beforeload', function(thiz, params) {
+                    params.match = Ext.getCmp('MATCH').getValue();
+                    params.sort = 'updateTime desc';
                 });
                 var url_status_store = new Ext.data.SimpleStore(
                 {
@@ -113,6 +120,18 @@
                         }
                     },
                     {
+                        header: '添加调度',
+                        width: 60,
+                        xtype: 'actioncolumn',
+                        items: [
+                            {
+                                icon   : 'resources/accept.gif',  // Use a URL in the icon config
+                                tooltip: '添加调度配置',
+                                handler: handleAddScheduler
+                            }
+                        ]
+                    },
+                    {
                         header: '创建时间',
                         dataIndex: 'createTime',
                         width: 200,
@@ -154,14 +173,6 @@
 
                 // by default columns are sortable
                 cm.defaultSortable = false;
-
-                // trigger the data store load
-                store.load({params : {
-                        start : start,
-                        limit : pageSize
-                    },
-                    arg : []});
-
                 
                 var grid = new Ext.grid.EditorGridPanel({
                     //el:'topic-grid',
@@ -196,12 +207,6 @@
                             tooltip: '删除记录',
                             iconCls: 'icon-delete',
                             handler: handleDelete
-                        }, '-',
-                        {
-                            text: '添加调度计划',
-                            tooltip: '添加调度计划',
-                            iconCls: 'icon-add',
-                            handler: handleAddScheduler
                         }, '->',
                         ' ', 'URL', ' ',
                         {
@@ -232,6 +237,14 @@
 
                 // render it
                 grid.render();
+                // trigger the data store load
+                store.load(
+                {
+                    params : {
+                        start : start,
+                        limit : pageSize
+                    }
+                });
                 function handleAdd(){
                     var p = new recordType();
                     grid.stopEditing();
@@ -263,18 +276,59 @@
                     store.reload();
                 }
 
-                function handleAddScheduler(){
-                    var selections = grid.selModel.getSelections();
-
-                    for (var i = 0,len = selections.length; i < len; i++) {
-                        var url = selections[i];
-                        var sche = new Scheduler();
-                        sche.set("startURLId", url.get("id"));
-                        sche.set("jobId", "0");
-                        sche.set("schedule",defaultSchedule);
-                        SchedulerService.insert(sche.data);
+                function handleAddScheduler(grid, rowIndex, colIndex){
+                    
+                    var record= grid.getStore().getAt(rowIndex);
+                    if(null != record) {
+                        var editPanel = new AddSchedulePanel();
+                        var data = record.data;
+                        Ext.getCmp('fp_startURLId').setValue(data.id);
+                        Ext.getCmp('fp_startURL').setValue(data.startURL);
+                        var AddWin = new Ext.Window({
+                            title: '新建记录',
+                            width: 500,
+                            height: 350,
+                            plain: true,
+                            items: editPanel,
+                            buttons: [{
+                                    text: '保存',
+                                    handler: function(){
+                                        var startURLId = data.id;
+                                        var createSchedule = editPanel.getComponent('fp_createSchedule').getValue();
+                                        var scheduleType = editPanel.getComponent('fp_scheduleType').getValue();
+                                        var schedule = editPanel.getComponent('fp_schedule').getValue();
+                                        //alert(startURLId);
+                                        var createJob = editPanel.getComponent('fp_createJob').getValue();
+                                        var jobType = editPanel.getComponent('fp_jobType').getValue();
+                                        var configure = editPanel.getComponent('fp_job').getValue();
+                                        var wrapperId = editPanel.getComponent('fp_wrapperType').getValue();
+                                        if(createJob && createSchedule) {
+                                            var JobRecordType = new Ext.data.Record.create(jobRecordType);
+                                            var job = new JobRecordType();
+                                            job.set("configure",configure);
+                                            job.set("jobType",jobType);
+                                            job.set("wrapperId", wrapperId);
+                                            JobService.insert(job.data, function(jobId){
+                                                var ScheduleRecordType = new Ext.data.Record.create(scheduleRecordType);
+                                                var sche = new ScheduleRecordType();
+                                                sche.set("startURLId",startURLId);
+                                                sche.set("scheduleType",scheduleType);
+                                                sche.set("schedule",schedule);
+                                                sche.set("jobId",jobId);
+                                                ScheduleService.insert(sche.data);
+                                            });
+                                        }
+                                        AddWin.close();
+                                    }
+                                }, {
+                                    text: '取消',
+                                    handler: function(){
+                                        AddWin.close();
+                                    }
+                                }]
+                        });
+                        AddWin.show(this);
                     }
-                    Ext.MessageBox.alert("添加结束，点击“数据管理->调度计划”查看");
                 }
 
                 function handleQuery(){

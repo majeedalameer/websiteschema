@@ -31,7 +31,7 @@ public class StartURLService {
         ListRange listRange = new ListRange();
         Map params = buildParamWithInt(map, "start", "limit");
         listRange.setData(startURLMapper.getStartURLs(params).toArray());
-        listRange.setTotalSize(startURLMapper.getTotalResults());
+        listRange.setTotalSize(startURLMapper.getTotalResults(params));
         return listRange;
     }
 

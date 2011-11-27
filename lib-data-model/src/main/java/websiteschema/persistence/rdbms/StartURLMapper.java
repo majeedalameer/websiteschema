@@ -15,7 +15,7 @@ import websiteschema.model.domain.StartURL;
  */
 public interface StartURLMapper {
 
-    public long getTotalResults();
+    public long getTotalResults(Map params);
 
     public List<StartURL> getStartURLs(Map params);
 
