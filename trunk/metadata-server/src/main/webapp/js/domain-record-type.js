@@ -4,13 +4,17 @@
  */
 
 
-var schedulerRecordType = [
+var scheduleRecordType = [
 {
     name : 'id',
     type : 'long'
 },
 {
     name : 'startURLId',
+    type : 'string'
+},
+{
+    name : 'startURL',
     type : 'string'
 },
 {

@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import websiteschema.persistence.rdbms.SchedulerMapper;
+import websiteschema.persistence.rdbms.ScheduleMapper;
 import websiteschema.schedule.JobScheduler;
 
 /**
@@ -27,12 +27,25 @@ public class SchedulerController {
     Logger l = Logger.getRootLogger();
     private static final JobScheduler scheduler = new JobScheduler();
     @Autowired
-    SchedulerMapper schedulerMapper;
+    ScheduleMapper scheduleMapper;
+
+    public void setScheduleMapper(ScheduleMapper scheduleMapper) {
+        this.scheduleMapper = scheduleMapper;
+    }
 
     @RequestMapping(value = "/start", method = RequestMethod.GET)
     public void start(HttpServletResponse response) throws IOException {
+        boolean ok = start();
+        if (ok) {
+            response.getWriter().print("{success:true}");
+        } else {
+            response.getWriter().print("{success:false}");
+        }
+    }
+
+    public boolean start() throws IOException {
         try {
-            scheduler.setSchedulerMapper(schedulerMapper);
+            scheduler.setSchedulerMapper(scheduleMapper);
             int status = scheduler.status();
             if (JobScheduler.Stopped == status
                     || JobScheduler.Error == status) {
@@ -48,21 +61,31 @@ public class SchedulerController {
                 scheduler.load();
                 scheduler.startup();
             }
-            response.getWriter().print("{success:true}");
+            return true;
         } catch (SchedulerException e) {
             e.printStackTrace();
-            response.getWriter().print("{success:false}");
+            return false;
         }
     }
 
     @RequestMapping(value = "/stop", method = RequestMethod.GET)
     public void stop(HttpServletResponse response) throws IOException {
         l.info("stop");
+        boolean ok = stop();
+        if (ok) {
+            response.getWriter().print("{success:true}");
+        } else {
+            response.getWriter().print("{success:false}");
+        }
+    }
+
+    public boolean stop() throws IOException {
         try {
             scheduler.shutdown();
-            response.getWriter().print("{success:true}");
+            return true;
         } catch (SchedulerException e) {
-            response.getWriter().print("{success:false}");
+            e.printStackTrace();
+            return false;
         }
     }
 
@@ -70,10 +93,14 @@ public class SchedulerController {
     public void status(HttpServletRequest request, HttpServletResponse response) throws IOException {
         l.debug("status");
         try {
-            int status = scheduler.status();
+            int status = status();
             response.getWriter().print("{success:true,status:" + status + "}");
         } catch (SchedulerException e) {
             response.getWriter().print("{success:false}");
         }
+    }
+
+    public int status() throws SchedulerException {
+        return scheduler.status();
     }
 }

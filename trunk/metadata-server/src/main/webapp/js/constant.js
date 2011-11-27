@@ -4,4 +4,4 @@
  */
 
 
-var defaultSchedule = "0/10 * * * *";
+var defaultSchedule = "0/10 * * * ?";

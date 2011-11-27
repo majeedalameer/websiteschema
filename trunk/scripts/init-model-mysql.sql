@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     2011-10-25 10:41:45                          */
+/* Created on:     2011-11-26 23:34:57                          */
 /*==============================================================*/
 
 
@@ -73,7 +73,7 @@ values (1,1,0,now());
 create table Job
 (
    id                   bigint not null auto_increment,
-   jobType              varchar(30),
+   jobType              varchar(100),
    configure            varchar(4000),
    wrapperId            bigint,
    createTime           datetime,

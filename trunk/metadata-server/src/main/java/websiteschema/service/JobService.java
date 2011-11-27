@@ -40,11 +40,12 @@ public class JobService {
     }
 
     @Transactional
-    public void insert(Job job) {
+    public long insert(Job job) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         job.setCreateUser(userDetails.getUsername());
         job.setLastUpdateUser(job.getCreateUser());
         jobMapper.insert(job);
+        return job.getId();
     }
 
     @Transactional

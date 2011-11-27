@@ -14,7 +14,7 @@ import org.quartz.JobKey;
  *
  * @author ray
  */
-public class SimpleJob implements Job {
+public class JobAMQPQueueV1 implements Job {
 
     private long jobId;
     private long schedulerId;

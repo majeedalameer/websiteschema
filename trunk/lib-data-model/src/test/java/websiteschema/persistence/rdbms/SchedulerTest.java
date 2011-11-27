@@ -8,7 +8,7 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import websiteschema.model.domain.Scheduler;
+import websiteschema.model.domain.Schedule;
 
 /**
  *
@@ -17,7 +17,7 @@ import websiteschema.model.domain.Scheduler;
 public class SchedulerTest {
 
     ApplicationContext ctx = new ClassPathXmlApplicationContext("spring-beans.xml");
-    SchedulerMapper schedulerMapper = ctx.getBean("schedulerMapper", SchedulerMapper.class);
+    ScheduleMapper schedulerMapper = ctx.getBean("schedulerMapper", ScheduleMapper.class);
     long startURLId = 1;
 
     @Test
@@ -28,13 +28,13 @@ public class SchedulerTest {
     }
 
     public void insert() {
-        Scheduler scheduler = new Scheduler();
+        Schedule scheduler = new Schedule();
         scheduler.setJobId(1);
         scheduler.setStartURLId(startURLId);
         scheduler.setSchedule("2 * * * *");
         schedulerMapper.insert(scheduler);
-        
-        scheduler = new Scheduler();
+
+        scheduler = new Schedule();
         scheduler.setJobId(1);
         scheduler.setStartURLId(startURLId);
         scheduler.setSchedule("3 * * * *");
@@ -42,17 +42,17 @@ public class SchedulerTest {
     }
 
     public void selectAndUpdate() {
-        List<Scheduler> url = schedulerMapper.getSchedulersByStartURL(startURLId);
+        List<Schedule> url = schedulerMapper.getSchedulesByStartURL(startURLId);
 
-        for (Scheduler scheduler : url) {
+        for (Schedule scheduler : url) {
             schedulerMapper.update(scheduler);
         }
     }
 
     public void delete() {
-        List<Scheduler> url = schedulerMapper.getSchedulersByStartURL(startURLId);
+        List<Schedule> url = schedulerMapper.getSchedulesByStartURL(startURLId);
 
-        for (Scheduler scheduler : url) {
+        for (Schedule scheduler : url) {
             schedulerMapper.delete(scheduler);
         }
     }

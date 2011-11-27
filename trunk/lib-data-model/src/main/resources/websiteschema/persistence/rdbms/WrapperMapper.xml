@@ -3,16 +3,31 @@
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="websiteschema.persistence.rdbms.WrapperMapper">
 
-    <cache />
+<!--    <cache />-->
 
     <sql id='wrapperColumns'>id, wrapperType, name, createTime, createUser, updateTime, lastUpdateUser</sql>
 
     <select id="getTotalResults" resultType="long">
         select count(*) from Wrapper
+        <trim prefix="WHERE" prefixOverrides="AND |OR ">
+            <if test="match != null">
+                name like CONCAT('%','${match}','%' )
+            </if>
+        </trim>
     </select>
 
     <select id="getWrappers" parameterType="java.util.Map" resultType="websiteschema.model.domain.Wrapper">
-        select <include refid="wrapperColumns"/> from Wrapper
+        select
+        <include refid="wrapperColumns"/>
+        from Wrapper
+        <trim prefix="WHERE" prefixOverrides="AND |OR ">
+            <if test="match != null">
+                name like CONCAT('%','${match}','%' )
+            </if>
+        </trim>
+        <if test="sort != null">
+            order by ${sort}
+        </if>
         limit #{start}, #{limit}
     </select>
 

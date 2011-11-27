@@ -10,13 +10,14 @@ import java.util.Date;
  *
  * @author ray
  */
-public class Scheduler implements java.io.Serializable {
+public class Schedule implements java.io.Serializable {
 
     public final static int CRON = 0;
     public final static int StartEndTimes = 1;
     public final static int Invalid = -1;
     long id;
     long startURLId;
+    String startURL;
     long jobId;
     long priority = 0;
     String schedule;
@@ -77,5 +78,13 @@ public class Scheduler implements java.io.Serializable {
 
     public void setPriority(long priority) {
         this.priority = priority;
+    }
+
+    public String getStartURL() {
+        return startURL;
+    }
+
+    public void setStartURL(String startURL) {
+        this.startURL = startURL;
     }
 }

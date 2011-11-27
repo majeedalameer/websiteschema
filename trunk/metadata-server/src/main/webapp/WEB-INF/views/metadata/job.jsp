@@ -16,11 +16,15 @@
         <script type="text/javascript" src="js/dwrproxy.js"></script>
         <script type="text/javascript" src="dwr/engine.js"></script>
         <script type="text/javascript" src="dwr/interface/JobService.js"></script>
+        <script type="text/javascript" src="dwr/interface/WrapperService.js"></script>
+        <script type="text/javascript" src="js/wrapper/JobEditorPanel.js"></script>
     </head>
 
     <body>
 
         <div id="gridpanel"></div>
+
+        <div id="info-panel"></div>
 
         <script type="text/javascript">
             var start = 0;
@@ -40,13 +44,37 @@
                     remoteSort: false
 
                 });
+                proxy.on('beforeload', function(thiz, params) {
+                    params.match = Ext.getCmp('MATCH').getValue();
+                    params.sort = 'updateTime desc';
+                });
                 var type_store = new Ext.data.SimpleStore(
                 {
                     fields :['name','value'],
                     data:[
-                        ['v1','v1'],
-                        ['v2','v2']
+                        ['消息队列:V1','websiteschema.schedule.job.JobAMQPQueueV1'],
+                        ['消息队列:V2','websiteschema.schedule.job.JobAMQPQueueV2']
                     ]
+                });
+
+                var wrapperProxy = new Ext.data.DWRProxy(WrapperService.getResults, true);
+                var wrt = new Ext.data.Record.create(wrapperRecordType);
+                var wrapper_type_store = new Ext.data.Store({
+                    proxy : wrapperProxy,
+                    reader : new Ext.data.ListRangeReader(
+                    {
+                        id : 'id',
+                        totalProperty : 'totalSize'
+                    }, wrt
+                ),
+                    remoteSort: false
+                });
+                wrapper_type_store.load({
+                    params :{
+                        start : 0,
+                        limit : 100,
+                        sort : 'id desc'
+                    }
                 });
 
                 // the column model has information about grid columns
@@ -62,6 +90,27 @@
                         header: 'ID',
                         dataIndex: 'id',
                         width: 50
+                    },{
+                        header: '抽取器',
+                        dataIndex: 'wrapperId',
+                        width: 100,
+                        hidden : false,
+                        editor: new fm.ComboBox({
+                            store : wrapper_type_store,
+                            triggerAction: 'all',
+                            allowBlank: false,
+                            mode: 'local',
+                            forceSelection: true,
+                            displayField:'name',
+                            valueField:'id'
+                        }),
+                        renderer: function(value,metadata,record){
+                            var index = wrapper_type_store.find('id',value);
+                            if(index!=-1){
+                                return wrapper_type_store.getAt(index).data.name;
+                            }
+                            return value;
+                        }
                     },
                     {
                         header: '配置',
@@ -74,7 +123,7 @@
                     {
                         header: '类型',
                         dataIndex: 'jobType',
-                        width: 50,
+                        width: 100,
                         hidden : false,
                         editor: new fm.ComboBox({
                             store : type_store,
@@ -84,7 +133,6 @@
                             mode: 'local',
                             displayField:'name',
                             valueField:'value'
-
                         }),
                         renderer: function(value,metadata,record){
                             var index = type_store.find('value',value);
@@ -93,6 +141,18 @@
                             }
                             return value;
                         }
+                    },
+                    {
+                        header: '编辑配置',
+                        width: 60,
+                        xtype: 'actioncolumn',
+                        items: [
+                            {
+                                icon   : 'resources/accept.gif',  // Use a URL in the icon config
+                                tooltip: '编辑配置',
+                                handler: editJob
+                            }
+                        ]
                     },
                     {
                         header: '创建时间',
@@ -136,14 +196,6 @@
 
                 // by default columns are sortable
                 cm.defaultSortable = false;
-
-                // trigger the data store load
-                store.load({params : {
-                        start : start,
-                        limit : pageSize
-                    },
-                    arg : []});
-
                 
                 var grid = new Ext.grid.EditorGridPanel({
                     //el:'topic-grid',
@@ -208,15 +260,37 @@
 
                 // render it
                 grid.render();
+
+                // trigger the data store load
+                store.load(
+                {
+                    params : {
+                        start : start,
+                        limit : pageSize
+                    }
+                });
+
+                var p = '<p>任务配置是为相应的抽取器设置参数，每一个任务关联一个抽取器，这些抽取器需要的参数就来自这里的配置</p>'
+
+
+                new Ext.Panel({
+                    title: '任务配置与抽取器',
+                    preventBodyReset: true,
+                    renderTo: 'info-panel',
+                    width: '100%',
+                    html: p
+                });
+                
                 function handleAdd(){
                     var p = new recordType();
                     grid.stopEditing();
                     p.set("configure","");
-                    p.set("jobType","v1");
+                    p.set("jobType","websiteschema.schedule.job.JobAMQPQueueV1");
                     store.insert(0, p);
                     grid.startEditing(0, 0);
-                    JobService.insert(p.data);
-                    store.reload();
+                    JobService.insert(p.data, function(){
+                        store.reload();
+                    });
                 }
 
                 function handleEdit(){
@@ -240,6 +314,43 @@
                 function handleQuery(){
                     alert(Ext.getCmp('MATCH').getValue());
                     store.reload();
+                }
+
+                function editJob(grid, rowIndex, colIndex) {
+                    var record= grid.getStore().getAt(rowIndex);
+                    if(null != record) {
+                        var data = record.data;
+                        var editPanel = new JobEditorFormPanel();
+                        Ext.getCmp('fp_id').setValue(data.id);
+                        Ext.getCmp('fp_job').setValue(data.configure);
+                        Ext.getCmp('fp_jobType').setValue(data.jobType);
+                        Ext.getCmp('fp_wrapperType').setValue(data.wrapperId);
+                        var AddWin = new Ext.Window({
+                            title: '新建记录',
+                            width: 600,
+                            height: 350,
+                            plain: true,
+                            items: editPanel,
+                            buttons: [{
+                                    text: '保存',
+                                    handler: function(){
+                                        data.configure = editPanel.getComponent('fp_job').getValue();
+                                        data.jobType = editPanel.getComponent('fp_jobType').getValue();
+                                        data.jobType = editPanel.getComponent('fp_jobType').getValue();
+                                        JobService.update(data, function(){
+                                            store.reload();
+                                        });
+                                        AddWin.close();
+                                    }
+                                }, {
+                                    text: '取消',
+                                    handler: function(){
+                                        AddWin.close();
+                                    }
+                                }]
+                        });
+                        AddWin.show(this);
+                    }
                 }
             });
         </script>
