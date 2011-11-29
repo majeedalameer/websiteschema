@@ -28,8 +28,8 @@ var job_type_store = new Ext.data.SimpleStore(
 {
     fields :['name','value'],
     data:[
-    ['消息队列:V1','websiteschema.schedule.job.JobAMQPQueueV1'],
-    ['消息队列:V2','websiteschema.schedule.job.JobAMQPQueueV2']
+    ['基于消息队列的任务','websiteschema.schedule.job.JobAMQPQueueV1'],
+    ['更新历史新闻的转发和点击信息','websiteschema.schedule.job.RefreshJobAMQPQueueV1']
     ]
 });
 
