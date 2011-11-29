@@ -52,8 +52,8 @@
                 {
                     fields :['name','value'],
                     data:[
-                        ['消息队列:V1','websiteschema.schedule.job.JobAMQPQueueV1'],
-                        ['消息队列:V2','websiteschema.schedule.job.JobAMQPQueueV2']
+                        ['基于消息队列的任务','websiteschema.schedule.job.JobAMQPQueueV1'],
+                        ['更新历史新闻的转发和点击信息','websiteschema.schedule.job.RefreshJobAMQPQueueV1']
                     ]
                 });
 
@@ -123,7 +123,7 @@
                     {
                         header: '类型',
                         dataIndex: 'jobType',
-                        width: 100,
+                        width: 200,
                         hidden : false,
                         editor: new fm.ComboBox({
                             store : type_store,
@@ -270,7 +270,8 @@
                     }
                 });
 
-                var p = '<p>任务配置是为相应的抽取器设置参数，每一个任务关联一个抽取器，这些抽取器需要的参数就来自这里的配置</p>'
+                var p = '<p>任务配置是为相应的抽取器设置参数，每一个任务关联一个抽取器，这些抽取器需要的参数就来自这里的配置<br/>\n\
+                任务类型1：基于消息队列的任务，将相关的起始URL加入至采集队列中。任务类型2：更新历史新闻的转发和点击信息，将起始URL相关的内容页加入至采集队列中，主要用于更新点击量、转发、回帖等信息。</p>'
 
 
                 new Ext.Panel({
@@ -294,21 +295,30 @@
                 }
 
                 function handleEdit(){
-
                     var mr = store.getModifiedRecords();
                     for(var i=0;i<mr.length;i++){
-                        JobService.update(mr[i].data);
+                        if(i == mr.length - 1) {
+                            JobService.update(mr[i].data, function(){
+                                store.reload();
+                            });
+                        } else {
+                            JobService.update(mr[i].data);
+                        }
                     }
-                    
                 }
 
                 //删除数据
                 function handleDelete(){
                     var selections = grid.selModel.getSelections();
                     for (var i = 0,len = selections.length; i < len; i++) {
-                        JobService.deleteRecord(selections[i].data);
+                        if(i == len - 1) {
+                            JobService.deleteRecord(selections[i].data, function(){
+                                store.reload();
+                            });
+                        } else {
+                            JobService.deleteRecord(selections[i].data);
+                        }
                     }
-                    store.reload();
                 }
 
                 function handleQuery(){

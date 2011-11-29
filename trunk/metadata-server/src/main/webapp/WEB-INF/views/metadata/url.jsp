@@ -254,26 +254,36 @@
                     p.set("startURL","URL_here");
                     store.insert(0, p);
                     grid.startEditing(0, 0);
-                    StartURLService.insert(p.data);
-                    store.reload();
+                    StartURLService.insert(p.data, function(){
+                        store.reload();
+                    });
                 }
 
                 function handleEdit(){
-
                     var mr = store.getModifiedRecords();
                     for(var i=0;i<mr.length;i++){
-                        StartURLService.update(mr[i].data);
+                        if(i == mr.length - 1) {
+                            StartURLService.update(mr[i].data, function(){
+                                store.reload();
+                            });
+                        } else {
+                            StartURLService.update(mr[i].data);
+                        }
                     }
-                    
                 }
 
                 //删除数据
                 function handleDelete(){
                     var selections = grid.selModel.getSelections();
                     for (var i = 0,len = selections.length; i < len; i++) {
-                        StartURLService.deleteRecord(selections[i].data);
+                        if(i == len - 1) {
+                            StartURLService.deleteRecord(selections[i].data, function(){
+                                store.reload();
+                            });
+                        } else {
+                            StartURLService.deleteRecord(selections[i].data);
+                        }
                     }
-                    store.reload();
                 }
 
                 function handleAddScheduler(grid, rowIndex, colIndex){
