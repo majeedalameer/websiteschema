@@ -18,6 +18,7 @@
  */
 package websiteschema.device;
 
+import websiteschema.device.job.JobMessageReceiver;
 import websiteschema.fb.core.Application;
 import websiteschema.fb.core.ApplicationManager;
 import websiteschema.fb.core.ApplicationService;
@@ -25,14 +26,20 @@ import websiteschema.fb.core.RuntimeContext;
 
 public class VirtualDevice {
 
-    public static void main(String[] args) throws Exception {
+    public static void test() throws Exception {
         ApplicationService service = new ApplicationManager();
         Application app = new Application();
         RuntimeContext runtimeContext = app.getContext();
         runtimeContext.loadConfigure(VirtualDevice.class.getClassLoader().getResourceAsStream("fb/crawler.app"));
         service.startup(app);
-        while(true) {
+        while (true) {
             Thread.sleep(10000);
         }
+    }
+
+    public static void main(String[] args) throws Exception {
+        JobMessageReceiver receiver = new JobMessageReceiver();
+        Thread t = new Thread(receiver);
+        t.start();
     }
 }

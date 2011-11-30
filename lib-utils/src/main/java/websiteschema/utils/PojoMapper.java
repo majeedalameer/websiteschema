@@ -20,12 +20,12 @@ public class PojoMapper {
     private static ObjectMapper m = new ObjectMapper();
     private static JsonFactory jf = new JsonFactory();
 
-    public static <T> Object fromJson(String jsonAsString, Class<T> pojoClass)
+    public static <T> T fromJson(String jsonAsString, Class<T> pojoClass)
             throws JsonMappingException, JsonParseException, IOException {
         return m.readValue(jsonAsString, pojoClass);
     }
 
-    public static <T> Object fromJson(FileReader fr, Class<T> pojoClass)
+    public static <T> T fromJson(FileReader fr, Class<T> pojoClass)
             throws JsonParseException, IOException {
         return m.readValue(fr, pojoClass);
     }

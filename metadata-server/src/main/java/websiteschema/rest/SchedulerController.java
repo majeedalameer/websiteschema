@@ -13,7 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import websiteschema.persistence.rdbms.JobMapper;
 import websiteschema.persistence.rdbms.ScheduleMapper;
+import websiteschema.persistence.rdbms.StartURLMapper;
+import websiteschema.persistence.rdbms.WrapperMapper;
 import websiteschema.schedule.JobScheduler;
 
 /**
@@ -28,9 +31,27 @@ public class SchedulerController {
     private static final JobScheduler scheduler = new JobScheduler();
     @Autowired
     ScheduleMapper scheduleMapper;
+    @Autowired
+    JobMapper jobMapper;
+    @Autowired
+    WrapperMapper wrapperMapper;
+    @Autowired
+    StartURLMapper startURLMapper;
 
     public void setScheduleMapper(ScheduleMapper scheduleMapper) {
         this.scheduleMapper = scheduleMapper;
+    }
+
+    public void setJobMapper(JobMapper jobMapper) {
+        this.jobMapper = jobMapper;
+    }
+
+    public void setStartURLMapper(StartURLMapper startURLMapper) {
+        this.startURLMapper = startURLMapper;
+    }
+
+    public void setWrapperMapper(WrapperMapper wrapperMapper) {
+        this.wrapperMapper = wrapperMapper;
     }
 
     @RequestMapping(value = "/start", method = RequestMethod.GET)
@@ -45,7 +66,10 @@ public class SchedulerController {
 
     public boolean start() throws IOException {
         try {
-            scheduler.setSchedulerMapper(scheduleMapper);
+            scheduler.setScheduleMapper(scheduleMapper);
+            scheduler.setJobMapper(jobMapper);
+            scheduler.setStartURLMapper(startURLMapper);
+            scheduler.setWrapperMapper(wrapperMapper);
             int status = scheduler.status();
             if (JobScheduler.Stopped == status
                     || JobScheduler.Error == status) {
