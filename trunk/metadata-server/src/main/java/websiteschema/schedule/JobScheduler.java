@@ -4,6 +4,11 @@
  */
 package websiteschema.schedule;
 
+import org.quartz.Job;
+import org.quartz.JobDataMap;
+import websiteschema.persistence.rdbms.JobMapper;
+import websiteschema.persistence.rdbms.StartURLMapper;
+import websiteschema.persistence.rdbms.WrapperMapper;
 import org.apache.log4j.Logger;
 import websiteschema.model.domain.Schedule;
 import java.text.ParseException;
@@ -15,7 +20,6 @@ import org.quartz.SchedulerFactory;
 import org.quartz.Trigger;
 import org.quartz.impl.StdSchedulerFactory;
 import websiteschema.persistence.rdbms.ScheduleMapper;
-import websiteschema.schedule.job.JobAMQPQueueV1;
 import static org.quartz.JobBuilder.*;
 import static org.quartz.TriggerBuilder.*;
 import static org.quartz.CronScheduleBuilder.*;
@@ -32,6 +36,9 @@ public class JobScheduler {
     public final static int Standby = 3;
     private Scheduler sched = null;
     private ScheduleMapper scheduleMapper = null;
+    private JobMapper jobMapper = null;
+    private WrapperMapper wrapperMapper = null;
+    private StartURLMapper startURLMapper = null;
     private final java.util.Random random = new java.util.Random();
     private final Logger l = Logger.getLogger(JobScheduler.class);
     private final String group = "group1";
@@ -85,14 +92,29 @@ public class JobScheduler {
     }
 
     private JobDetail createJob(Schedule sche) {
-        JobDetail job =
-                newJob(JobAMQPQueueV1.class).
-                withIdentity(String.valueOf(sche.getId()), group).
-                usingJobData("schedulerId", sche.getId()).
-                usingJobData("jobId", sche.getJobId()).
-                usingJobData("startURLId", sche.getStartURLId()).
-                build();
-        return job;
+        JobDataMap jobDataMap = new JobDataMap();
+        String jobType = jobMapper.getById(sche.getJobId()).getJobType();
+        l.debug("jobId: " + sche.getJobId() + " jobType: " + jobType);
+        jobDataMap.put("startURLMapper", startURLMapper);
+        jobDataMap.put("jobMapper", jobMapper);
+        jobDataMap.put("wrapperMapper", wrapperMapper);
+        jobDataMap.put("schedulerId", sche.getId());
+        jobDataMap.put("jobId", sche.getJobId());
+        jobDataMap.put("startURLId", sche.getStartURLId());
+        try {
+            Class<? extends Job> jobClazz = (Class<? extends Job>) Class.forName(jobType);
+
+            // 创建JobDetail
+            JobDetail job =
+                    newJob(jobClazz).
+                    withIdentity(String.valueOf(sche.getId()), group).
+                    usingJobData(jobDataMap).
+                    build();
+            return job;
+        } catch (Exception ex) {
+            l.error(ex);
+        }
+        return null;
     }
 
     private Trigger createTrigger(Schedule sche) {
@@ -118,7 +140,19 @@ public class JobScheduler {
         return random.nextInt(60);
     }
 
-    public void setSchedulerMapper(ScheduleMapper scheduleMapper) {
+    public void setScheduleMapper(ScheduleMapper scheduleMapper) {
         this.scheduleMapper = scheduleMapper;
+    }
+
+    public void setJobMapper(JobMapper jobMapper) {
+        this.jobMapper = jobMapper;
+    }
+
+    public void setStartURLMapper(StartURLMapper startURLMapper) {
+        this.startURLMapper = startURLMapper;
+    }
+
+    public void setWrapperMapper(WrapperMapper wrapperMapper) {
+        this.wrapperMapper = wrapperMapper;
     }
 }

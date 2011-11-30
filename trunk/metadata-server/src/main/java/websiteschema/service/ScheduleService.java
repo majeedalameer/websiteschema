@@ -25,11 +25,12 @@ public class ScheduleService {
 
     @Autowired
     private ScheduleMapper scheduleMapper;
+    @Autowired
     private SchedulerController schedulerController;
 
-    ScheduleService() {
-        schedulerController = new SchedulerController();
-    }
+//    ScheduleService() {
+//        schedulerController = new SchedulerController();
+//    }
 
     public ListRange getResults(Map map) {
         ListRange listRange = new ListRange();
@@ -60,12 +61,12 @@ public class ScheduleService {
     }
 
     public boolean launchScheduler() throws IOException {
-        schedulerController.setScheduleMapper(scheduleMapper);
+//        schedulerController.setScheduleMapper(scheduleMapper);
         return schedulerController.start();
     }
 
     public boolean shutdownScheduler() throws IOException {
-        schedulerController.setScheduleMapper(scheduleMapper);
+//        schedulerController.setScheduleMapper(scheduleMapper);
         return schedulerController.stop();
     }
 }
