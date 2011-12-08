@@ -4,6 +4,7 @@
  */
 package websiteschema.analyzer.sample;
 
+import websiteschema.analyzer.browser.left.AnalysisPanel;
 import java.awt.Component;
 import java.util.*;
 import javax.swing.JOptionPane;

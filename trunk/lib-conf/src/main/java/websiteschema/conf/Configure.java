@@ -180,18 +180,62 @@ public class Configure {
         }
     }
 
+    /**
+     * 获取所有域的集合
+     * @return
+     */
+    public Set<String> getAllFields() {
+        return properties.keySet();
+    }
+
+    /**
+     * 获取指定域下的所有配置
+     * @param field
+     * @return
+     */
+    public Map<String, String> getAllPropertiesInField(String field) {
+        return properties.get(field);
+    }
+
+    /**
+     * 获取默认域下的指定配置
+     * @param key
+     * @return
+     */
     public String getProperty(String key) {
         return getProperty(DefaultField, key, null);
     }
 
+    /**
+     * 获取特定域下的指定配置
+     * @param field
+     * @param key
+     * @return
+     */
     public String getProperty(String field, String key) {
         return getProperty(field, key, null);
     }
 
+    /**
+     * 获取特定域下的指定配置，如果配置无效就返回用户设定的默认值
+     * @param field
+     * @param key
+     * @param def
+     * @return
+     */
     public String getProperty(String field, String key, String def) {
         return getProperty(getNamespace(), field, key, def);
     }
 
+    /**
+     * 获取特定域下的指定配置，如果配置无效就返回用户设定的默认值，<br/>
+     * 同时指定域的命名空间。
+     * @param ns
+     * @param field
+     * @param key
+     * @param def
+     * @return
+     */
     public String getProperty(String ns, String field, String key, String def) {
         if (null == key || "".equals(key)) {
             return def;

@@ -14,7 +14,7 @@ import static websiteschema.utils.PojoMapper.*;
  *
  * @author ray
  */
-public class URLQueue<T> {
+public class RabbitQueue<T> {
 
     ConnectionFactory factory = new ConnectionFactory();
     Connection connection;
@@ -22,13 +22,13 @@ public class URLQueue<T> {
     QueueingConsumer consumer;
     String queueName;
     String charset = "UTF-8";
-    Logger l = Logger.getLogger(URLQueue.class);
+    Logger l = Logger.getLogger(RabbitQueue.class);
 
-    public URLQueue(String host, String queueName, boolean sender) throws IOException {
+    public RabbitQueue(String host, String queueName, boolean sender) throws IOException {
         this(host, -1, queueName, sender);
     }
 
-    public URLQueue(String host, int port, String queueName, boolean sender) throws IOException {
+    public RabbitQueue(String host, int port, String queueName, boolean sender) throws IOException {
         factory = new ConnectionFactory();
         factory.setHost(host);
         if (port > 0) {
@@ -131,5 +131,9 @@ public class URLQueue<T> {
     public void close() throws IOException {
         channel.close();
         connection.close();
+    }
+
+    public String getQueueName() {
+        return queueName;
     }
 }

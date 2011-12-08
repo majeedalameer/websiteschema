@@ -122,8 +122,8 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="jScrollPane1" alignment="0" pref="717" max="32767" attributes="0"/>
-          <Component id="jToolBar1" alignment="0" pref="717" max="32767" attributes="0"/>
+          <Component id="jScrollPane1" alignment="0" pref="740" max="32767" attributes="0"/>
+          <Component id="jToolBar1" alignment="0" pref="740" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
@@ -268,6 +268,17 @@
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="refreshButtonActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JButton" name="browserButton">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="&#x6d4f;&#x89c8;"/>
+            <Property name="focusable" type="boolean" value="false"/>
+            <Property name="horizontalTextPosition" type="int" value="0"/>
+            <Property name="verticalTextPosition" type="int" value="3"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="browserButtonActionPerformed"/>
           </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="statusLabel">

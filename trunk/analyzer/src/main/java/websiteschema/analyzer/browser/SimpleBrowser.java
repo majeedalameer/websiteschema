@@ -11,7 +11,7 @@
 package websiteschema.analyzer.browser;
 
 import java.util.Iterator;
-import websiteschema.analyzer.sample.AnalysisPanel;
+import websiteschema.analyzer.browser.left.AnalysisPanel;
 import javax.swing.event.TreeSelectionEvent;
 import websiteschema.utils.Console;
 import websiteschema.utils.AWTConsole;
@@ -30,6 +30,8 @@ import javax.xml.namespace.NamespaceContext;
 import org.w3c.dom.*;
 import javax.xml.parsers.*;
 import javax.xml.xpath.*;
+import websiteschema.analyzer.browser.bottom.PageInfoPanel;
+import websiteschema.analyzer.browser.bottom.PageSourcePanel;
 import static websiteschema.element.DocumentUtil.*;
 import websiteschema.analyzer.browser.listener.*;
 import websiteschema.context.BrowserContext;
@@ -57,6 +59,8 @@ public class SimpleBrowser extends javax.swing.JFrame {
     final String user = BrowserContext.getConfigure().getProperty("Browser", "LicenseUser");
     final String serial = BrowserContext.getConfigure().getProperty("Browser", "LicenseSerial");
     AnalysisPanel analysisPanel;
+    PageInfoPanel pageInfoPanel;
+    PageSourcePanel pageSourcePanel;
     private javax.swing.JScrollPane vipsTreePane;
     private VipsTree vipsTree = null;
 
@@ -68,6 +72,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
         console = new AWTConsole(consoleTextArea);
         context.setConsole(console);
         context.setReference(homePage);
+        context.setSimpleBrowser(this);
 
         //初始化Webrenderer
         initBrowser();
@@ -75,6 +80,8 @@ public class SimpleBrowser extends javax.swing.JFrame {
         initVipsTree();
         //初始化分析栏
         initAnalysisPanel();
+        //初始化页面信息分析栏
+        initBottomPagePanels();
 
         //关闭consolePane
         this.consolePane.setVisible(this.hideConsoleMenu.isSelected());
@@ -127,6 +134,15 @@ public class SimpleBrowser extends javax.swing.JFrame {
         jPanel4Layout.setVerticalGroup(
                 jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addComponent(vipsTreePane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 505, Short.MAX_VALUE));
 
+    }
+
+    private void initBottomPagePanels() {
+        pageInfoPanel = new PageInfoPanel();
+        pageInfoPanel.setContext(context);
+        pageSourcePanel = new PageSourcePanel();
+
+        consolePane.addTab("页面信息", pageInfoPanel);
+        consolePane.addTab("页面源代码", pageSourcePanel);
     }
 
     private void setupVipsTree(VisionBlock block) {
@@ -218,7 +234,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
 
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(BorderLayout.CENTER, browser.getComponent());
-        this.jInternalFrame1.setContentPane(panel);
+        this.analyzerFrame.setContentPane(panel);
 
         //初始化BrowerContext
         context.setBrowser(browser);
@@ -302,14 +318,9 @@ public class SimpleBrowser extends javax.swing.JFrame {
         XQueryButton = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         nodeValueTextArea = new javax.swing.JTextArea();
-        jPanel5 = new javax.swing.JPanel();
-        jLabel5 = new javax.swing.JLabel();
-        jTextField4 = new javax.swing.JTextField();
-        jLabel6 = new javax.swing.JLabel();
-        jCheckBox4 = new javax.swing.JCheckBox();
         browserTab = new javax.swing.JTabbedPane();
         configFrame = new javax.swing.JInternalFrame();
-        jInternalFrame1 = new javax.swing.JInternalFrame();
+        analyzerFrame = new javax.swing.JInternalFrame();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -591,45 +602,6 @@ public class SimpleBrowser extends javax.swing.JFrame {
 
         consolePane.addTab("节点信息", jPanel2);
 
-        jLabel5.setText("页面编码:");
-
-        jLabel6.setText("包含Frame: Yes");
-
-        jCheckBox4.setText("关闭Frame");
-
-        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
-        jPanel5.setLayout(jPanel5Layout);
-        jPanel5Layout.setHorizontalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel5Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addComponent(jLabel5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addComponent(jLabel6)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jCheckBox4)))
-                .addContainerGap(646, Short.MAX_VALUE))
-        );
-        jPanel5Layout.setVerticalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel5Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5)
-                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel6)
-                    .addComponent(jCheckBox4))
-                .addContainerGap(134, Short.MAX_VALUE))
-        );
-
-        consolePane.addTab("页面信息", jPanel5);
-
         javax.swing.GroupLayout configFrameLayout = new javax.swing.GroupLayout(configFrame.getContentPane());
         configFrame.getContentPane().setLayout(configFrameLayout);
         configFrameLayout.setHorizontalGroup(
@@ -643,18 +615,18 @@ public class SimpleBrowser extends javax.swing.JFrame {
 
         browserTab.addTab("Configure", configFrame);
 
-        javax.swing.GroupLayout jInternalFrame1Layout = new javax.swing.GroupLayout(jInternalFrame1.getContentPane());
-        jInternalFrame1.getContentPane().setLayout(jInternalFrame1Layout);
-        jInternalFrame1Layout.setHorizontalGroup(
-            jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout analyzerFrameLayout = new javax.swing.GroupLayout(analyzerFrame.getContentPane());
+        analyzerFrame.getContentPane().setLayout(analyzerFrameLayout);
+        analyzerFrameLayout.setHorizontalGroup(
+            analyzerFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 842, Short.MAX_VALUE)
         );
-        jInternalFrame1Layout.setVerticalGroup(
-            jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        analyzerFrameLayout.setVerticalGroup(
+            analyzerFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 335, Short.MAX_VALUE)
         );
 
-        browserTab.addTab("Analyzer", jInternalFrame1);
+        browserTab.addTab("Analyzer", analyzerFrame);
 
         jMenu1.setText("文件");
 
@@ -683,7 +655,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
         });
         jMenu3.add(hideAnalysisMenu);
 
-        hideConsoleMenu.setText("Console");
+        hideConsoleMenu.setText("信息栏");
         hideConsoleMenu.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 hideConsoleMenuActionPerformed(evt);
@@ -824,12 +796,13 @@ public class SimpleBrowser extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_XQueryButtonActionPerformed
 
-    private void openUrl(String url) {
+    public void openUrl(String url) {
         if (url.startsWith("ftp://")) {
             System.out.println("FTP URL: " + url);
         } else if (!url.startsWith("http://")) {
             url = "http://" + url;
         }
+        context.getURLAndMIME().clear();
         context.setReference(url);
         browser.loadURL(url);
     }
@@ -864,6 +837,18 @@ public class SimpleBrowser extends javax.swing.JFrame {
     }
 
     /**
+     * 显示页面源代码
+     * @param source
+     */
+    public void setSource(String source) {
+        this.pageSourcePanel.setSource(source);
+    }
+
+    public PageInfoPanel getPageInfoPanel() {
+        return this.pageInfoPanel;
+    }
+
+    /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
@@ -878,6 +863,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton XQueryButton;
     private javax.swing.JTabbedPane analysisPane;
+    private javax.swing.JInternalFrame analyzerFrame;
     private javax.swing.JButton backButton;
     private javax.swing.JProgressBar browserProgress;
     private javax.swing.JTabbedPane browserTab;
@@ -894,14 +880,10 @@ public class SimpleBrowser extends javax.swing.JFrame {
     private javax.swing.JButton homeButton;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
-    private javax.swing.JCheckBox jCheckBox4;
-    private javax.swing.JInternalFrame jInternalFrame1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
@@ -911,11 +893,9 @@ public class SimpleBrowser extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTextField jTextField4;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JToolBar jToolBar2;
     private javax.swing.JTextArea nodeValueTextArea;

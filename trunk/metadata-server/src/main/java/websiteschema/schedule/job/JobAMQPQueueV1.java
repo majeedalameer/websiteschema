@@ -5,13 +5,19 @@
 package websiteschema.schedule.job;
 
 import javax.servlet.http.*;
+import org.apache.log4j.Logger;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.JobKey;
 import org.springframework.beans.factory.annotation.Autowired;
+import websiteschema.common.amqp.Message;
+import websiteschema.common.amqp.RabbitQueue;
+import websiteschema.metadata.utils.MetadataServerContext;
+import websiteschema.model.domain.StartURL;
 import websiteschema.persistence.rdbms.*;
+import websiteschema.schedule.TaskHandler;
 
 /**
  *
@@ -25,6 +31,7 @@ public class JobAMQPQueueV1 implements Job {
     private JobMapper jobMapper;
     private WrapperMapper wrapperMapper;
     private StartURLMapper startURLMapper;
+    Logger l = Logger.getLogger(JobAMQPQueueV1.class);
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
@@ -33,9 +40,17 @@ public class JobAMQPQueueV1 implements Job {
 //        wrapperMapper = (WrapperMapper) context.getJobDetail().getJobDataMap().get("wrapperMapper");
 //        startURLMapper = (StartURLMapper) context.getJobDetail().getJobDataMap().get("startURLMapper");
 
-        System.out.println("Instance " + key + " of schedulerId: " + schedulerId + ", and jobId is: " + jobId + ", and startURLId is: " + startURLId);
+        l.debug("Instance " + key + " of schedulerId: " + schedulerId + ", and jobId is: " + jobId + ", and startURLId is: " + startURLId);
         websiteschema.model.domain.Job job = jobMapper.getById(jobId);
-        System.out.println(job.getConfigure());
+        l.debug(job.getConfigure());
+        RabbitQueue<Message> queue = TaskHandler.getInstance().getQueue();
+        queue.offer(create(job));
+        l.debug("Message about Job " + jobId + " has been emitted to queue: " + queue.getQueueName());
+    }
+
+    private Message create(websiteschema.model.domain.Job job) {
+        StartURL startURL = startURLMapper.getById(startURLId);
+        return new Message(jobId, startURLId, job.getWrapperId(), startURL.getStartURL(), job.getConfigure());
     }
 
     public long getJobId() {

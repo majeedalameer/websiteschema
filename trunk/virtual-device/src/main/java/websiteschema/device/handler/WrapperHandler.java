@@ -4,8 +4,9 @@
  */
 package websiteschema.device.handler;
 
-import java.io.InputStream;
 import websiteschema.model.domain.Wrapper;
+import websiteschema.persistence.rdbms.WrapperMapper;
+import static websiteschema.device.DeviceContext.*;
 
 /**
  * 负责缓存Wrapper
@@ -14,13 +15,14 @@ import websiteschema.model.domain.Wrapper;
 public class WrapperHandler {
 
     private static WrapperHandler ins = new WrapperHandler();
+    private WrapperMapper wrapperMapper = getSpringContext().getBean("wrapperMapper", WrapperMapper.class);
 
     public static WrapperHandler getInstance() {
         return ins;
     }
 
     public Wrapper getWrapper(long wrapperId) {
-        return null;
+        return wrapperMapper.getById(wrapperId);
     }
 
 }

@@ -5,6 +5,7 @@
 package websiteschema.analyzer.browser.listener;
 
 import com.webrenderer.swing.IBrowserCanvas;
+import com.webrenderer.swing.dom.IDocument;
 import com.webrenderer.swing.event.NetworkEvent;
 import com.webrenderer.swing.event.NetworkListener;
 import java.util.Timer;
@@ -12,6 +13,8 @@ import java.util.TimerTask;
 import javax.swing.JProgressBar;
 import javax.swing.JTextField;
 import org.apache.log4j.Logger;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import websiteschema.context.BrowserContext;
 import websiteschema.vips.VIPSImpl;
 
@@ -89,15 +92,28 @@ public class SimpleNetworkListener implements NetworkListener {
     @Override
     public void onDocumentComplete(NetworkEvent ne) {
         l.debug("onDocumentComplete " + ne.getURL());
-        context.setReference(ne.getURL());
-        progress.setValue(progress.getMaximum());
-        progress.setVisible(false);
-        addressTextField.setText(ne.getURL());
+        try {
+            context.setReference(ne.getURL());
+            progress.setValue(progress.getMaximum());
+            progress.setVisible(false);
+            addressTextField.setText(ne.getURL());
+            String title = null != context.getBrowser().getDocument() ? context.getBrowser().getDocument().getTitle() : "";
+            context.getConsole().log("title: " + title);
+            // 更新页面信息
+            context.getSimpleBrowser().getPageInfoPanel().update();
 
-        timer.cancel();
-        timer = null;
-        if (couldProcess()) {
-            process();
+            // 显示源代码
+            IDocument doc = context.getBrowser().getDocument();
+            if (null != doc) {
+                context.getSimpleBrowser().setSource(doc.getBody().getParentElement().getInnerHTML());
+            }
+
+            timer.cancel();
+            timer = null;
+            if (couldProcess()) {
+                process();
+            }
+        } catch (Exception ex) {
         }
     }
 
@@ -115,6 +131,7 @@ public class SimpleNetworkListener implements NetworkListener {
     public void onHTTPResponse(NetworkEvent ne) {
 //        l.debug("onHTTPResponse\n" + ne.getResponseHeaders());
         l.debug("onHTTPResponse\n" + ne.getURL() + " : " + ne.getStatus() + " : " + ne.getStatusText());
+        context.getURLAndMIME().put(ne.getURL(), ne.getResponseHeaders());
     }
 
     @Override
