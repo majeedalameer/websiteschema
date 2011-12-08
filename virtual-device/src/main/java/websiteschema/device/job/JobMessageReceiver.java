@@ -7,11 +7,9 @@ package websiteschema.device.job;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringBufferInputStream;
-import java.io.UnsupportedEncodingException;
 import org.apache.log4j.Logger;
 import websiteschema.common.amqp.Message;
-import websiteschema.common.amqp.URLQueue;
+import websiteschema.common.amqp.RabbitQueue;
 import websiteschema.common.base.Function;
 import websiteschema.device.DeviceContext;
 import websiteschema.device.handler.WrapperHandler;
@@ -25,7 +23,7 @@ import websiteschema.model.domain.Wrapper;
  */
 public class JobMessageReceiver implements Runnable {
 
-    private URLQueue<Message> queue;
+    private RabbitQueue<Message> queue;
     private boolean isStop = false;
     private Logger l = Logger.getLogger(JobMessageReceiver.class);
 
@@ -35,7 +33,7 @@ public class JobMessageReceiver implements Runnable {
         String queueName = DeviceContext.getInstance().getConf().
                 getProperty("URLQueue", "QueueName", "url_queue");
         try {
-            queue = new URLQueue<Message>(host, queueName, false);
+            queue = new RabbitQueue<Message>(host, queueName, false);
         } catch (IOException ex) {
             l.error("can not initialize URL Queue.", ex);
         }

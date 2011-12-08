@@ -21,7 +21,7 @@ import websiteschema.model.domain.cluster.Sample;
 import static websiteschema.utils.PojoMapper.*;
 
 /**
- *
+ * 用来分析新闻类型的网站
  * @author ray
  */
 public class NewsClusterAnalyzer implements ClusterAnalyzer {
@@ -65,5 +65,10 @@ public class NewsClusterAnalyzer implements ClusterAnalyzer {
         }
 
         return ret;
+    }
+
+    private void findTitlePrefix() {
+        String titlePath = "html/head/title";
+        
     }
 }

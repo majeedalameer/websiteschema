@@ -23,6 +23,7 @@ import websiteschema.model.domain.cluster.Cluster;
 import websiteschema.model.domain.cluster.ClusterModel;
 import websiteschema.model.domain.cluster.Dimension;
 import websiteschema.model.domain.cluster.DocVector;
+import websiteschema.model.domain.cluster.Sample;
 import websiteschema.persistence.hbase.ClusterModelMapper;
 import websiteschema.persistence.hbase.SampleMapper;
 
@@ -36,6 +37,7 @@ public class ClusterFrame extends javax.swing.JFrame {
     SampleMapper sampleMapper = null;
     ClusterModelMapper cmMapper = null;
     ClusterModel cm = null;
+    BrowserContext context;
 
     /** Creates new form ClusterFrame */
     public ClusterFrame(String siteId) {
@@ -56,6 +58,14 @@ public class ClusterFrame extends javax.swing.JFrame {
         cmMapper = BrowserContext.getSpringContext().getBean("clusterModelMapper", ClusterModelMapper.class);
 
         loadData();
+    }
+
+    public BrowserContext getContext() {
+        return context;
+    }
+
+    public void setContext(BrowserContext context) {
+        this.context = context;
     }
 
     private void loadData() {
@@ -131,6 +141,7 @@ public class ClusterFrame extends javax.swing.JFrame {
         deleteClusterButton = new javax.swing.JButton();
         saveButton = new javax.swing.JButton();
         refreshButton = new javax.swing.JButton();
+        browserButton = new javax.swing.JButton();
         statusLabel = new javax.swing.JLabel();
 
         viewSimDialog.setMinimumSize(new java.awt.Dimension(217, 120));
@@ -295,6 +306,17 @@ public class ClusterFrame extends javax.swing.JFrame {
         });
         jToolBar1.add(refreshButton);
 
+        browserButton.setText("浏览");
+        browserButton.setFocusable(false);
+        browserButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        browserButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        browserButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                browserButtonActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(browserButton);
+
         statusLabel.setText("Status: Load Compeleted");
         jToolBar1.add(statusLabel);
 
@@ -302,8 +324,8 @@ public class ClusterFrame extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 717, Short.MAX_VALUE)
-            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 717, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 740, Short.MAX_VALUE)
+            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 740, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -469,7 +491,24 @@ public class ClusterFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         loadData();
     }//GEN-LAST:event_refreshButtonActionPerformed
+
+    private void browserButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browserButtonActionPerformed
+        // TODO add your handling code here:
+        int selectRows = table.getSelectedRows().length;// 取得用户所选行的行数
+
+        if (selectRows == 1) {
+            int selRowIndex = table.getSelectedRows()[0];// 用户所选行的序列
+
+            Cluster c = cm.getCluster(selRowIndex);
+            List<String> samples = c.getSamples();
+            Sample sample = sampleMapper.get(samples.get(0));
+            String url = sample.getUrl();
+            context.getSimpleBrowser().openUrl(url);
+        }
+    }//GEN-LAST:event_browserButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton browserButton;
     private javax.swing.JButton checkButton;
     private javax.swing.JButton deleteClusterButton;
     private javax.swing.JButton jButton1;

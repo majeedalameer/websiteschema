@@ -76,6 +76,12 @@ public class AnalyzerUtil {
         return ret;
     }
 
+    /**
+     * 获取指定xpath在样本中包含的文本，主要用来计算相似度，或查找相同的前缀和后缀。
+     * @param xpath
+     * @param samples
+     * @return
+     */
     public Map<String, String> getText(String xpath, List<Sample> samples) {
         Map<String, String> ret = new HashMap<String, String>();
         for (Sample sample : samples) {

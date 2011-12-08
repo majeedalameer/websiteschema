@@ -5,6 +5,8 @@
 package websiteschema.device;
 
 import org.apache.log4j.Logger;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import websiteschema.conf.Configure;
 import websiteschema.fb.core.ApplicationManager;
 import websiteschema.fb.core.ApplicationService;
@@ -15,10 +17,15 @@ import websiteschema.fb.core.ApplicationService;
  */
 public class DeviceContext {
 
+    private static final ApplicationContext ctx = new ClassPathXmlApplicationContext("spring-beans.xml");
     private static DeviceContext ins = new DeviceContext();
 
     public static DeviceContext getInstance() {
         return ins;
+    }
+
+    public static ApplicationContext getSpringContext() {
+        return ctx;
     }
     private ApplicationService appRuntime;
     private Configure conf;

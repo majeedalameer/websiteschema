@@ -35,7 +35,7 @@
     <!-- define the SqlSessionFactory -->
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="dataSource" />
-        <property name="typeAliasesPackage" value="com.apc.datahandler.data.domain" />
+        <property name="typeAliasesPackage" value="websiteschema.model.domain" />
     </bean>
 
     <!-- scan for mappers and let them be autowired -->

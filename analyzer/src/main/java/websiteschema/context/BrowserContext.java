@@ -6,9 +6,11 @@ package websiteschema.context;
 
 import com.webrenderer.swing.IMozillaBrowserCanvas;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import websiteschema.analyzer.browser.SimpleBrowser;
 import websiteschema.element.StyleSheet;
 import websiteschema.conf.Configure;
 import websiteschema.utils.Console;
@@ -23,9 +25,11 @@ public class BrowserContext {
     IMozillaBrowserCanvas browser = null;
     private static final Configure configure = new Configure("configure-site.ini");
     Map<String, StyleSheet> styleSheets = new HashMap<String, StyleSheet>();
+    Map<String, String> urlAndMIME = new LinkedHashMap<String, String>();
 //    AnalysisPanel analysisPanel;
     private static final ApplicationContext ctx = new ClassPathXmlApplicationContext("spring-beans.xml");
     private String reference = null;
+    private SimpleBrowser simpleBrowser;
 
     public static Configure getConfigure() {
         return configure;
@@ -41,6 +45,14 @@ public class BrowserContext {
 
     public void setConsole(Console console) {
         this.console = console;
+    }
+
+    public SimpleBrowser getSimpleBrowser() {
+        return simpleBrowser;
+    }
+
+    public void setSimpleBrowser(SimpleBrowser simpleBrowser) {
+        this.simpleBrowser = simpleBrowser;
     }
 
     public IMozillaBrowserCanvas getBrowser() {
@@ -67,4 +79,7 @@ public class BrowserContext {
         return reference;
     }
 
+    public Map<String,String> getURLAndMIME() {
+        return this.urlAndMIME;
+    }
 }
