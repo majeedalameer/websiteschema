@@ -13,7 +13,7 @@ package websiteschema.analyzer.sample;
 import java.util.Date;
 import java.util.List;
 import websiteschema.cluster.DocumentConvertor;
-import websiteschema.context.BrowserContext;
+import websiteschema.analyzer.context.BrowserContext;
 import websiteschema.model.domain.Websiteschema;
 import websiteschema.model.domain.cluster.Sample;
 import websiteschema.persistence.hbase.SampleMapper;

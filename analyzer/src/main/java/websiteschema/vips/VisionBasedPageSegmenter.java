@@ -8,7 +8,7 @@ import com.webrenderer.swing.dom.IDocument;
 import com.webrenderer.swing.dom.IElement;
 import com.webrenderer.swing.dom.IElementCollection;
 import org.apache.log4j.Logger;
-import websiteschema.context.BrowserContext;
+import websiteschema.analyzer.context.BrowserContext;
 import websiteschema.element.factory.RectangleFactory;
 import websiteschema.element.factory.XPathAttrFactory;
 import websiteschema.utils.ElementUtil;

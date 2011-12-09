@@ -23,8 +23,8 @@ public class SimplePromptListener implements PromptListener {
         switch (type) {
             case PromptEvent.DIALOG_ALERT:
                 dialogType = "DIALOG_ALERT";
-                pe.blockPromptDialog();
-                l.debug("closed prompt dialog.");
+//                pe.blockPromptDialog();
+//                l.debug("closed prompt dialog.");
                 break;
             case PromptEvent.DIALOG_ALERT_CHECK:
                 dialogType = "DIALOG_ALERT_CHECK";

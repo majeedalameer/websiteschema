@@ -4,7 +4,7 @@
  */
 package websiteschema.vips.extraction;
 
-import websiteschema.context.BrowserContext;
+import websiteschema.analyzer.context.BrowserContext;
 
 /**
  *

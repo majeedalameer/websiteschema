@@ -15,7 +15,7 @@ import javax.swing.JTextField;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-import websiteschema.context.BrowserContext;
+import websiteschema.analyzer.context.BrowserContext;
 import websiteschema.vips.VIPSImpl;
 
 /**
@@ -131,6 +131,7 @@ public class SimpleNetworkListener implements NetworkListener {
     public void onHTTPResponse(NetworkEvent ne) {
 //        l.debug("onHTTPResponse\n" + ne.getResponseHeaders());
         l.debug("onHTTPResponse\n" + ne.getURL() + " : " + ne.getStatus() + " : " + ne.getStatusText());
+        l.debug("onHTTPResponse\n" + ne.getFrame());
         context.getURLAndMIME().put(ne.getURL(), ne.getResponseHeaders());
     }
 

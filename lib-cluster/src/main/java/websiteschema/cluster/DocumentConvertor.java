@@ -5,9 +5,12 @@
 package websiteschema.cluster;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import websiteschema.element.XPathAttributes;
@@ -42,20 +45,42 @@ public class DocumentConvertor {
     }
 
     private void traversal(Element ele, List<Unit> units) {
-        StringBuilder text = new StringBuilder();
         String xpath = XPathAttrFactory.getInstance().create(ele, xpathAttr);
+        StringBuilder text = new StringBuilder();
         NodeList children = ele.getChildNodes();
         if (null != children) {
             for (int i = 0; i < children.getLength(); i++) {
                 Node child = children.item(i);
-                if(Node.TEXT_NODE == child.getNodeType()) {
+                if (Node.TEXT_NODE == child.getNodeType()) {
                     text.append(child.getNodeValue());
-                } else if(Node.ELEMENT_NODE == child.getNodeType()) {
-                    traversal((Element) child,units);
+                } else if (Node.ELEMENT_NODE == child.getNodeType()) {
+                    traversal((Element) child, units);
                 }
             }
         }
+
         Unit unit = new Unit(xpath, text.toString());
+        //获取节点的其他属性
+        String tagName = ele.getTagName();
+        if ("A".equalsIgnoreCase(tagName)) {
+            Map<String, String> attrs = getNodeAttributes(ele);
+            unit.setAttributes(attrs);
+        }
         units.add(unit);
+    }
+
+    private Map<String, String> getNodeAttributes(Node node) {
+        NamedNodeMap attributes = node.getAttributes();
+        if (null != attributes && attributes.getLength() > 0) {
+            Map<String, String> attrs = new HashMap<String, String>(attributes.getLength());
+            for (int i = 0; i < attributes.getLength(); i++) {
+                Node attr = attributes.item(i);
+                String name = attr.getNodeName();
+                String value = attr.getNodeValue();
+                attrs.put(name, value);
+            }
+            return attrs;
+        }
+        return null;
     }
 }

@@ -6,7 +6,7 @@ package websiteschema.vips.extraction.rule;
 
 import java.lang.reflect.Method;
 import java.util.Set;
-import websiteschema.context.BrowserContext;
+import websiteschema.analyzer.context.BrowserContext;
 
 /**
  *

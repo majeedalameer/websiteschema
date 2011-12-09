@@ -13,7 +13,7 @@ package websiteschema.analyzer.browser.bottom;
 import com.webrenderer.swing.dom.IDocument;
 import java.util.Map;
 import java.util.Set;
-import websiteschema.context.BrowserContext;
+import websiteschema.analyzer.context.BrowserContext;
 
 /**
  *

@@ -19,7 +19,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
-import websiteschema.context.BrowserContext;
+import websiteschema.analyzer.context.BrowserContext;
 import websiteschema.model.domain.Websiteschema;
 import websiteschema.model.domain.cluster.DocUnits;
 import websiteschema.model.domain.cluster.Sample;

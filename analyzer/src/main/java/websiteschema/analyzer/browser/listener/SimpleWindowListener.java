@@ -11,7 +11,7 @@ import com.webrenderer.swing.event.WindowListener;
 import java.awt.BorderLayout;
 import javax.swing.JFrame;
 import org.apache.log4j.Logger;
-import websiteschema.context.BrowserContext;
+import websiteschema.analyzer.context.BrowserContext;
 
 /**
  *

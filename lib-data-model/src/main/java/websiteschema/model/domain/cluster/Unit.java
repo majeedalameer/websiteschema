@@ -4,6 +4,8 @@
  */
 package websiteschema.model.domain.cluster;
 
+import java.util.Map;
+
 /**
  *
  * @author ray
@@ -12,6 +14,7 @@ public class Unit {
 
     public String xpath;
     public String text;
+    public Map<String, String> attributes;
 
     public Unit() {
         xpath = null;
@@ -37,5 +40,17 @@ public class Unit {
 
     public void setXpath(String xpath) {
         this.xpath = xpath;
+    }
+
+    public Map<String, String> getAttributes() {
+        return attributes;
+    }
+
+    public void setAttributes(Map<String, String> attributes) {
+        this.attributes = attributes;
+    }
+
+    public String getAttribute(String attr) {
+        return null != attributes ? attributes.get(attr) : null;
     }
 }
