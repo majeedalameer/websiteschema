@@ -28,6 +28,8 @@ public class BaseClusterAnalyzer implements ClusterAnalyzer {
 
     Set<String> validNodes = new HashSet<String>();
     Set<String> invalidNodes = new HashSet<String>();
+    Set<String> titlePrefix = new HashSet<String>();
+    Set<String> titleSuffix = new HashSet<String>();
     AnalyzerUtil analyzer = new AnalyzerUtil();
 
     public Map<String, String> analysis(Map<String, String> old, ClusterModel cm, List<Sample> samples) {
@@ -43,22 +45,32 @@ public class BaseClusterAnalyzer implements ClusterAnalyzer {
 
             for (Cluster cluster : clusters) {
                 if (cluster.getSamples().size() > 1) {
-                    List<String> rowKeys = cluster.getSamples();
+                    List<String> allSamples = cluster.getSamples();
+                    List<String> rowKeys = new ArrayList<String>();
+                    int count = allSamples.size() > 10 ? 10 : allSamples.size();
+                    for (int i = 0; i < count; i++) {
+                        rowKeys.add(allSamples.get(i));
+                    }
                     List<DocVector> vectors = analyzer.getVectors(rowKeys, space);
                     List<Sample> clusterSamples = analyzer.getSamples(rowKeys, samples);
                     Set<String> commonNodes = analyzer.findCommonNodes(vectors, statInfo);
+
+                    analyzer.findTitlePrefixAndSuffix(titlePrefix, titleSuffix, clusterSamples);
                     Set<String> invalidNodeSet = analyzer.findInvalidNodes(clusterSamples, commonNodes, 0.6);
                     invalidNodes.addAll(invalidNodeSet);
                     validNodes.addAll(commonNodes);
                     for (String xpath : invalidNodes) {
                         validNodes.remove(xpath);
                     }
+
                 } else {
                 }
             }
             try {
                 ret.put("ValidNodes", toJson(validNodes));
                 ret.put("InvalidNodes", toJson(invalidNodes));
+                ret.put("TitlePrefix", toJson(titlePrefix));
+                ret.put("TitleSuffix", toJson(titleSuffix));
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -69,6 +81,6 @@ public class BaseClusterAnalyzer implements ClusterAnalyzer {
 
     private void findTitlePrefix() {
         String titlePath = "html/head/title";
-        
+
     }
 }
