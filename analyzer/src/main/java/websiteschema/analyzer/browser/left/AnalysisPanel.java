@@ -595,6 +595,7 @@ public class AnalysisPanel extends javax.swing.JPanel {
 //        if siteType == news
         clusterer.setAnalyzer(createClusterAnalyzer());
         clusterer.setPanel(this);
+        clusterer.setContext(context);
         new Thread(clusterer).start();
     }//GEN-LAST:event_trainButtonActionPerformed
 

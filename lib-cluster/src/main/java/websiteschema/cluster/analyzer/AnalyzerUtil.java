@@ -66,7 +66,10 @@ public class AnalyzerUtil {
             Map<String, String> mapText = getText(xpath, samples);
             List<String> listText = new ArrayList<String>();
             for (String key : mapText.keySet()) {
-                listText.add(mapText.get(key));
+                String text = mapText.get(key);
+                text = null != text ? text : "";
+                text = text.length() > 100 ? text.substring(0, 100) : text;
+                listText.add(text);
             }
             double sim = ld.caculateSimilarity(listText);
             if (sim >= th) {
@@ -96,6 +99,64 @@ public class AnalyzerUtil {
                 }
             }
             ret.put(sample.getRowKey(), sb.toString());
+        }
+        return ret;
+    }
+
+    /**
+     * 找到同组文档的标题，检查是否有相同的前缀和后缀
+     * @param titlePrefix
+     * @param titleSuffix
+     * @param samples
+     */
+    public void findTitlePrefixAndSuffix(Set<String> titlePrefix, Set<String> titleSuffix, List<Sample> samples) {
+        Map<String, String> mapText = getText("html/head/title", samples);
+        List<String> listText = new ArrayList<String>();
+        for (String key : mapText.keySet()) {
+            String text = mapText.get(key);
+            if (!"".equals(text)) {
+                listText.add(text);
+            }
+        }
+        String prefix = listText.get(0);
+        String suffix = listText.get(0);
+        for (int i = 1; i < listText.size(); i++) {
+            String title = listText.get(i);
+            prefix = findPrefix(title, prefix);
+            suffix = findSuffix(title, suffix);
+        }
+        if (null != prefix && !"".equals(prefix)) {
+            //必须要有标点符号结尾
+            if (prefix.trim().matches(".*[\\p{Punct}]")) {
+                titlePrefix.add(prefix);
+            }
+        }
+        if (null != suffix && !"".equals(suffix)) {
+            //必须要有标点符号开头
+            if (suffix.trim().matches("[\\p{Punct}].*")) {
+                titleSuffix.add(suffix);
+            }
+        }
+    }
+
+    private String findPrefix(String str, String prefix) {
+        String ret = prefix;
+        while (!str.startsWith(ret)) {
+            ret = ret.substring(0, ret.length() - 1);
+            if (ret.length() <= 0) {
+                break;
+            }
+        }
+        return ret;
+    }
+
+    private String findSuffix(String str, String suffix) {
+        String ret = suffix;
+        while (!str.endsWith(ret)) {
+            ret = ret.substring(1, ret.length());
+            if (ret.length() <= 0) {
+                break;
+            }
         }
         return ret;
     }

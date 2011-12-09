@@ -24,13 +24,13 @@ public class UrlLinkUtil {
         try {
             if (null != href && null != pageUrl) {
                 if (href.startsWith("http://") || href.startsWith("ftp://")) {
-                    return new URI(href);
+                    return new URI(href.trim());
                 } else if (href.indexOf("://") > 0) {
                     // UnsupportProtocol.
-                    return new URI(href);
+                    return new URI(href.trim());
                 }
                 URI uri = new URI(pageUrl);
-                return uri.resolve(href);
+                return uri.resolve(href.trim());
             }
         } catch (URISyntaxException ex) {
             ex.printStackTrace();
@@ -62,6 +62,7 @@ public class UrlLinkUtil {
 
     public boolean match(String url, String[] mustHave, String[] dontHave) {
         if (null != url) {
+            // 必须同时包含设置中的参数。
             if (null != mustHave) {
                 for (String must : mustHave) {
                     if (!"".equals(must)) {
@@ -71,7 +72,7 @@ public class UrlLinkUtil {
                     }
                 }
             }
-
+            // 不能包含任意一个
             if (null != dontHave) {
                 for (String dont : dontHave) {
                     if (!"".equals(dont)) {

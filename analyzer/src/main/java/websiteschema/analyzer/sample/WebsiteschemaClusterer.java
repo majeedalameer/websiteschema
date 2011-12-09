@@ -17,6 +17,7 @@ import websiteschema.persistence.hbase.ClusterModelMapper;
 import websiteschema.persistence.hbase.SampleMapper;
 import websiteschema.persistence.hbase.WebsiteschemaMapper;
 import websiteschema.utils.DateUtil;
+import websiteschema.analyzer.context.BrowserContext;
 
 /**
  *
@@ -32,6 +33,7 @@ public class WebsiteschemaClusterer implements Runnable {
     ClusterAnalyzer analyzer;
     Component parentComponent;
     AnalysisPanel panel;
+    BrowserContext context;
 
     @Override
     public void run() {
@@ -45,11 +47,12 @@ public class WebsiteschemaClusterer implements Runnable {
             model = cc.clustering();
             model.printClusterInfo();
             if (null != cmMapper) {
-                System.out.println("Saving ClusterModel...");
+                context.getConsole().log("Saving ClusterModel...");
                 cmMapper.put(model);
                 Websiteschema schema = websiteschemaMapper.get(siteId);
                 if (null != schema) {
                     Map<String, String> prop = schema.getProperties();
+                    context.getConsole().log("Start analysis parameters...");
                     prop = analyzer.analysis(prop, model, samples);
                     schema.setProperties(prop);
                     websiteschemaMapper.put(schema);
@@ -89,5 +92,13 @@ public class WebsiteschemaClusterer implements Runnable {
 
     public void setPanel(AnalysisPanel panel) {
         this.panel = panel;
+    }
+
+    public BrowserContext getContext() {
+        return context;
+    }
+
+    public void setContext(BrowserContext context) {
+        this.context = context;
     }
 }
