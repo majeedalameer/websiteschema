@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Vector;
 import javax.swing.table.DefaultTableModel;
 import websiteschema.cluster.Clusterer;
-import websiteschema.context.BrowserContext;
+import websiteschema.analyzer.context.BrowserContext;
 import websiteschema.model.domain.cluster.Cluster;
 import websiteschema.model.domain.cluster.ClusterModel;
 import websiteschema.model.domain.cluster.Dimension;

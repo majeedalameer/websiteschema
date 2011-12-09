@@ -24,7 +24,7 @@ import static websiteschema.utils.PojoMapper.*;
  * 用来分析新闻类型的网站
  * @author ray
  */
-public class NewsClusterAnalyzer implements ClusterAnalyzer {
+public class BaseClusterAnalyzer implements ClusterAnalyzer {
 
     Set<String> validNodes = new HashSet<String>();
     Set<String> invalidNodes = new HashSet<String>();

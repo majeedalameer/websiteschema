@@ -7,7 +7,7 @@ package websiteschema.vips;
 import com.webrenderer.swing.dom.IDocument;
 import com.webrenderer.swing.dom.IElement;
 import org.apache.log4j.Logger;
-import websiteschema.context.BrowserContext;
+import websiteschema.analyzer.context.BrowserContext;
 import websiteschema.element.Rectangle;
 import websiteschema.element.StyleSheet;
 import websiteschema.element.factory.RectangleFactory;

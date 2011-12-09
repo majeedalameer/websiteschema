@@ -7,9 +7,10 @@ package websiteschema.analyzer.browser.listener;
 import com.webrenderer.swing.dom.IElement;
 import com.webrenderer.swing.event.MouseEvent;
 import com.webrenderer.swing.event.MouseListener;
+import java.net.URI;
 import org.apache.log4j.Logger;
 import websiteschema.analyzer.browser.SimpleBrowser;
-import websiteschema.context.BrowserContext;
+import websiteschema.analyzer.context.BrowserContext;
 import websiteschema.element.CSSProperties;
 import websiteschema.element.Rectangle;
 import websiteschema.element.StyleSheet;
@@ -18,6 +19,7 @@ import websiteschema.element.XPathAttributes;
 import websiteschema.element.factory.StyleSheetFactory;
 import websiteschema.element.factory.XPathAttrFactory;
 import websiteschema.utils.ElementUtil;
+import websiteschema.utils.UrlLinkUtil;
 import websiteschema.vips.extraction.VipsBlockExtractor;
 
 /**
@@ -47,34 +49,42 @@ public class SimpleMouseListener implements MouseListener {
         l.debug("mouse onclick");
         if (null != context.getBrowser().getDocument()) {
             IElement ele = me.getTargetElement();
-            drawRectangleInPage(ele);
-            Rectangle rect = new RectangleFactory().create(ele);
-            String xpath = XPathAttrFactory.getInstance().create(ele);
-            attr = simpleBrowser.getXPathAttr();
-            String xpath2 = XPathAttrFactory.getInstance().create(ele, attr);
-            simpleBrowser.displaySelectedElement(xpath, xpath2);
+            if (null != ele) {
+//                String tagName = ele.getTagName();
+//                if (tagName.equalsIgnoreCase("A")) {
+//                    String href = me.getTargetElement().getAttribute("href", 0);
+//                    System.out.println("URL:" + context.getBrowser().getURL());
+//                        URI uri = UrlLinkUtil.getInstance().getURL(context.getBrowser().getURL(), href);
+//                }
+                drawRectangleInPage(ele);
+                Rectangle rect = new RectangleFactory().create(ele);
+                String xpath = XPathAttrFactory.getInstance().create(ele);
+                attr = simpleBrowser.getXPathAttr();
+                String xpath2 = XPathAttrFactory.getInstance().create(ele, attr);
+                simpleBrowser.displaySelectedElement(xpath, xpath2);
 
-            String text = ele.getInnerHTML();
-            simpleBrowser.displayNodeValue(text);
+                String text = ele.getInnerHTML();
+                simpleBrowser.displayNodeValue(text);
 
-            l.debug("Elememnt Type: " + ele.getTagName());
-            context.getConsole().log("Tag Name: " + ele.getTagName() + " -- Node Type: " + ElementUtil.getInstance().getNodeType(ele) + " -- XPath: " + xpath);
-            l.debug(rect);
-            String referrer1 = context.getBrowser().getDocument().getReferrer();
-            StyleSheet styleSheets = context.getStyleSheet(referrer1);
-            CSSProperties css = new StyleSheetFactory().createCSSProperties(styleSheets, ele);
-            l.debug("CSS Properties: " + css);
+                l.debug("Elememnt Type: " + ele.getTagName());
+                context.getConsole().log("Tag Name: " + ele.getTagName() + " -- Node Type: " + ElementUtil.getInstance().getNodeType(ele) + " -- XPath: " + xpath);
+                l.debug(rect);
+                String referrer1 = context.getBrowser().getDocument().getReferrer();
+                StyleSheet styleSheets = context.getStyleSheet(referrer1);
+                CSSProperties css = new StyleSheetFactory().createCSSProperties(styleSheets, ele);
+                l.debug("CSS Properties: " + css);
 
 //            String text = ElementUtil.getInstance().getText(ele);
 //            context.getConsole().log(text);
 
-            VipsBlockExtractor be = new VipsBlockExtractor();
-            be.setContext(context);
-            String referrer2 = context.getBrowser().getDocument().getReferrer();
-            be.setReferrer(referrer2);
-            Rectangle rectBody = new RectangleFactory().create(context.getBrowser().getDocument().getBody());
-            be.setPageSize(rectBody.getHeight() * rectBody.getWidth());
-            be.analysisElement(ele);
+                VipsBlockExtractor be = new VipsBlockExtractor();
+                be.setContext(context);
+                String referrer2 = context.getBrowser().getDocument().getReferrer();
+                be.setReferrer(referrer2);
+                Rectangle rectBody = new RectangleFactory().create(context.getBrowser().getDocument().getBody());
+                be.setPageSize(rectBody.getHeight() * rectBody.getWidth());
+                be.analysisElement(ele);
+            }
         }
     }
 

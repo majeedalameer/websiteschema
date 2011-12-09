@@ -5,7 +5,7 @@
 package websiteschema.vips.extraction.rule;
 
 import com.webrenderer.swing.dom.IElement;
-import websiteschema.context.BrowserContext;
+import websiteschema.analyzer.context.BrowserContext;
 
 /**
  * Rule7: If the background color of this node is different from one of its children's, divided this node.

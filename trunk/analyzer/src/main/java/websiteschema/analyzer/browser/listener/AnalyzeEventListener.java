@@ -12,7 +12,7 @@ import com.webrenderer.swing.event.MouseListener;
 import javax.swing.JTabbedPane;
 import org.apache.log4j.Logger;
 import websiteschema.analyzer.browser.SimpleBrowser;
-import websiteschema.context.BrowserContext;
+import websiteschema.analyzer.context.BrowserContext;
 import websiteschema.utils.ElementUtil;
 
 /**

@@ -7,7 +7,7 @@ package websiteschema.analyzer.sample;
 import java.util.Date;
 import org.w3c.dom.Document;
 import websiteschema.cluster.DocumentConvertor;
-import websiteschema.context.BrowserContext;
+import websiteschema.analyzer.context.BrowserContext;
 import websiteschema.crawler.Crawler;
 import websiteschema.crawler.browser.BrowserWebCrawler;
 import websiteschema.element.XPathAttributes;

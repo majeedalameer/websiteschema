@@ -34,7 +34,7 @@ import websiteschema.analyzer.browser.bottom.PageInfoPanel;
 import websiteschema.analyzer.browser.bottom.PageSourcePanel;
 import static websiteschema.element.DocumentUtil.*;
 import websiteschema.analyzer.browser.listener.*;
-import websiteschema.context.BrowserContext;
+import websiteschema.analyzer.context.BrowserContext;
 import websiteschema.element.XPathAttributes;
 import websiteschema.model.domain.Site;
 import websiteschema.model.domain.Websiteschema;
@@ -490,7 +490,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 159, Short.MAX_VALUE))
         );
 
-        consolePane.addTab("控制台", jPanel3);
+        consolePane.addTab("日志", jPanel3);
 
         jPanel6.setBorder(javax.swing.BorderFactory.createTitledBorder("XPath"));
 
