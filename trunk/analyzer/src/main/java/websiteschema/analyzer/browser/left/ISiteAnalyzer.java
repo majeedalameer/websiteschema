@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package websiteschema.analyzer.sample;
+package websiteschema.analyzer.browser.left;
 
 /**
  *

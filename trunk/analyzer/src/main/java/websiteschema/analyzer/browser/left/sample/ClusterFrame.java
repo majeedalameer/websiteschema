@@ -8,7 +8,7 @@
  *
  * Created on Oct 28, 2011, 3:29:02 PM
  */
-package websiteschema.analyzer.sample;
+package websiteschema.analyzer.browser.left.sample;
 
 import java.lang.reflect.Constructor;
 import java.text.DecimalFormat;
@@ -132,6 +132,9 @@ public class ClusterFrame extends javax.swing.JFrame {
         sampleViewDialog = new javax.swing.JDialog();
         jScrollPane2 = new javax.swing.JScrollPane();
         sampleTextArea = new javax.swing.JTextArea();
+        jToolBar2 = new javax.swing.JToolBar();
+        viewButton = new javax.swing.JButton();
+        browseButton = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         table = new javax.swing.JTable();
         jToolBar1 = new javax.swing.JToolBar();
@@ -192,15 +195,43 @@ public class ClusterFrame extends javax.swing.JFrame {
         sampleTextArea.setRows(5);
         jScrollPane2.setViewportView(sampleTextArea);
 
+        jToolBar2.setRollover(true);
+
+        viewButton.setText("查看所选样本");
+        viewButton.setFocusable(false);
+        viewButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        viewButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        viewButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                viewButtonActionPerformed(evt);
+            }
+        });
+        jToolBar2.add(viewButton);
+
+        browseButton.setText("在浏览器中打开所选样本");
+        browseButton.setFocusable(false);
+        browseButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        browseButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        browseButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                browseButtonActionPerformed(evt);
+            }
+        });
+        jToolBar2.add(browseButton);
+
         javax.swing.GroupLayout sampleViewDialogLayout = new javax.swing.GroupLayout(sampleViewDialog.getContentPane());
         sampleViewDialog.getContentPane().setLayout(sampleViewDialogLayout);
         sampleViewDialogLayout.setHorizontalGroup(
             sampleViewDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 599, Short.MAX_VALUE)
+            .addComponent(jToolBar2, javax.swing.GroupLayout.DEFAULT_SIZE, 599, Short.MAX_VALUE)
         );
         sampleViewDialogLayout.setVerticalGroup(
             sampleViewDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 299, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, sampleViewDialogLayout.createSequentialGroup()
+                .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         table.setModel(new javax.swing.table.DefaultTableModel(
@@ -233,8 +264,8 @@ public class ClusterFrame extends javax.swing.JFrame {
         table.getColumnModel().getColumn(0).setMaxWidth(30);
         table.getColumnModel().getColumn(1).setPreferredWidth(50);
         table.getColumnModel().getColumn(1).setMaxWidth(50);
-        table.getColumnModel().getColumn(2).setPreferredWidth(50);
-        table.getColumnModel().getColumn(2).setMaxWidth(50);
+        table.getColumnModel().getColumn(2).setPreferredWidth(100);
+        table.getColumnModel().getColumn(2).setMaxWidth(100);
         table.getColumnModel().getColumn(4).setMaxWidth(100);
         table.getColumnModel().getColumn(5).setMaxWidth(100);
 
@@ -507,7 +538,40 @@ public class ClusterFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_browserButtonActionPerformed
 
+    private void viewButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewButtonActionPerformed
+        // TODO add your handling code here:
+        String text = sampleTextArea.getText();
+        if (!"".equals(text)) {
+            int pos = sampleTextArea.getCaretPosition();
+            int start = text.lastIndexOf("\n", pos);
+            start = start >= 0 ? start : 0;
+            int end = text.indexOf("\n", pos);
+            String rowKey = text.substring(start, end).trim();
+            if (!"".equals(rowKey)) {
+                ContentFrame contentFrame = new ContentFrame();
+                contentFrame.setSample(rowKey);
+            }
+        }
+    }//GEN-LAST:event_viewButtonActionPerformed
+
+    private void browseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseButtonActionPerformed
+        // TODO add your handling code here:
+        String text = sampleTextArea.getText();
+        if (!"".equals(text)) {
+            int pos = sampleTextArea.getCaretPosition();
+            int start = text.lastIndexOf("\n", pos);
+            start = start >= 0 ? start : 0;
+            int end = text.indexOf("\n", pos);
+            String rowKey = text.substring(start, end).trim();
+            Sample sample = sampleMapper.get(rowKey);
+            if (!"".equals(rowKey)) {
+                context.getSimpleBrowser().openUrl(sample.getUrl());
+            }
+        }
+
+    }//GEN-LAST:event_browseButtonActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton browseButton;
     private javax.swing.JButton browserButton;
     private javax.swing.JButton checkButton;
     private javax.swing.JButton deleteClusterButton;
@@ -516,6 +580,7 @@ public class ClusterFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JToolBar jToolBar1;
+    private javax.swing.JToolBar jToolBar2;
     private javax.swing.JButton mergeClusterButton;
     private javax.swing.JButton refreshButton;
     private javax.swing.JTextArea sampleTextArea;
@@ -524,6 +589,7 @@ public class ClusterFrame extends javax.swing.JFrame {
     private javax.swing.JLabel simLabel;
     private javax.swing.JLabel statusLabel;
     private javax.swing.JTable table;
+    private javax.swing.JButton viewButton;
     private javax.swing.JButton viewClusterButton;
     private javax.swing.JDialog viewSimDialog;
     // End of variables declaration//GEN-END:variables

@@ -8,7 +8,7 @@
  *
  * Created on Oct 6, 2011, 9:51:25 PM
  */
-package websiteschema.analyzer.sample;
+package websiteschema.analyzer.browser.left.sample;
 
 import java.util.Date;
 import java.util.List;
