@@ -4,30 +4,59 @@
  */
 
 /*
- * PageSourcePanel.java
+ * ContentFrame.java
  *
- * Created on Dec 7, 2011, 2:29:18 PM
+ * Created on Dec 10, 2011, 11:14:55 PM
  */
-package websiteschema.analyzer.browser.bottom;
+package websiteschema.analyzer.browser.left.sample;
 
 import websiteschema.analyzer.browser.utils.TextAreaSearch;
+import websiteschema.analyzer.context.BrowserContext;
+import websiteschema.model.domain.cluster.DocUnits;
+import websiteschema.model.domain.cluster.Sample;
+import websiteschema.model.domain.cluster.Unit;
+import websiteschema.persistence.hbase.SampleMapper;
 
 /**
  *
  * @author ray
  */
-public class PageSourcePanel extends javax.swing.JPanel {
+public class ContentFrame extends javax.swing.JFrame {
 
     TextAreaSearch tas;
+    String sample;
 
-    /** Creates new form PageSourcePanel */
-    public PageSourcePanel() {
+    /** Creates new form ContentFrame */
+    public ContentFrame() {
         initComponents();
-        sourceArea.setLineWrap(this.wrapLineCheckBox.isSelected());
-        tas = new TextAreaSearch(this.sourceArea);
+        this.contentTextArea.setLineWrap(this.wrapLineCheckBox.isSelected());
+        tas = new TextAreaSearch(this.contentTextArea);
     }
 
+    public String getSample() {
+        return sample;
+    }
 
+    public void setSample(String sample) {
+        this.sample = sample;
+        update();
+    }
+
+    private void update() {
+        SampleMapper mapper = BrowserContext.getSpringContext().getBean("sampleMapper", SampleMapper.class);
+        this.contentTextArea.setText("");
+        Sample s = mapper.get(sample);
+        DocUnits docUnits = s.getContent();
+        Unit[] units = docUnits.getUnits();
+        if (null != units) {
+            setTitle(s.getUrl());
+            setVisible(true);
+            for (Unit unit : units) {
+                this.contentTextArea.append(unit.xpath + " -> " + unit.text.trim() + "\n");
+            }
+            this.contentTextArea.setCaretPosition(0);
+        }
+    }
 
     /** This method is called from within the constructor to
      * initialize the form.
@@ -38,8 +67,6 @@ public class PageSourcePanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPane1 = new javax.swing.JScrollPane();
-        sourceArea = new javax.swing.JTextArea();
         jToolBar1 = new javax.swing.JToolBar();
         jLabel1 = new javax.swing.JLabel();
         searchField = new javax.swing.JTextField();
@@ -47,15 +74,21 @@ public class PageSourcePanel extends javax.swing.JPanel {
         lastButton = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         wrapLineCheckBox = new javax.swing.JCheckBox();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        contentTextArea = new javax.swing.JTextArea();
 
-        sourceArea.setColumns(20);
-        sourceArea.setRows(5);
-        jScrollPane1.setViewportView(sourceArea);
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jToolBar1.setRollover(true);
 
         jLabel1.setText("搜索: ");
         jToolBar1.add(jLabel1);
+
+        searchField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                searchFieldActionPerformed(evt);
+            }
+        });
         jToolBar1.add(searchField);
 
         nextButton.setText("下一个");
@@ -83,7 +116,6 @@ public class PageSourcePanel extends javax.swing.JPanel {
         jLabel2.setText("折行: ");
         jToolBar1.add(jLabel2);
 
-        wrapLineCheckBox.setSelected(true);
         wrapLineCheckBox.setFocusable(false);
         wrapLineCheckBox.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         wrapLineCheckBox.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -94,20 +126,26 @@ public class PageSourcePanel extends javax.swing.JPanel {
         });
         jToolBar1.add(wrapLineCheckBox);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
+        contentTextArea.setColumns(20);
+        contentTextArea.setRows(5);
+        jScrollPane1.setViewportView(contentTextArea);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 621, Short.MAX_VALUE)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 621, Short.MAX_VALUE)
+            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 586, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 586, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 343, Short.MAX_VALUE))
         );
+
+        pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void nextButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextButtonActionPerformed
@@ -122,21 +160,19 @@ public class PageSourcePanel extends javax.swing.JPanel {
         tas.last(target);
     }//GEN-LAST:event_lastButtonActionPerformed
 
+    private void searchFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchFieldActionPerformed
+        // TODO add your handling code here:
+        String target = this.searchField.getText();
+        tas.next(target);
+    }//GEN-LAST:event_searchFieldActionPerformed
+
     private void wrapLineCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_wrapLineCheckBoxActionPerformed
         // TODO add your handling code here:
-        sourceArea.setLineWrap(this.wrapLineCheckBox.isSelected());
-        sourceArea.updateUI();
+        this.contentTextArea.setLineWrap(this.wrapLineCheckBox.isSelected());
     }//GEN-LAST:event_wrapLineCheckBoxActionPerformed
 
-    public void setSource(String source) {
-        this.sourceArea.setText(source);
-        sourceArea.setCaretPosition(0);
-    }
-
-    public String getSource() {
-        return this.sourceArea.getText();
-    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextArea contentTextArea;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
@@ -144,7 +180,6 @@ public class PageSourcePanel extends javax.swing.JPanel {
     private javax.swing.JButton lastButton;
     private javax.swing.JButton nextButton;
     private javax.swing.JTextField searchField;
-    private javax.swing.JTextArea sourceArea;
     private javax.swing.JCheckBox wrapLineCheckBox;
     // End of variables declaration//GEN-END:variables
 }

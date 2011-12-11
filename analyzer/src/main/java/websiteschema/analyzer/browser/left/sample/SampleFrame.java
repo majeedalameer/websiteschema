@@ -8,22 +8,17 @@
  *
  * Created on Oct 8, 2011, 11:41:32 PM
  */
-package websiteschema.analyzer.sample;
+package websiteschema.analyzer.browser.left.sample;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
 import websiteschema.analyzer.context.BrowserContext;
 import websiteschema.model.domain.Websiteschema;
-import websiteschema.model.domain.cluster.DocUnits;
 import websiteschema.model.domain.cluster.Sample;
-import websiteschema.model.domain.cluster.Unit;
 import websiteschema.persistence.hbase.SampleMapper;
 import websiteschema.persistence.hbase.WebsiteschemaMapper;
 import websiteschema.utils.DateUtil;
@@ -51,9 +46,6 @@ public class SampleFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        contentDialog = new javax.swing.JDialog();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        contentTextArea = new javax.swing.JTextArea();
         addDialog = new javax.swing.JDialog();
         jLabel1 = new javax.swing.JLabel();
         siteIdField = new javax.swing.JTextField();
@@ -69,23 +61,6 @@ public class SampleFrame extends javax.swing.JFrame {
         refreshButton = new javax.swing.JButton();
         viewButton = new javax.swing.JButton();
         statusLabel = new javax.swing.JLabel();
-
-        contentDialog.setMinimumSize(new java.awt.Dimension(800, 600));
-
-        contentTextArea.setColumns(20);
-        contentTextArea.setRows(5);
-        jScrollPane2.setViewportView(contentTextArea);
-
-        javax.swing.GroupLayout contentDialogLayout = new javax.swing.GroupLayout(contentDialog.getContentPane());
-        contentDialog.getContentPane().setLayout(contentDialogLayout);
-        contentDialogLayout.setHorizontalGroup(
-            contentDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
-        );
-        contentDialogLayout.setVerticalGroup(
-            contentDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
-        );
 
         addDialog.setMinimumSize(new java.awt.Dimension(280, 119));
         addDialog.setResizable(false);
@@ -140,8 +115,6 @@ public class SampleFrame extends javax.swing.JFrame {
                 .addComponent(addSampleButton)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-
-        setMinimumSize(new java.awt.Dimension(400, 300));
 
         sampleTable.setAutoCreateRowSorter(true);
         sampleTable.setModel(new javax.swing.table.DefaultTableModel(
@@ -301,23 +274,13 @@ public class SampleFrame extends javax.swing.JFrame {
 
     private void viewButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewButtonActionPerformed
         // TODO add your handling code here:
-        SampleMapper mapper = BrowserContext.getSpringContext().getBean("sampleMapper", SampleMapper.class);
         int selectRows = sampleTable.getSelectedRows().length;// 取得用户所选行的行数
         DefaultTableModel tableModel = (DefaultTableModel) sampleTable.getModel();
         if (selectRows == 1) {
-            this.contentTextArea.setText("");
             int rowId = sampleTable.getSelectedRow();
             String rowKey = (String) tableModel.getValueAt(rowId, 1);
-            Sample sample = mapper.get(rowKey);
-            DocUnits docUnits = sample.getContent();
-            Unit[] units = docUnits.getUnits();
-            if (null != units) {
-                this.contentDialog.setTitle(getSiteId() + " : " + sample.getUrl());
-                this.contentDialog.setVisible(true);
-                for (Unit unit : units) {
-                    this.contentTextArea.append(unit.xpath + " -> " + unit.text.trim() + "\n");
-                }
-            }
+            ContentFrame contentFrame = new ContentFrame();
+            contentFrame.setSample(rowKey);
         }
     }//GEN-LAST:event_viewButtonActionPerformed
 
@@ -409,14 +372,11 @@ public class SampleFrame extends javax.swing.JFrame {
     private javax.swing.JButton addButton;
     private javax.swing.JDialog addDialog;
     private javax.swing.JButton addSampleButton;
-    private javax.swing.JDialog contentDialog;
-    private javax.swing.JTextArea contentTextArea;
     private javax.swing.JButton deleteButton;
     private javax.swing.JButton fetchButton;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JButton refreshButton;
     private javax.swing.JTable sampleTable;

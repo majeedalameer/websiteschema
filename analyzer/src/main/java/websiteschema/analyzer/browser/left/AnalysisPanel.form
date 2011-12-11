@@ -531,6 +531,7 @@
         <Component class="javax.swing.JButton" name="analyzeParamButton">
           <Properties>
             <Property name="text" type="java.lang.String" value="&#x5206;&#x6790;&#x9875;&#x9762;"/>
+            <Property name="toolTipText" type="java.lang.String" value="&#x5206;&#x6790;&#x5f53;&#x524d;&#x9875;&#x9762;"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="analyzeParamButtonActionPerformed"/>

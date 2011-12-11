@@ -10,8 +10,6 @@
  */
 package websiteschema.analyzer.browser.left;
 
-import websiteschema.analyzer.sample.SampleCollectionFrame;
-import websiteschema.analyzer.sample.SampleFrame;
 import com.webrenderer.swing.IMozillaBrowserCanvas;
 import com.webrenderer.swing.dom.IElement;
 import com.webrenderer.swing.dom.IElementCollection;
@@ -28,13 +26,12 @@ import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
 import org.w3c.dom.Document;
 import websiteschema.analyzer.browser.SimpleBrowser;
-import websiteschema.analyzer.sample.ClusterFrame;
-import websiteschema.analyzer.sample.SampleCollectionFrame;
-import websiteschema.analyzer.sample.SampleFrame;
-import websiteschema.analyzer.sample.WebsiteschemaClusterer;
+import websiteschema.analyzer.browser.left.sample.ClusterFrame;
+import websiteschema.analyzer.browser.left.sample.SampleCollectionFrame;
+import websiteschema.analyzer.browser.left.sample.SampleFrame;
+import websiteschema.analyzer.browser.left.sample.WebsiteschemaClusterer;
 import websiteschema.cluster.analyzer.BaseClusterAnalyzer;
 import websiteschema.analyzer.context.BrowserContext;
-import websiteschema.analyzer.sample.ISiteAnalyzer;
 import websiteschema.cluster.analyzer.ClusterAnalyzer;
 import websiteschema.crawler.fb.FBDOMExtractor;
 import websiteschema.element.DocumentUtil;
@@ -370,6 +367,7 @@ public class AnalysisPanel extends javax.swing.JPanel {
         });
 
         analyzeParamButton.setText("分析页面");
+        analyzeParamButton.setToolTipText("分析当前页面");
         analyzeParamButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 analyzeParamButtonActionPerformed(evt);

@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package websiteschema.analyzer.sample;
+package websiteschema.analyzer.browser.left.sample;
 
 import websiteschema.analyzer.browser.left.AnalysisPanel;
 import java.awt.Component;
@@ -47,8 +47,7 @@ public class WebsiteschemaClusterer implements Runnable {
             model = cc.clustering();
             model.printClusterInfo();
             if (null != cmMapper) {
-                context.getConsole().log("Saving ClusterModel...");
-                cmMapper.put(model);
+                context.getConsole().log("Clustering compeleted...");
                 Websiteschema schema = websiteschemaMapper.get(siteId);
                 if (null != schema) {
                     Map<String, String> prop = schema.getProperties();
@@ -57,6 +56,8 @@ public class WebsiteschemaClusterer implements Runnable {
                     schema.setProperties(prop);
                     websiteschemaMapper.put(schema);
                 }
+                context.getConsole().log("Saving ClusterModel...");
+                cmMapper.put(model);
             }
             this.panel.setSiteId(siteId);
             JOptionPane.showMessageDialog(parentComponent, "聚类分析完成");
