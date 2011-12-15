@@ -12,7 +12,7 @@ drop table if exists Job;
 
 drop table if exists Keyword;
 
-drop table if exists Scheduler;
+drop table if exists Schedule;
 
 drop table if exists Site;
 
@@ -100,9 +100,9 @@ create table Keyword
 );
 
 /*==============================================================*/
-/* Table: Scheduler                                             */
+/* Table: Schedule                                             */
 /*==============================================================*/
-create table Scheduler
+create table Schedule
 (
    id                   bigint not null auto_increment,
    startURLId           bigint,
