@@ -22,6 +22,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import websiteschema.element.xpath.XPathParser;
 
 /**
  *
@@ -80,6 +81,7 @@ public class DocumentUtil {
             }
             nodes = xpath.selectNodes(doc);
         } catch (Exception ex) {
+            ex.printStackTrace();
         }
         return nodes;
     }
@@ -111,12 +113,21 @@ public class DocumentUtil {
     }
 
     /**
-     * 为XPATH增加pre namespace，实现简单，如果需要完全正确的结果，需要做XPATH的词法分析，这里还暂不支持//p[b='xy']这种格式。
+     * 为XPATH增加pre namespace，实现简单，如果需要完全正确的结果，需要做XPATH的词法分析。
      * @param xpath
      * @param pre
      * @return
      */
     public static String buildXPath(String xpath, String pre) {
+        if (null == pre || "".equals(pre)) {
+            return xpath;
+        }
+        XPathParser parser = new XPathParser(xpath);
+        parser.setNamespace(pre);
+        return parser.toString();
+    }
+
+    public static String buildXPath2(String xpath, String pre) {
         if (null == pre || "".equals(pre)) {
             return xpath;
         }

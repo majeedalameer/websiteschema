@@ -77,7 +77,7 @@ public class ContentFrame extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         contentTextArea = new javax.swing.JTextArea();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jToolBar1.setRollover(true);
 

@@ -10,7 +10,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import websiteschema.cluster.DocVectorConvertor;
 import websiteschema.model.domain.cluster.Cluster;
 import websiteschema.model.domain.cluster.ClusterModel;
 import websiteschema.model.domain.cluster.Dimension;
@@ -21,10 +20,10 @@ import websiteschema.model.domain.cluster.Sample;
 import static websiteschema.utils.PojoMapper.*;
 
 /**
- * 用来分析新闻类型的网站
+ *
  * @author ray
  */
-public class BaseClusterAnalyzer implements ClusterAnalyzer {
+public class AbstractClusterAnalyzer implements ClusterAnalyzer {
 
     Set<String> validNodes = new HashSet<String>();
     Set<String> invalidNodes = new HashSet<String>();
@@ -101,6 +100,10 @@ public class BaseClusterAnalyzer implements ClusterAnalyzer {
             ex.printStackTrace();
         }
         return ret;
+    }
+
+    private void analyzeEachCluster(Cluster cluster) {
+        
     }
 
     private void confirmClusterType(Cluster[] clusters, List<DocVector> space, List<Sample> samples, FeatureStatInfo statInfo) {

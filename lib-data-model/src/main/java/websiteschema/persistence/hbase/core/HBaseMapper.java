@@ -34,18 +34,24 @@ public class HBaseMapper<T extends HBaseBean> extends Mapper {
 
     public void scan(Function<T> func) {
         ResultScanner rs = scan();
-        for (Result r : rs) {
-            T obj = wrapper.getBean(r, clazz);
-            func.invoke(obj);
+        if (null != rs) {
+            for (Result r : rs) {
+                T obj = wrapper.getBean(r, clazz);
+                func.invoke(obj);
+            }
+            rs.close();
         }
     }
 
     public void scan(String start, Function<T> func) {
         if (null != start && "".equals(start)) {
             ResultScanner rs = scan(start);
-            for (Result r : rs) {
-                T obj = wrapper.getBean(r, clazz);
-                func.invoke(obj);
+            if (null != rs) {
+                for (Result r : rs) {
+                    T obj = wrapper.getBean(r, clazz);
+                    func.invoke(obj);
+                }
+                rs.close();
             }
         }
     }
@@ -53,15 +59,18 @@ public class HBaseMapper<T extends HBaseBean> extends Mapper {
     public List<T> getList(String start, String end) {
         if (null != start && !"".equals(start)) {
             ResultScanner rs = scan(start, end);
-            List<T> ret = new ArrayList<T>();
-            for (Result r : rs) {
-                T obj = wrapper.getBean(r, clazz);
-                ret.add(obj);
+            if (null != rs) {
+                List<T> ret = new ArrayList<T>();
+                for (Result r : rs) {
+                    T obj = wrapper.getBean(r, clazz);
+                    ret.add(obj);
+                }
+                rs.close();
+                return ret;
             }
-            return ret;
-        } else {
-            return null;
         }
+        return null;
+
     }
 
     public void put(T obj) {
