@@ -176,8 +176,10 @@ public class AnalyzerUtil {
         List<DocVector> ret = new ArrayList<DocVector>();
         Set<String> setRowKeys = new HashSet<String>(rowKeys);
         for (DocVector vect : samples) {
-            if (setRowKeys.contains(vect.getName())) {
-                ret.add(vect);
+            if (null != vect) {
+                if (setRowKeys.contains(vect.getName())) {
+                    ret.add(vect);
+                }
             }
         }
         return ret;
