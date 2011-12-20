@@ -139,7 +139,9 @@ public class CosineClusterer extends Clusterer {
         DocVectorConvertor convertor = new DocVectorConvertor();
         for (Sample sample : samples) {
             DocVector vect = convertor.convert(sample, statInfo);
-            space.add(vect);
+            if (null != vect) {
+                space.add(vect);
+            }
         }
         return clustering(space);
     }

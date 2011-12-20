@@ -5,6 +5,7 @@
 package websiteschema.cluster;
 
 import java.util.*;
+import org.apache.log4j.Logger;
 import websiteschema.model.domain.cluster.Dimension;
 import websiteschema.model.domain.cluster.DocUnits;
 import websiteschema.model.domain.cluster.DocVector;
@@ -18,6 +19,8 @@ import websiteschema.model.domain.cluster.Unit;
  * @author ray
  */
 public class DocVectorConvertor {
+
+    Logger l = Logger.getLogger(DocVectorConvertor.class);
 
     private Dimension getDim(String dimName, FeatureStatInfo statInfo) {
         FeatureInfo f = statInfo.getFeatureInfo(dimName);
@@ -36,21 +39,26 @@ public class DocVectorConvertor {
         vect.setName(sample.getRowKey());
 
         DocUnits units = sample.getContent();
-        Unit array[] = units.getUnits();
-        if (null != array) {
-            List<Dimension> dims = new ArrayList<Dimension>();
-            Set<String> set = new HashSet<String>();
-            for (Unit u : array) {
-                if (!set.contains(u.xpath)) {
-                    Dimension d = getDim(u.xpath, statInfo);
-                    if (null != d && d.getValue() > 0) {
-                        dims.add(d);
+        if (null != units) {
+            Unit array[] = units.getUnits();
+            if (null != array) {
+                List<Dimension> dims = new ArrayList<Dimension>();
+                Set<String> set = new HashSet<String>();
+                for (Unit u : array) {
+                    if (!set.contains(u.xpath)) {
+                        Dimension d = getDim(u.xpath, statInfo);
+                        if (null != d && d.getValue() > 0) {
+                            dims.add(d);
+                        }
+                        set.add(u.xpath);
                     }
-                    set.add(u.xpath);
                 }
+                set = null;
+                vect.append(dims);
             }
-            set = null;
-            vect.append(dims);
+        } else {
+            l.error("sample is invalid: " + sample.getUrl());
+            return null;
         }
 
         return vect;

@@ -78,15 +78,18 @@ public class BaseClusterAnalyzer implements ClusterAnalyzer {
                     rowKeys.add(allSamples.get(i));
                 }
                 List<DocVector> vectors = analyzer.getVectors(rowKeys, space);
-                List<Sample> clusterSamples = analyzer.getSamples(rowKeys, samples);
-                Set<String> commonNodes = analyzer.findCommonNodes(vectors, statInfo);
+                //如果没有合适的向量，则表明这个类是无效的。
+                if (null != vectors && !vectors.isEmpty()) {
+                    List<Sample> clusterSamples = analyzer.getSamples(rowKeys, samples);
+                    Set<String> commonNodes = analyzer.findCommonNodes(vectors, statInfo);
 
-                analyzer.findTitlePrefixAndSuffix(titlePrefix, titleSuffix, clusterSamples);
-                Set<String> invalidNodeSet = analyzer.findInvalidNodes(clusterSamples, commonNodes, 0.6);
-                invalidNodes.addAll(invalidNodeSet);
-                validNodes.addAll(commonNodes);
-                for (String xpath : invalidNodes) {
-                    validNodes.remove(xpath);
+                    analyzer.findTitlePrefixAndSuffix(titlePrefix, titleSuffix, clusterSamples);
+                    Set<String> invalidNodeSet = analyzer.findInvalidNodes(clusterSamples, commonNodes, 0.6);
+                    invalidNodes.addAll(invalidNodeSet);
+                    validNodes.addAll(commonNodes);
+                    for (String xpath : invalidNodes) {
+                        validNodes.remove(xpath);
+                    }
                 }
 
             } else {
@@ -113,44 +116,49 @@ public class BaseClusterAnalyzer implements ClusterAnalyzer {
                     rowKeys.add(allSamples.get(i));
                 }
                 List<DocVector> vectors = analyzer.getVectors(rowKeys, space);
-//                List<Sample> clusterSamples = analyzer.getSamples(rowKeys, samples);
-//                Set<String> commonNodes = analyzer.findCommonNodes(vectors, statInfo);
-                double textWeight = 0.0;
-                int textCount = 0;
-                double anchorWeight = 0.0;
-                int anchorCount = 0;
-//                DocVector v = vectors.get(0);
-                for (DocVector v : vectors) {
-                    Dimension dims[] = v.getDims();
-                    for (Dimension dim : dims) {
-                        int dimId = dim.getId();
-                        int value = dim.getValue();
-                        FeatureInfo feature = statInfo.getList()[dimId];
-                        String xpath = feature.getName();
-                        if (!invalidNodes.contains(xpath)) {
-                            xpath = xpath.toLowerCase();
-                            if (feature.getWeight() > 0) {
-                                if (xpath.endsWith("/a")) {
-                                    anchorWeight += Math.log(feature.getWeight());
-                                    anchorCount++;
-                                } else {
-                                    textWeight += Math.log(feature.getWeight());
-                                    textCount++;
+                //如果没有合适的向量，则表明这个类是无效的。
+                if (null != vectors && !vectors.isEmpty()) {
+//                  List<Sample> clusterSamples = analyzer.getSamples(rowKeys, samples);
+//                  Set<String> commonNodes = analyzer.findCommonNodes(vectors, statInfo);
+                    double textWeight = 0.0;
+                    int textCount = 0;
+                    double anchorWeight = 0.0;
+                    int anchorCount = 0;
+//                      DocVector v = vectors.get(0);
+                    for (DocVector v : vectors) {
+                        Dimension dims[] = v.getDims();
+                        for (Dimension dim : dims) {
+                            int dimId = dim.getId();
+                            int value = dim.getValue();
+                            FeatureInfo feature = statInfo.getList()[dimId];
+                            String xpath = feature.getName();
+                            if (!invalidNodes.contains(xpath)) {
+                                xpath = xpath.toLowerCase();
+                                if (feature.getWeight() > 0) {
+                                    if (xpath.endsWith("/a")) {
+                                        anchorWeight += Math.log(feature.getWeight());
+                                        anchorCount++;
+                                    } else {
+                                        textWeight += Math.log(feature.getWeight());
+                                        textCount++;
+                                    }
                                 }
                             }
                         }
                     }
+                    double ratio = textWeight / (textWeight + anchorWeight);
+                    double countRatio = (double) textCount / (double) (textCount + anchorCount);
+                    System.out.println("cluster: " + cluster.getCustomName() + " text ratio: " + ratio + "text count ratio: " + countRatio);
+                    String type = "LINKS";
+                    if ((textWeight + anchorWeight) < 0.01D) {
+                        type = "INVALID";
+                    } else if (ratio > 0.5) {
+                        type = "DOCUMENT";
+                    }
+                    cluster.setType(type);
+                } else {
+                    cluster.setType("INVALID");
                 }
-                double ratio = textWeight / (textWeight + anchorWeight);
-                double countRatio = (double) textCount / (double) (textCount + anchorCount);
-                System.out.println("cluster: " + cluster.getCustomName() + " text ratio: " + ratio + "text count ratio: " + countRatio);
-                String type = "LINKS";
-                if ((textWeight + anchorWeight) < 0.01D) {
-                    type = "INVALID";
-                } else if (ratio > 0.5) {
-                    type = "DOCUMENT";
-                }
-                cluster.setType(type);
             } else {
                 String type = "INVALID";
                 cluster.setType(type);
