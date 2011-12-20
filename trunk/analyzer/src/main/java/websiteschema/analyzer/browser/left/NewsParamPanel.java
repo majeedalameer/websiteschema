@@ -8,8 +8,15 @@
  *
  * Created on Dec 8, 2011, 11:16:17 PM
  */
-
 package websiteschema.analyzer.browser.left;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import websiteschema.analyzer.context.BrowserContext;
+import websiteschema.cluster.Clusterer;
+import websiteschema.model.domain.cluster.ClusterModel;
+import websiteschema.model.domain.cluster.Sample;
+import websiteschema.persistence.hbase.ClusterModelMapper;
 
 /**
  *
@@ -17,7 +24,7 @@ package websiteschema.analyzer.browser.left;
  */
 public class NewsParamPanel extends javax.swing.JPanel implements ISiteAnalyzer {
 
-    String siteId;
+    BrowserContext context;
 
     /** Creates new form NewsParamPanel */
     public NewsParamPanel() {
@@ -101,6 +108,7 @@ public class NewsParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
         jTextField23 = new javax.swing.JTextField();
         jLabel31 = new javax.swing.JLabel();
         jTextField24 = new javax.swing.JTextField();
+        jButton4 = new javax.swing.JButton();
 
         jLabel1.setText("网站Id:");
 
@@ -182,6 +190,8 @@ public class NewsParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
 
         jLabel31.setText("栏目XPath:");
 
+        jButton4.setText("测试");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -231,9 +241,11 @@ public class NewsParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
                     .addComponent(jSeparator5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 646, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(jButton3)
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton1)
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton2))
                     .addComponent(jSeparator6, javax.swing.GroupLayout.DEFAULT_SIZE, 646, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
@@ -436,18 +448,18 @@ public class NewsParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton2)
                     .addComponent(jButton1)
+                    .addComponent(jButton4)
                     .addComponent(jButton3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jSeparator5, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
     }// </editor-fold>//GEN-END:initComponents
-
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel belongToLabel;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
     private javax.swing.JComboBox jComboBox1;
     private javax.swing.JComboBox jComboBox2;
     private javax.swing.JLabel jLabel1;
@@ -516,12 +528,44 @@ public class NewsParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
 
     @Override
     public void setSiteId(String siteId) {
-        this.siteId = siteId;
         this.siteIdLabel.setText(siteId);
     }
 
+    private void analysis() {
+        ClusterModelMapper cmMapper = BrowserContext.getSpringContext().getBean("clusterModelMapper", ClusterModelMapper.class);
+        ClusterModel cm = cmMapper.get(getSiteId());
+        if (null != cm) {
+            String clustererType = cm.getClustererType();
+            if (null != clustererType) {
+                try {
+                    Class clazz = Class.forName(clustererType);
+                    Clusterer clusterer = (Clusterer) clazz.newInstance();
+
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private Sample getCurrentDocument() {
+        Sample sample = null;
+
+        Node doc = context.getBrowser().getW3CDocument();
+        if(null != doc && doc.getNodeType() == Node.DOCUMENT_NODE) {
+            
+        }
+
+        return sample;
+    }
+
     @Override
-    public String getSiteId(){
-        return siteId;
+    public String getSiteId() {
+        return this.siteIdLabel.getText();
+    }
+
+    @Override
+    public void setBrowserContext(BrowserContext context) {
+        this.context = context;
     }
 }

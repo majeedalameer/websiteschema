@@ -32,6 +32,7 @@ public class DocumentTest {
         assertEquals(buildXPath("//@id", "pre"), "//@id");
         assertEquals(buildXPath("//*", "pre"), "//*");
         assertEquals(buildXPath("//p/a/*", "pre"), "//pre:p/pre:a/*");
+        assertEquals(buildXPath("//p[a='xy']/a/*", "bean"), "//bean:p[a='xy']/bean:a/*");
         assertEquals(buildXPath("//@id/p", "pre"), "//@id/pre:p");
         assertEquals(buildXPath("//a/p/@id", "pre"), "//pre:a/pre:p/@id");
         assertEquals(buildXPath("//html/META[@id='abc']", "pre"), "//pre:html/pre:META[@id='abc']");

@@ -710,7 +710,7 @@ public class AnalysisPanel extends javax.swing.JPanel {
         Site site = siteMapper.getBySiteId(siteId);
         if (null != site) {
             String siteType = site.getSiteType();
-            String panelClazz = BrowserContext.getConfigure().getProperty("PageAnalysisGUI", "portal", null);
+            String panelClazz = BrowserContext.getConfigure().getProperty("PageAnalysisGUI", siteType, null);
             if (null != panelClazz) {
                 try {
                     Class clazz = Class.forName(panelClazz);
