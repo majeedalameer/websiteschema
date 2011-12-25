@@ -13,7 +13,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import websiteschema.model.domain.Job;
-import websiteschema.model.domain.PageInfo;
 import websiteschema.persistence.rdbms.JobMapper;
 import static websiteschema.persistence.rdbms.utils.ParameterUtil.*;
 

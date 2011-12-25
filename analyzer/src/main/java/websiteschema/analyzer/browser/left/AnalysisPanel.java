@@ -30,9 +30,10 @@ import websiteschema.analyzer.browser.left.sample.ClusterFrame;
 import websiteschema.analyzer.browser.left.sample.SampleCollectionFrame;
 import websiteschema.analyzer.browser.left.sample.SampleFrame;
 import websiteschema.analyzer.browser.left.sample.WebsiteschemaClusterer;
-import websiteschema.cluster.analyzer.BaseClusterAnalyzer;
+import websiteschema.cluster.analyzer.SimpleClusterAnalyzer;
 import websiteschema.analyzer.context.BrowserContext;
 import websiteschema.cluster.analyzer.ClusterAnalyzer;
+import websiteschema.cluster.analyzer.ClusterAnalyzerImpl;
 import websiteschema.crawler.fb.FBDOMExtractor;
 import websiteschema.element.DocumentUtil;
 import websiteschema.element.XPathAttributes;
@@ -614,7 +615,7 @@ public class AnalysisPanel extends javax.swing.JPanel {
                 }
             }
         }
-        return new BaseClusterAnalyzer();
+        return new ClusterAnalyzerImpl();
     }
 
     private void testButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_testButtonActionPerformed

@@ -17,6 +17,7 @@ public class Wrapper implements java.io.Serializable {
     String name = "";
     String wrapperType;
     String visualConfig = "";
+    String checksum = "";
     Date createTime = new Date();
     String createUser = "system";
     Date updateTime = new Date();
@@ -94,4 +95,11 @@ public class Wrapper implements java.io.Serializable {
         this.wrapperType = wrapperType;
     }
 
+    public String getChecksum() {
+        return checksum;
+    }
+
+    public void setChecksum(String checksum) {
+        this.checksum = checksum;
+    }
 }

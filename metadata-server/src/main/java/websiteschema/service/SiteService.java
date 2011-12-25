@@ -15,7 +15,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import websiteschema.model.domain.PageInfo;
 import static websiteschema.persistence.rdbms.utils.ParameterUtil.*;
 
 /**

@@ -12,10 +12,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import websiteschema.model.domain.PageInfo;
 import websiteschema.model.domain.Wrapper;
 import websiteschema.persistence.rdbms.WrapperMapper;
 import static websiteschema.persistence.rdbms.utils.ParameterUtil.*;
+import websiteschema.utils.MD5;
 
 /**
  *
@@ -44,7 +44,20 @@ public class WrapperService {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         wrapper.setCreateUser(userDetails.getUsername());
         wrapper.setLastUpdateUser(wrapper.getCreateUser());
+        setChecksum(wrapper);
         wrapperMapper.insert(wrapper);
+    }
+
+    private void setChecksum(Wrapper wrapper) {
+        String config = wrapper.getApplication();
+        try {
+            if (null != config) {
+                String checksum = MD5.getMD5(config.getBytes("UTF-8"));
+                wrapper.setChecksum(checksum);
+            }
+        } catch (Exception ex) {
+            
+        }
     }
 
     @Transactional
@@ -52,6 +65,7 @@ public class WrapperService {
         wrapper.setUpdateTime(new Date());
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         wrapper.setLastUpdateUser(userDetails.getUsername());
+        setChecksum(wrapper);
         wrapperMapper.update(wrapper);
     }
 
