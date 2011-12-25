@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import websiteschema.model.domain.PageInfo;
 
 /**
  *
@@ -63,15 +62,6 @@ public class ParameterUtil {
         params.put("limit", limit);
         params.put("sort", sort);
         params.put("match", match);
-        return params;
-    }
-
-    public static Map buildParam(PageInfo pageInfo) {
-        Map params = new HashMap();
-        params.put("start", pageInfo.getPageNum());
-        params.put("limit", pageInfo.getPageSize());
-        params.put("sort", pageInfo.getOrderBy());
-        params.put("match", pageInfo.getMatch());
         return params;
     }
 

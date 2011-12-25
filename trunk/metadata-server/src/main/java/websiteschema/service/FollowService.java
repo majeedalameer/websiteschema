@@ -12,7 +12,6 @@ import websiteschema.persistence.rdbms.FollowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import websiteschema.model.domain.PageInfo;
 import static websiteschema.persistence.rdbms.utils.ParameterUtil.*;
 
 /**

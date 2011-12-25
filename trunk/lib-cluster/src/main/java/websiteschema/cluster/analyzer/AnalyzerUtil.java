@@ -25,6 +25,11 @@ import websiteschema.utils.EditDistance;
  */
 public class AnalyzerUtil {
 
+    private static AnalyzerUtil ins = new AnalyzerUtil();
+
+    public static AnalyzerUtil getInstance() {
+        return ins;
+    }
     EditDistance ld = new EditDistance();
 
     public List<DocVector> convertSamples(List<Sample> samples, FeatureStatInfo statInfo) {

@@ -24,12 +24,9 @@ import static websiteschema.utils.PojoMapper.*;
  * 用来分析新闻类型的网站
  * @author ray
  */
-public class BaseClusterAnalyzer implements ClusterAnalyzer {
+public class SimpleClusterAnalyzer implements ClusterAnalyzer {
 
-    Set<String> validNodes = new HashSet<String>();
-    Set<String> invalidNodes = new HashSet<String>();
-    Set<String> titlePrefix = new HashSet<String>();
-    Set<String> titleSuffix = new HashSet<String>();
+    BasicAnalysisResult result = new BasicAnalysisResult();
     AnalyzerUtil analyzer = new AnalyzerUtil();
 
     /**
@@ -83,12 +80,12 @@ public class BaseClusterAnalyzer implements ClusterAnalyzer {
                     List<Sample> clusterSamples = analyzer.getSamples(rowKeys, samples);
                     Set<String> commonNodes = analyzer.findCommonNodes(vectors, statInfo);
 
-                    analyzer.findTitlePrefixAndSuffix(titlePrefix, titleSuffix, clusterSamples);
+                    analyzer.findTitlePrefixAndSuffix(result.getTitlePrefix(), result.getTitleSuffix(), clusterSamples);
                     Set<String> invalidNodeSet = analyzer.findInvalidNodes(clusterSamples, commonNodes, 0.6);
-                    invalidNodes.addAll(invalidNodeSet);
-                    validNodes.addAll(commonNodes);
-                    for (String xpath : invalidNodes) {
-                        validNodes.remove(xpath);
+                    result.getInvalidNodes().addAll(invalidNodeSet);
+                    result.getValidNodes().addAll(commonNodes);
+                    for (String xpath : result.getInvalidNodes()) {
+                        result.getValidNodes().remove(xpath);
                     }
                 }
 
@@ -96,10 +93,10 @@ public class BaseClusterAnalyzer implements ClusterAnalyzer {
             }
         }
         try {
-            ret.put("ValidNodes", toJson(validNodes));
-            ret.put("InvalidNodes", toJson(invalidNodes));
-            ret.put("TitlePrefix", toJson(titlePrefix));
-            ret.put("TitleSuffix", toJson(titleSuffix));
+            ret.put("ValidNodes", toJson(result.getValidNodes()));
+            ret.put("InvalidNodes", toJson(result.getInvalidNodes()));
+            ret.put("TitlePrefix", toJson(result.getTitlePrefix()));
+            ret.put("TitleSuffix", toJson(result.getTitleSuffix()));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -132,7 +129,7 @@ public class BaseClusterAnalyzer implements ClusterAnalyzer {
                             int value = dim.getValue();
                             FeatureInfo feature = statInfo.getList()[dimId];
                             String xpath = feature.getName();
-                            if (!invalidNodes.contains(xpath)) {
+                            if (!result.getInvalidNodes().contains(xpath)) {
                                 xpath = xpath.toLowerCase();
                                 if (feature.getWeight() > 0) {
                                     if (xpath.endsWith("/a")) {
@@ -164,5 +161,15 @@ public class BaseClusterAnalyzer implements ClusterAnalyzer {
                 cluster.setType(type);
             }
         }
+    }
+
+    @Override
+    public BasicAnalysisResult getBasicAnalysisResult() {
+        return this.result;
+    }
+    
+    @Override
+    public void setFieldAnalyzers(List<IFieldAnalyzer> fieldAnalyzers) {
+//        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

@@ -11,7 +11,6 @@ import websiteschema.dwr.response.ListRange;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import websiteschema.model.domain.PageInfo;
 import websiteschema.model.domain.Schedule;
 import websiteschema.persistence.rdbms.ScheduleMapper;
 import static websiteschema.persistence.rdbms.utils.ParameterUtil.*;

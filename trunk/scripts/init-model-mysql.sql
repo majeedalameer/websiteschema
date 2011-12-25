@@ -219,6 +219,7 @@ create table Wrapper
    name                 varchar(100) not null,
    wrapperType          varchar(30),
    visualConfig         text,
+   checksum             char(32),
    createTime           datetime,
    createUser           varchar(30),
    updateTime           datetime,

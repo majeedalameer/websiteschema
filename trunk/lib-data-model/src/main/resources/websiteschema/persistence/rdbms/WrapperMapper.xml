@@ -5,7 +5,7 @@
 
 <!--    <cache />-->
 
-    <sql id='wrapperColumns'>id, wrapperType, name, createTime, createUser, updateTime, lastUpdateUser</sql>
+    <sql id='wrapperColumns'>id, wrapperType, name, checksum, createTime, createUser, updateTime, lastUpdateUser</sql>
 
     <select id="getTotalResults" resultType="long">
         select count(*) from Wrapper
@@ -45,8 +45,8 @@
     <!-- 插入记录 -->
     <insert id="insert" parameterType="websiteschema.model.domain.Wrapper"
         useGeneratedKeys="true" keyProperty="id">
-        insert into Wrapper (application, name, wrapperType, visualConfig, createTime, createUser, updateTime, lastUpdateUser)
-        values (#{application}, #{name},#{wrapperType},#{visualConfig},#{createTime},#{createUser},#{updateTime},#{lastUpdateUser})
+        insert into Wrapper (application, name, wrapperType, visualConfig, checksum, createTime, createUser, updateTime, lastUpdateUser)
+        values (#{application}, #{name},#{wrapperType},#{visualConfig},#{checksum},#{createTime},#{createUser},#{updateTime},#{lastUpdateUser})
     </insert>
 
     <!-- 更新任务状态记录 -->
@@ -56,6 +56,7 @@
         wrapperType = #{wrapperType},
         name = #{name},
         visualConfig = #{visualConfig},
+        checksum = #{checksum},
         createTime = #{createTime},
         createUser = #{createUser},
         updateTime = #{updateTime},
