@@ -38,6 +38,8 @@ public class Mapper {
     public Mapper(String tableName) {
         this.tableName = tableName;
         conf = HBaseConfiguration.create();
+        l.info("hbase.master: "+conf.get("hbase.master"));
+        l.info("hbase.zookeeper.quorum: "+conf.get("hbase.zookeeper.quorum"));
 //        conf.setQuietMode(false);
 //        conf.setClassLoader(Configuration.class.getClassLoader());
     }
