@@ -10,12 +10,18 @@ package websiteschema.model.domain.cluster;
  */
 public class FeatureInfo {
 
+    // Xpath
     private String name = null;
+    // 在文档集中出现的总次数
     private int totalCount = 0;
     //Average frequence of each document
+    // 平均在每篇文章中出现的次数
     private int frequence = 0;
+    // 在多少篇文档中出现过
     private int documentFrequence = 0;
+    // 平均在每篇文档中包含的有效字符的数量
     private int weight = 0;
+    // 每篇文档中包含的字符之间的相似度
     private double similarity = 0.0;
 
     public int getDocumentFrequence() {
