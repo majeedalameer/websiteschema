@@ -12,9 +12,9 @@ import java.util.Map;
  */
 public class Unit {
 
-    public String xpath;
-    public String text;
-    public Map<String, String> attributes;
+    private String xpath;
+    private String text;
+    private Map<String, String> attributes;
 
     public Unit() {
         xpath = null;
