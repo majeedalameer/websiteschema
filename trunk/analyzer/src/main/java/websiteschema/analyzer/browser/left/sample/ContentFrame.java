@@ -52,7 +52,7 @@ public class ContentFrame extends javax.swing.JFrame {
             setTitle(s.getUrl());
             setVisible(true);
             for (Unit unit : units) {
-                this.contentTextArea.append(unit.xpath + " -> " + unit.text.trim() + "\n");
+                this.contentTextArea.append(unit.getXpath() + " -> " + unit.getText().trim() + "\n");
             }
             this.contentTextArea.setCaretPosition(0);
         }
