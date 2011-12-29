@@ -12,11 +12,13 @@ import java.util.List;
  */
 public class Cluster {
 
+    // 样本的RowKey
     List<String> samples;
     DocVector centralPoint;
     double threshold;
     String siteId;
     String type;
+    // 用户可以起的名字，默认为数字形式
     String customName;
 
     public DocVector getCentralPoint() {
