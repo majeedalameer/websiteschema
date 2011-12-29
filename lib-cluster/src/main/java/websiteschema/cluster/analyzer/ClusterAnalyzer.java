@@ -26,7 +26,7 @@ public interface ClusterAnalyzer {
     public Map<String, String> analysis(Map<String, String> old, ClusterModel cm, List<Sample> samples);
 
     /**
-     * 仅能在调用analysis方法之后，方能获得BasicAnalysisResult。
+     * 仅在调用analysis方法之后，才可获得BasicAnalysisResult。
      * @return
      */
     public BasicAnalysisResult getBasicAnalysisResult();
