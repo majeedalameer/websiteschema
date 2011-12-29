@@ -44,29 +44,39 @@ public class DocumentConvertor {
         return ret;
     }
 
+    private boolean ignore(String tagName) {
+        boolean ret = false;
+        if ("script".equalsIgnoreCase(tagName) || "style".equals(tagName)) {
+            ret = true;
+        }
+        return ret;
+    }
+
     private void traversal(Element ele, List<Unit> units) {
-        String xpath = XPathAttrFactory.getInstance().create(ele, xpathAttr);
-        StringBuilder text = new StringBuilder();
-        NodeList children = ele.getChildNodes();
-        if (null != children) {
-            for (int i = 0; i < children.getLength(); i++) {
-                Node child = children.item(i);
-                if (Node.TEXT_NODE == child.getNodeType()) {
-                    text.append(child.getNodeValue());
-                } else if (Node.ELEMENT_NODE == child.getNodeType()) {
-                    traversal((Element) child, units);
+        String tagName = ele.getTagName();
+        if (!ignore(tagName)) {
+            String xpath = XPathAttrFactory.getInstance().create(ele, xpathAttr);
+            StringBuilder text = new StringBuilder();
+            NodeList children = ele.getChildNodes();
+            if (null != children) {
+                for (int i = 0; i < children.getLength(); i++) {
+                    Node child = children.item(i);
+                    if (Node.TEXT_NODE == child.getNodeType()) {
+                        text.append(child.getNodeValue());
+                    } else if (Node.ELEMENT_NODE == child.getNodeType()) {
+                        traversal((Element) child, units);
+                    }
                 }
             }
-        }
 
-        Unit unit = new Unit(xpath, text.toString());
-        //获取节点的其他属性
-        String tagName = ele.getTagName();
-        if ("A".equalsIgnoreCase(tagName)) {
-            Map<String, String> attrs = getNodeAttributes(ele);
-            unit.setAttributes(attrs);
+            Unit unit = new Unit(xpath, text.toString());
+            //获取节点的其他属性
+            if ("A".equalsIgnoreCase(tagName)) {
+                Map<String, String> attrs = getNodeAttributes(ele);
+                unit.setAttributes(attrs);
+            }
+            units.add(unit);
         }
-        units.add(unit);
     }
 
     private Map<String, String> getNodeAttributes(Node node) {

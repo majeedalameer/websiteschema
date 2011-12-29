@@ -90,5 +90,13 @@ public class UrlLinkUtil {
 //    public static void main(String args[]) throws URISyntaxException {
 //        System.out.println(UrlLinkUtil.getInstance().getURL("http://utility.baidu.com/traf/click.php?id=215&url=http://www.baidu.com", "test"));
 //        System.out.println(UrlLinkUtil.getInstance().getURL("http://utility.baidu.com/traf/click.php?id=215&url=http://www.baidu.com", ""));
+//
+//        URI uri = new URI("http://utility.baidu.com/traf/click.php?id=215&url=http://www.baidu.com");
+//        System.out.println("schema: " + uri.getScheme());
+//        System.out.println("schema-specific-part: " + uri.getSchemeSpecificPart());
+//        System.out.println("fragment: " + uri.getFragment());
+//        System.out.println("host: " + uri.getHost());
+//        System.out.println("path: " + uri.getPath());
+//        System.out.println("query: " + uri.getQuery());
 //    }
 }
