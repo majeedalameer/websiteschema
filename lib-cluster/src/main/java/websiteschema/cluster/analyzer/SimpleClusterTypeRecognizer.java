@@ -38,6 +38,8 @@ public class SimpleClusterTypeRecognizer implements IClusterTypeRecognizer {
                 int textCount = 0;
                 double anchorWeight = 0.0;
                 int anchorCount = 0;
+                int weightGt = 0;
+                int maxWeight = 0;
 //                DocVector v = vectors.get(0);
                 for (DocVector v : vectors) {
                     Dimension dims[] = v.getDims();
@@ -56,13 +58,25 @@ public class SimpleClusterTypeRecognizer implements IClusterTypeRecognizer {
                                     textWeight += feature.getWeight();
                                     textCount++;
                                 }
+
+                                int freq = feature.getFrequence();
+                                if (freq > 0) {
+                                    int weightOfEachNode = feature.getWeight() / freq;
+                                    if (weightOfEachNode >= 34) {
+                                        weightGt++;
+                                    }
+                                }
+
+                                if (feature.getWeight() > maxWeight) {
+                                    maxWeight = feature.getWeight();
+                                }
                             }
                         }
                     }
                 }
                 double ratio = textWeight / (textWeight + anchorWeight);
                 double countRatio = (double) textCount / (double) (textCount + anchorCount);
-                System.out.println("cluster: " + cluster.getCustomName() + " text ratio: " + ratio + "text count ratio: " + countRatio);
+//                System.out.println("cluster: " + cluster.getCustomName() + " text ratio: " + ratio + "text count ratio: " + countRatio);
                 String type = "LINKS";
                 if ((textWeight + anchorWeight) < 0.01D) {
                     type = "INVALID";
@@ -70,7 +84,7 @@ public class SimpleClusterTypeRecognizer implements IClusterTypeRecognizer {
                     type = "DOCUMENT";
                 }
                 cluster.setType(type);
-                System.out.println(ratio + "," + countRatio + "," + type);
+                System.out.println(ratio + "," + countRatio + "," + maxWeight + "," + weightGt + "," + type);
             } else {
                 String type = "INVALID";
                 cluster.setType(type);

@@ -68,7 +68,6 @@ public class SampleCollectionFrame extends javax.swing.JFrame {
         crawlerComboBox = new javax.swing.JComboBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setResizable(false);
 
         statusLabel.setText("url : ");
 
@@ -107,8 +106,8 @@ public class SampleCollectionFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(countLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 336, Short.MAX_VALUE))))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(76, 76, 76)
-                .addComponent(crawlerComboBox, 0, 110, Short.MAX_VALUE)
+                .addContainerGap(76, Short.MAX_VALUE)
+                .addComponent(crawlerComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(startButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -139,9 +138,9 @@ public class SampleCollectionFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         String clazzName = "websiteschema.crawler.browser.BrowserWebCrawler";
         String selected = (String) this.crawlerComboBox.getSelectedItem();
-        if("HtmlUnit".equalsIgnoreCase(selected)) {
+        if ("HtmlUnit".equalsIgnoreCase(selected)) {
             clazzName = "websiteschema.crawler.htmlunit.HtmlUnitWebCrawler";
-        } else if("Firefox".equalsIgnoreCase(selected)) {
+        } else if ("Firefox".equalsIgnoreCase(selected)) {
             clazzName = "websiteschema.crawler.browser.BrowserWebCrawler";
         }
         Thread t = new Thread(new SampleCollector(clazzName));
@@ -197,8 +196,13 @@ public class SampleCollectionFrame extends javax.swing.JFrame {
                     count();
                     String url = sample.getUrl();
                     getInstance().statusLabel.setText(url);
-
-                    sc.fetch(sample);
+                    Date lastUpdateTime = sample.getLastUpdateTime();
+                    long interval = null != lastUpdateTime ? System.currentTimeMillis() - lastUpdateTime.getTime() : 0;
+                    if (sample.getHttpStatus() != 200 || interval > 86400000) {
+                        sc.fetch(sample);
+                        //释放一下内存
+                        System.gc();
+                    }
                 } else {
                     break;
                 }

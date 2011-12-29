@@ -5,7 +5,6 @@
 package websiteschema.element.factory;
 
 import com.webrenderer.swing.dom.IElement;
-import com.webrenderer.swing.dom.IElementCollection;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -97,17 +96,24 @@ public class XPathAttrFactory {
                     NodeList siblings = parent.getChildNodes();
                     if (1 < siblings.getLength()) {
                         int pos = 1;
+                        int count = 0;
+                        boolean found = false;
                         for (int i = 0; i < siblings.getLength(); i++) {
                             String siblingName = siblings.item(i).getNodeName();
                             if (ele.equals(siblings.item(i))) {
-                                if (pos > 1) {
-                                    attrKeyValues = String.valueOf(pos);
+                                found = true;
+                            }
+                            if (tagName.equalsIgnoreCase(siblingName)) {
+                                count++;
+                                //如果找到了自己，则记下自己的位置
+                                if (!found) {
+                                    pos++;
                                 }
-                                break;
                             }
-                            if (tagName.equals(siblingName)) {
-                                pos++;
-                            }
+                        }
+                        //如果只有自己1个，则不需要使用格式：div[1]
+                        if(found && count > 1) {
+                            attrKeyValues = String.valueOf(pos);
                         }
                     }
                 }
