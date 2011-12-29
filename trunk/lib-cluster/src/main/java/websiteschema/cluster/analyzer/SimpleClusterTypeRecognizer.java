@@ -49,11 +49,11 @@ public class SimpleClusterTypeRecognizer implements IClusterTypeRecognizer {
                         if (!result.getInvalidNodes().contains(xpath)) {
                             xpath = xpath.toLowerCase();
                             if (feature.getWeight() > 0) {
-                                if (xpath.endsWith("/a")) {
-                                    anchorWeight += Math.log(feature.getWeight());
+                                if (isAnchor(xpath)) {
+                                    anchorWeight += feature.getWeight();
                                     anchorCount++;
                                 } else {
-                                    textWeight += Math.log(feature.getWeight());
+                                    textWeight += feature.getWeight();
                                     textCount++;
                                 }
                             }
@@ -70,11 +70,23 @@ public class SimpleClusterTypeRecognizer implements IClusterTypeRecognizer {
                     type = "DOCUMENT";
                 }
                 cluster.setType(type);
+                System.out.println(ratio + "," + countRatio + "," + type);
             } else {
                 String type = "INVALID";
                 cluster.setType(type);
             }
         }
+    }
+
+    private boolean isAnchor(String xpath) {
+        boolean ret = false;
+        if (xpath.endsWith("/a")) {
+            ret = true;
+        } else if (xpath.contains("/a[") || xpath.contains("/a/")) {
+            ret = true;
+        }
+
+        return ret;
     }
 
     public void setBasicAnalysisResult(BasicAnalysisResult analysisResult) {
