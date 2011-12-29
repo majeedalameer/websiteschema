@@ -39,8 +39,8 @@ public class JavaBeanWrapper {
                 String rowKey = new String(obj.getRow());
                 ret.setRowKey(rowKey);
                 for (KeyValue kv : obj.raw()) {
-                    String family = new String(kv.getFamily());
-                    String value = new String(kv.getValue());
+                    String family = new String(kv.getFamily(), "utf-8");
+                    String value = new String(kv.getValue(), "utf-8");
                     Field[] fields = clazz.getDeclaredFields();
                     for (Field field : fields) {
                         set(clazz, ret, field, family, value);
@@ -48,15 +48,7 @@ public class JavaBeanWrapper {
                 }
             }
             return ret;
-        } catch (InstantiationException ex) {
-            ex.printStackTrace();
-        } catch (IllegalAccessException ex) {
-            ex.printStackTrace();
-        } catch (IllegalArgumentException ex) {
-            ex.printStackTrace();
-        } catch (InvocationTargetException ex) {
-            ex.printStackTrace();
-        } catch (NoSuchMethodException ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
         return null;
