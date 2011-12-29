@@ -36,7 +36,7 @@ public class DocVectorConvertor {
 
     public DocVector convert(Sample sample, FeatureStatInfo statInfo) {
         DocVector vect = new DocVector();
-        vect.setName(sample.getRowKey());
+        vect.setName(sample.getRowKey());// 设置向量的row key
 
         DocUnits units = sample.getContent();
         if (null != units) {
@@ -45,12 +45,12 @@ public class DocVectorConvertor {
                 List<Dimension> dims = new ArrayList<Dimension>();
                 Set<String> set = new HashSet<String>();
                 for (Unit u : array) {
-                    if (!set.contains(u.xpath)) {
-                        Dimension d = getDim(u.xpath, statInfo);
+                    if (!set.contains(u.getXpath())) {
+                        Dimension d = getDim(u.getXpath(), statInfo);
                         if (null != d && d.getValue() > 0) {
                             dims.add(d);
                         }
-                        set.add(u.xpath);
+                        set.add(u.getXpath());
                     }
                 }
                 set = null;
