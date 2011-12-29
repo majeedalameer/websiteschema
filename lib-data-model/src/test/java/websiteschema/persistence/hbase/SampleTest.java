@@ -49,8 +49,8 @@ public class SampleTest {
             DocUnits doc = new DocUnits();
             Unit[] units = new Unit[1];
             Unit u = new Unit();
-            u.text = "test";
-            u.xpath = "/html/body/text()";
+            u.setText("test");
+            u.setXpath("/html/body/text()");
             units[0] = u;
             doc.setUnits(units);
             record.setContent(doc);
@@ -73,7 +73,7 @@ public class SampleTest {
         Sample record = mapper.get(rowKey);
         System.out.println("    " + record.getRowKey());
         System.out.println("    " + record.getUrl());
-        System.out.println("    " + record.getContent().get(0).text);
+        System.out.println("    " + record.getContent().get(0).getText());
         System.out.println("    " + record.getLastUpdateTime());
     }
 
