@@ -191,6 +191,7 @@ public class SampleCollectionFrame extends javax.swing.JFrame {
             String now = DateUtil.format(new Date(), "yyyy-MM-dd HH:mm");
             String end = getSiteId() + "+" + now;
             List<Sample> samples = mapper.getList(getSiteId(), end);
+            int count = 0;
             for (Sample sample : samples) {
                 if (isRunning()) {
                     count();
@@ -201,7 +202,11 @@ public class SampleCollectionFrame extends javax.swing.JFrame {
                     if (sample.getHttpStatus() != 200 || interval > 86400000) {
                         sc.fetch(sample);
                         //释放一下内存
-                        System.gc();
+                        count++;
+                        count = count % 5;
+                        if (count == 5) {
+                            System.gc();
+                        }
                     }
                 } else {
                     break;

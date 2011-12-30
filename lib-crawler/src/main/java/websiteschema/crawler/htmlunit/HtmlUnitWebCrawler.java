@@ -176,4 +176,9 @@ public class HtmlUnitWebCrawler implements Crawler {
             encoding = crawlerSettings.getEncoding();
         }
     }
+
+    @Override
+    public void setTimeout(int timeout) {
+        this.delay = timeout;
+    }
 }

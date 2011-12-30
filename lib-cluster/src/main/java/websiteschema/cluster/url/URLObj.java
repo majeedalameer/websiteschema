@@ -13,12 +13,14 @@ import java.net.URI;
  */
 public class URLObj {
 
+    private URI uri;
     private String path;
     private String query;
     private String schema;
     private String host;
 
     public URLObj(URI uri) {
+        this.uri = uri;
         this.path = uri.getPath();
         this.query = uri.getQuery();
         this.schema = uri.getScheme();
@@ -39,5 +41,13 @@ public class URLObj {
 
     public String getSchema() {
         return schema;
+    }
+
+    public URI getUri() {
+        return uri;
+    }
+
+    public void setUri(URI uri) {
+        this.uri = uri;
     }
 }

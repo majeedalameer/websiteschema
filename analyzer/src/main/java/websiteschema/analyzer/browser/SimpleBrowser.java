@@ -329,6 +329,8 @@ public class SimpleBrowser extends javax.swing.JFrame {
         hideAnalysisMenu = new javax.swing.JCheckBoxMenuItem();
         hideConsoleMenu = new javax.swing.JCheckBoxMenuItem();
         drawBorderMenu = new javax.swing.JMenuItem();
+        jMenu4 = new javax.swing.JMenu();
+        gcMenu = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Simple Browser");
@@ -673,6 +675,19 @@ public class SimpleBrowser extends javax.swing.JFrame {
 
         jMenuBar1.add(jMenu3);
 
+        jMenu4.setText("工具");
+
+        gcMenu.setText("内存回收");
+        gcMenu.setToolTipText("调用JVM的垃圾回收");
+        gcMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                gcMenuActionPerformed(evt);
+            }
+        });
+        jMenu4.add(gcMenu);
+
+        jMenuBar1.add(jMenu4);
+
         setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -796,6 +811,11 @@ public class SimpleBrowser extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_XQueryButtonActionPerformed
 
+    private void gcMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gcMenuActionPerformed
+        // TODO add your handling code here:
+        System.gc();
+    }//GEN-LAST:event_gcMenuActionPerformed
+
     public void openUrl(String url) {
         if (url.startsWith("ftp://")) {
             System.out.println("FTP URL: " + url);
@@ -874,6 +894,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
     private javax.swing.JTextField defaultXPathField;
     private javax.swing.JMenuItem drawBorderMenu;
     private javax.swing.JButton forwardButton;
+    private javax.swing.JMenuItem gcMenu;
     private javax.swing.JButton goButton;
     private javax.swing.JCheckBoxMenuItem hideAnalysisMenu;
     private javax.swing.JCheckBoxMenuItem hideConsoleMenu;
@@ -887,6 +908,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
+    private javax.swing.JMenu jMenu4;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPanel jPanel1;

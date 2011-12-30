@@ -59,6 +59,22 @@
             </MenuItem>
           </SubComponents>
         </Menu>
+        <Menu class="javax.swing.JMenu" name="jMenu4">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="&#x5de5;&#x5177;"/>
+          </Properties>
+          <SubComponents>
+            <MenuItem class="javax.swing.JMenuItem" name="gcMenu">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="&#x5185;&#x5b58;&#x56de;&#x6536;"/>
+                <Property name="toolTipText" type="java.lang.String" value="&#x8c03;&#x7528;JVM&#x7684;&#x5783;&#x573e;&#x56de;&#x6536;"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="gcMenuActionPerformed"/>
+              </Events>
+            </MenuItem>
+          </SubComponents>
+        </Menu>
       </SubComponents>
     </Menu>
   </NonVisualComponents>

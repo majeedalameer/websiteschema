@@ -42,7 +42,7 @@ public class URLCluster {
         // 需要删除的元素数量
         int d = getMembers().size() - n;
         for (int i = 0; i < d; i++) {
-            int index = new Random(ret.size()).nextInt();
+            int index = new Random(ret.size()).nextInt(ret.size());
             ret.remove(index);
         }
 

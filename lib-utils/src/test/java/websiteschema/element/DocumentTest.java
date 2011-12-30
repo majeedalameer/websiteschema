@@ -55,4 +55,14 @@ public class DocumentTest {
             System.out.println(node.getNodeName() + " : " + node.getNodeValue() + " " + node.getTextContent());
         }
     }
+
+    @Test
+    public void testXML() throws ParserConfigurationException, IOException, SAXException {
+        String content = FileUtil.readResource("book.xml");
+        DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
+        domFactory.setNamespaceAware(true); // never forget this!
+        DocumentBuilder builder = domFactory.newDocumentBuilder();
+        Document doc = builder.parse(new ByteArrayInputStream(content.getBytes()));
+        System.out.println(DocumentUtil.getXMLString(doc));
+    }
 }

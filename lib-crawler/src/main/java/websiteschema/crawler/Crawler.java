@@ -37,4 +37,6 @@ public interface Crawler {
 
     public void setCrawlerSettings(CrawlerSettings setting);
 
+    public void setTimeout(int timeout);
+
 }

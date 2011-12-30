@@ -37,11 +37,7 @@ public class Mapper {
 
     public Mapper(String tableName) {
         this.tableName = tableName;
-        conf = HBaseConfiguration.create();
-        l.info("hbase.master: "+conf.get("hbase.master"));
-        l.info("hbase.zookeeper.quorum: "+conf.get("hbase.zookeeper.quorum"));
-//        conf.setQuietMode(false);
-//        conf.setClassLoader(Configuration.class.getClassLoader());
+        conf = HBaseConf.getHBaseConfiguration();
     }
 
     public String getTableName() {
@@ -149,6 +145,7 @@ public class Mapper {
         try {
             HTable table = new HTable(conf, getTableName());
             Scan s = new Scan(Bytes.toBytes(rangeStart), Bytes.toBytes(rangeEnd));
+            s.setCaching(0);
             s.setFilter(filter);
             return table.getScanner(s);
         } catch (IOException ex) {

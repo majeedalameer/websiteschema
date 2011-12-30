@@ -247,4 +247,9 @@ public class BrowserWebCrawler implements Crawler {
     public void setHttpStatus(int status) {
         this.httpStatus = status;
     }
+
+    @Override
+    public void setTimeout(int timeout) {
+        this.delay = timeout;
+    }
 }

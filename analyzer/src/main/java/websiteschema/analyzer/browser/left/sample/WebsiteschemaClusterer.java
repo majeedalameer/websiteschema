@@ -6,8 +6,11 @@ package websiteschema.analyzer.browser.left.sample;
 
 import websiteschema.analyzer.browser.left.AnalysisPanel;
 import java.awt.Component;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.*;
 import javax.swing.JOptionPane;
+import javax.swing.JTextArea;
 import websiteschema.cluster.Clusterer;
 import websiteschema.cluster.CosineClusterer;
 import websiteschema.cluster.analyzer.ClusterAnalyzer;
@@ -33,32 +36,38 @@ public class WebsiteschemaClusterer implements Runnable {
     ClusterAnalyzer analyzer;
     Component parentComponent;
     AnalysisPanel panel;
-    BrowserContext context;
+    JTextArea textArea;
 
     @Override
     public void run() {
         String now = DateUtil.format(new Date(), "yyyy-MM-dd HH:mm");
         String end = siteId + "+" + now;
+        textArea.append("正在加载样本...\n");
         List<Sample> samples = sampleMapper.getList(siteId, end);
         if (null != samples && !samples.isEmpty()) {
             Clusterer cc = new CosineClusterer(siteId);
             cc.appendSample(samples);
+            textArea.append("开始统计特征值...\n");
             cc.statFeature();
+            textArea.append("开始聚类...\n");
             model = cc.clustering();
-            model.printClusterInfo();
+            StringWriter sw = new StringWriter();
+            model.printClusterInfo(new PrintWriter(sw));
+            textArea.append(sw.getBuffer().toString());
             if (null != cmMapper) {
-                context.getConsole().log("Clustering compeleted...");
+                textArea.append("\n聚类完成...\n");
                 Websiteschema schema = websiteschemaMapper.get(siteId);
                 if (null != schema) {
                     Map<String, String> prop = schema.getProperties();
-                    context.getConsole().log("Start analysis parameters...");
+                    textArea.append("开始分析各种参数...\n");
                     prop = analyzer.analysis(prop, model, samples);
                     schema.setProperties(prop);
                     websiteschemaMapper.put(schema);
                 }
-                context.getConsole().log("Saving ClusterModel...");
+                textArea.append("保存分析结果...\n");
                 cmMapper.put(model);
             }
+            //重新刷新一下AnalysisPanel
             this.panel.setSiteId(siteId);
             JOptionPane.showMessageDialog(parentComponent, "聚类分析完成");
         } else {
@@ -95,11 +104,11 @@ public class WebsiteschemaClusterer implements Runnable {
         this.panel = panel;
     }
 
-    public BrowserContext getContext() {
-        return context;
+    public JTextArea getTextArea() {
+        return textArea;
     }
 
-    public void setContext(BrowserContext context) {
-        this.context = context;
+    public void setTextArea(JTextArea textArea) {
+        this.textArea = textArea;
     }
 }
