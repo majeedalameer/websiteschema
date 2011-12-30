@@ -27,6 +27,7 @@ import javax.swing.table.DefaultTableModel;
 import org.w3c.dom.Document;
 import websiteschema.analyzer.browser.SimpleBrowser;
 import websiteschema.analyzer.browser.left.sample.ClusterFrame;
+import websiteschema.analyzer.browser.left.sample.ClustererFrame;
 import websiteschema.analyzer.browser.left.sample.SampleCollectionFrame;
 import websiteschema.analyzer.browser.left.sample.SampleFrame;
 import websiteschema.analyzer.browser.left.sample.WebsiteschemaClusterer;
@@ -55,7 +56,6 @@ public class AnalysisPanel extends javax.swing.JPanel {
 
     BrowserContext context;
     SimpleBrowser simpleBrowser = null;
-    SampleFrame sf = new SampleFrame();
 
     /** Creates new form AnalysisPanel */
     public AnalysisPanel(BrowserContext context, SimpleBrowser simpleBrowser) {
@@ -576,6 +576,7 @@ public class AnalysisPanel extends javax.swing.JPanel {
 
     private void viewSampleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewSampleButtonActionPerformed
         // TODO add your handling code here:
+        SampleFrame sf = new SampleFrame();
         sf.setSiteId(getSiteId());
         sf.setVisible(true);
         sf.loadData();
@@ -583,45 +584,15 @@ public class AnalysisPanel extends javax.swing.JPanel {
 
     private void trainButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_trainButtonActionPerformed
         // TODO add your handling code here:
-        WebsiteschemaClusterer clusterer = new WebsiteschemaClusterer();
-        clusterer.setSiteId(getSiteId());
-        clusterer.setParentComponent(this);
-        clusterer.setSampleMapper(BrowserContext.getSpringContext().getBean("sampleMapper", SampleMapper.class));
-        clusterer.setCmMapper(BrowserContext.getSpringContext().getBean("clusterModelMapper", ClusterModelMapper.class));
-        clusterer.setWebsiteschemaMapper(BrowserContext.getSpringContext().getBean("websiteschemaMapper", WebsiteschemaMapper.class));
-//        SiteMapper siteMapper = BrowserContext.getSpringContext().getBean("siteMapper", SiteMapper.class);
-//        Site site = siteMapper.getBySiteId(getSiteId());
-//        if siteType == news
-        clusterer.setAnalyzer(createClusterAnalyzer());
-        clusterer.setPanel(this);
-        clusterer.setContext(context);
-        new Thread(clusterer).start();
+        ClustererFrame cf = new ClustererFrame();
+        cf.setSiteId(getSiteId());
+        cf.setAnalysisPanel(this);
+        cf.setTitle("聚类分析");
+        cf.setVisible(true);
     }//GEN-LAST:event_trainButtonActionPerformed
-
-    private ClusterAnalyzer createClusterAnalyzer() {
-        String siteId = this.getSiteId();
-        SiteMapper siteMapper = BrowserContext.getSpringContext().getBean("siteMapper", SiteMapper.class);
-        Site site = siteMapper.getBySiteId(siteId);
-        if (null != site) {
-            String siteType = site.getSiteType();
-            String className = BrowserContext.getConfigure().getProperty("ClusterAnalyzer", siteType, null);
-            if (null != className) {
-                try {
-                    Class clazz = Class.forName(className);
-                    ClusterAnalyzer ret = (ClusterAnalyzer) clazz.newInstance();
-                    return ret;
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-            }
-        }
-        return new ClusterAnalyzerImpl();
-    }
 
     private void testButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_testButtonActionPerformed
         // TODO add your handling code here:
-
-
         WebsiteschemaMapper mapper = BrowserContext.getSpringContext().getBean("websiteschemaMapper", WebsiteschemaMapper.class);
         Websiteschema websiteschema = mapper.get(getSiteId());
 

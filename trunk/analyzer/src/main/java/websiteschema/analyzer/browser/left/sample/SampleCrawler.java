@@ -48,6 +48,7 @@ public class SampleCrawler {
 
         if (shouldCrawl(sample)) {
             final Crawler crawler = createCrawler();
+            crawler.setTimeout(10000);
             crawler.setLoadImage(false);
             Document[] docs = crawler.crawl(url);
             Document doc = null != docs ? docs[0] : null;

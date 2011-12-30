@@ -4,6 +4,7 @@
  */
 package websiteschema.model.domain.cluster;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import websiteschema.model.domain.HBaseBean;
@@ -55,22 +56,24 @@ public class ClusterModel implements HBaseBean {
         this.totalSamples = totalSamples;
     }
 
-    public void printClusterInfo() {
+    public void printClusterInfo(PrintWriter pw) {
         if (null != clusters) {
             for (int i = 0; i < clusters.length; i++) {
-                System.out.println("Cluster " + i);
+                pw.println("Cluster name: " + clusters[i].getCustomName());
                 List<String> sameKindInstancs = clusters[i].getSamples();
                 for (String sample : sameKindInstancs) {
-                    System.out.println(sample);
+                    pw.println(sample);
                 }
             }
         }
     }
 
+    @Override
     public String getRowKey() {
         return rowKey;
     }
 
+    @Override
     public void setRowKey(String rowKey) {
         this.rowKey = rowKey;
     }

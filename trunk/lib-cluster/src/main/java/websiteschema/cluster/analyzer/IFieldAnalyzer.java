@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import org.w3c.dom.Document;
 import websiteschema.model.domain.cluster.Cluster;
+import websiteschema.model.domain.cluster.FeatureStatInfo;
 import websiteschema.model.domain.cluster.Sample;
 
 /**
@@ -24,6 +25,12 @@ public interface IFieldAnalyzer {
     public String getFieldName();
 
     /**
+     * 返回适合的ClusterType，例如{"DOCUMENT"}，表明只能针对内容性文档进行分析
+     * @return
+     */
+    public String[] getProperClusterType();
+
+    /**
      * 用analyze方法得到的结果去初始化一个FieldAnalyzer，根据谁分析谁负责抽取的原则设计。
      * @param params - 用analyze方法得到的Map
      */
@@ -36,7 +43,7 @@ public interface IFieldAnalyzer {
      * @param samples - cluster中的样本
      * @return 分析结果
      */
-    public Map<String, String> analyze(Cluster cluster, BasicAnalysisResult analysisResult, List<Sample> samples);
+    public Map<String, String> analyze(Cluster cluster, FeatureStatInfo statInfo, BasicAnalysisResult analysisResult, List<Sample> samples);
 
     /**
      * 抽取数据，结果可能是一个集合
