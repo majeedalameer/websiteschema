@@ -10,7 +10,7 @@ import java.util.List;
  *
  * @author ray
  */
-public class DocVector {
+public class DocVector {// 能够代表一个文档的数字化序列，便于做聚类分析
 
     Dimension[] dims;
     String name;
