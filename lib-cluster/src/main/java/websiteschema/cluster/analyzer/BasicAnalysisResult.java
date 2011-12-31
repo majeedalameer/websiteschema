@@ -13,8 +13,8 @@ import java.util.Set;
  */
 public class BasicAnalysisResult {
 
-    Set<String> validNodes = new HashSet<String>();
-    Set<String> invalidNodes = new HashSet<String>();
+    Set<String> validNodes = new HashSet<String>();// 在多有文档中都出现的XPath，且其内容不是完全一样的
+    Set<String> invalidNodes = new HashSet<String>();// 在多有文档中都出现的XPath，且其内容基本一样（页面的模板中出现的部分）
     Set<String> titlePrefix = new HashSet<String>();
     Set<String> titleSuffix = new HashSet<String>();
 
