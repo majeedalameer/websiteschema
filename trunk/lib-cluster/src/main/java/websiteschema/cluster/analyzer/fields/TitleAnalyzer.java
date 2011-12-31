@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import websiteschema.cluster.analyzer.AnalyzerUtil;
 import websiteschema.cluster.analyzer.BasicAnalysisResult;
 import websiteschema.cluster.analyzer.IFieldAnalyzer;
@@ -140,11 +141,25 @@ public class TitleAnalyzer implements IFieldAnalyzer {
         Set<String> ret = new HashSet<String>();
         List<Node> nodes = DocumentUtil.getByXPath(doc, xpath);
         for (Node node : nodes) {
-            String t = node.getNodeValue();
+            String t = extractNodeText(node);
             if (null != t) {
                 ret.add(t);
             }
         }
+        return ret;
+    }
+
+    private String extractNodeText(Node node) {
+        String ret = "";
+
+        NodeList children = node.getChildNodes();
+        for(int i = 0; i < children.getLength(); i++) {
+            Node child = children.item(i);
+            if(child.getNodeType() == Node.TEXT_NODE) {
+                ret += child.getNodeValue();
+            }
+        }
+
         return ret;
     }
 

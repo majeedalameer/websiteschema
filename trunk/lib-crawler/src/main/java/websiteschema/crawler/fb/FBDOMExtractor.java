@@ -4,6 +4,9 @@
  */
 package websiteschema.crawler.fb;
 
+import websiteschema.utils.PojoMapper;
+import websiteschema.cluster.analyzer.IFieldAnalyzer;
+import java.util.List;
 import websiteschema.model.domain.Websiteschema;
 import websiteschema.common.base.Function;
 import java.util.HashSet;
@@ -53,7 +56,12 @@ public class FBDOMExtractor extends FunctionBlock {
             Set<String> invalidNodes = null != vnode ? (Set<String>) fromJson(ivnode, Set.class) : null;
             toUppercase(validNodes);
             toUppercase(invalidNodes);
+            //抽取正文
             out = extract(validNodes, invalidNodes);
+            //抽取其他标签
+            String fa = prop.get("FieldAnalyzers");
+            Map<String, String> fieldAnalyzers = null != vnode ? (Map<String, String>) fromJson(fa, Map.class) : null;
+            extractFields(in, out, fieldAnalyzers);
             this.triggerEvent("EO");
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -73,6 +81,54 @@ public class FBDOMExtractor extends FunctionBlock {
 
     private boolean isTextNode(Node node) {
         return Node.TEXT_NODE == node.getNodeType();
+    }
+
+    /**
+     * 根据配置抽取每一个字段
+     * @param in
+     * @param fieldAnalyzerNames
+     */
+    private void extractFields(Document in, Document out, Map<String, String> fieldAnalyzerNames) {
+        for (String fieldName : fieldAnalyzerNames.keySet()) {
+            String clazzName = fieldAnalyzerNames.get(fieldName);
+            //创建字段抽取器
+            IFieldAnalyzer analyzer = createFieldAnalyzer(clazzName);
+            //读取字段抽取器的配置，这是一个List<Map>的配置
+            String configStr = prop.get(fieldName);
+            try {
+                List<Map<String, String>> listConfig = PojoMapper.fromJson(configStr, List.class);
+                //对每一个配置都尝试抽取
+                for (Map<String, String> config : listConfig) {
+                    analyzer.init(config);
+                    //开始抽取
+                    Set<String> result = analyzer.extract(in);
+                    if (null != result && !result.isEmpty()) {
+                        Element root = out.getDocumentElement();
+                        //添加抽取结果到doc中
+                        for (String res : result) {
+                            Element ele = out.createElement(fieldName);
+                            ele.setTextContent(res);
+                            root.appendChild(ele);
+                        }
+                        //如果抽取到结果，就结束抽取
+                        break;
+                    }
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+    
+    private IFieldAnalyzer createFieldAnalyzer(String clazzName) {
+        try {
+            Class clazz = Class.forName(clazzName);
+            IFieldAnalyzer analyzer = (IFieldAnalyzer) clazz.newInstance();
+            return analyzer;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return null;
     }
 
     private Document extract(final Set<String> validNodes, final Set<String> invalidNodes) {
