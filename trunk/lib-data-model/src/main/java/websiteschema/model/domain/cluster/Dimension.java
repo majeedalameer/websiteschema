@@ -10,8 +10,8 @@ package websiteschema.model.domain.cluster;
  */
 public class Dimension {
 
-    private int id;
-    private int value;
+    private int id;// 唯一对应一个XPath
+    private int value;// XPath对应的weight
 
     public int getId() {
         return id;
