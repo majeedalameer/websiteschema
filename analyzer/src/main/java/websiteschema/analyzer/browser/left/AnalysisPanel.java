@@ -76,12 +76,6 @@ public class AnalysisPanel extends javax.swing.JPanel {
         WrapperTestingDialog = new javax.swing.JDialog();
         jScrollPane2 = new javax.swing.JScrollPane();
         resultArea = new javax.swing.JTextArea();
-        propEditDialog = new javax.swing.JDialog();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        propTextArea = new javax.swing.JTextArea();
-        jToolBar1 = new javax.swing.JToolBar();
-        savePropButton = new javax.swing.JButton();
-        reloadPropButton = new javax.swing.JButton();
         propAddDialog = new javax.swing.JDialog();
         propNameTextField = new javax.swing.JTextField();
         propValueTextField = new javax.swing.JTextField();
@@ -136,52 +130,6 @@ public class AnalysisPanel extends javax.swing.JPanel {
         WrapperTestingDialogLayout.setVerticalGroup(
             WrapperTestingDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
-        );
-
-        propEditDialog.setMinimumSize(new java.awt.Dimension(600, 300));
-
-        propTextArea.setColumns(20);
-        propTextArea.setLineWrap(true);
-        propTextArea.setRows(5);
-        jScrollPane3.setViewportView(propTextArea);
-
-        jToolBar1.setRollover(true);
-
-        savePropButton.setText("确定");
-        savePropButton.setFocusable(false);
-        savePropButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        savePropButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        savePropButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                savePropButtonActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(savePropButton);
-
-        reloadPropButton.setText("还原");
-        reloadPropButton.setFocusable(false);
-        reloadPropButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        reloadPropButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        reloadPropButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                reloadPropButtonActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(reloadPropButton);
-
-        javax.swing.GroupLayout propEditDialogLayout = new javax.swing.GroupLayout(propEditDialog.getContentPane());
-        propEditDialog.getContentPane().setLayout(propEditDialogLayout);
-        propEditDialogLayout.setHorizontalGroup(
-            propEditDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 629, Short.MAX_VALUE)
-            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 629, Short.MAX_VALUE)
-        );
-        propEditDialogLayout.setVerticalGroup(
-            propEditDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(propEditDialogLayout.createSequentialGroup()
-                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 284, Short.MAX_VALUE))
         );
 
         propAddDialog.setMinimumSize(new java.awt.Dimension(371, 135));
@@ -551,7 +499,7 @@ public class AnalysisPanel extends javax.swing.JPanel {
         return websiteschema;
     }
 
-    private void save() {
+    public void save() {
         WebsiteschemaMapper mapper = BrowserContext.getSpringContext().getBean("websiteschemaMapper", WebsiteschemaMapper.class);
         Websiteschema websiteschema = mapper.get(getSiteId());
         CrawlerSettings settings = getCrawlerSettings();
@@ -625,37 +573,16 @@ public class AnalysisPanel extends javax.swing.JPanel {
         String propName = (String) tableModel.getValueAt(row, 0);
         String propValue = (String) tableModel.getValueAt(row, 1);
         if (null != propValue) {
-            propEditDialog.setTitle(propName);
-            this.propTextArea.setText(propValue);
-            int screenWidth = ((int) java.awt.Toolkit.getDefaultToolkit().getScreenSize().width);
-            int screenHeight = ((int) java.awt.Toolkit.getDefaultToolkit().getScreenSize().height);
-            int sizeWidth = propEditDialog.getWidth();
-            int sizeHeight = propEditDialog.getHeight();
-            propEditDialog.setLocation((screenWidth - sizeWidth) / 2, (screenHeight - sizeHeight) / 2);
-            this.propEditDialog.setVisible(true);
+            PropEditFrame pef = new PropEditFrame();
+            pef.setAnalysisPanel(this);
+            pef.setPropName(propName);
+            pef.setPropValue(propValue);
+            pef.setTitle("编辑参数: " + propName);
+            pef.setVisible(true);
         } else {
             JOptionPane.showMessageDialog(this, "选择了错误的数据！");
         }
     }//GEN-LAST:event_editButtonActionPerformed
-
-    private void savePropButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_savePropButtonActionPerformed
-        // TODO add your handling code here:
-        Map<String, String> prop = getProperties();
-        String name = this.propEditDialog.getTitle();
-        String value = this.propTextArea.getText();
-        prop.put(name, value);
-        setProperties(prop);
-        save();
-        propEditDialog.setVisible(false);
-    }//GEN-LAST:event_savePropButtonActionPerformed
-
-    private void reloadPropButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reloadPropButtonActionPerformed
-        // TODO add your handling code here:
-        String name = this.propEditDialog.getTitle();
-        Map<String, String> prop = getProperties();
-        String value = prop.get(name);
-        this.propTextArea.setText(value);
-    }//GEN-LAST:event_reloadPropButtonActionPerformed
 
     private void addPropButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addPropButtonActionPerformed
         // TODO add your handling code here:
@@ -839,22 +766,16 @@ public class AnalysisPanel extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JSeparator jSeparator2;
-    private javax.swing.JToolBar jToolBar1;
     private javax.swing.JTextField maxDateField;
     private javax.swing.JTextField minDateField;
     private javax.swing.JTextField mustHaveField;
     private javax.swing.JTextField pageTypeField;
     private javax.swing.JDialog propAddDialog;
-    private javax.swing.JDialog propEditDialog;
     private javax.swing.JTextField propNameTextField;
     private javax.swing.JTable propTable;
-    private javax.swing.JTextArea propTextArea;
     private javax.swing.JTextField propValueTextField;
-    private javax.swing.JButton reloadPropButton;
     private javax.swing.JTextArea resultArea;
-    private javax.swing.JButton savePropButton;
     private javax.swing.JButton saveSettingsButton;
     private javax.swing.JTextField siteIdField;
     private javax.swing.JButton testButton;
