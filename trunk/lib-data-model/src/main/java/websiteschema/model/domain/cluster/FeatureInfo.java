@@ -12,10 +12,10 @@ public class FeatureInfo {
 
     // XPath
     private String name = null;
-    // 在文档集（簇）中出现的总次数
+    // 在所有文档中出现的总次数
     private int totalCount = 0;
     //Average frequence of each document
-    // 平均在每篇文档中出现的次数
+    // 平均在每篇文档中出现的次数（平均的基数是所有文档的数目，以下相同）
     private int frequence = 0;
     // 在多少篇文档中出现过
     private int documentFrequence = 0;
