@@ -4,9 +4,12 @@
  */
 package websiteschema.utils;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.util.Date;
+import java.util.Map;
 
 /**
  *
@@ -36,6 +39,49 @@ public class UrlLinkUtil {
             ex.printStackTrace();
         }
         return null;
+    }
+
+    private boolean shouldEscape(Character ch) {
+        if(ch.equals(' ')) {
+            return true;
+        } else if(ch > 127) {
+            return true;
+        }
+        return false;
+    }
+
+    public URI getURL(String pageUrl, String href, String charset, Map<String, String> charsetMap, String def) {
+        StringBuilder sb = new StringBuilder();
+        for (Character ch : href.toCharArray()) {
+            if (shouldEscape(ch)) {
+                try {
+                    sb.append(URLEncoder.encode(String.valueOf(ch), charset));
+                } catch (UnsupportedEncodingException ex) {
+                    charset = parseCharset(charset, charsetMap, def);
+                    try {
+                        sb.append(URLEncoder.encode(String.valueOf(ch), charset));
+                    } catch (Exception e) {
+                    }
+                }
+            } else {
+                sb.append(ch);
+            }
+        }
+
+        return getURL(pageUrl, sb.toString());
+    }
+
+    private String parseCharset(String charset, Map<String, String> charsetMap, String def) {
+        charset = charset.toLowerCase();
+        if (charset.contains("gb")) {
+            charset = "gbk";
+        } else if (charsetMap.containsKey(charset)) {
+            charset = charsetMap.get(charset);
+        } else {
+            charset = def;
+        }
+
+        return charset;
     }
 
     public String convertUriToRowKey(URI uri, String siteId) {

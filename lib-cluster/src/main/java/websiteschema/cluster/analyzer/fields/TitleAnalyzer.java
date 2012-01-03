@@ -31,6 +31,9 @@ public class TitleAnalyzer implements IFieldAnalyzer {
     String titleXPath = "";
     String titlePrefixString = "";
     String titleSuffixString = "";
+    private final static String xpathKey = "XPath";
+    private final static String prefixKey = "PrefixString";
+    private final static String suffixKey = "SuffixString";
 
     public String getFieldName() {
         return "TITLE";
@@ -41,9 +44,9 @@ public class TitleAnalyzer implements IFieldAnalyzer {
     }
 
     public void init(Map<String, String> params) {
-        titleXPath = params.containsKey("TitleXPath") ? params.get("TitleXPath") : "";
-        titlePrefixString = params.containsKey("TitlePrefixString") ? params.get("TitlePrefixString") : "";
-        titleSuffixString = params.containsKey("TitleSuffixString") ? params.get("TitleSuffixString") : "";
+        titleXPath = params.containsKey(xpathKey) ? params.get(xpathKey) : "";
+        titlePrefixString = params.containsKey(prefixKey) ? params.get(prefixKey) : "";
+        titleSuffixString = params.containsKey(suffixKey) ? params.get(suffixKey) : "";
     }
 
     public Map<String, String> analyze(Cluster cluster, FeatureStatInfo statInfo, BasicAnalysisResult analysisResult, List<Sample> samples) {
@@ -115,13 +118,13 @@ public class TitleAnalyzer implements IFieldAnalyzer {
         Map<String, String> ret = new HashMap<String, String>();
 
         if (null != titleXPath && !"".equals(titleXPath)) {
-            ret.put("TitleXPath", titleXPath);
+            ret.put(xpathKey, titleXPath);
         }
 
         if (null != titlePrefixString && !"".equals(titlePrefixString)) {
             if (null != titleSuffixString && !"".equals(titleSuffixString)) {
-                ret.put("TitlePrefixString", titlePrefixString);
-                ret.put("TitleSuffixString", titleSuffixString);
+                ret.put(prefixKey, titlePrefixString);
+                ret.put(suffixKey, titleSuffixString);
             }
         }
         return ret;
@@ -141,25 +144,11 @@ public class TitleAnalyzer implements IFieldAnalyzer {
         Set<String> ret = new HashSet<String>();
         List<Node> nodes = DocumentUtil.getByXPath(doc, xpath);
         for (Node node : nodes) {
-            String t = extractNodeText(node);
-            if (null != t) {
-                ret.add(t);
+            String t = ExtractUtil.getInstance().getNodeText(node);
+            if (null != t && !"".equals(t)) {
+                ret.add(t.trim());
             }
         }
-        return ret;
-    }
-
-    private String extractNodeText(Node node) {
-        String ret = "";
-
-        NodeList children = node.getChildNodes();
-        for(int i = 0; i < children.getLength(); i++) {
-            Node child = children.item(i);
-            if(child.getNodeType() == Node.TEXT_NODE) {
-                ret += child.getNodeValue();
-            }
-        }
-
         return ret;
     }
 
@@ -170,8 +159,12 @@ public class TitleAnalyzer implements IFieldAnalyzer {
         int start = text.indexOf(prefix);
         if (start >= 0) {
             int end = text.indexOf(suffix, start + prefix.length());
-            String title = text.substring(start + prefix.length(), end);
-            ret.add(title);
+            if (end > 0) {
+                String title = text.substring(start + prefix.length(), end);
+                if (null != title && !"".equals(title)) {
+                    ret.add(title);
+                }
+            }
         }
         return ret;
     }

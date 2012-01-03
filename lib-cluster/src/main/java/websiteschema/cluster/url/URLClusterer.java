@@ -8,7 +8,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 import websiteschema.utils.EditDistance;
 
@@ -18,7 +17,8 @@ import websiteschema.utils.EditDistance;
  */
 public class URLClusterer {
 
-    int clusterSize = 20;
+    int clusterSize = 25;
+    double th = 0.7;
 
     public List<URLCluster> clustering(List<URI> setURLs) {
         List<URLCluster> ret = init(setURLs);
@@ -66,7 +66,7 @@ public class URLClusterer {
                     int i2 = (j) % (clusters.size());
                     URLCluster c2 = clusters.get(i2);
                     double sim = membership(c1, c2);
-                    if (sim > membership && sim > 0.7) {
+                    if (sim > membership && sim > th) {
                         membership = sim;
                         index = i2;
                     }
@@ -141,7 +141,6 @@ public class URLClusterer {
         if (null != u1.getQuery() && null != u2.getQuery()) {
             ret += w[4] * ld.caculateSimilarityBetweenStrings(u1.getQuery(), u2.getQuery());
         }
-//        System.out.println("sim: " + ret + " " + u1.getUri() + " " + u2.getUri());
         return ret;
     }
 
@@ -154,13 +153,5 @@ public class URLClusterer {
             pos = str.indexOf(s, pos + 1);
         }
         return ret;
-    }
-
-    public static void main(String args[]) {
-        System.out.println(new Random(20).nextInt(1));
-        System.out.println(new Random(20).nextInt(2));
-        System.out.println(new Random(20).nextInt(3));
-        System.out.println(new Random(20).nextInt(4));
-        System.out.println(new Random(10).nextInt(10));
     }
 }

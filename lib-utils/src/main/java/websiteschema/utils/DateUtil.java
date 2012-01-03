@@ -19,6 +19,7 @@ public class DateUtil {
         System.out.println(DateUtil.changeTime("2010-03-23 00:00:00"));
         System.out.println(DateUtil.changeTime("2010-03-23 23:00:00"));
         System.out.println(DateUtil.changeTime("2010-03-23 23:02:33"));
+        System.out.println(DateUtil.parseDate("2010年03-23 23:02:33来源","yyyy年MM-dd HH:mm:SS"));
     }
 
     public static String changeTime(String tStr) {

@@ -4,11 +4,11 @@
  */
 package websiteschema.crawler.fb;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import websiteschema.utils.PojoMapper;
 import websiteschema.cluster.analyzer.IFieldAnalyzer;
 import java.util.List;
 import websiteschema.model.domain.Websiteschema;
-import websiteschema.common.base.Function;
 import java.util.HashSet;
 import websiteschema.element.factory.XPathAttrFactory;
 import websiteschema.element.XPathAttributes;
@@ -20,19 +20,19 @@ import websiteschema.fb.annotation.DO;
 import java.util.Set;
 import java.util.Map;
 import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 import websiteschema.fb.annotation.Algorithm;
 import websiteschema.fb.annotation.DI;
 import websiteschema.fb.annotation.EI;
 import websiteschema.fb.annotation.EO;
 import websiteschema.fb.core.FunctionBlock;
 import static websiteschema.utils.PojoMapper.*;
-import static websiteschema.common.base.Traversal.*;
 
 /**
  *
  * @author ray
  */
-@EO(name = {"EO"})
+@EO(name = {"EO", "FATAL"})
 @EI(name = {"EXTRACT:EXT"})
 public class FBDOMExtractor extends FunctionBlock {
 
@@ -56,16 +56,22 @@ public class FBDOMExtractor extends FunctionBlock {
             Set<String> invalidNodes = null != vnode ? (Set<String>) fromJson(ivnode, Set.class) : null;
             toUppercase(validNodes);
             toUppercase(invalidNodes);
-            //抽取正文
-            out = extract(validNodes, invalidNodes);
+            //初始化Document out
+            createDocument();
             //抽取其他标签
             String fa = prop.get("FieldAnalyzers");
             Map<String, String> fieldAnalyzers = null != vnode ? (Map<String, String>) fromJson(fa, Map.class) : null;
             extractFields(in, out, fieldAnalyzers);
+            //抽取正文
+            long t1 = System.currentTimeMillis();
+            extract(validNodes, invalidNodes);
+            long t2 = System.currentTimeMillis();
+            l.debug("----- elaspe times : " + (t2 - t1) + " millseconds.");
             this.triggerEvent("EO");
         } catch (Exception ex) {
             ex.printStackTrace();
             l.error(ex);
+            this.triggerEvent("FATAL");
         }
     }
 
@@ -119,7 +125,7 @@ public class FBDOMExtractor extends FunctionBlock {
             }
         }
     }
-    
+
     private IFieldAnalyzer createFieldAnalyzer(String clazzName) {
         try {
             Class clazz = Class.forName(clazzName);
@@ -134,49 +140,66 @@ public class FBDOMExtractor extends FunctionBlock {
     private Document extract(final Set<String> validNodes, final Set<String> invalidNodes) {
         if (null != in) {
             final StringBuilder content = new StringBuilder();
-            traversal(in.getDocumentElement(), new Function<Node>() {
+            long t1 = System.currentTimeMillis();
+            traversal(validNodes, invalidNodes, in.getDocumentElement(), content);
+            long t2 = System.currentTimeMillis();
+            l.debug("----- elaspe times : " + (t2 - t1) + " millseconds.");
 
-                @Override
-                public void invoke(Node node) {
-//                    System.out.println("----" + XPathAttrFactory.getInstance().create(node, xpathAttr));
-                    if (isTextNode(node)) {
-                        Node father = node.getParentNode();
-                        String xpath = XPathAttrFactory.getInstance().create(father, xpathAttr).toUpperCase();
-                        if (!invalidNodes.contains(xpath)) {
-                            if (validNodes.contains(xpath)) {
-                                String nodeName = father.getNodeName();
-                                String text = node.getNodeValue();
-                                content.append(node.getNodeValue());
-                                if ("P".equalsIgnoreCase(nodeName)) {
-                                    if (!text.endsWith("\n")) {
-                                        content.append("\n");
-                                    }
-                                }
-                            }
-                        }
-                    } else {
-                        String nodeName = node.getNodeName();
-                        if ("BR".equalsIgnoreCase(nodeName)) {
-                            content.append("\n");
-                        }
-                    }
-                }
-            });
+            Element eleRoot = out.getDocumentElement();
+            Element eleContent = out.createElement("DRECONTENT");
+            StringEscapeUtils.unescapeHtml(null);
+            eleContent.setTextContent(StringEscapeUtils.unescapeHtml(content.toString().trim()));
+            eleRoot.appendChild(eleContent);
+            return out;
+        }
+        return null;
+    }
 
+    private Document createDocument() {
+        if (null == out) {
             try {
                 DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
                 DocumentBuilder builder = domFactory.newDocumentBuilder();
-                Document doc = builder.newDocument();
-                Element eleRoot = doc.createElement("DOCUMENT");
-                Element eleContent = doc.createElement("DRECONTENT");
-                eleContent.setTextContent(content.toString());
-                eleRoot.appendChild(eleContent);
-                doc.appendChild(eleRoot);
-                return doc;
+                out = builder.newDocument();
+                Element eleRoot = out.createElement("DOCUMENT");
+                out.appendChild(eleRoot);
+                return out;
             } catch (Exception ex) {
                 l.error("Can not create Document: ", ex);
             }
         }
         return null;
+    }
+
+    private void traversal(final Set<String> validNodes, final Set<String> invalidNodes, Node node, StringBuilder ret) {
+        String nodeName = node.getNodeName();
+        if (!isTextNode(node)) {
+            String xpath = XPathAttrFactory.getInstance().create(node, xpathAttr).toUpperCase();
+            NodeList children = node.getChildNodes();
+            if (null != children) {
+                for (int i = 0; i < children.getLength(); i++) {
+                    Node child = children.item(i);
+                    if (isTextNode(child)) {
+                        if (!invalidNodes.contains(xpath)) {
+                            if (validNodes.contains(xpath)) {
+                                ret.append(child.getNodeValue());
+                            }
+                        }
+                    } else if (Node.ELEMENT_NODE == child.getNodeType()) {
+                        traversal(validNodes, invalidNodes, (Element) child, ret);
+                    }
+                }
+                if (breakLine(nodeName)) {
+                    ret.append("\n");
+                }
+            }
+        }
+    }
+
+    private boolean breakLine(String node) {
+        if (node.equalsIgnoreCase("BR") || node.equalsIgnoreCase("P")) {
+            return true;
+        }
+        return false;
     }
 }

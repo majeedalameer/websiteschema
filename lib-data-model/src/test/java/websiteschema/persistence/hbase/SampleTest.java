@@ -4,6 +4,7 @@
  */
 package websiteschema.persistence.hbase;
 
+import java.util.List;
 import websiteschema.persistence.hbase.core.HBaseMapperFactory;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
@@ -32,6 +33,8 @@ public class SampleTest {
 
         scan();
 
+        getList();
+
         delete();
 
 //        deleteTable();
@@ -59,14 +62,23 @@ public class SampleTest {
     }
 
     public void scan() {
-        final String siteId = "sda";
+        final String siteId = "test_sohu_com_2+";
         mapper.scan("test_sohu_com_2+", new Function<Sample>() {
 
+            @Override
             public void invoke(Sample arg) {
                 String rowKey = arg.getRowKey();
                 System.out.println(siteId + " " + rowKey);
             }
         });
+    }
+
+    public void getList() {
+        final String siteId = "test_sohu_com_2";
+        List<Sample> samples = mapper.getList(siteId, "test_sohu_com_3", "cf");
+        for (Sample sample : samples) {
+            assert (null == sample.getContent());
+        }
     }
 
     public void get() {

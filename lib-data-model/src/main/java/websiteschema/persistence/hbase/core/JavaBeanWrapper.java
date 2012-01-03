@@ -39,11 +39,12 @@ public class JavaBeanWrapper {
                 String rowKey = new String(obj.getRow());
                 ret.setRowKey(rowKey);
                 for (KeyValue kv : obj.raw()) {
-                    String family = new String(kv.getFamily(), "utf-8");
+//                    String family = new String(kv.getFamily(), "utf-8");
+                    String qualifier = new String(kv.getQualifier(), "utf-8");
                     String value = new String(kv.getValue(), "utf-8");
                     Field[] fields = clazz.getDeclaredFields();
                     for (Field field : fields) {
-                        set(clazz, ret, field, family, value);
+                        set(clazz, ret, field, qualifier, value);
                     }
                 }
             }
@@ -59,24 +60,16 @@ public class JavaBeanWrapper {
             T ret = null;
             if (!obj.isEmpty()) {
                 ret = clazz.newInstance();
-                for (String family : obj.keySet()) {
-                    String value = obj.get(family);
+                for (String name : obj.keySet()) {
+                    String value = obj.get(name);
                     Field[] fields = clazz.getDeclaredFields();
                     for (Field field : fields) {
-                        set(clazz, ret, field, family, value);
+                        set(clazz, ret, field, name, value);
                     }
                 }
             }
             return ret;
-        } catch (InstantiationException ex) {
-            ex.printStackTrace();
-        } catch (IllegalAccessException ex) {
-            ex.printStackTrace();
-        } catch (IllegalArgumentException ex) {
-            ex.printStackTrace();
-        } catch (InvocationTargetException ex) {
-            ex.printStackTrace();
-        } catch (NoSuchMethodException ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
         return null;
@@ -108,19 +101,6 @@ public class JavaBeanWrapper {
                     method.invoke(obj, Boolean.valueOf(value));
                 } else {
                     Method method = clazz.getMethod(setterName, arg);
-//                    if (!arg.isArray()) {
-//                        try {
-//                            Object param = JSONObject.toBean(JSONObject.fromObject(value), arg);
-//                            method.invoke(obj, param);
-//                        } catch (Exception e) {
-//                            System.out.println("json-lib error: " + e);
-//                            System.out.println(arg);
-//                            System.out.println(value);
-//                        }
-//                    } else {
-//                        Object param = JSONArray.toArray(JSONArray.fromObject(value), arg.getComponentType());
-//                        method.invoke(obj, param);
-//                    }
                     try {
                         Object param = fromJson(value, arg);
                         method.invoke(obj, param);
@@ -132,12 +112,20 @@ public class JavaBeanWrapper {
         }
     }
 
+    private String getColumnName(ColumnFamily cf, Field field) {
+        String familyName = null != cf.family() && !"".equals(cf.family())
+                ? cf.family() : field.getName();
+        return familyName + ":" + field.getName();
+    }
+
     public <T extends HBaseBean> Map<String, String> getMap(T obj, Class<T> clazz) {
         try {
             Map<String, String> ret = new HashMap<String, String>();
             Field[] fields = clazz.getDeclaredFields();
             for (Field field : fields) {
                 if (field.isAnnotationPresent(ColumnFamily.class)) {
+                    ColumnFamily cf = field.getAnnotation(ColumnFamily.class);
+                    String column = getColumnName(cf, field);
                     String fieldName = field.getName();
                     Class typo = field.getType();
                     String value = "";
@@ -174,26 +162,14 @@ public class JavaBeanWrapper {
                         } catch (Exception ex) {
                             System.out.println("jackson toJSON error: " + ex);
                         }
-//                        Class retType = method.getReturnType();
-//                        if (!retType.isArray()) {
-//                            value = JSONObject.fromObject(method.invoke(obj)).toString();
-//                        } else {
-//                            value = JSONArray.fromObject(method.invoke(obj)).toString();
-//                        }
                     }
                     if (null != value) {
-                        ret.put(fieldName, value);
+                        ret.put(column, value);
                     }
                 }
             }
             return ret;
-        } catch (IllegalAccessException ex) {
-            ex.printStackTrace();
-        } catch (IllegalArgumentException ex) {
-            ex.printStackTrace();
-        } catch (NoSuchMethodException ex) {
-            ex.printStackTrace();
-        } catch (InvocationTargetException ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
         return null;

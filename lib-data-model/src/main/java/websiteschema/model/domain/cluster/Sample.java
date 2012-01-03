@@ -22,7 +22,7 @@ public class Sample implements HBaseBean {
     String rowKey;
     @ColumnFamily
     String url;
-    @ColumnFamily
+    @ColumnFamily(family = "c")
     DocUnits content;
     @ColumnFamily
     int httpStatus = 0;
