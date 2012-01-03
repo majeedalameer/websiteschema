@@ -224,7 +224,7 @@ public class DateAnalyzer implements IFieldAnalyzer {
             String text = ExtractUtil.getInstance().getNodeText(node);
             if (null != text && !"".equals(text)) {
                 String date = DateDetectUtil.getInstance().parseDate(text.trim(), pattern, format);
-                if (null != date) {
+                if (null != date && !"".equals(date)) {
                     ret.add(date);
                 }
             }
