@@ -10,6 +10,7 @@
  */
 package websiteschema.analyzer.browser.left.sample;
 
+import java.util.Map;
 import websiteschema.analyzer.browser.utils.TextAreaSearch;
 import websiteschema.analyzer.context.BrowserContext;
 import websiteschema.model.domain.cluster.DocUnits;
@@ -52,7 +53,13 @@ public class ContentFrame extends javax.swing.JFrame {
             setTitle(s.getUrl());
             setVisible(true);
             for (Unit unit : units) {
-                this.contentTextArea.append(unit.getXpath() + " -> " + unit.getText().trim() + "\n");
+                Map<String, String> attr = unit.getAttributes();
+                this.contentTextArea.append(unit.getXpath() + " -> " + unit.getText().trim());
+                if(null != attr) {
+                    this.contentTextArea.append(" | " + attr +"\n");
+                } else {
+                    this.contentTextArea.append("\n");
+                }
             }
             this.contentTextArea.setCaretPosition(0);
         }

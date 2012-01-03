@@ -33,12 +33,17 @@ import websiteschema.utils.EditDistance;
  */
 public class DateAnalyzer implements IFieldAnalyzer {
 
-    String xpath = "";
-    String pattern = "";
-    String format = "yyyy-MM-dd";
-    private final static String xpathKey = "XPath";
-    private final static String patternKey = "Pattern";
-    private final static String formatKey = "Format";
+    private String fieldName = "DATE";
+    private String xpath = "";
+    private String pattern = "";
+    private String format = "yyyy-MM-dd";
+    public final static String xpathKey = "XPath";
+    public final static String patternKey = "Pattern";
+    public final static String formatKey = "Format";
+    public final static String typeKey = "Type";
+    public final static String Type_XPath = "XPath";
+    public final static String Type_URL = "URL";
+    public final static String Type_HTTP_Response = "HTTP";
 
     class Feature {
 
@@ -52,7 +57,11 @@ public class DateAnalyzer implements IFieldAnalyzer {
     }
 
     public String getFieldName() {
-        return "DATE";
+        return fieldName;
+    }
+
+    public void setFieldName(String fieldName) {
+        this.fieldName = fieldName;
     }
 
     public String[] getProperClusterType() {

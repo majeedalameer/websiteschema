@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package websiteschema.crawler.fb;
+package websiteschema.cluster.fb;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import websiteschema.utils.PojoMapper;
@@ -53,14 +53,14 @@ public class FBDOMExtractor extends FunctionBlock {
             String vnode = prop.get("ValidNodes");
             Set<String> validNodes = null != vnode ? (Set<String>) fromJson(vnode, Set.class) : null;
             String ivnode = prop.get("InvalidNodes");
-            Set<String> invalidNodes = null != vnode ? (Set<String>) fromJson(ivnode, Set.class) : null;
+            Set<String> invalidNodes = null != ivnode ? (Set<String>) fromJson(ivnode, Set.class) : null;
             toUppercase(validNodes);
             toUppercase(invalidNodes);
             //初始化Document out
             createDocument();
             //抽取其他标签
             String fa = prop.get("FieldAnalyzers");
-            Map<String, String> fieldAnalyzers = null != vnode ? (Map<String, String>) fromJson(fa, Map.class) : null;
+            Map<String, String> fieldAnalyzers = null != fa ? (Map<String, String>) fromJson(fa, Map.class) : null;
             extractFields(in, out, fieldAnalyzers);
             //抽取正文
             long t1 = System.currentTimeMillis();

@@ -65,7 +65,7 @@ public class ClusterAnalyzerImpl implements ClusterAnalyzer {
             ret.put("TitlePrefix", toJson(result.getTitlePrefix()));
             ret.put("TitleSuffix", toJson(result.getTitleSuffix()));
             if (null != fieldAnalyzers && !fieldAnalyzers.isEmpty()) {
-                Map<String,String> map = new HashMap<String,String>();
+                Map<String, String> map = new HashMap<String, String>();
                 for (IFieldAnalyzer fieldAnalyzer : fieldAnalyzers) {
                     map.put(fieldAnalyzer.getFieldName(), fieldAnalyzer.getClass().getName());
                 }
@@ -99,7 +99,7 @@ public class ClusterAnalyzerImpl implements ClusterAnalyzer {
      * @param map
      * @return
      */
-    private boolean alreadyHas(List<Map<String, String>> old, Map<String, String> map) {
+    private boolean alreadyHas(List<Map<String, String>> old, Map<String, String> map, String clusterName) {
         if (null != old) {
             try {
                 for (Map<String, String> compareTo : old) {
@@ -118,6 +118,7 @@ public class ClusterAnalyzerImpl implements ClusterAnalyzer {
                         }
                     }
                     if (same) {
+                        addProperCluster(clusterName, compareTo);
                         return true;
                     }
                 }
@@ -129,7 +130,52 @@ public class ClusterAnalyzerImpl implements ClusterAnalyzer {
         return false;
     }
 
-    private void mergeAnalysisResult(String fieldName, Map<String, String> res, Map<String, String> old) throws IOException {
+    /**
+     * 一个字段分析的结果要对应到一个Cluster中，所有其返回的Map中要加一个字段叫Cluster。
+     * @param map
+     * @return
+     */
+    private List<String> getProperCluster(Map<String, String> map) {
+        String properClusters = map.get("Cluster");
+        if (null != properClusters) {
+            try {
+                List<String> list = PojoMapper.fromJson(properClusters, List.class);
+                return list;
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    private void setProperCluster(List<String> properClusters, Map<String, String> map) {
+        if (null != properClusters) {
+            try {
+                map.put("Cluster", PojoMapper.toJson(properClusters));
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * 将对应的cluster名称加入到返回结果中
+     * @param clusterName
+     * @param map
+     */
+    private void addProperCluster(String clusterName, Map<String, String> map) {
+        List<String> properClusters = getProperCluster(map);
+        if (null != properClusters && !properClusters.contains(clusterName)) {
+            properClusters.add(clusterName);
+        } else {
+            properClusters = new ArrayList<String>();
+            properClusters.add(clusterName);
+        }
+        //将添加后的结果写入到Map
+        setProperCluster(properClusters, map);
+    }
+
+    private void mergeAnalysisResult(Cluster cluster, String fieldName, Map<String, String> res, Map<String, String> old) throws IOException {
         //如果不为空，则将结果保存到Map中
         if (null != res && !res.isEmpty()) {
             String ori = old.get(fieldName);
@@ -144,13 +190,22 @@ public class ClusterAnalyzerImpl implements ClusterAnalyzer {
             } else {
                 list = new ArrayList<Map<String, String>>();
             }
-            if (!alreadyHas(list, res)) {
+            String clusterName = cluster.getCustomName();
+            if (!alreadyHas(list, res, clusterName)) {
+                addProperCluster(clusterName, res);
                 list.add(res);
-                old.put(fieldName, PojoMapper.toJson(list));
             }
+            old.put(fieldName, PojoMapper.toJson(list));
         }
     }
 
+    /**
+     *
+     * @param cluster
+     * @param statInfo
+     * @param samples
+     * @param old - 用来保存最终的结果
+     */
     private void analyzeEachCluster(Cluster cluster, FeatureStatInfo statInfo, List<Sample> samples, Map<String, String> old) {
         for (IFieldAnalyzer fieldAnalyzer : fieldAnalyzers) {
             String[] types = fieldAnalyzer.getProperClusterType();
@@ -159,7 +214,7 @@ public class ClusterAnalyzerImpl implements ClusterAnalyzer {
                     try {
                         Map<String, String> res = fieldAnalyzer.analyze(cluster, statInfo, result, samples);
                         //保存结果res存到old中，key是fieldAnalyzer.getFieldName()
-                        mergeAnalysisResult(fieldAnalyzer.getFieldName(), res, old);
+                        mergeAnalysisResult(cluster, fieldAnalyzer.getFieldName(), res, old);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

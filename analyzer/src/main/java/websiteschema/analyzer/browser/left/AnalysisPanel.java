@@ -15,8 +15,10 @@ import com.webrenderer.swing.dom.IElement;
 import com.webrenderer.swing.dom.IElementCollection;
 import java.awt.BorderLayout;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
@@ -35,7 +37,10 @@ import websiteschema.cluster.analyzer.SimpleClusterAnalyzer;
 import websiteschema.analyzer.context.BrowserContext;
 import websiteschema.cluster.analyzer.ClusterAnalyzer;
 import websiteschema.cluster.analyzer.ClusterAnalyzerImpl;
-import websiteschema.crawler.fb.FBDOMExtractor;
+import websiteschema.cluster.url.URLCluster;
+import websiteschema.cluster.url.URLClusterer;
+import websiteschema.cluster.url.URLObj;
+import websiteschema.cluster.fb.FBDOMExtractor;
 import websiteschema.element.DocumentUtil;
 import websiteschema.element.XPathAttributes;
 import websiteschema.model.domain.Site;
@@ -52,7 +57,7 @@ import websiteschema.utils.UrlLinkUtil;
  *
  * @author ray
  */
-public class AnalysisPanel extends javax.swing.JPanel {
+public class AnalysisPanel extends javax.swing.JPanel implements IConfigureHandler {
 
     BrowserContext context;
     SimpleBrowser simpleBrowser = null;
@@ -113,6 +118,7 @@ public class AnalysisPanel extends javax.swing.JPanel {
         saveSettingsButton = new javax.swing.JButton();
         addPropButton = new javax.swing.JButton();
         editButton = new javax.swing.JButton();
+        delPropButton = new javax.swing.JButton();
 
         WrapperTestingDialog.setMinimumSize(new java.awt.Dimension(600, 300));
 
@@ -207,31 +213,31 @@ public class AnalysisPanel extends javax.swing.JPanel {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(mustHaveField, javax.swing.GroupLayout.DEFAULT_SIZE, 137, Short.MAX_VALUE))
+                .addComponent(mustHaveField, javax.swing.GroupLayout.DEFAULT_SIZE, 153, Short.MAX_VALUE))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(dontHaveField, javax.swing.GroupLayout.DEFAULT_SIZE, 137, Short.MAX_VALUE))
+                .addComponent(dontHaveField, javax.swing.GroupLayout.DEFAULT_SIZE, 153, Short.MAX_VALUE))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(pageTypeField, javax.swing.GroupLayout.DEFAULT_SIZE, 137, Short.MAX_VALUE))
+                .addComponent(pageTypeField, javax.swing.GroupLayout.DEFAULT_SIZE, 153, Short.MAX_VALUE))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jLabel5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(encodingField, javax.swing.GroupLayout.DEFAULT_SIZE, 137, Short.MAX_VALUE))
+                .addComponent(encodingField, javax.swing.GroupLayout.DEFAULT_SIZE, 153, Short.MAX_VALUE))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jLabel6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(depthField, javax.swing.GroupLayout.DEFAULT_SIZE, 137, Short.MAX_VALUE))
+                .addComponent(depthField, javax.swing.GroupLayout.DEFAULT_SIZE, 153, Short.MAX_VALUE))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jLabel7)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(minDateField, javax.swing.GroupLayout.DEFAULT_SIZE, 85, Short.MAX_VALUE))
+                .addComponent(minDateField, javax.swing.GroupLayout.DEFAULT_SIZE, 101, Short.MAX_VALUE))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jLabel8)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(maxDateField, javax.swing.GroupLayout.DEFAULT_SIZE, 85, Short.MAX_VALUE))
+                .addComponent(maxDateField, javax.swing.GroupLayout.DEFAULT_SIZE, 101, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -334,16 +340,16 @@ public class AnalysisPanel extends javax.swing.JPanel {
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(viewSampleButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(addLinksButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(collectSampleButton)
-                            .addComponent(trainButton)))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(trainButton)
+                            .addComponent(collectSampleButton)))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(viewCategoryButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(18, 18, 18)
                         .addComponent(analyzeParamButton))
                     .addComponent(testButton))
-                .addContainerGap(14, Short.MAX_VALUE))
+                .addContainerGap(18, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -383,13 +389,15 @@ public class AnalysisPanel extends javax.swing.JPanel {
         jScrollPane1.setViewportView(propTable);
 
         saveSettingsButton.setText("保存");
+        saveSettingsButton.setToolTipText("保存配置");
         saveSettingsButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 saveSettingsButtonActionPerformed(evt);
             }
         });
 
-        addPropButton.setText("添加");
+        addPropButton.setText("+");
+        addPropButton.setToolTipText("添加配置");
         addPropButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 addPropButtonActionPerformed(evt);
@@ -397,9 +405,18 @@ public class AnalysisPanel extends javax.swing.JPanel {
         });
 
         editButton.setText("编辑");
+        editButton.setToolTipText("编辑配置");
         editButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 editButtonActionPerformed(evt);
+            }
+        });
+
+        delPropButton.setText("-");
+        delPropButton.setToolTipText("删除配置");
+        delPropButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                delPropButtonActionPerformed(evt);
             }
         });
 
@@ -410,19 +427,21 @@ public class AnalysisPanel extends javax.swing.JPanel {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 208, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 224, Short.MAX_VALUE)
                     .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 208, Short.MAX_VALUE)
+                    .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 224, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addGap(2, 2, 2)
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(siteIdField, javax.swing.GroupLayout.DEFAULT_SIZE, 143, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(addPropButton)
+                        .addComponent(siteIdField, javax.swing.GroupLayout.DEFAULT_SIZE, 159, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addComponent(addPropButton, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(delPropButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(editButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(saveSettingsButton)))
                 .addContainerGap())
         );
@@ -442,9 +461,10 @@ public class AnalysisPanel extends javax.swing.JPanel {
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 143, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(saveSettingsButton)
                     .addComponent(addPropButton)
-                    .addComponent(editButton))
+                    .addComponent(editButton)
+                    .addComponent(delPropButton)
+                    .addComponent(saveSettingsButton))
                 .addGap(20, 20, 20))
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -458,19 +478,35 @@ public class AnalysisPanel extends javax.swing.JPanel {
 
     private void addLinksButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addLinksButtonActionPerformed
         // TODO add your handling code here:
-        System.out.println("addLinksButtonActionPerformed");
         IMozillaBrowserCanvas browser = context.getBrowser();
         IElementCollection links = browser.getDocument().getLinks();
         String pageUrl = context.getReference();
+        String charset = browser.getDocument().getCharSet();
         String siteId = getSiteId();
         if (null != links && null != siteId && !"".equals(siteId)) {
+            List<URI> urls = new ArrayList<URI>();
+            //收集所有的链接
             for (int i = 0; i < links.length(); i++) {
                 IElement ele = links.item(i);
                 String href = ele.getAttribute("href", 0);
-                URI uri = UrlLinkUtil.getInstance().getURL(pageUrl, href);
-                if ("http".equals(uri.getScheme())) {
-                    context.getConsole().log("add sample: " + uri.getScheme() + ":" + uri.getSchemeSpecificPart());
-                    addSampleUrl(uri);
+                String def = BrowserContext.getConfigure().getProperty("URLCharset", "DefaultCharset");
+                Map<String, String> charsetMap = BrowserContext.getConfigure().getMapProperty("URLCharset", "CharsetMap");
+                URI uri = UrlLinkUtil.getInstance().getURL(pageUrl, href, charset, charsetMap, def);
+                urls.add(uri);
+            }
+            //对收集到的链接进行聚类，然后抽样加入到样本中
+            URLClusterer uc = new URLClusterer();
+            List<URLCluster> result = uc.clustering(urls);
+            if (null != result) {
+                for (URLCluster cluster : result) {
+                    List<URLObj> list = cluster.sampling(10);
+                    for (URLObj obj : list) {
+                        URI uri = obj.getUri();
+                        if (null != uri && "http".equals(uri.getScheme())) {
+                            context.getConsole().log("add sample: " + uri.toString());
+                            addSampleUrl(uri);
+                        }
+                    }
                 }
             }
             JOptionPane.showMessageDialog(this, "添加链接完毕！");
@@ -499,6 +535,7 @@ public class AnalysisPanel extends javax.swing.JPanel {
         return websiteschema;
     }
 
+    @Override
     public void save() {
         WebsiteschemaMapper mapper = BrowserContext.getSpringContext().getBean("websiteschemaMapper", WebsiteschemaMapper.class);
         Websiteschema websiteschema = mapper.get(getSiteId());
@@ -603,6 +640,16 @@ public class AnalysisPanel extends javax.swing.JPanel {
         popup.setVisible(true);
     }//GEN-LAST:event_analyzeParamButtonActionPerformed
 
+    private void delPropButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_delPropButtonActionPerformed
+        // TODO add your handling code here:
+        DefaultTableModel tableModel = (DefaultTableModel) propTable.getModel();
+        int row = propTable.getSelectedRow();
+        if (row >= 0) {
+            tableModel.removeRow(row);
+            save();
+        }
+    }//GEN-LAST:event_delPropButtonActionPerformed
+
     private JPanel createPageAnalysisGUI() {
         String siteId = this.getSiteId();
         SiteMapper siteMapper = BrowserContext.getSpringContext().getBean("siteMapper", SiteMapper.class);
@@ -616,7 +663,10 @@ public class AnalysisPanel extends javax.swing.JPanel {
                     JPanel panel = (JPanel) clazz.newInstance();
                     // 为创建的分析器添加SiteId
                     ISiteAnalyzer analyzer = (ISiteAnalyzer) panel;
+                    analyzer.setConfigureHandler(this);
+                    analyzer.setBrowserContext(context);
                     analyzer.setSiteId(siteId);
+                    analyzer.start();
                     return panel;
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -627,9 +677,7 @@ public class AnalysisPanel extends javax.swing.JPanel {
     }
 
     private void addSampleUrl(URI uri) {
-//        XPathAttributes attr = this.simpleBorwser.getXPathAttr();
-//        this.docConvertor.setXpathAttr(attr);
-        String url = uri.getScheme() + ":" + uri.getSchemeSpecificPart();
+        String url = uri.toString();
         CrawlerSettings settings = getCrawlerSettings();
         String[] mustHave = settings.getMustHave();
         String[] dontHave = settings.getDontHave();
@@ -678,6 +726,7 @@ public class AnalysisPanel extends javax.swing.JPanel {
         return settings;
     }
 
+    @Override
     public Map<String, String> getProperties() {
         Map<String, String> prop = new HashMap<String, String>();
 
@@ -692,6 +741,7 @@ public class AnalysisPanel extends javax.swing.JPanel {
         return prop;
     }
 
+    @Override
     public void setProperties(Map<String, String> prop) {
         DefaultTableModel tableModel = (DefaultTableModel) propTable.getModel();
         int rows = propTable.getRowCount();
@@ -748,6 +798,7 @@ public class AnalysisPanel extends javax.swing.JPanel {
     private javax.swing.JButton analyzeParamButton;
     private javax.swing.JButton collectSampleButton;
     private javax.swing.JButton confirmAddButton;
+    private javax.swing.JButton delPropButton;
     private javax.swing.JTextField depthField;
     private javax.swing.JTextField dontHaveField;
     private javax.swing.JButton editButton;

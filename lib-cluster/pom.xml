@@ -19,6 +19,10 @@
             <artifactId>lib-data-model</artifactId>
         </dependency>
         <dependency>
+            <groupId>websiteschema</groupId>
+            <artifactId>lib-func-blk</artifactId>
+        </dependency>
+        <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <scope>runtime</scope>

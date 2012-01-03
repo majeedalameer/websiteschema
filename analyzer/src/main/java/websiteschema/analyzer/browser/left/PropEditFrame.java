@@ -11,6 +11,7 @@
 package websiteschema.analyzer.browser.left;
 
 import java.util.Map;
+import websiteschema.analyzer.browser.utils.TextAreaSearch;
 
 /**
  *
@@ -21,16 +22,22 @@ public class PropEditFrame extends javax.swing.JFrame {
     AnalysisPanel analysisPanel;
     String propName;
     String propValue;
+    TextAreaSearch tas;
 
     /** Creates new form PropEditFrame */
     public PropEditFrame() {
         initComponents();
+
+        tas = new TextAreaSearch(this.displayArea);
 
         int screenWidth = ((int) java.awt.Toolkit.getDefaultToolkit().getScreenSize().width);
         int screenHeight = ((int) java.awt.Toolkit.getDefaultToolkit().getScreenSize().height);
         int sizeWidth = this.getWidth();
         int sizeHeight = this.getHeight();
         this.setLocation((screenWidth - sizeWidth) / 2, (screenHeight - sizeHeight) / 2);
+
+        displayArea.setLineWrap(this.wrapLineCheckBox.isSelected());
+        displayArea.updateUI();
     }
 
     /** This method is called from within the constructor to
@@ -48,6 +55,8 @@ public class PropEditFrame extends javax.swing.JFrame {
         confirmButton = new javax.swing.JButton();
         resetButton = new javax.swing.JButton();
         wrapLineCheckBox = new javax.swing.JCheckBox();
+        searchField = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -69,12 +78,21 @@ public class PropEditFrame extends javax.swing.JFrame {
             }
         });
 
+        wrapLineCheckBox.setSelected(true);
         wrapLineCheckBox.setText("自动换行");
         wrapLineCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 wrapLineCheckBoxActionPerformed(evt);
             }
         });
+
+        searchField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                searchFieldActionPerformed(evt);
+            }
+        });
+
+        jLabel1.setText("搜索:");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -85,9 +103,12 @@ public class PropEditFrame extends javax.swing.JFrame {
                 .addComponent(confirmButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(resetButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(wrapLineCheckBox)
-                .addContainerGap(331, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(searchField, javax.swing.GroupLayout.DEFAULT_SIZE, 284, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(wrapLineCheckBox))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -96,7 +117,9 @@ public class PropEditFrame extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(confirmButton)
                     .addComponent(resetButton)
-                    .addComponent(wrapLineCheckBox))
+                    .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(wrapLineCheckBox)
+                    .addComponent(jLabel1))
                 .addContainerGap(8, Short.MAX_VALUE))
         );
 
@@ -139,6 +162,12 @@ public class PropEditFrame extends javax.swing.JFrame {
         displayArea.updateUI();
     }//GEN-LAST:event_wrapLineCheckBoxActionPerformed
 
+    private void searchFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchFieldActionPerformed
+        // TODO add your handling code here:
+        String target = this.searchField.getText();
+        tas.next(target);
+    }//GEN-LAST:event_searchFieldActionPerformed
+
     private String getPropValue() {
         return this.displayArea.getText();
     }
@@ -158,9 +187,11 @@ public class PropEditFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton confirmButton;
     private javax.swing.JTextArea displayArea;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton resetButton;
+    private javax.swing.JTextField searchField;
     private javax.swing.JCheckBox wrapLineCheckBox;
     // End of variables declaration//GEN-END:variables
 }
