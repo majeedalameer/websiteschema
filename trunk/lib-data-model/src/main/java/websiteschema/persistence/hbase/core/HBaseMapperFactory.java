@@ -51,7 +51,11 @@ public class HBaseMapperFactory {
                 Field[] fields = clazz.getDeclaredFields();
                 for (Field field : fields) {
                     if (field.isAnnotationPresent(ColumnFamily.class)) {
-                        tableDesc.addFamily(new HColumnDescriptor(field.getName()));
+                        ColumnFamily cf = field.getAnnotation(ColumnFamily.class);
+                        String familyName = null != cf.family() && !"".equals(cf.family())
+                                ? cf.family() : field.getName();
+                        System.out.println("-------- Family name: " + familyName);
+                        tableDesc.addFamily(new HColumnDescriptor(familyName));
                     }
                 }
                 admin.createTable(tableDesc);
@@ -63,7 +67,10 @@ public class HBaseMapperFactory {
                 HTableDescriptor tableDesc = admin.getTableDescriptor(Bytes.toBytes(tableName));
                 for (Field field : fields) {
                     if (field.isAnnotationPresent(ColumnFamily.class)) {
-                        if (!tableDesc.hasFamily(Bytes.toBytes(field.getName()))) {
+                        ColumnFamily cf = field.getAnnotation(ColumnFamily.class);
+                        String familyName = null != cf.family() && !"".equals(cf.family())
+                                ? cf.family() : field.getName();
+                        if (!tableDesc.hasFamily(Bytes.toBytes(familyName))) {
                             admin.addColumn(tableName, new HColumnDescriptor(field.getName()));
                             l.debug("表 " + tableName + " 添加了列： " + field.getName());
                         }

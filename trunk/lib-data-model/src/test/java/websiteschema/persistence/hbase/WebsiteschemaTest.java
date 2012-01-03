@@ -31,7 +31,7 @@ public class WebsiteschemaTest {
         scan();
 
         delete();
-        
+
 //        deleteTable();
     }
 
@@ -50,6 +50,7 @@ public class WebsiteschemaTest {
         final String siteId = "sda";
         mapper.scan(new Function<Websiteschema>() {
 
+            @Override
             public void invoke(Websiteschema arg) {
                 String rowKey = arg.getRowKey();
                 System.out.println(siteId + " " + rowKey);
@@ -62,6 +63,7 @@ public class WebsiteschemaTest {
         System.out.println("    " + record.getRowKey());
         System.out.println("    " + record.isValid());
         System.out.println("    " + record.getLastUpdateTime());
+        assert (!record.isValid());
     }
 
     public void delete() {

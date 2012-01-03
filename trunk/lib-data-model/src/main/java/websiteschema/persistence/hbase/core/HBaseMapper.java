@@ -82,6 +82,26 @@ public class HBaseMapper<T extends HBaseBean> extends Mapper {
 
     }
 
+    public List<T> getList(String start, String end, String family) {
+        if (null != start && !"".equals(start)) {
+            ResultScanner rs = scan(start, end, family);
+            if (null != rs) {
+                List<T> ret = new ArrayList<T>();
+                try {
+                    for (Result r : rs) {
+                        T obj = wrapper.getBean(r, clazz);
+                        ret.add(obj);
+                    }
+                } finally {
+                    rs.close();
+                }
+                return ret;
+            }
+        }
+        return null;
+
+    }
+
     public void put(T obj) {
         Map<String, String> record = wrapper.getMap(obj, clazz);
         write(obj.getRowKey(), record);

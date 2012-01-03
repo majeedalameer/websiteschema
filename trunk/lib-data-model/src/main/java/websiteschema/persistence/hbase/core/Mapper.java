@@ -63,10 +63,18 @@ public class Mapper {
             Put put = new Put(Bytes.toBytes(rowKey));
             for (String key : record.keySet()) {
                 if (!"rowKey".equalsIgnoreCase(key)) {
-                    put.add(Bytes.toBytes(key),
-                            Bytes.toBytes(String.valueOf(1)),
-                            Bytes.toBytes(record.get(key)));
-                    table.put(put);
+                    if (key.indexOf(':') > 0) {
+                        String cf[] = key.split(":");
+                        put.add(Bytes.toBytes(cf[0]),
+                                Bytes.toBytes(cf[1]),
+                                Bytes.toBytes(record.get(key)));
+                        table.put(put);
+                    } else {
+                        put.add(Bytes.toBytes(key),
+                                Bytes.toBytes(String.valueOf(1)),
+                                Bytes.toBytes(record.get(key)));
+                        table.put(put);
+                    }
                 }
             }
         } catch (IOException ex) {
@@ -123,6 +131,18 @@ public class Mapper {
         try {
             HTable table = new HTable(conf, getTableName());
             Scan s = new Scan(Bytes.toBytes(rangeStart), Bytes.toBytes(rangeEnd));
+            return table.getScanner(s);
+        } catch (IOException ex) {
+            l.error("Table " + getTableName(), ex);
+            return null;
+        }
+    }
+
+    public ResultScanner scan(String rangeStart, String rangeEnd, String family) {
+        try {
+            HTable table = new HTable(conf, getTableName());
+            Scan s = new Scan(Bytes.toBytes(rangeStart), Bytes.toBytes(rangeEnd));
+            s.addFamily(Bytes.toBytes(family));
             return table.getScanner(s);
         } catch (IOException ex) {
             l.error("Table " + getTableName(), ex);
