@@ -17,12 +17,6 @@ import websiteschema.model.domain.cluster.Sample;
 public interface IFieldAnalyzer extends IFieldExtractor {
 
     /**
-     * 指明分析的字段类型，例如分析时间字段就返回PUBLISHDATE。
-     * @return
-     */
-    public String getFieldName();
-
-    /**
      * 返回适合的ClusterType，例如{"DOCUMENT"}，表明只能针对内容性文档进行分析
      * @return
      */

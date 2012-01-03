@@ -344,7 +344,7 @@ public class SampleFrame extends javax.swing.JFrame {
         final SampleMapper mapper = BrowserContext.getSpringContext().getBean("sampleMapper", SampleMapper.class);
         String now = DateUtil.format(new Date(), "yyyy-MM-dd HH:mm");
         String end = getSiteId() + "+" + now;
-        List<Sample> samples = mapper.getList(getSiteId(), end);
+        List<Sample> samples = mapper.getList(getSiteId(), end, "cf");
         DefaultTableModel tableModel = (DefaultTableModel) sampleTable.getModel();
         int rows = sampleTable.getRowCount();
         for (int i = 0; i < rows; i++) {

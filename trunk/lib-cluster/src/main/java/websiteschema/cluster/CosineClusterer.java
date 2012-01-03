@@ -130,7 +130,23 @@ public class CosineClusterer extends Clusterer {
 
     @Override
     public Cluster classify(Sample sample) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        DocVectorConvertor convertor = new DocVectorConvertor();
+        DocVector vect = convertor.convert(sample, statInfo);
+        int index = -1;
+        double membership = 0.0;
+        for (int i = 0; i < clusters.length; i++) {
+            Cluster c = clusters[i];
+            double sim = membershipDegree(vect, c.getCentralPoint());
+            if (sim > membership) {
+                membership = sim;
+                index = i;
+            }
+        }
+        if (index >= 0) {
+            return clusters[index];
+        } else {
+            return null;
+        }
     }
 
     @Override

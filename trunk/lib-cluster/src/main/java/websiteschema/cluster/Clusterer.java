@@ -54,6 +54,11 @@ public abstract class Clusterer {
         this.siteId = siteId;
     }
 
+    public void init(ClusterModel cm) {
+        this.statInfo = cm.getStatInfo();
+        clusters = cm.getClusters();
+    }
+
     private FeatureStatInfo featureInfoStatistic(List<Sample> samples) {
         FeatureStatHelper statHelper = new FeatureStatHelper();
         for (Sample sample : samples) {

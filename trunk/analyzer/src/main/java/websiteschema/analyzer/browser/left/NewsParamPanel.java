@@ -10,13 +10,27 @@
  */
 package websiteschema.analyzer.browser.left;
 
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import websiteschema.analyzer.context.BrowserContext;
 import websiteschema.cluster.Clusterer;
+import websiteschema.cluster.DocVectorConvertor;
+import websiteschema.cluster.DocumentConvertor;
+import websiteschema.cluster.analyzer.fields.DateAnalyzer;
+import websiteschema.cluster.analyzer.fields.TitleAnalyzer;
+import websiteschema.model.domain.Websiteschema;
+import websiteschema.model.domain.cluster.Cluster;
 import websiteschema.model.domain.cluster.ClusterModel;
+import websiteschema.model.domain.cluster.DocVector;
 import websiteschema.model.domain.cluster.Sample;
 import websiteschema.persistence.hbase.ClusterModelMapper;
+import websiteschema.persistence.hbase.WebsiteschemaMapper;
+import websiteschema.utils.PojoMapper;
 
 /**
  *
@@ -25,10 +39,186 @@ import websiteschema.persistence.hbase.ClusterModelMapper;
 public class NewsParamPanel extends javax.swing.JPanel implements ISiteAnalyzer {
 
     BrowserContext context;
+    Websiteschema schema;
+    IConfigureHandler confHandler;
+    TitleAnalyzer titleAnalyzer = new TitleAnalyzer();
+    DateAnalyzer dateAnalyzer = new DateAnalyzer();
 
     /** Creates new form NewsParamPanel */
     public NewsParamPanel() {
         initComponents();
+    }
+
+    @Override
+    public void setSiteId(String siteId) {
+        this.siteIdLabel.setText(siteId);
+        this.schema = BrowserContext.getSpringContext().
+                getBean("websiteschemaMapper", WebsiteschemaMapper.class).
+                get(siteId);
+    }
+
+    private void analysis() {
+        try {
+            classify();
+            getProp();
+        } catch (Exception ex) {
+        }
+    }
+
+    private void getProp() throws IOException {
+        Map<String, String> prop = this.confHandler.getProperties(); //获取当前的配置
+
+        String title = prop.get(titleAnalyzer.getFieldName());
+        if (null != title) {
+            List<Map<String, String>> config = PojoMapper.fromJson(title, List.class);
+            setTitle(config);
+        }
+
+        String date = prop.get(dateAnalyzer.getFieldName());
+        if (null != date) {
+            List<Map<String, String>> config = PojoMapper.fromJson(date, List.class);
+            setDate(config);
+        }
+
+        String fa = prop.get("FieldAnalyzers"); //读取配置
+        //序列化JSON配置，得到一个Map，是所有的IFieldAnalyzer
+        Map<String, String> fieldAnalyzers =
+                null != fa ? (Map<String, String>) PojoMapper.fromJson(fa, Map.class) : null;
+
+
+    }
+
+    /**
+     * 在界面上显示标题
+     * @param params
+     */
+    private void setTitle(List<Map<String, String>> params) {
+        for (Map<String, String> map : params) {
+            titleAnalyzer.init(map);
+            Set<String> set = titleAnalyzer.extract(getDocument());
+            if (null != set && !set.isEmpty()) {
+                String xpath = map.get(TitleAnalyzer.xpathKey);
+                String prefix = map.get(TitleAnalyzer.prefixKey);
+                String suffix = map.get(TitleAnalyzer.suffixKey);
+                this.titleResultField.setText(set.iterator().next());
+                this.titleXPathField.setText(xpath);
+                this.titlePrefixField.setText(prefix);
+                this.titleSuffixField.setText(suffix);
+                break;
+            }
+        }
+    }
+
+    /**
+     * 在界面上显示标题
+     * @param params
+     */
+    private void setDate(List<Map<String, String>> params) {
+        for (Map<String, String> map : params) {
+            dateAnalyzer.init(map);
+            Set<String> set = dateAnalyzer.extract(getDocument());
+            if (null != set && !set.isEmpty()) {
+                String xpath = map.get(DateAnalyzer.xpathKey);
+                String pattern = map.get(DateAnalyzer.patternKey);
+                String format = map.get(DateAnalyzer.formatKey);
+                String type = map.get(DateAnalyzer.typeKey);
+                this.dateResultField.setText(set.iterator().next());
+                this.dateXPathField.setText(xpath);
+                this.datePatternField.setText(pattern);
+                this.dateFormatField.setText(format);
+                if (null != type) {
+                    this.dateTypeCombo.setSelectedItem(type);
+                } else {
+                    if (null != xpath) {
+                        this.dateTypeCombo.setSelectedItem(DateAnalyzer.Type_XPath);
+                    }
+                }
+                break;
+            }
+        }
+    }
+
+    private void classify() {
+        ClusterModelMapper cmMapper = BrowserContext.getSpringContext().getBean("clusterModelMapper", ClusterModelMapper.class);
+        ClusterModel cm = cmMapper.get(getSiteId());
+        if (null != cm) {
+            String clustererType = cm.getClustererType();
+            if (null != clustererType) {
+                try {
+                    Class clazz = Class.forName(clustererType);
+                    Constructor ctor[] = clazz.getDeclaredConstructors();
+                    Class cx[] = ctor[0].getParameterTypes();
+                    // 通过反射创建Clusterer。其构造函数需要siteId;
+                    Clusterer clusterer = (Clusterer) clazz.getConstructor(cx).newInstance(new Object[]{getSiteId()});
+                    clusterer.init(cm);
+                    Sample sample = getCurrentDocument();
+                    DocVector vect = new DocVectorConvertor().convert(sample, cm.getStatInfo());
+                    Cluster cluster = clusterer.classify(sample);
+                    double sim = clusterer.membershipDegree(vect, cluster.getCentralPoint());
+                    setCluster(cluster, sim);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private void setCluster(Cluster cluster, double sim) {
+        this.belongToLabel.setText(cluster.getCustomName());
+        this.simLabel.setText(String.valueOf(sim));
+    }
+
+    private Sample getCurrentDocument() {
+        Sample sample = null;
+
+        Node doc = context.getBrowser().getW3CDocument();
+        if (null != doc && doc.getNodeType() == Node.DOCUMENT_NODE) {
+            DocumentConvertor dc = new DocumentConvertor();
+            dc.setXpathAttr(schema.getXpathAttr());
+            sample = new Sample();
+            sample.setUrl(context.getBrowser().getURL());
+            sample.setSiteId(getSiteId());
+            sample.setContent(dc.convertDocument((Document) doc));
+        }
+
+        return sample;
+    }
+
+    private Document getDocument() {
+        Document doc = (Document) context.getBrowser().getW3CDocument();
+        return doc;
+    }
+
+    @Override
+    public String getSiteId() {
+        return this.siteIdLabel.getText();
+    }
+
+    @Override
+    public void setBrowserContext(BrowserContext context) {
+        this.context = context;
+    }
+
+    @Override
+    public void setConfigureHandler(IConfigureHandler confHandler) {
+        this.confHandler = confHandler;
+    }
+
+    @Override
+    public void start() {
+        new Thread(new FooThread()).start();
+    }
+
+    class FooThread implements Runnable {
+
+        @Override
+        public void run() {
+            init();
+        }
+    };
+
+    public void init() {
+        analysis();
     }
 
     /** This method is called from within the constructor to
@@ -45,16 +235,16 @@ public class NewsParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
         jLabel2 = new javax.swing.JLabel();
         belongToLabel = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        titleResultField = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
+        titleXPathField = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
+        dateResultField = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox();
-        jTextField4 = new javax.swing.JTextField();
+        dateTypeCombo = new javax.swing.JComboBox();
+        dateXPathField = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
-        jTextField5 = new javax.swing.JTextField();
+        datePatternField = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
         jTextField6 = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
@@ -85,7 +275,7 @@ public class NewsParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
         jLabel21 = new javax.swing.JLabel();
         jTextField17 = new javax.swing.JTextField();
         jLabel22 = new javax.swing.JLabel();
-        jTextField18 = new javax.swing.JTextField();
+        dateFormatField = new javax.swing.JTextField();
         jLabel23 = new javax.swing.JLabel();
         jTextField19 = new javax.swing.JTextField();
         jLabel24 = new javax.swing.JLabel();
@@ -95,7 +285,7 @@ public class NewsParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
         jButton2 = new javax.swing.JButton();
         jSeparator5 = new javax.swing.JSeparator();
         jLabel25 = new javax.swing.JLabel();
-        jLabel26 = new javax.swing.JLabel();
+        simLabel = new javax.swing.JLabel();
         jButton3 = new javax.swing.JButton();
         jSeparator6 = new javax.swing.JSeparator();
         jLabel27 = new javax.swing.JLabel();
@@ -109,6 +299,10 @@ public class NewsParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
         jLabel31 = new javax.swing.JLabel();
         jTextField24 = new javax.swing.JTextField();
         jButton4 = new javax.swing.JButton();
+        jLabel32 = new javax.swing.JLabel();
+        titlePrefixField = new javax.swing.JTextField();
+        jLabel33 = new javax.swing.JLabel();
+        titleSuffixField = new javax.swing.JTextField();
 
         jLabel1.setText("网站Id:");
 
@@ -126,11 +320,9 @@ public class NewsParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
 
         jLabel6.setText("时间抽取来自: ");
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "DOM Node", "URL", "HTTP Response" }));
+        dateTypeCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "XPath", "URL", "HTTP" }));
 
-        jTextField4.setText("XPath here");
-
-        jLabel7.setText("格式: ");
+        jLabel7.setText("模式: ");
 
         jLabel8.setText("来源: ");
 
@@ -162,7 +354,7 @@ public class NewsParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
 
         jLabel22.setText("目标格式:");
 
-        jTextField18.setText("yyyy-MM-dd HH:mm:SS");
+        dateFormatField.setText("yyyy-MM-dd HH:mm:SS");
 
         jLabel23.setText("转发数:");
 
@@ -174,7 +366,7 @@ public class NewsParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
 
         jLabel25.setText("相似度: ");
 
-        jLabel26.setText("${similarity}");
+        simLabel.setText("${similarity}");
 
         jButton3.setText("分析");
 
@@ -192,6 +384,10 @@ public class NewsParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
 
         jButton4.setText("测试");
 
+        jLabel32.setText("标题起始位置:");
+
+        jLabel33.setText("标题结束位置:");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -199,6 +395,31 @@ public class NewsParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jSeparator5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 646, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel32))
+                        .addGap(3, 3, 3)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(siteIdLabel)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(belongToLabel)
+                                .addGap(29, 29, 29)
+                                .addComponent(jLabel25)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(simLabel))
+                            .addComponent(titleResultField, javax.swing.GroupLayout.DEFAULT_SIZE, 562, Short.MAX_VALUE)
+                            .addComponent(titleXPathField, javax.swing.GroupLayout.DEFAULT_SIZE, 562, Short.MAX_VALUE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(titlePrefixField, javax.swing.GroupLayout.DEFAULT_SIZE, 219, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel33)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(titleSuffixField, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addComponent(jSeparator2, javax.swing.GroupLayout.DEFAULT_SIZE, 646, Short.MAX_VALUE)
                     .addComponent(jSeparator1, javax.swing.GroupLayout.DEFAULT_SIZE, 646, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
@@ -208,37 +429,19 @@ public class NewsParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jTextField3, javax.swing.GroupLayout.DEFAULT_SIZE, 134, Short.MAX_VALUE)
+                                .addComponent(dateResultField, javax.swing.GroupLayout.DEFAULT_SIZE, 134, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabel7)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextField5, javax.swing.GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
+                                .addComponent(datePatternField, javax.swing.GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabel22)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextField18, javax.swing.GroupLayout.DEFAULT_SIZE, 146, Short.MAX_VALUE))
+                                .addComponent(dateFormatField, javax.swing.GroupLayout.DEFAULT_SIZE, 146, Short.MAX_VALUE))
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(dateTypeCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextField4, javax.swing.GroupLayout.DEFAULT_SIZE, 419, Short.MAX_VALUE))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel4)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel1))
-                        .addGap(16, 16, 16)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(siteIdLabel)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(belongToLabel)
-                                .addGap(29, 29, 29)
-                                .addComponent(jLabel25)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel26))
-                            .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 562, Short.MAX_VALUE)
-                            .addComponent(jTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 562, Short.MAX_VALUE)))
-                    .addComponent(jSeparator5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 646, Short.MAX_VALUE)
+                                .addComponent(dateXPathField, javax.swing.GroupLayout.DEFAULT_SIZE, 480, Short.MAX_VALUE))))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(jButton3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -352,30 +555,36 @@ public class NewsParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
                     .addComponent(jLabel2)
                     .addComponent(belongToLabel)
                     .addComponent(jLabel25)
-                    .addComponent(jLabel26))
+                    .addComponent(simLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(titleResultField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(titleXPathField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel32)
+                    .addComponent(titlePrefixField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(titleSuffixField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel33))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(dateResultField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel7)
-                    .addComponent(jTextField18, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(dateFormatField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(datePatternField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel22))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(dateTypeCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(dateXPathField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -456,11 +665,15 @@ public class NewsParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel belongToLabel;
+    private javax.swing.JTextField dateFormatField;
+    private javax.swing.JTextField datePatternField;
+    private javax.swing.JTextField dateResultField;
+    private javax.swing.JComboBox dateTypeCombo;
+    private javax.swing.JTextField dateXPathField;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
-    private javax.swing.JComboBox jComboBox1;
     private javax.swing.JComboBox jComboBox2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
@@ -480,13 +693,14 @@ public class NewsParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
     private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel24;
     private javax.swing.JLabel jLabel25;
-    private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel27;
     private javax.swing.JLabel jLabel28;
     private javax.swing.JLabel jLabel29;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel30;
     private javax.swing.JLabel jLabel31;
+    private javax.swing.JLabel jLabel32;
+    private javax.swing.JLabel jLabel33;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
@@ -499,7 +713,6 @@ public class NewsParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
     private javax.swing.JSeparator jSeparator4;
     private javax.swing.JSeparator jSeparator5;
     private javax.swing.JSeparator jSeparator6;
-    private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField10;
     private javax.swing.JTextField jTextField11;
     private javax.swing.JTextField jTextField12;
@@ -508,64 +721,21 @@ public class NewsParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
     private javax.swing.JTextField jTextField15;
     private javax.swing.JTextField jTextField16;
     private javax.swing.JTextField jTextField17;
-    private javax.swing.JTextField jTextField18;
     private javax.swing.JTextField jTextField19;
-    private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField20;
     private javax.swing.JTextField jTextField21;
     private javax.swing.JTextField jTextField22;
     private javax.swing.JTextField jTextField23;
     private javax.swing.JTextField jTextField24;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
-    private javax.swing.JTextField jTextField5;
     private javax.swing.JTextField jTextField6;
     private javax.swing.JTextField jTextField7;
     private javax.swing.JTextField jTextField8;
     private javax.swing.JTextField jTextField9;
+    private javax.swing.JLabel simLabel;
     private javax.swing.JLabel siteIdLabel;
+    private javax.swing.JTextField titlePrefixField;
+    private javax.swing.JTextField titleResultField;
+    private javax.swing.JTextField titleSuffixField;
+    private javax.swing.JTextField titleXPathField;
     // End of variables declaration//GEN-END:variables
-
-    @Override
-    public void setSiteId(String siteId) {
-        this.siteIdLabel.setText(siteId);
-    }
-
-    private void analysis() {
-        ClusterModelMapper cmMapper = BrowserContext.getSpringContext().getBean("clusterModelMapper", ClusterModelMapper.class);
-        ClusterModel cm = cmMapper.get(getSiteId());
-        if (null != cm) {
-            String clustererType = cm.getClustererType();
-            if (null != clustererType) {
-                try {
-                    Class clazz = Class.forName(clustererType);
-                    Clusterer clusterer = (Clusterer) clazz.newInstance();
-
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-            }
-        }
-    }
-
-    private Sample getCurrentDocument() {
-        Sample sample = null;
-
-        Node doc = context.getBrowser().getW3CDocument();
-        if(null != doc && doc.getNodeType() == Node.DOCUMENT_NODE) {
-            
-        }
-
-        return sample;
-    }
-
-    @Override
-    public String getSiteId() {
-        return this.siteIdLabel.getText();
-    }
-
-    @Override
-    public void setBrowserContext(BrowserContext context) {
-        this.context = context;
-    }
 }

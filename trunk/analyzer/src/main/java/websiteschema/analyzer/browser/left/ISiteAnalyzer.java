@@ -19,4 +19,7 @@ public interface ISiteAnalyzer {
 
     public void setBrowserContext(BrowserContext context);
 
+    public void setConfigureHandler(IConfigureHandler confHandler);
+
+    public void start();
 }

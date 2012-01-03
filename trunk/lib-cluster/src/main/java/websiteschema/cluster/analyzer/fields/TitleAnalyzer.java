@@ -28,15 +28,16 @@ import websiteschema.utils.EditDistance;
  */
 public class TitleAnalyzer implements IFieldAnalyzer {
 
-    String titleXPath = "";
-    String titlePrefixString = "";
-    String titleSuffixString = "";
-    private final static String xpathKey = "XPath";
-    private final static String prefixKey = "PrefixString";
-    private final static String suffixKey = "SuffixString";
+    private String fieldName = "TITLE";
+    private String titleXPath = "";
+    private String titlePrefixString = "";
+    private String titleSuffixString = "";
+    public final static String xpathKey = "XPath";
+    public final static String prefixKey = "PrefixString";
+    public final static String suffixKey = "SuffixString";
 
     public String getFieldName() {
-        return "TITLE";
+        return fieldName;
     }
 
     public String[] getProperClusterType() {
@@ -167,5 +168,9 @@ public class TitleAnalyzer implements IFieldAnalyzer {
             }
         }
         return ret;
+    }
+
+    public void setFieldName(String fieldName) {
+        this.fieldName = fieldName;
     }
 }
