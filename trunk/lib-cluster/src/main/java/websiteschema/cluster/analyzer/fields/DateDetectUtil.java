@@ -122,7 +122,7 @@ public class DateDetectUtil {
         pat = pat.replaceAll("H+", "([0-9]{1,2})");
         pat = pat.replaceAll("m+", "([0-9]{1,2})");
         pat = pat.replaceAll("S+", "([0-9]{1,2})");
-        pat = "(^|.*?)(" + pat + ")($|[^0-9].*?)";
+        pat = "(^|.*?)(" + pat + ")($|.*?)";
         return pat;
     }
 

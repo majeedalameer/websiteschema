@@ -81,6 +81,10 @@ public class DateDetectTest {
         pat = "yy年MM月dd日 HH:mm";
         res = DateDetectUtil.getInstance().parseDate(date, pat, "yyyy-MM-dd HH:mm");
         assert("2012-01-01 21:36".equals(res));
+        date = "2011年12月31日09:35";
+        pat = "yy年MM月dd日";
+        res = DateDetectUtil.getInstance().parseDate(date, pat, "yyyy-MM-dd");
+        assert("2011-12-31".equals(res));
     }
 
     @Test
