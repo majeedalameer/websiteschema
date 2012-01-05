@@ -4,10 +4,7 @@
  */
 package websiteschema.cluster.analyzer;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import websiteschema.utils.PojoMapper;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import websiteschema.model.domain.cluster.Cluster;
@@ -15,7 +12,6 @@ import websiteschema.model.domain.cluster.ClusterModel;
 import websiteschema.model.domain.cluster.DocVector;
 import websiteschema.model.domain.cluster.FeatureStatInfo;
 import websiteschema.model.domain.cluster.Sample;
-import static websiteschema.utils.PojoMapper.*;
 
 /**
  *
@@ -23,6 +19,7 @@ import static websiteschema.utils.PojoMapper.*;
  */
 public class ClusterAnalyzerImpl implements ClusterAnalyzer {
 
+    AnalysisResult analysisResult = new AnalysisResult();
     BasicAnalysisResult result = null;
     AnalyzerUtil analyzer = AnalyzerUtil.getInstance();
     IClusterTypeRecognizer clusterTypeRecognizer = new SimpleClusterTypeRecognizer();
@@ -34,7 +31,6 @@ public class ClusterAnalyzerImpl implements ClusterAnalyzer {
         if (null == cm || null == samples) {
             return old;
         }
-        Map<String, String> ret = null != old ? old : new HashMap<String, String>();
 
         Cluster[] clusters = cm.getClusters();
         FeatureStatInfo statInfo = cm.getStatInfo();
@@ -46,38 +42,23 @@ public class ClusterAnalyzerImpl implements ClusterAnalyzer {
             //确定每个类的类型
             confirmClusterType(clusters, space, samples, statInfo);
             //对每个类进行分析，挖掘各个字段的配置，例如标题、作者等
-            analyzeFields(clusters, samples, statInfo, ret);
+            analyzeFields(clusters, samples, statInfo);
         }
 
         //整理结果并返回
-        return createResult(ret);
+        return createResult(old);
     }
 
     private void findBasicParameter(Cluster[] clusters, List<DocVector> space, List<Sample> samples, FeatureStatInfo statInfo) {
         result = simpleAnalyzer.analysis(clusters, space, samples, statInfo);
+        analysisResult.setBasicAnalysisResult(result);
     }
 
     private Map<String, String> createResult(Map<String, String> old) {
-        Map<String, String> ret = null != old ? old : new HashMap<String, String>();
-        try {
-            ret.put("ValidNodes", toJson(result.getValidNodes()));
-            ret.put("InvalidNodes", toJson(result.getInvalidNodes()));
-            ret.put("TitlePrefix", toJson(result.getTitlePrefix()));
-            ret.put("TitleSuffix", toJson(result.getTitleSuffix()));
-            if (null != fieldAnalyzers && !fieldAnalyzers.isEmpty()) {
-                Map<String, String> map = new HashMap<String, String>();
-                for (IFieldAnalyzer fieldAnalyzer : fieldAnalyzers) {
-                    map.put(fieldAnalyzer.getFieldName(), fieldAnalyzer.getClass().getName());
-                }
-                ret.put("FieldAnalyzers", PojoMapper.toJson(map));
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return ret;
+        return analysisResult.getResult(old);
     }
 
-    private void analyzeFields(Cluster[] clusters, List<Sample> samples, FeatureStatInfo statInfo, Map<String, String> old) {
+    private void analyzeFields(Cluster[] clusters, List<Sample> samples, FeatureStatInfo statInfo) {
         if (null != fieldAnalyzers) {
             for (Cluster cluster : clusters) {
                 List<String> allSamples = cluster.getSamples();
@@ -88,114 +69,8 @@ public class ClusterAnalyzerImpl implements ClusterAnalyzer {
                 }
                 //每个类在进行分析的时候，只分析十个样本
                 List<Sample> clusterSamples = analyzer.getSamples(rowKeys, samples);
-                analyzeEachCluster(cluster, statInfo, clusterSamples, old);
+                analyzeEachCluster(cluster, statInfo, clusterSamples);
             }
-        }
-    }
-
-    /**
-     * 检查List中是否已经存在一个Map，这个Map和map一样。
-     * @param old
-     * @param map
-     * @return
-     */
-    private boolean alreadyHas(List<Map<String, String>> old, Map<String, String> map, String clusterName) {
-        if (null != old) {
-            try {
-                for (Map<String, String> compareTo : old) {
-                    boolean same = true;
-                    for (String key : map.keySet()) {
-                        String value = map.get(key);
-                        if (!compareTo.containsKey(key)) {
-                            same = false;
-                            break;
-                        } else {
-                            String v1 = compareTo.get(key);
-                            if (!value.equals(v1)) {
-                                same = false;
-                                break;
-                            }
-                        }
-                    }
-                    if (same) {
-                        addProperCluster(clusterName, compareTo);
-                        return true;
-                    }
-                }
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * 一个字段分析的结果要对应到一个Cluster中，所有其返回的Map中要加一个字段叫Cluster。
-     * @param map
-     * @return
-     */
-    private List<String> getProperCluster(Map<String, String> map) {
-        String properClusters = map.get("Cluster");
-        if (null != properClusters) {
-            try {
-                List<String> list = PojoMapper.fromJson(properClusters, List.class);
-                return list;
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-        return null;
-    }
-
-    private void setProperCluster(List<String> properClusters, Map<String, String> map) {
-        if (null != properClusters) {
-            try {
-                map.put("Cluster", PojoMapper.toJson(properClusters));
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-    }
-
-    /**
-     * 将对应的cluster名称加入到返回结果中
-     * @param clusterName
-     * @param map
-     */
-    private void addProperCluster(String clusterName, Map<String, String> map) {
-        List<String> properClusters = getProperCluster(map);
-        if (null != properClusters && !properClusters.contains(clusterName)) {
-            properClusters.add(clusterName);
-        } else {
-            properClusters = new ArrayList<String>();
-            properClusters.add(clusterName);
-        }
-        //将添加后的结果写入到Map
-        setProperCluster(properClusters, map);
-    }
-
-    private void mergeAnalysisResult(Cluster cluster, String fieldName, Map<String, String> res, Map<String, String> old) throws IOException {
-        //如果不为空，则将结果保存到Map中
-        if (null != res && !res.isEmpty()) {
-            String ori = old.get(fieldName);
-            List<Map<String, String>> list = null;
-            if (null != ori) {
-                try {
-                    list = PojoMapper.fromJson(ori, List.class);
-                } catch (Exception ex) {
-                    //可能是旧版本，会导致反序列化失败
-                    list = new ArrayList<Map<String, String>>();
-                }
-            } else {
-                list = new ArrayList<Map<String, String>>();
-            }
-            String clusterName = cluster.getCustomName();
-            if (!alreadyHas(list, res, clusterName)) {
-                addProperCluster(clusterName, res);
-                list.add(res);
-            }
-            old.put(fieldName, PojoMapper.toJson(list));
         }
     }
 
@@ -206,15 +81,21 @@ public class ClusterAnalyzerImpl implements ClusterAnalyzer {
      * @param samples
      * @param old - 用来保存最终的结果
      */
-    private void analyzeEachCluster(Cluster cluster, FeatureStatInfo statInfo, List<Sample> samples, Map<String, String> old) {
+    private void analyzeEachCluster(Cluster cluster, FeatureStatInfo statInfo, List<Sample> samples) {
         for (IFieldAnalyzer fieldAnalyzer : fieldAnalyzers) {
             String[] types = fieldAnalyzer.getProperClusterType();
             for (String type : types) {
                 if (cluster.getType().equals(type)) {
                     try {
-                        Map<String, String> res = fieldAnalyzer.analyze(cluster, statInfo, result, samples);
+                        fieldAnalyzer.setBasicAnalysisResult(result);
+                        Map<String, String> res = fieldAnalyzer.analyze(cluster, statInfo, samples);
                         //保存结果res存到old中，key是fieldAnalyzer.getFieldName()
-                        mergeAnalysisResult(cluster, fieldAnalyzer.getFieldName(), res, old);
+                        analysisResult.setFieldAnalysisResult(
+                                cluster.getCustomName(), //聚类的名称
+                                fieldAnalyzer.getFieldName(), //参数名称
+                                fieldAnalyzer.getClass().getName(), //类名
+                                res //参数
+                                );
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

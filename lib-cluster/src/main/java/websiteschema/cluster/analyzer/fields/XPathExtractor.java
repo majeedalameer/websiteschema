@@ -10,21 +10,19 @@ import java.util.Map;
 import java.util.Set;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-import websiteschema.cluster.analyzer.IFieldExtractor;
 import websiteschema.element.DocumentUtil;
 
 /**
  *
  * @author ray
  */
-public class XPathExtractor implements IFieldExtractor {
+public class XPathExtractor extends AbstractFieldExtractor {
 
-    private String fieldName;
     private String xpath = null;
     public final static String xpathKey = "XPath";
 
     public Set<String> extract(Document doc) {
-        if (null != xpath) {
+        if (null != xpath && !"".equals(xpath)) {
             return extractByXPath(doc);
         }
         return null;
@@ -32,7 +30,7 @@ public class XPathExtractor implements IFieldExtractor {
 
     private Set<String> extractByXPath(Document doc) {
         Set<String> ret = new HashSet<String>();
-        List<Node> nodes = DocumentUtil.getByXPath(doc, xpath);
+        List<Node> nodes = DocumentUtil.getByXPath(doc, xpath.trim());
         for (Node node : nodes) {
             String t = ExtractUtil.getInstance().getNodeText(node);
             if (null != t && !"".equals(t)) {
@@ -44,13 +42,5 @@ public class XPathExtractor implements IFieldExtractor {
 
     public void init(Map<String, String> params) {
         xpath = params.containsKey(xpathKey) ? params.get(xpathKey) : "";
-    }
-
-    public String getFieldName() {
-        return fieldName;
-    }
-
-    public void setFieldName(String fieldName) {
-        this.fieldName = fieldName;
     }
 }

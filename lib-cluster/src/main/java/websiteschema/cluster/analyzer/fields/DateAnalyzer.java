@@ -16,7 +16,6 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import websiteschema.cluster.analyzer.AnalyzerUtil;
-import websiteschema.cluster.analyzer.BasicAnalysisResult;
 import websiteschema.cluster.analyzer.IFieldAnalyzer;
 import websiteschema.utils.CollectionUtil;
 import websiteschema.element.DocumentUtil;
@@ -31,9 +30,8 @@ import websiteschema.utils.EditDistance;
  *
  * @author ray
  */
-public class DateAnalyzer implements IFieldAnalyzer {
+public class DateAnalyzer extends AbstractFieldExtractor implements IFieldAnalyzer {
 
-    private String fieldName = "DATE";
     private String xpath = "";
     private String pattern = "";
     private String format = "yyyy-MM-dd";
@@ -56,19 +54,15 @@ public class DateAnalyzer implements IFieldAnalyzer {
         boolean hasWeek = false;
     }
 
-    public String getFieldName() {
-        return fieldName;
-    }
-
-    public void setFieldName(String fieldName) {
-        this.fieldName = fieldName;
+    public DateAnalyzer() {
+        setFieldName("DATE");
     }
 
     public String[] getProperClusterType() {
         return new String[]{"DOCUMENT"};
     }
 
-    public Map<String, String> analyze(Cluster cluster, FeatureStatInfo statInfo, BasicAnalysisResult analysisResult, List<Sample> samples) {
+    public Map<String, String> analyze(Cluster cluster, FeatureStatInfo statInfo, List<Sample> samples) {
         if (samples.size() > 0) {
             AnalyzerUtil util = AnalyzerUtil.getInstance();
             List<DocVector> vectors = AnalyzerUtil.getInstance().convertSamples(samples, statInfo);
