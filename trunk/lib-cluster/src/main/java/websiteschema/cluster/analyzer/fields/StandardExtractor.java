@@ -10,16 +10,14 @@ import java.util.Map;
 import java.util.Set;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-import websiteschema.cluster.analyzer.IFieldExtractor;
 import websiteschema.element.DocumentUtil;
 
 /**
  *
  * @author ray
  */
-public class StandardExtractor implements IFieldExtractor {
+public class StandardExtractor extends AbstractFieldExtractor {
 
-    private String fieldName;
     private String xpath = null;
     private String prefix = null;
     private String suffix = null;
@@ -28,7 +26,7 @@ public class StandardExtractor implements IFieldExtractor {
     public final static String suffixKey = "SuffixString";
 
     public Set<String> extract(Document doc) {
-        if(null != xpath) {
+        if (null != xpath && !"".equals(xpath)) {
             return extractByXPath(doc);
         } else if (!"".equals(prefix) && !"".equals(suffix)) {
             return extractByPattern(prefix, suffix, doc);
@@ -38,7 +36,7 @@ public class StandardExtractor implements IFieldExtractor {
 
     private Set<String> extractByXPath(Document doc) {
         Set<String> ret = new HashSet<String>();
-        List<Node> nodes = DocumentUtil.getByXPath(doc, xpath);
+        List<Node> nodes = DocumentUtil.getByXPath(doc, xpath.trim());
         for (Node node : nodes) {
             String t = ExtractUtil.getInstance().getNodeText(node);
             if (null != t && !"".equals(t)) {
@@ -53,13 +51,16 @@ public class StandardExtractor implements IFieldExtractor {
 
         String text = DocumentUtil.getXMLString(doc);
         int start = text.indexOf(prefix);
-        if (start >= 0) {
+        while (start >= 0) {
             int end = text.indexOf(suffix, start + prefix.length());
             if (end > 0) {
                 String title = text.substring(start + prefix.length(), end);
                 if (null != title && !"".equals(title)) {
                     ret.add(title);
                 }
+                start = text.indexOf(prefix, end + suffix.length());
+            } else {
+                break;
             }
         }
         return ret;
@@ -69,13 +70,5 @@ public class StandardExtractor implements IFieldExtractor {
         xpath = params.containsKey(xpathKey) ? params.get(xpathKey) : "";
         prefix = params.containsKey(prefixKey) ? params.get(prefixKey) : "";
         suffix = params.containsKey(suffixKey) ? params.get(suffixKey) : "";
-    }
-
-    public String getFieldName() {
-        return fieldName;
-    }
-
-    public void setFieldName(String fieldName) {
-        this.fieldName = fieldName;
     }
 }

@@ -634,7 +634,7 @@ public class AnalysisPanel extends javax.swing.JPanel implements IConfigureHandl
     private void analyzeParamButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_analyzeParamButtonActionPerformed
         // TODO add your handling code here:
         final JFrame popup = new JFrame("参数分析");
-        popup.setSize(800, 600);
+        popup.setSize(800, 700);
         JPanel panel = createPageAnalysisGUI();
         popup.getContentPane().add(BorderLayout.CENTER, panel);
         popup.setVisible(true);

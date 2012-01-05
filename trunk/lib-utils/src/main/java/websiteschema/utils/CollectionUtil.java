@@ -5,6 +5,7 @@
 package websiteschema.utils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -34,6 +35,18 @@ public class CollectionUtil {
 //            System.out.println(entry.getKey() + "  " + entry.getValue());
 //        }
         return arrayList;
+    }
+
+    public static String toString(Collection<String> c) {
+        StringBuilder sb = new StringBuilder();
+        for (String s : c) {
+            sb.append(s).append(",");
+        }
+        if (sb.toString().endsWith(",")) {
+            return sb.substring(0, sb.length() - 1);
+        } else {
+            return sb.toString();
+        }
     }
 
     public static void main(String args[]) {

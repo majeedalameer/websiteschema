@@ -29,5 +29,5 @@ public interface IFieldAnalyzer extends IFieldExtractor {
      * @param samples - cluster中的样本
      * @return 分析结果
      */
-    public Map<String, String> analyze(Cluster cluster, FeatureStatInfo statInfo, BasicAnalysisResult analysisResult, List<Sample> samples);
+    public Map<String, String> analyze(Cluster cluster, FeatureStatInfo statInfo, List<Sample> samples);
 }

@@ -7,6 +7,7 @@ package websiteschema.cluster.analyzer;
 import java.util.Set;
 import org.w3c.dom.Document;
 import websiteschema.common.base.JObject;
+import websiteschema.element.XPathAttributes;
 
 /**
  *
@@ -28,4 +29,17 @@ public interface IFieldExtractor extends JObject {
      * @return
      */
     public Set<String> extract(Document doc);
+
+    /**
+     * 设置基本分析结果
+     * @param basicAnalysisResult
+     * @return
+     */
+    public void setBasicAnalysisResult(BasicAnalysisResult basicAnalysisResult);
+
+    /**
+     * 设置用来生成XPath的配置
+     * @param xpathAttr
+     */
+    public void setXPathAttr(XPathAttributes xpathAttr);
 }

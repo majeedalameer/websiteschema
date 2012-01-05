@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.Set;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import websiteschema.cluster.analyzer.AnalyzerUtil;
 import websiteschema.cluster.analyzer.BasicAnalysisResult;
 import websiteschema.cluster.analyzer.IFieldAnalyzer;
@@ -26,9 +25,8 @@ import websiteschema.utils.EditDistance;
  *
  * @author ray
  */
-public class TitleAnalyzer implements IFieldAnalyzer {
+public class TitleAnalyzer extends AbstractFieldExtractor implements IFieldAnalyzer {
 
-    private String fieldName = "TITLE";
     private String titleXPath = "";
     private String titlePrefixString = "";
     private String titleSuffixString = "";
@@ -36,8 +34,8 @@ public class TitleAnalyzer implements IFieldAnalyzer {
     public final static String prefixKey = "PrefixString";
     public final static String suffixKey = "SuffixString";
 
-    public String getFieldName() {
-        return fieldName;
+    public TitleAnalyzer() {
+        setFieldName("TITLE");
     }
 
     public String[] getProperClusterType() {
@@ -50,14 +48,14 @@ public class TitleAnalyzer implements IFieldAnalyzer {
         titleSuffixString = params.containsKey(suffixKey) ? params.get(suffixKey) : "";
     }
 
-    public Map<String, String> analyze(Cluster cluster, FeatureStatInfo statInfo, BasicAnalysisResult analysisResult, List<Sample> samples) {
-        Set<String> validNodes = analysisResult.getValidNodes();
+    public Map<String, String> analyze(Cluster cluster, FeatureStatInfo statInfo, List<Sample> samples) {
+        Set<String> validNodes = getBasicAnalysisResult().getValidNodes();
         AnalyzerUtil util = AnalyzerUtil.getInstance();
         Map<String, String> titleText = util.getText("html/head/title", samples);
         //将每篇文章的标题进行一次过滤
         for (String key : titleText.keySet()) {
             String title = titleText.get(key);
-            title = trimTitle(title, analysisResult);
+            title = trimTitle(title, getBasicAnalysisResult());
             titleText.put(key, title);
         }
         double sim = 0.4;
@@ -168,9 +166,5 @@ public class TitleAnalyzer implements IFieldAnalyzer {
             }
         }
         return ret;
-    }
-
-    public void setFieldName(String fieldName) {
-        this.fieldName = fieldName;
     }
 }
