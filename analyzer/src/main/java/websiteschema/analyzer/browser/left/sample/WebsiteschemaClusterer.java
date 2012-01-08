@@ -20,7 +20,6 @@ import websiteschema.persistence.hbase.ClusterModelMapper;
 import websiteschema.persistence.hbase.SampleMapper;
 import websiteschema.persistence.hbase.WebsiteschemaMapper;
 import websiteschema.utils.DateUtil;
-import websiteschema.analyzer.context.BrowserContext;
 
 /**
  *

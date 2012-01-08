@@ -26,28 +26,21 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
-import org.w3c.dom.Document;
 import websiteschema.analyzer.browser.SimpleBrowser;
 import websiteschema.analyzer.browser.left.sample.ClusterFrame;
 import websiteschema.analyzer.browser.left.sample.ClustererFrame;
 import websiteschema.analyzer.browser.left.sample.SampleCollectionFrame;
 import websiteschema.analyzer.browser.left.sample.SampleFrame;
-import websiteschema.analyzer.browser.left.sample.WebsiteschemaClusterer;
-import websiteschema.cluster.analyzer.SimpleClusterAnalyzer;
+import websiteschema.analyzer.browser.left.sample.TestingFrame;
 import websiteschema.analyzer.context.BrowserContext;
-import websiteschema.cluster.analyzer.ClusterAnalyzer;
-import websiteschema.cluster.analyzer.ClusterAnalyzerImpl;
 import websiteschema.cluster.url.URLCluster;
 import websiteschema.cluster.url.URLClusterer;
 import websiteschema.cluster.url.URLObj;
-import websiteschema.cluster.fb.FBDOMExtractor;
-import websiteschema.element.DocumentUtil;
 import websiteschema.element.XPathAttributes;
 import websiteschema.model.domain.Site;
 import websiteschema.model.domain.Websiteschema;
 import websiteschema.model.domain.cluster.Sample;
 import websiteschema.model.domain.cralwer.CrawlerSettings;
-import websiteschema.persistence.hbase.ClusterModelMapper;
 import websiteschema.persistence.hbase.SampleMapper;
 import websiteschema.persistence.hbase.WebsiteschemaMapper;
 import websiteschema.persistence.rdbms.SiteMapper;
@@ -578,28 +571,10 @@ public class AnalysisPanel extends javax.swing.JPanel implements IConfigureHandl
 
     private void testButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_testButtonActionPerformed
         // TODO add your handling code here:
-        WebsiteschemaMapper mapper = BrowserContext.getSpringContext().getBean("websiteschemaMapper", WebsiteschemaMapper.class);
-        Websiteschema websiteschema = mapper.get(getSiteId());
-
-        FBDOMExtractor extractor = new FBDOMExtractor();
-        Document source = (Document) context.getBrowser().getW3CDocument();
-//        String xml = DocumentUtil.getXMLString(source);
-        extractor.in = source;
-        extractor.schema = websiteschema;
-
-        extractor.extract();
-        Document result = extractor.out;
-        if (null != result) {
-            this.resultArea.setText(DocumentUtil.getXMLString(result));
-            int screenWidth = ((int) java.awt.Toolkit.getDefaultToolkit().getScreenSize().width);
-            int screenHeight = ((int) java.awt.Toolkit.getDefaultToolkit().getScreenSize().height);
-            int sizeWidth = WrapperTestingDialog.getWidth();
-            int sizeHeight = WrapperTestingDialog.getHeight();
-            WrapperTestingDialog.setLocation((screenWidth - sizeWidth) / 2, (screenHeight - sizeHeight) / 2);
-            this.WrapperTestingDialog.setVisible(true);
-        } else {
-            JOptionPane.showMessageDialog(this, "无法抽取出数据！");
-        }
+        TestingFrame tf = new TestingFrame();
+        tf.setContext(context);
+        tf.setSiteId(getSiteId());
+        tf.setVisible(true);
     }//GEN-LAST:event_testButtonActionPerformed
 
     private void editButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editButtonActionPerformed

@@ -4,10 +4,10 @@
  */
 package websiteschema.cluster.analyzer.fields;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import websiteschema.element.DocumentUtil;
@@ -21,20 +21,23 @@ public class XPathExtractor extends AbstractFieldExtractor {
     private String xpath = null;
     public final static String xpathKey = "XPath";
 
-    public Set<String> extract(Document doc) {
+    public Collection<String> extract(Document doc) {
         if (null != xpath && !"".equals(xpath)) {
             return extractByXPath(doc);
         }
         return null;
     }
 
-    private Set<String> extractByXPath(Document doc) {
-        Set<String> ret = new HashSet<String>();
+    private Collection<String> extractByXPath(Document doc) {
+        List<String> ret = new ArrayList<String>();
         List<Node> nodes = DocumentUtil.getByXPath(doc, xpath.trim());
         for (Node node : nodes) {
             String t = ExtractUtil.getInstance().getNodeText(node);
             if (null != t && !"".equals(t)) {
-                ret.add(t.trim());
+                t = t.trim();
+                if (!ret.contains(t)) {
+                    ret.add(t.trim());
+                }
             }
         }
         return ret;

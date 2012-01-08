@@ -4,6 +4,7 @@
  */
 package websiteschema.cluster.analyzer.fields;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -129,7 +130,7 @@ public class TitleAnalyzer extends AbstractFieldExtractor implements IFieldAnaly
         return ret;
     }
 
-    public Set<String> extract(Document doc) {
+    public Collection<String> extract(Document doc) {
         if (!"".equals(titleXPath)) {
             return getTitle(titleXPath, doc);
         } else if (!"".equals(titlePrefixString) && !"".equals(titleSuffixString)) {

@@ -39,10 +39,12 @@ public class Websiteschema implements HBaseBean {
     @ColumnFamily
     Map<String, String> properties;
 
+    @Override
     public String getRowKey() {
         return rowKey;
     }
 
+    @Override
     public void setRowKey(String rowKey) {
         this.rowKey = rowKey;
     }

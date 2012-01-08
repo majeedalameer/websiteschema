@@ -5,6 +5,7 @@
 package websiteschema.cluster.analyzer.fields;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -220,7 +221,7 @@ public class DateAnalyzer extends AbstractFieldExtractor implements IFieldAnalyz
         return ret;
     }
 
-    public Set<String> extract(Document doc) {
+    public Collection<String> extract(Document doc) {
         Set<String> ret = new HashSet<String>();
         List<Node> nodes = DocumentUtil.getByXPath(doc, xpath);
         for (Node node : nodes) {
