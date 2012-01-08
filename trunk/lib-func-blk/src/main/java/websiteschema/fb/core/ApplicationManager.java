@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package websiteschema.fb.core;
 
 import java.util.ArrayList;
@@ -44,9 +43,7 @@ public class ApplicationManager implements ApplicationService {
 
     @Override
     public void finalize() {
-        if (null != pool) {
-            pool.shutdown();
-        }
+        shutdown();
     }
 
     public boolean addTask(Runnable task) {
@@ -79,7 +76,9 @@ public class ApplicationManager implements ApplicationService {
     }
 
     public void shutdown() {
-        pool.shutdown();
+        if (null != pool) {
+            pool.shutdown();
+        }
     }
 
     public boolean isTerminated() {

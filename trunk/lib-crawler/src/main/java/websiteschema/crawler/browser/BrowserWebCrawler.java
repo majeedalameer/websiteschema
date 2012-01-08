@@ -13,6 +13,7 @@ import com.webrenderer.swing.dom.IElement;
 import com.webrenderer.swing.dom.IElementCollection;
 import java.awt.BorderLayout;
 import java.net.URI;
+import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
@@ -206,8 +207,8 @@ public class BrowserWebCrawler implements Crawler {
         for (int i = 0; i < links.length(); i++) {
             IElement ele = links.item(i);
             String href = ele.getAttribute("href", 0);
-            URI uri = UrlLinkUtil.getInstance().getURL(getUrl(), href);
-            ret[i] = uri.getScheme() + ":" + uri.getSchemeSpecificPart();
+            URL uri = UrlLinkUtil.getInstance().getURL(getUrl(), href);
+            ret[i] = uri.toString();
         }
 
         return ret;

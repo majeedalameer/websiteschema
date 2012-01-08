@@ -7,7 +7,6 @@ package websiteschema.fb.core;
 import websiteschema.fb.core.ecc.ECC;
 import websiteschema.fb.core.ecc.ExecutionControl;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -27,17 +26,17 @@ public class FunctionBlock {
     public final static int STOPED = 2;
     public final Logger l = Logger.getLogger(FunctionBlock.class);
     int status;
-    String name;
-    public RuntimeContext context;
+    String fbName;
+    private RuntimeContext context;
     boolean withECC = false;
     ECC ecc;
 
     public String getName() {
-        return name;
+        return fbName;
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.fbName = name;
     }
 
     public RuntimeContext getContext() {
