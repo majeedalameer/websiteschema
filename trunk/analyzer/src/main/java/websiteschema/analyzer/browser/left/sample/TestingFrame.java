@@ -14,7 +14,7 @@ import javax.swing.JOptionPane;
 import org.w3c.dom.Document;
 import websiteschema.analyzer.browser.utils.ClustererUtil;
 import websiteschema.analyzer.context.BrowserContext;
-import websiteschema.cluster.fb.FBDOMExtractor;
+import websiteschema.crawler.fb.FBDOMExtractor;
 import websiteschema.crawler.htmlunit.HtmlUnitWebCrawler;
 import websiteschema.element.DocumentUtil;
 import websiteschema.model.domain.Websiteschema;
