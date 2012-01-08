@@ -12,6 +12,7 @@ package websiteschema.analyzer.browser.left;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -129,7 +130,7 @@ public class NewsParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
             JTextField valueField, JTextField xpathField, JTextField prefixField, JTextField suffixField) {
         if (null != params && null != extractor) {
             for (Map<String, String> map : params) {
-                Set<String> set = extractAndDisplayStandardExtractor(extractor, map, valueField, xpathField, prefixField, suffixField);
+                Collection<String> set = extractAndDisplayStandardExtractor(extractor, map, valueField, xpathField, prefixField, suffixField);
                 if (null != set && !set.isEmpty()) {
                     break;
                 }
@@ -142,10 +143,10 @@ public class NewsParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
      * @param map
      * @return
      */
-    private Set<String> extractAndDisplayStandardExtractor(StandardExtractor extractor, Map<String, String> map,
+    private Collection<String> extractAndDisplayStandardExtractor(StandardExtractor extractor, Map<String, String> map,
             JTextField valueField, JTextField xpathField, JTextField prefixField, JTextField suffixField) {
         extractor.init(map);
-        Set<String> set = extractor.extract(getDocument());
+        Collection<String> set = extractor.extract(getDocument());
         if (null != set && !set.isEmpty()) {
             valueField.setText(CollectionUtil.toString(set));
             xpathField.setText(map.get(StandardExtractor.xpathKey));
@@ -159,7 +160,7 @@ public class NewsParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
             JTextField valueField, JTextField xpathField) {
         if (null != params && null != extractor) {
             for (Map<String, String> map : params) {
-                Set<String> set = extractAndDisplayXPathExtractor(extractor, map, valueField, xpathField);
+                Collection<String> set = extractAndDisplayXPathExtractor(extractor, map, valueField, xpathField);
                 if (null != set && !set.isEmpty()) {
                     break;
                 }
@@ -172,10 +173,10 @@ public class NewsParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
      * @param map
      * @return
      */
-    private Set<String> extractAndDisplayXPathExtractor(XPathExtractor extractor, Map<String, String> map,
+    private Collection<String> extractAndDisplayXPathExtractor(XPathExtractor extractor, Map<String, String> map,
             JTextField valueField, JTextField xpathField) {
         extractor.init(map);
-        Set<String> set = extractor.extract(getDocument());
+        Collection<String> set = extractor.extract(getDocument());
         if (null != set && !set.isEmpty()) {
             valueField.setText(CollectionUtil.toString(set));
             xpathField.setText(map.get(XPathExtractor.xpathKey));
@@ -190,7 +191,7 @@ public class NewsParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
     private void setTitle(List<Map<String, String>> params) {
         if (null != params) {
             for (Map<String, String> map : params) {
-                Set<String> set = extractAndDisplayTitle(map);
+                Collection<String> set = extractAndDisplayTitle(map);
                 if (null != set && !set.isEmpty()) {
                     break;
                 }
@@ -205,7 +206,7 @@ public class NewsParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
     private void setContent(List<Map<String, String>> params) {
         if (null != params) {
             for (Map<String, String> map : params) {
-                Set<String> set = extractAndDisplayContent(map);
+                Collection<String> set = extractAndDisplayContent(map);
                 if (null != set && !set.isEmpty()) {
                     break;
                 }
@@ -213,9 +214,9 @@ public class NewsParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
         }
     }
 
-    private Set<String> extractAndDisplayContent(Map<String, String> map) {
+    private Collection<String> extractAndDisplayContent(Map<String, String> map) {
         contentExtractor.init(map);
-        Set<String> set = contentExtractor.extract(getDocument());
+        Collection<String> set = contentExtractor.extract(getDocument());
         if (null != set && !set.isEmpty()) {
             this.contentTextArea.setText(set.iterator().next());
             this.contentTextArea.setCaretPosition(0);
@@ -247,9 +248,9 @@ public class NewsParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
      * @param map
      * @return
      */
-    private Set<String> extractAndDisplayTitle(Map<String, String> map) {
+    private Collection<String> extractAndDisplayTitle(Map<String, String> map) {
         titleAnalyzer.init(map);
-        Set<String> set = titleAnalyzer.extract(getDocument());
+        Collection<String> set = titleAnalyzer.extract(getDocument());
         if (null != set && !set.isEmpty()) {
             this.titleResultField.setText(set.iterator().next());
             this.titleXPathField.setText(map.get(TitleAnalyzer.xpathKey));
@@ -278,7 +279,7 @@ public class NewsParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
     private void setDate(List<Map<String, String>> params) {
         if (null != params) {
             for (Map<String, String> map : params) {
-                Set<String> set = extractAndDisplayDate(map);
+                Collection<String> set = extractAndDisplayDate(map);
                 if (null != set && !set.isEmpty()) {
                     break;
                 }
@@ -291,9 +292,9 @@ public class NewsParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
      * @param map
      * @return
      */
-    private Set<String> extractAndDisplayDate(Map<String, String> map) {
+    private Collection<String> extractAndDisplayDate(Map<String, String> map) {
         dateAnalyzer.init(map);
-        Set<String> set = dateAnalyzer.extract(getDocument());
+        Collection<String> set = dateAnalyzer.extract(getDocument());
         if (null != set && !set.isEmpty()) {
             String xpath = map.get(DateAnalyzer.xpathKey);
             String type = map.get(DateAnalyzer.typeKey);

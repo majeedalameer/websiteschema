@@ -113,7 +113,7 @@ public final class AnalysisResult {
         return null;
     }
 
-    private List<Map<String, String>> getListByField(String fieldName) {
+    public List<Map<String, String>> getListByField(String fieldName) {
         String json = result.get(fieldName);
         try {
             List<Map<String, String>> ret = PojoMapper.fromJson(json, List.class);
@@ -124,7 +124,7 @@ public final class AnalysisResult {
         return null;
     }
 
-    private List<Map<String, String>> getListByField(String clusterName, String fieldName) {
+    public List<Map<String, String>> getListByField(String clusterName, String fieldName) {
         String json = result.get(fieldName);
         if (null != json && !"".equals(json)) {
             try {
@@ -144,18 +144,20 @@ public final class AnalysisResult {
      * @return
      */
     private List<Map<String, String>> sort(String clusterName, List<Map<String, String>> list) {
-        List<Map<String, String>> ret = new ArrayList<Map<String, String>>();
-        for (Map<String, String> map : list) {
-            List<String> properClusters = getProperCluster(map);
-            if (properClusters.contains(clusterName)) {
-                ret.add(0, map);
-            } else if (properClusters.contains(DefaultClusterName)) {
-                ret.add(0, map);
-            } else {
-                ret.add(map);
+        if (null != clusterName) {
+            List<Map<String, String>> ret = new ArrayList<Map<String, String>>();
+            for (Map<String, String> map : list) {
+                List<String> properClusters = getProperCluster(map);
+                if (properClusters.contains(clusterName)) {
+                    ret.add(0, map);
+                } else {
+                    ret.add(map);
+                }
             }
+            return ret;
+        } else {
+            return list;
         }
-        return ret;
     }
 
     public void setFieldAnalysisResult(String fieldName, String clsName, Map<String, String> res) {
@@ -272,7 +274,7 @@ public final class AnalysisResult {
      * @param map
      * @return
      */
-    private List<String> getProperCluster(Map<String, String> map) {
+    public List<String> getProperCluster(Map<String, String> map) {
         String properClusters = map.get("Cluster");
         if (null != properClusters) {
             try {

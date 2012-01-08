@@ -4,6 +4,7 @@
  */
 package websiteschema.cluster.analyzer.fields;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -38,7 +39,7 @@ public class ContentExtractor extends AbstractFieldExtractor {
     public final static String includeValidKey = "IncludeValidNodeOnly";
     public final static String keepHTMLTagKey = "KeepHTMLTag";
 
-    public Set<String> extract(Document doc) {
+    public Collection<String> extract(Document doc) {
         reached = false;
         String content = extractContentText(doc);
         if (null != content) {

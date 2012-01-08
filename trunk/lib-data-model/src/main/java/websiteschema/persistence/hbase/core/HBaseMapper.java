@@ -24,7 +24,7 @@ public class HBaseMapper<T extends HBaseBean> extends Mapper {
     public HBaseMapper(Class<T> clazz) {
         super(clazz.getName().replaceAll(".*\\.", "").toLowerCase());
         this.clazz = clazz;
-        HBaseMapperFactory.getInstance().createTableIfNotExists(getTableName(), clazz);
+//        HBaseMapperFactory.getInstance().createTableIfNotExists(getTableName(), clazz);
     }
 
     public T get(String rowKey) {

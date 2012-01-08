@@ -19,7 +19,6 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.XHtmlPage;
 import com.gargoylesoftware.htmlunit.xml.XmlPage;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -39,6 +38,7 @@ public class HtmlUnitWebCrawler implements Crawler {
     boolean loadImage = false;
     boolean loadEmbeddedFrame = false;
     boolean allowPopupWindow = false;
+    boolean javaScriptEnabled = false;
     String url = null;
     String encoding = null;
     CrawlerSettings crawlerSettings;
@@ -49,7 +49,7 @@ public class HtmlUnitWebCrawler implements Crawler {
 
     private WebClient getWebClient() {
         final WebClient webClient = new WebClient();
-        webClient.setJavaScriptEnabled(false);
+        webClient.setJavaScriptEnabled(isJavaScriptEnabled());
         webClient.setTimeout(delay);
         webClient.setPopupBlockerEnabled(allowPopupWindow);
         webClient.setRedirectEnabled(true);
@@ -100,7 +100,6 @@ public class HtmlUnitWebCrawler implements Crawler {
             httpStatus = res.getStatusCode();
             
             WebWindow window = webClient.getCurrentWindow();
-//            final HtmlPage page = new HtmlPage(dest, res, window);
             final Page page = webClient.loadWebResponseInto(res, window);
 
             this.url = page.getUrl().toString();
@@ -180,5 +179,13 @@ public class HtmlUnitWebCrawler implements Crawler {
     @Override
     public void setTimeout(int timeout) {
         this.delay = timeout;
+    }
+
+    public boolean isJavaScriptEnabled() {
+        return javaScriptEnabled;
+    }
+
+    public void setJavaScriptEnabled(boolean javaScriptEnabled) {
+        this.javaScriptEnabled = javaScriptEnabled;
     }
 }
