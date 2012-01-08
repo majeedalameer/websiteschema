@@ -485,6 +485,9 @@
                   <Properties>
                     <Property name="text" type="java.lang.String" value="&#x6dfb;&#x52a0;&#x5230;&#x526a;&#x5207;&#x7248;"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton1ActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JLabel" name="jLabel2">
                   <Properties>
@@ -524,6 +527,9 @@
                   <Properties>
                     <Property name="text" type="java.lang.String" value="&#x6dfb;&#x52a0;&#x5230;&#x526a;&#x5207;&#x677f;"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton2ActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JTextField" name="xpathField">
                 </Component>

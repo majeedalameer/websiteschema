@@ -7,7 +7,10 @@ package websiteschema.analyzer.browser.listener;
 import com.webrenderer.swing.dom.IElement;
 import com.webrenderer.swing.event.MouseEvent;
 import com.webrenderer.swing.event.MouseListener;
-import java.net.URI;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import org.apache.log4j.Logger;
 import websiteschema.analyzer.browser.SimpleBrowser;
 import websiteschema.analyzer.context.BrowserContext;
@@ -19,14 +22,13 @@ import websiteschema.element.XPathAttributes;
 import websiteschema.element.factory.StyleSheetFactory;
 import websiteschema.element.factory.XPathAttrFactory;
 import websiteschema.utils.ElementUtil;
-import websiteschema.utils.UrlLinkUtil;
 import websiteschema.vips.extraction.VipsBlockExtractor;
 
 /**
  *
  * @author ray
  */
-public class SimpleMouseListener implements MouseListener {
+public class SimpleMouseListener implements MouseListener, ActionListener {
 
     XPathAttributes attr = new XPathAttributes();
     Logger l = Logger.getRootLogger();
@@ -50,12 +52,6 @@ public class SimpleMouseListener implements MouseListener {
         if (null != context.getBrowser().getDocument()) {
             IElement ele = me.getTargetElement();
             if (null != ele) {
-//                String tagName = ele.getTagName();
-//                if (tagName.equalsIgnoreCase("A")) {
-//                    String href = me.getTargetElement().getAttribute("href", 0);
-//                    System.out.println("URL:" + context.getBrowser().getURL());
-//                        URI uri = UrlLinkUtil.getInstance().getURL(context.getBrowser().getURL(), href);
-//                }
                 drawRectangleInPage(ele);
                 Rectangle rect = new RectangleFactory().create(ele);
                 String xpath = XPathAttrFactory.getInstance().create(ele);
@@ -112,11 +108,36 @@ public class SimpleMouseListener implements MouseListener {
 
     @Override
     public void onMouseDown(MouseEvent me) {
-//        l.debug("mouse onMouseDown");
+//        l.debug("mouse onMouseDown " + me.isMetaDown());
+//        if (me.isMetaDown()) {
+//            JPopupMenu popup = createPopupMenu();
+//            popup.show(me.getComponent(), me.getX(), me.getY());
+//        }
     }
 
     @Override
     public void onMouseUp(MouseEvent me) {
 //        l.debug("mouse onMouseUp");
+    }
+
+    public JPopupMenu createPopupMenu() {
+        JMenuItem menuItem;
+
+        //Create the popup menu.
+        JPopupMenu popup = new JPopupMenu();
+        menuItem = new JMenuItem("Popup item 1");
+        menuItem.addActionListener(this);
+        popup.add(menuItem);
+        menuItem = new JMenuItem("Popup item 2");
+        menuItem.addActionListener(this);
+        popup.add(menuItem);
+
+        return popup;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        JMenuItem source = (JMenuItem) (e.getSource());
+        System.out.println("Selected: " + source.getText());
     }
 }
