@@ -10,7 +10,6 @@
  */
 package websiteschema.analyzer.browser;
 
-import java.util.Iterator;
 import websiteschema.analyzer.browser.left.AnalysisPanel;
 import javax.swing.event.TreeSelectionEvent;
 import websiteschema.utils.Console;
@@ -19,17 +18,15 @@ import com.webrenderer.swing.BrowserFactory;
 import com.webrenderer.swing.IBrowserCanvas;
 import com.webrenderer.swing.IMozillaBrowserCanvas;
 import com.webrenderer.swing.RenderingOptimization;
-import com.webrenderer.swing.dom.IDocument;
 import com.webrenderer.swing.dom.IElement;
 import java.awt.BorderLayout;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.event.TreeSelectionListener;
-import javax.xml.XMLConstants;
-import javax.xml.namespace.NamespaceContext;
 import org.w3c.dom.*;
-import javax.xml.parsers.*;
-import javax.xml.xpath.*;
 import websiteschema.analyzer.browser.bottom.PageInfoPanel;
 import websiteschema.analyzer.browser.bottom.PageSourcePanel;
 import static websiteschema.element.DocumentUtil.*;
@@ -499,6 +496,11 @@ public class SimpleBrowser extends javax.swing.JFrame {
         jLabel1.setText("默认XPath:");
 
         jButton1.setText("添加到剪切版");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jLabel2.setText("XPath属性:");
 
@@ -515,6 +517,11 @@ public class SimpleBrowser extends javax.swing.JFrame {
         jLabel4.setText("自定义XPath:");
 
         jButton2.setText("添加到剪切板");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         XQueryButton.setText("查询");
         XQueryButton.addActionListener(new java.awt.event.ActionListener() {
@@ -815,6 +822,20 @@ public class SimpleBrowser extends javax.swing.JFrame {
         // TODO add your handling code here:
         System.gc();
     }//GEN-LAST:event_gcMenuActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        StringSelection textInfoSelected = new StringSelection(defaultXPathField.getText());
+        clipboard.setContents(textInfoSelected, null);
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        StringSelection textInfoSelected = new StringSelection(xpathField.getText());
+        clipboard.setContents(textInfoSelected, null);
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     public void openUrl(String url) {
         if (url.startsWith("ftp://")) {
