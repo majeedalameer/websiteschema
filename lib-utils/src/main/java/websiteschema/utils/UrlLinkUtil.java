@@ -5,8 +5,10 @@
 package websiteschema.utils;
 
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Date;
 import java.util.Map;
@@ -23,7 +25,7 @@ public class UrlLinkUtil {
         return ins;
     }
 
-    public URI getURL(String pageUrl, String href) {
+    public URI getURI(String pageUrl, String href) {
         try {
             if (null != href && null != pageUrl) {
                 if (href.startsWith("http://") || href.startsWith("ftp://")) {
@@ -41,16 +43,44 @@ public class UrlLinkUtil {
         return null;
     }
 
+    public URL getURL(String pageUrl, String href) {
+        try {
+            if (null != href && null != pageUrl) {
+                if (href.startsWith("http://") || href.startsWith("ftp://")) {
+                    return new URL(href.trim());
+                } else if (href.indexOf("://") > 0) {
+                    // UnsupportProtocol.
+                    return new URL(href.trim());
+                }
+                URI uri = new URI(pageUrl);
+                return uri.resolve(href.trim()).toURL();
+            }
+        } catch (URISyntaxException ex) {
+            ex.printStackTrace();
+        } catch (MalformedURLException ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
     private boolean shouldEscape(Character ch) {
-        if(ch.equals(' ')) {
+        if (ch.equals(' ')) {
             return true;
-        } else if(ch > 127) {
+        } else if (ch > 127) {
             return true;
         }
         return false;
     }
 
-    public URI getURL(String pageUrl, String href, String charset, Map<String, String> charsetMap, String def) {
+    public URI getURI(String pageUrl, String href, String charset, Map<String, String> charsetMap, String def) {
+        return getURI(pageUrl, escapeIfNecessary(href, charset, charsetMap, def));
+    }
+
+    public URL getURL(String pageUrl, String href, String charset, Map<String, String> charsetMap, String def) {
+        return getURL(pageUrl, escapeIfNecessary(href, charset, charsetMap, def));
+    }
+
+    private String escapeIfNecessary(String href, String charset, Map<String, String> charsetMap, String def) {
         StringBuilder sb = new StringBuilder();
         for (Character ch : href.toCharArray()) {
             if (shouldEscape(ch)) {
@@ -67,8 +97,7 @@ public class UrlLinkUtil {
                 sb.append(ch);
             }
         }
-
-        return getURL(pageUrl, sb.toString());
+        return sb.toString();
     }
 
     private String parseCharset(String charset, Map<String, String> charsetMap, String def) {
@@ -82,6 +111,28 @@ public class UrlLinkUtil {
         }
 
         return charset;
+    }
+
+    public String convertUrlToRowKey(URL url, String siteId) {
+        String ret = null;
+
+        if (null != url) {
+            String schema = url.getProtocol();
+            String host = url.getHost();
+            String query = url.getQuery();
+            String path = url.getPath();
+            String date = DateUtil.format(new Date(), "yyyy-MM-dd HH:mm");
+
+            host = (new StringBuilder(host)).reverse().toString();
+
+            if (null != query) {
+                ret = siteId + "+" + date + "+" + schema + "://" + host + "/" + path + "?" + query;
+            } else {
+                ret = siteId + "+" + date + "+" + schema + "://" + host + "/" + path;
+            }
+        }
+
+        return ret;
     }
 
     public String convertUriToRowKey(URI uri, String siteId) {

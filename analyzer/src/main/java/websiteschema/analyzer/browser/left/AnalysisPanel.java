@@ -484,7 +484,7 @@ public class AnalysisPanel extends javax.swing.JPanel implements IConfigureHandl
                 String href = ele.getAttribute("href", 0);
                 String def = BrowserContext.getConfigure().getProperty("URLCharset", "DefaultCharset");
                 Map<String, String> charsetMap = BrowserContext.getConfigure().getMapProperty("URLCharset", "CharsetMap");
-                URI uri = UrlLinkUtil.getInstance().getURL(pageUrl, href, charset, charsetMap, def);
+                URI uri = UrlLinkUtil.getInstance().getURI(pageUrl, href, charset, charsetMap, def);
                 urls.add(uri);
             }
             //对收集到的链接进行聚类，然后抽样加入到样本中

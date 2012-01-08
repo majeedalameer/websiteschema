@@ -33,29 +33,30 @@ public class Application implements Runnable {
         start.triggerEvent(initEvent);
 
         while (running) {
-
-            Event evt = context.getEventQueue().poll();
-            if (null != evt) {
-                FunctionBlock fb = evt.fb;
-                String ei = evt.ei;
-                if (null == fb && ei.equals(Event.CEASE_COMMAND)) {
-                    stop();
-                } else {
-                    if (!fb.withECC) {
-                        Class clazz = fb.getClass();
-                        FBInfo fbInfo = context.getFunctionBlockInfo(clazz);
-                        String algorithm = fbInfo.getEIRelatedAlgorithm(ei);
-                        fb.execute(algorithm, ei);
+            try {
+                Event evt = context.getEventQueue().poll();
+                if (null != evt) {
+                    FunctionBlock fb = evt.fb;
+                    String ei = evt.ei;
+                    if (null == fb && ei.equals(Event.CEASE_COMMAND)) {
+                        stop();
                     } else {
-                        fb.executeEvent(ei);
+                        if (!fb.withECC) {
+                            Class clazz = fb.getClass();
+                            FBInfo fbInfo = context.getFunctionBlockInfo(clazz);
+                            String algorithm = fbInfo.getEIRelatedAlgorithm(ei);
+                            fb.execute(algorithm, ei);
+                        } else {
+                            fb.executeEvent(ei);
+                        }
                     }
-                }
-            } else {
-                try {
+                } else {
+                    l.trace("no more event to handle, waiting...");
                     Thread.sleep(100);
-                } catch (InterruptedException ex) {
-                    l.error(ex);
                 }
+            } catch (Exception ex) {
+                running = false;
+                l.error("FATAL ERROR: exit.", ex);
             }
         }
     }
