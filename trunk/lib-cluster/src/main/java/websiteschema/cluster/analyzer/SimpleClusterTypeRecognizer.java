@@ -23,12 +23,13 @@ public class SimpleClusterTypeRecognizer implements IClusterTypeRecognizer {
     AnalyzerUtil analyzer = new AnalyzerUtil();
 
     public void recognizeClusterType(Cluster[] clusters, List<DocVector> space, List<Sample> samples, FeatureStatInfo statInfo) {
+        List<String> allSamples = null;
         for (Cluster cluster : clusters) {// 遍历所有文档簇
             if (cluster.getSamples().size() > 0) {
-                List<String> allSamples = cluster.getSamples();
+                allSamples = cluster.getSamples();
                 List<String> rowKeys = new ArrayList<String>();
                 int count = allSamples.size() > 10 ? 10 : allSamples.size();
-                for (int i = 0; i < count; i++) {// 从每一个簇中取一个样本集进行分析，集中样本个数最多为10个
+                for (int i = 0; i < count; i++) {// 从每一个簇中取一个样本集进行分析，样本集中样本个数最多为10个
                     rowKeys.add(allSamples.get(i));
                 }
                 List<DocVector> vectors = analyzer.getVectors(rowKeys, space);// 获取样本中能够表示XPath的数字
@@ -84,12 +85,17 @@ public class SimpleClusterTypeRecognizer implements IClusterTypeRecognizer {
                     type = "DOCUMENT";
                 }
                 cluster.setType(type);
-                System.out.println(ratio + "," + countRatio + "," + maxWeight + "," + weightGt + "," + type);
+                SimpleLogger.record_line(ratio + "," + countRatio + "," + maxWeight + "," + weightGt + "," + type);
+//                System.out.println(ratio + "," + countRatio + "," + maxWeight + "," + weightGt + "," + type);
             } else {
                 String type = "INVALID";
                 cluster.setType(type);
             }
         }
+        if (null != allSamples && allSamples.size() > 0) {
+            SimpleLogger.record_line(allSamples.get(0));
+        }
+        SimpleLogger.end_block();
     }
 
     // 判断一个XPath对应的是不是链接（<a></a>）标签

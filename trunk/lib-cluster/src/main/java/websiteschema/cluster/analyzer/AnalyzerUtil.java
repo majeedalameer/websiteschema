@@ -123,23 +123,25 @@ public class AnalyzerUtil {
                 listText.add(text);
             }
         }
-        String prefix = listText.get(0);
-        String suffix = listText.get(0);
-        for (int i = 1; i < listText.size(); i++) {
-            String title = listText.get(i);
-            prefix = findPrefix(title, prefix);
-            suffix = findSuffix(title, suffix);
-        }
-        if (null != prefix && !"".equals(prefix)) {
-            //必须要有标点符号结尾
-            if (prefix.trim().matches(".*[\\p{Punct}]")) {
-                titlePrefix.add(prefix);
+        if (listText.size() > 1) {
+            String prefix = listText.get(0);
+            String suffix = listText.get(0);
+            for (int i = 1; i < listText.size(); i++) {
+                String title = listText.get(i);
+                prefix = findPrefix(title, prefix);
+                suffix = findSuffix(title, suffix);
             }
-        }
-        if (null != suffix && !"".equals(suffix)) {
-            //必须要有标点符号开头
-            if (suffix.trim().matches("[\\p{Punct}].*")) {
-                titleSuffix.add(suffix);
+            if (null != prefix && !"".equals(prefix)) {
+                //必须要有标点符号结尾
+                if (prefix.trim().matches(".*[\\p{Punct}]")) {
+                    titlePrefix.add(prefix);
+                }
+            }
+            if (null != suffix && !"".equals(suffix)) {
+                //必须要有标点符号开头
+                if (suffix.trim().matches("[\\p{Punct}].*")) {
+                    titleSuffix.add(suffix);
+                }
             }
         }
     }
