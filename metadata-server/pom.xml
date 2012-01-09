@@ -12,7 +12,7 @@
     <packaging>war</packaging>
     <version>1.0-SNAPSHOT</version>
     <name>metadata-server</name>
-    
+
     <dependencies>
         <dependency>
             <groupId>websiteschema</groupId>
@@ -149,8 +149,5 @@
             </plugin>
         </plugins>
     </build>
-    <properties>
-        <netbeans.hint.deploy.server>Tomcat60</netbeans.hint.deploy.server>
-    </properties>
 </project>
 

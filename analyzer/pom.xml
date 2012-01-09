@@ -13,18 +13,6 @@
     <packaging>jar</packaging>
     <name>websiteschema analyzer</name>
 
-    <properties>
-        <webrenderer.classifier>linux64</webrenderer.classifier>
-    </properties>
-    <profiles>
-        <profile>
-            <id>windows64</id>
-            <properties>
-                <webrenderer.classifier>windows64</webrenderer.classifier>
-            </properties>
-        </profile>
-    </profiles>
-
     <dependencies>
         <dependency>
             <groupId>websiteschema</groupId>
