@@ -5,6 +5,7 @@
 package websiteschema.weka;
 
 import java.io.File;
+import java.io.InputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -46,7 +47,8 @@ public class WekaUtil {
                 if (new File(model).exists()) {
                     ob = new ObjectInputStream(new FileInputStream(model));
                 } else {
-                    ob = new ObjectInputStream(WekaUtil.class.getClassLoader().getResourceAsStream(model));
+                    InputStream is = WekaUtil.class.getClassLoader().getResourceAsStream(model);
+                    ob = new ObjectInputStream(is);
                 }
                 Classifier c = (Classifier) ob.readObject();
                 Instances trainHeader = (Instances) ob.readObject();

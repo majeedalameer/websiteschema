@@ -14,23 +14,32 @@ import weka.core.Instances;
  */
 public class WekaClassifier {
 
-    public boolean category() {
-        String model = null;
-        Classifier c = WekaUtil.getWekaUtil().getClassifier(model);
-        Instances dataSet = WekaUtil.getWekaUtil().getDataSet(model);
+    String model_str = null;
+
+    public int classify(double[] vector) {
+        Classifier c = WekaUtil.getWekaUtil().getClassifier(model_str);
+        Instances dataSet = WekaUtil.getWekaUtil().getDataSet(model_str);
         FeatureWrapFactory fwf = new FeatureWrapFactory();
         fwf.setDataSet(dataSet);
 
         try {
-            Instance feature = fwf.wrap(new double[1]);
-            if (null != feature) {
-                double res = c.classifyInstance(feature);
-                int belong = (int) res;
+            Instance v = fwf.wrap(vector);
+            if (null != v) {
+                double res = c.classifyInstance(v);
+                return (int) res;
             }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
-        return true;
+        return -1;
+    }
+
+    public String getModel() {
+        return model_str;
+    }
+
+    public void setModel(String model) {
+        this.model_str = model;
     }
 }

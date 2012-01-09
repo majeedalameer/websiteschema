@@ -4,10 +4,7 @@
  */
 package websiteschema.weka;
 
-import java.io.*;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
+
 import weka.core.DenseInstance;
 import weka.core.Instance;
 import weka.core.Instances;
