@@ -67,5 +67,9 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
+         <dependency>
+            <groupId>weka</groupId>
+            <artifactId>weka</artifactId>
+        </dependency>
     </dependencies>
 </project>
