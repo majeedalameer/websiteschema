@@ -62,9 +62,10 @@ public class SimpleLogger {
         pw.flush();
     }
 
-    /* 测试代码 */
-    public static void main(String[] args) {
-        SimpleLogger.record_line("测试记录");
-        SimpleLogger.end_block();
-    }
+
+//    /* 测试代码 */
+//    public static void main(String[] args) {
+//        SimpleLogger.record_line("测试记录");
+//        SimpleLogger.end_block();
+//    }
 }
