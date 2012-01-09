@@ -248,6 +248,18 @@
                 <classifier>windows64</classifier>
             </dependency>
             <dependency>
+                <groupId>com.webrenderer</groupId>
+                <artifactId>corecomponents-swing</artifactId>
+                <version>${webrenderer.version}</version>
+                <classifier>windows32</classifier>
+            </dependency>
+            <dependency>
+                <groupId>com.webrenderer</groupId>
+                <artifactId>libwebrenderer</artifactId>
+                <version>${webrenderer.version}</version>
+                <classifier>windows32</classifier>
+            </dependency>
+            <dependency>
                 <groupId>org.netlib</groupId>
                 <artifactId>mtj</artifactId>
                 <version>1.0</version>
