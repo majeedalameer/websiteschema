@@ -23,6 +23,12 @@ public class SimpleClusterTypeRecognizer implements IClusterTypeRecognizer {
     BasicAnalysisResult result = null;
     AnalyzerUtil analyzer = new AnalyzerUtil();
 
+    WekaClassifier wc = new WekaClassifier();
+
+    public SimpleClusterTypeRecognizer() {
+        wc.setModel("websiteschema/model/cluster_type.model");
+    }
+
     public void recognizeClusterType(Cluster[] clusters, List<DocVector> space, List<Sample> samples, FeatureStatInfo statInfo) {
         List<String> allSamples = null;
         for (Cluster cluster : clusters) {// 遍历所有文档簇
@@ -78,8 +84,7 @@ public class SimpleClusterTypeRecognizer implements IClusterTypeRecognizer {
                 }
                 double ratio = textWeight / (textWeight + anchorWeight);// 非链接节点权重的比率
                 double countRatio = (double) textCount / (double) (textCount + anchorCount);// 非内容节点数量的比率
-                WekaClassifier wc = new WekaClassifier();
-                wc.setModel("websiteschema/model/cluster_type.model");
+
                 double[] vec = {ratio, countRatio, maxWeight, weightGt};
                 String type = null;
                 switch (wc.classify(vec)) {
@@ -101,9 +106,6 @@ public class SimpleClusterTypeRecognizer implements IClusterTypeRecognizer {
                 String type = "INVALID";
                 cluster.setType(type);
             }
-        }
-        if (null != allSamples && allSamples.size() > 0) {
-            SimpleLogger.record_line(allSamples.get(0));
         }
     }
 
