@@ -5,6 +5,7 @@
 package websiteschema.cluster.analyzer;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.Calendar;
@@ -19,7 +20,7 @@ public class SimpleLogger {
 
     private static PrintWriter pw = null;
     private static Calendar calendar = new GregorianCalendar();
-    private static String URL_BASE_STR = "D:/logs/";
+    private static String DIR_BASE_STR = "D:/logs/";
 
     static {// 初始化块
         init();
@@ -38,8 +39,12 @@ public class SimpleLogger {
 
     private static void init() {
         try {
+            File dir_base = new File(DIR_BASE_STR);
+            if (!dir_base.exists()) {
+                dir_base.mkdir();
+            }
             pw = new PrintWriter(new BufferedWriter(
-                    new FileWriter(URL_BASE_STR + get_time_str() + "_cluster.txt")));
+                    new FileWriter(DIR_BASE_STR + get_time_str() + "_cluster.txt")));
         } catch (Exception e) {
             System.err.println("日志文件流异常!");
         }
@@ -55,5 +60,11 @@ public class SimpleLogger {
     public static void end_block() {
         pw.println("-------------------------------------------\r\n\r\n");
         pw.flush();
+    }
+
+    /* 测试代码 */
+    public static void main(String[] args) {
+        SimpleLogger.record_line("测试记录");
+        SimpleLogger.end_block();
     }
 }
