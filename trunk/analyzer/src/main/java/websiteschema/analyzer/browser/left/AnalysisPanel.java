@@ -485,7 +485,9 @@ public class AnalysisPanel extends javax.swing.JPanel implements IConfigureHandl
                 String def = BrowserContext.getConfigure().getProperty("URLCharset", "DefaultCharset");
                 Map<String, String> charsetMap = BrowserContext.getConfigure().getMapProperty("URLCharset", "CharsetMap");
                 URI uri = UrlLinkUtil.getInstance().getURI(pageUrl, href, charset, charsetMap, def);
-                urls.add(uri);
+                if (null != uri) {
+                    urls.add(uri);
+                }
             }
             //对收集到的链接进行聚类，然后抽样加入到样本中
             URLClusterer uc = new URLClusterer();
