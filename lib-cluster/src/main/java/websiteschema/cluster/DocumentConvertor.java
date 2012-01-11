@@ -37,7 +37,9 @@ public class DocumentConvertor {
     public DocUnits convertDocument(Document document) {
         List<Unit> units = new ArrayList<Unit>();
 
-        traversal(document.getDocumentElement(), units);
+//        traversal(document.getDocumentElement(), units);
+
+        traversal(document.getDocumentElement(), units, null);
 
         DocUnits ret = new DocUnits();
         ret.setUnits(units.toArray(new Unit[0]));
@@ -50,6 +52,33 @@ public class DocumentConvertor {
             ret = true;
         }
         return ret;
+    }
+
+    private void traversal(Element ele, List<Unit> units, String parentXPath) {
+        String tagName = ele.getTagName();
+        if (!ignore(tagName)) {
+            String xpath = XPathAttrFactory.getInstance().create(ele, xpathAttr, parentXPath);
+            StringBuilder text = new StringBuilder();
+            NodeList children = ele.getChildNodes();
+            if (null != children) {
+                for (int i = 0; i < children.getLength(); i++) {
+                    Node child = children.item(i);
+                    if (Node.TEXT_NODE == child.getNodeType()) {
+                        text.append(child.getNodeValue());
+                    } else if (Node.ELEMENT_NODE == child.getNodeType()) {
+                        traversal((Element) child, units, xpath);
+                    }
+                }
+            }
+
+            Unit unit = new Unit(xpath, text.toString());
+            //获取节点的其他属性
+            if ("A".equalsIgnoreCase(tagName)) {
+                Map<String, String> attrs = getNodeAttributes(ele);
+                unit.setAttributes(attrs);
+            }
+            units.add(unit);
+        }
     }
 
     private void traversal(Element ele, List<Unit> units) {

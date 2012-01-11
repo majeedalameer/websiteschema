@@ -469,8 +469,20 @@ public class AnalysisPanel extends javax.swing.JPanel implements IConfigureHandl
         cf.setVisible(true);
     }//GEN-LAST:event_viewCategoryButtonActionPerformed
 
-    private void addLinksButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addLinksButtonActionPerformed
-        // TODO add your handling code here:
+    class FooThread implements Runnable {
+
+        @Override
+        public void run() {
+            addLinksButton.setEnabled(false);
+            try {
+                sampleUrls();
+            } finally {
+                addLinksButton.setEnabled(true);
+            }
+        }
+    };
+
+    private void sampleUrls() {
         IMozillaBrowserCanvas browser = context.getBrowser();
         IElementCollection links = browser.getDocument().getLinks();
         String pageUrl = context.getReference();
@@ -508,6 +520,11 @@ public class AnalysisPanel extends javax.swing.JPanel implements IConfigureHandl
         } else {
             JOptionPane.showMessageDialog(this, "无法获取链接或者siteId是空或无效！");
         }
+    }
+
+    private void addLinksButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addLinksButtonActionPerformed
+        // TODO add your handling code here:
+        new Thread(new FooThread()).start();
     }//GEN-LAST:event_addLinksButtonActionPerformed
 
     private void saveSettingsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveSettingsButtonActionPerformed

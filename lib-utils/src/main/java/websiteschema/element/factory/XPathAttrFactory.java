@@ -40,6 +40,14 @@ public class XPathAttrFactory {
         return getXPath(node, attr);
     }
 
+    public String create(Node node, XPathAttributes attr, String parentXPath) {
+        return getXPath(node, attr, parentXPath);
+    }
+
+    public String create(Element ele, XPathAttributes attr, String parentXPath) {
+        return getXPath(ele, attr, parentXPath);
+    }
+
     public String create(IElement ele) {
         return getXPath(ele, attr);
     }
@@ -71,8 +79,17 @@ public class XPathAttrFactory {
         return xpath;
     }
 
-    private boolean isTextNode(Node node) {
-        return Node.TEXT_NODE == node.getNodeType();
+    private String getXPath(Node ele, XPathAttributes attr, String parentXPath) {
+        String xpath = "";
+        if (isTextNode(ele)) {
+            xpath = "text()";
+        } else {
+            xpath = getElementXPath(ele, attr);
+        }
+        if (null != parentXPath && !"".equals(parentXPath)) {
+            xpath = parentXPath + "/" + xpath;
+        }
+        return xpath;
     }
 
     private String getElementXPath(Node ele, XPathAttributes attr) {
@@ -112,7 +129,7 @@ public class XPathAttrFactory {
                             }
                         }
                         //如果只有自己1个，则不需要使用格式：div[1]
-                        if(found && count > 1) {
+                        if (found && count > 1) {
                             attrKeyValues = String.valueOf(pos);
                         }
                     }
@@ -122,7 +139,6 @@ public class XPathAttrFactory {
                 if (attrs != null) {
                     if (attr.isUsingClass()) {
                         //将class属性增加到XPath中
-//                    String className = ele.getAttribute("class");
                         Node n = attrs.getNamedItem("class");
                         String className = null != n ? n.getNodeValue() : null;
                         if (null != className && !"".equals(className)) {
@@ -131,7 +147,6 @@ public class XPathAttrFactory {
                     }
                     if (attr.isUsingId()) {
                         //将id属性增加到XPath中
-//                    String id = ele.getAttribute("id");
                         Node n = attrs.getNamedItem("id");
                         String id = null != n ? n.getNodeValue() : null;
                         if (null != id && !"".equals(id)) {
@@ -145,7 +160,6 @@ public class XPathAttrFactory {
                     String specifyAttr = attr.getSpecifyAttr();
                     if (null != specifyAttr && !"".equals(specifyAttr)) {
                         //将指定的属性增加到XPath中
-//                    String attrValue = ele.getAttribute(specifyAttr);
                         Node n = attrs.getNamedItem(specifyAttr);
                         String attrValue = null != n ? n.getNodeValue() : null;
                         if (null != attrValue && !"".equals(attrValue)) {
@@ -163,5 +177,9 @@ public class XPathAttrFactory {
             }
         }
         return xpath;
+    }
+
+    private boolean isTextNode(Node node) {
+        return Node.TEXT_NODE == node.getNodeType();
     }
 }

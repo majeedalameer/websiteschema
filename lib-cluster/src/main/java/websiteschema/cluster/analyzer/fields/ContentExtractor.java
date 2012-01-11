@@ -59,7 +59,7 @@ public class ContentExtractor extends AbstractFieldExtractor {
             } else {
                 Set<String> validNodes = this.toUppercase(getBasicAnalysisResult().getValidNodes());
                 Set<String> invalidNodes = this.toUppercase(getBasicAnalysisResult().getInvalidNodes());
-                traversal(validNodes, invalidNodes, doc.getDocumentElement(), content);
+                traversal(validNodes, invalidNodes, doc.getDocumentElement(), content, null);
             }
             long t2 = System.currentTimeMillis();
             l.debug("----- elaspe times : " + (t2 - t1) + " millseconds.");
@@ -82,27 +82,30 @@ public class ContentExtractor extends AbstractFieldExtractor {
      * @return 返回true，表示到达结束节点
      */
     private void processText(String text, String xpath, StringBuilder content, final Set<String> validNodes, final Set<String> invalidNodes) {
-        if (xpath.equalsIgnoreCase(this.startXPath)) {
-            //如果是开始路径，则删除之前所有数据。
-            content.delete(0, content.length());
-        } else {
-            boolean passed = false;
-            if (includeValidNodeOnly) {
-                //仅接受有效节点的文本
-                if (isValidNode(xpath, validNodes)) {
-                    passed = true;
-                }
-            } else if (this.excludeInvalidNode) {
-                //接受所有不是无效节点的文本
-                if (!isInvalidNode(xpath, invalidNodes)) {
-                    passed = true;
-                }
+        if (null != xpath) {
+            xpath = xpath.toUpperCase();
+            if (xpath.equalsIgnoreCase(this.startXPath)) {
+                //如果是开始路径，则删除之前所有数据。
+                content.delete(0, content.length());
             } else {
-                //表示所有文本都可以接受，这种时候，一般都要设置开始节点和结束节点
-                passed = true;
-            }
-            if (passed) {
-                content.append(text);
+                boolean passed = false;
+                if (includeValidNodeOnly) {
+                    //仅接受有效节点的文本
+                    if (isValidNode(xpath, validNodes)) {
+                        passed = true;
+                    }
+                } else if (this.excludeInvalidNode) {
+                    //接受所有不是无效节点的文本
+                    if (!isInvalidNode(xpath, invalidNodes)) {
+                        passed = true;
+                    }
+                } else {
+                    //表示所有文本都可以接受，这种时候，一般都要设置开始节点和结束节点
+                    passed = true;
+                }
+                if (passed) {
+                    content.append(text);
+                }
             }
         }
     }
@@ -119,15 +122,13 @@ public class ContentExtractor extends AbstractFieldExtractor {
         return invalidNodes.contains(xpath);
     }
 
-    private void traversal(final Set<String> validNodes, final Set<String> invalidNodes, Node node, StringBuilder ret) {
+    private void traversal(final Set<String> validNodes, final Set<String> invalidNodes, Node node, StringBuilder ret, String parentXPath) {
         //如果没有碰到结束节点，就继续，如果碰到结束节点了，就结束返回
         if (!reached) {
             String nodeName = node.getNodeName();
             if (!isTextNode(node) && !ignore(nodeName)) {
-                String xpath = XPathAttrFactory.getInstance().create(node, getXPathAttr());
+                String xpath = XPathAttrFactory.getInstance().create(node, getXPathAttr(), parentXPath);
                 if (null != xpath && !"".equals(xpath)) {
-                    xpath = xpath.toUpperCase();
-
                     //如果路径是结束路径，则返回true，表示到达结束节点。
                     if (xpath.equalsIgnoreCase(this.endXPath)) {
                         reached = true;
@@ -141,7 +142,7 @@ public class ContentExtractor extends AbstractFieldExtractor {
                                 //处理文本节点
                                 processText(child.getNodeValue(), xpath, ret, validNodes, invalidNodes);
                             } else if (Node.ELEMENT_NODE == child.getNodeType()) {
-                                traversal(validNodes, invalidNodes, child, ret);
+                                traversal(validNodes, invalidNodes, child, ret, xpath);
                             }
                         }
                         if (breakLine(nodeName)) {
