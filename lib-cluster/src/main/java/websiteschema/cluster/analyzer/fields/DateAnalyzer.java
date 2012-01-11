@@ -123,12 +123,14 @@ public class DateAnalyzer extends AbstractFieldExtractor implements IFieldAnalyz
         }
         String text = list.get(0);
         this.pattern = DateDetectUtil.getInstance().detectPattern(text);
-        if (pattern.contains("HH")) {
-            this.format = "yyyy-MM-dd HH";
-            if (pattern.contains("mm")) {
-                format += ":mm";
-                if (pattern.contains("SS")) {
-                    format += ":SS";
+        if (null != pattern) {
+            if (pattern.contains("HH")) {
+                this.format = "yyyy-MM-dd HH";
+                if (pattern.contains("mm")) {
+                    format += ":mm";
+                    if (pattern.contains("SS")) {
+                        format += ":SS";
+                    }
                 }
             }
         }
