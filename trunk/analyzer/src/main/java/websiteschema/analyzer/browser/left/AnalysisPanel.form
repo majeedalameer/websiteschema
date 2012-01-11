@@ -134,14 +134,14 @@
           <Group type="102" alignment="1" attributes="0">
               <Group type="103" groupAlignment="1" attributes="0">
                   <Component id="jPanel2" alignment="0" max="32767" attributes="2"/>
-                  <Component id="jScrollPane1" alignment="1" pref="224" max="32767" attributes="0"/>
+                  <Component id="jScrollPane1" alignment="1" pref="236" max="32767" attributes="0"/>
                   <Component id="jPanel1" alignment="0" max="32767" attributes="2"/>
-                  <Component id="jSeparator2" alignment="0" pref="224" max="32767" attributes="2"/>
+                  <Component id="jSeparator2" alignment="0" pref="236" max="32767" attributes="2"/>
                   <Group type="102" alignment="0" attributes="1">
                       <EmptySpace min="-2" pref="2" max="-2" attributes="0"/>
                       <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="siteIdField" pref="164" max="32767" attributes="0"/>
+                      <Component id="siteIdField" pref="171" max="32767" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="addPropButton" min="-2" pref="44" max="-2" attributes="0"/>
@@ -202,37 +202,37 @@
               <Group type="102" alignment="0" attributes="0">
                   <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="mustHaveField" pref="160" max="32767" attributes="0"/>
+                  <Component id="mustHaveField" pref="165" max="32767" attributes="0"/>
               </Group>
               <Group type="102" alignment="0" attributes="0">
                   <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="dontHaveField" pref="160" max="32767" attributes="0"/>
+                  <Component id="dontHaveField" pref="165" max="32767" attributes="0"/>
               </Group>
               <Group type="102" alignment="0" attributes="0">
                   <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="pageTypeField" pref="160" max="32767" attributes="0"/>
+                  <Component id="pageTypeField" pref="165" max="32767" attributes="0"/>
               </Group>
               <Group type="102" alignment="0" attributes="0">
                   <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="encodingField" pref="160" max="32767" attributes="0"/>
+                  <Component id="encodingField" pref="165" max="32767" attributes="0"/>
               </Group>
               <Group type="102" alignment="0" attributes="0">
                   <Component id="jLabel6" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="depthField" pref="160" max="32767" attributes="0"/>
+                  <Component id="depthField" pref="165" max="32767" attributes="0"/>
               </Group>
               <Group type="102" alignment="0" attributes="0">
                   <Component id="jLabel7" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="minDateField" pref="112" max="32767" attributes="0"/>
+                  <Component id="minDateField" pref="113" max="32767" attributes="0"/>
               </Group>
               <Group type="102" alignment="0" attributes="0">
                   <Component id="jLabel8" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="maxDateField" pref="112" max="32767" attributes="0"/>
+                  <Component id="maxDateField" pref="113" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>

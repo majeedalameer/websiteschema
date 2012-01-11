@@ -16,7 +16,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import javax.swing.JTextField;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -371,9 +370,11 @@ public class NewsParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
                     // 通过反射创建Clusterer。其构造函数需要siteId;
                     Clusterer clusterer = (Clusterer) clazz.getConstructor(cx).newInstance(new Object[]{getSiteId()});
                     clusterer.init(cm);
+                    this.statusLabel.setText("转换文档");
                     Sample sample = getCurrentDocument();
                     if (null != sample) {
                         DocVector vect = new DocVectorConvertor().convert(sample, cm.getStatInfo());
+                        this.statusLabel.setText("开始分类");
                         Cluster cluster = clusterer.classify(sample);
                         if (null != cluster) {
                             double sim = clusterer.membershipDegree(vect, cluster.getCentralPoint());
