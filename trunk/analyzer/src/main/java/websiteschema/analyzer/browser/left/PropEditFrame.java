@@ -11,7 +11,13 @@
 package websiteschema.analyzer.browser.left;
 
 import java.util.Map;
+import javax.swing.JOptionPane;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONException;
+import net.sf.json.JSONObject;
+import net.sf.json.util.JSONUtils;
 import websiteschema.analyzer.browser.utils.TextAreaSearch;
+import websiteschema.cluster.analyzer.SimpleLogger;
 
 /**
  *
@@ -78,7 +84,6 @@ public class PropEditFrame extends javax.swing.JFrame {
             }
         });
 
-        wrapLineCheckBox.setSelected(true);
         wrapLineCheckBox.setText("自动换行");
         wrapLineCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -120,7 +125,7 @@ public class PropEditFrame extends javax.swing.JFrame {
                     .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(wrapLineCheckBox)
                     .addComponent(jLabel1))
-                .addContainerGap(8, Short.MAX_VALUE))
+                .addContainerGap(12, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -133,7 +138,7 @@ public class PropEditFrame extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE))
         );
@@ -168,8 +173,22 @@ public class PropEditFrame extends javax.swing.JFrame {
         tas.next(target);
     }//GEN-LAST:event_searchFieldActionPerformed
 
+    private Object str2json(String json_str) {
+        Object obj_JSON = null;
+        if (json_str.startsWith("[")) {
+            obj_JSON = JSONArray.fromObject(json_str);
+        } else if (json_str.startsWith("{")) {
+            obj_JSON = JSONObject.fromObject(json_str);
+        } else {
+            JOptionPane.showMessageDialog(this, "JSON 语法错误！");
+        }
+
+        return obj_JSON;
+    }
+
     private String getPropValue() {
-        return this.displayArea.getText();
+        this.propValue = JSONUtils.valueToString(str2json(this.displayArea.getText()));
+        return this.propValue ;
     }
 
     public void setAnalysisPanel(AnalysisPanel analysisPanel) {
@@ -182,7 +201,7 @@ public class PropEditFrame extends javax.swing.JFrame {
 
     public void setPropValue(String propValue) {
         this.propValue = propValue;
-        this.displayArea.setText(propValue);
+        this.displayArea.setText(JSONUtils.valueToString(str2json(propValue), 8, 0));// 每级缩进8个空格
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton confirmButton;
