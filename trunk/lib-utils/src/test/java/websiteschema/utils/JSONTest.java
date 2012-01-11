@@ -36,16 +36,30 @@ public class JSONTest {
     @Test
     public void testMap() {
         try {
-            Map<String,String> map = new HashMap<String,String>();
+            Map<String, String> map = new HashMap<String, String>();
             map.put("a", "b");
             map.put("c", "d");
             List list = new ArrayList();
             list.add(map);
             String json = toJson(list);
             System.out.println(json);
-            List<Map<String,String>> res = fromJson(json, List.class);
+            List<Map<String, String>> res = fromJson(json, List.class);
             System.out.println(res);
-            assert(res.get(0).get("a").equals("b"));
+            assert (res.get(0).get("a").equals("b"));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            assert (false);
+        }
+    }
+
+    @Test
+    public void testPrettyPrint() {
+        try {
+            String json = "[{\"ExcludeInvalidNode\": \"false\",\"Cluster\": \"[\\\"1\\\"]\",\"StartXPath\": \"html/body/div[@class='endArea']/div[@class='colL']/div[@class='bg_endPage_blue clearfix']/div[@class='endContent']/p[@class='summary']\",\"KeepHTMLTag\": \"false\",\"IncludeValidNodeOnly\": \"true\"}]";
+            List<Map<String, String>> res = fromJson(json, List.class);
+            System.out.println(res);
+            json = toJson(res, true);
+            System.out.println(json);
         } catch (Exception ex) {
             ex.printStackTrace();
             assert (false);

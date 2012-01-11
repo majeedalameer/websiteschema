@@ -10,6 +10,7 @@
  */
 package websiteschema.analyzer.browser.left;
 
+import java.util.List;
 import java.util.Map;
 import javax.swing.JOptionPane;
 import net.sf.json.JSONArray;
@@ -18,6 +19,7 @@ import net.sf.json.JSONObject;
 import net.sf.json.util.JSONUtils;
 import websiteschema.analyzer.browser.utils.TextAreaSearch;
 import websiteschema.cluster.analyzer.SimpleLogger;
+import websiteschema.utils.PojoMapper;
 
 /**
  *
@@ -111,7 +113,7 @@ public class PropEditFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(searchField, javax.swing.GroupLayout.DEFAULT_SIZE, 284, Short.MAX_VALUE)
+                .addComponent(searchField, javax.swing.GroupLayout.DEFAULT_SIZE, 392, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(wrapLineCheckBox))
         );
@@ -133,14 +135,14 @@ public class PropEditFrame extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 554, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 662, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 378, Short.MAX_VALUE))
         );
 
         pack();
@@ -175,20 +177,37 @@ public class PropEditFrame extends javax.swing.JFrame {
 
     private Object str2json(String json_str) {
         Object obj_JSON = null;
-        if (json_str.startsWith("[")) {
-            obj_JSON = JSONArray.fromObject(json_str);
-        } else if (json_str.startsWith("{")) {
-            obj_JSON = JSONObject.fromObject(json_str);
-        } else {
-            JOptionPane.showMessageDialog(this, "JSON 语法错误！");
+//        if (json_str.startsWith("[")) {
+//            obj_JSON = JSONArray.fromObject(json_str);
+//        } else if (json_str.startsWith("{")) {
+//            obj_JSON = JSONObject.fromObject(json_str);
+//        } else {
+//            JOptionPane.showMessageDialog(this, "JSON 语法错误！");
+//        }
+        try {
+            if (json_str.startsWith("[")) {
+                obj_JSON = PojoMapper.fromJson(json_str, List.class);
+            } else if (json_str.startsWith("{")) {
+                obj_JSON = PojoMapper.fromJson(json_str, Map.class);
+            } else {
+                obj_JSON = json_str;
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            obj_JSON = json_str;
         }
-
         return obj_JSON;
     }
 
     private String getPropValue() {
-        this.propValue = JSONUtils.valueToString(str2json(this.displayArea.getText()));
-        return this.propValue ;
+//        this.propValue = JSONUtils.valueToString(str2json(this.displayArea.getText()));
+        try {
+            this.propValue = PojoMapper.toJson(str2json(this.displayArea.getText()));
+            return this.propValue;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return null;
     }
 
     public void setAnalysisPanel(AnalysisPanel analysisPanel) {
@@ -201,7 +220,12 @@ public class PropEditFrame extends javax.swing.JFrame {
 
     public void setPropValue(String propValue) {
         this.propValue = propValue;
-        this.displayArea.setText(JSONUtils.valueToString(str2json(propValue), 8, 0));// 每级缩进8个空格
+        try {
+            this.displayArea.setText(PojoMapper.toJson(str2json(propValue), true));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+//        this.displayArea.setText(JSONUtils.valueToString(str2json(propValue), 8, 0));// 每级缩进8个空格
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton confirmButton;
