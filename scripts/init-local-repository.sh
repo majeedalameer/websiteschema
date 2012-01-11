@@ -19,3 +19,7 @@ mvn install:install-file -Dfile=../lib/corecomponents-swing-linux64.jar -DgroupI
 mvn install:install-file -Dfile=../lib/webrenderer-swing.jar -DgroupId=com.webrenderer -DartifactId=webrenderer-swing -Dversion=6.0b3 -Dpackaging=jar -DgeneratePom=true
 
 mvn install:install-file -Dfile=../lib/webrenderer-swing-linux64.jar -DgroupId=com.webrenderer -DartifactId=libwebrenderer -Dversion=6.0b3 -Dpackaging=jar -DgeneratePom=true -Dclassifier=linux64
+
+#mvn install:install-file -Dfile=../lib/weka.jar -DgroupId=weka -DartifactId=weka -Dversion=3.6.6 -Dpackaging=jar -DgeneratePom=true
+
+#mvn install:install-file -Dfile=../lib/weka-src.jar -DgroupId=weka -DartifactId=weka -Dversion=3.6.6 -Dpackaging=jar -DgeneratePom=true -Dclassifier=sources
