@@ -4,18 +4,15 @@
  */
 package websiteschema.schedule.job;
 
-import javax.servlet.http.*;
 import org.apache.log4j.Logger;
 import org.quartz.Job;
-import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.JobKey;
-import org.springframework.beans.factory.annotation.Autowired;
 import websiteschema.common.amqp.Message;
 import websiteschema.common.amqp.RabbitQueue;
-import websiteschema.metadata.utils.MetadataServerContext;
 import websiteschema.model.domain.StartURL;
+import websiteschema.model.domain.Task;
 import websiteschema.persistence.rdbms.*;
 import websiteschema.schedule.TaskHandler;
 
@@ -31,21 +28,31 @@ public class JobAMQPQueueV1 implements Job {
     private JobMapper jobMapper;
     private WrapperMapper wrapperMapper;
     private StartURLMapper startURLMapper;
+    private TaskMapper taskMapper;
     Logger l = Logger.getLogger(JobAMQPQueueV1.class);
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         JobKey key = context.getJobDetail().getKey();
-//        jobMapper = (JobMapper) context.getJobDetail().getJobDataMap().get("jobMapper");
-//        wrapperMapper = (WrapperMapper) context.getJobDetail().getJobDataMap().get("wrapperMapper");
-//        startURLMapper = (StartURLMapper) context.getJobDetail().getJobDataMap().get("startURLMapper");
-
         l.debug("Instance " + key + " of schedulerId: " + schedulerId + ", and jobId is: " + jobId + ", and startURLId is: " + startURLId);
         websiteschema.model.domain.Job job = jobMapper.getById(jobId);
         l.debug(job.getConfigure());
-        RabbitQueue<Message> queue = TaskHandler.getInstance().getQueue();
-        queue.offer(create(job));
-        l.debug("Message about Job " + jobId + " has been emitted to queue: " + queue.getQueueName());
+        Task task = new Task(schedulerId);
+        taskMapper.insert(task);
+        try {
+            RabbitQueue<Message> queue = TaskHandler.getInstance().getQueue();
+            Message msg = create(job);
+            msg.setTaskId(task.getId());
+            queue.offer(msg);
+            l.debug("Message about Job " + jobId + " has been emitted to queue: " + queue.getQueueName());
+            task.setStatus(Task.SENT);
+            taskMapper.update(task);
+        } catch (Exception ex) {
+            task.setStatus(Task.UNSENT);
+            task.setMessage(ex.getMessage());
+            taskMapper.update(task);
+            ex.printStackTrace();
+        }
     }
 
     private Message create(websiteschema.model.domain.Job job) {
@@ -99,5 +106,13 @@ public class JobAMQPQueueV1 implements Job {
 
     public void setWrapperMapper(WrapperMapper wrapperMapper) {
         this.wrapperMapper = wrapperMapper;
+    }
+
+    public TaskMapper getTaskMapper() {
+        return taskMapper;
+    }
+
+    public void setTaskMapper(TaskMapper taskMapper) {
+        this.taskMapper = taskMapper;
     }
 }

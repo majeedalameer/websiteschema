@@ -1,9 +1,5 @@
 package websiteschema.common.amqp;
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 /**
  * Job在执行过程中，会生成消息(Message)，此消息包含有一些配置信息，告诉接收者如何执行。<br/>
  * 消息将被发往Virtual-Device，由虚拟设备运行。
@@ -16,6 +12,7 @@ public class Message implements java.io.Serializable {
     private long jobId;
     private long startURLId;
     private long wrapperId;
+    private long taskId;
     private long createTime;
     private String url;
     private String configure;
@@ -99,6 +96,14 @@ public class Message implements java.io.Serializable {
 
     public void setWrapperId(long wrapperId) {
         this.wrapperId = wrapperId;
+    }
+
+    public long getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(long taskId) {
+        this.taskId = taskId;
     }
 
     @Override

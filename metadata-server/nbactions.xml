@@ -3,11 +3,9 @@
         <action>
             <actionName>run</actionName>
             <goals>
-                <goal>compile</goal>
+                <goal>package</goal>
                 <goal>jetty:run-exploded</goal>
+                
             </goals>
-            <properties>
-                <netbeans.deploy>true</netbeans.deploy>
-            </properties>
         </action>
     </actions>

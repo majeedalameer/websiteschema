@@ -13,7 +13,7 @@ import java.util.Date;
 public class Job implements java.io.Serializable {
 
     long id;
-    String jobType;
+    String jobType; //Class name of Job
     String configure;
     long wrapperId;
     Date createTime = new Date();

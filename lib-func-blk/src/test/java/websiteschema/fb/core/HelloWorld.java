@@ -5,6 +5,7 @@
 
 package websiteschema.fb.core;
 
+import websiteschema.fb.core.app.Application;
 import org.junit.Test;
 
 /**

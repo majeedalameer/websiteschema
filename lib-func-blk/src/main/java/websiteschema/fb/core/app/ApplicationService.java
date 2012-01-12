@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package websiteschema.fb.core;
+package websiteschema.fb.core.app;
 
 /**
  *
@@ -12,5 +12,7 @@ package websiteschema.fb.core;
 public interface ApplicationService {
 
     public boolean startup(Application app);
+
+    public int getTotalTasks();
 
 }

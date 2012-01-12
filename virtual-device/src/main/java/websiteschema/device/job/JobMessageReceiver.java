@@ -13,7 +13,7 @@ import websiteschema.common.amqp.RabbitQueue;
 import websiteschema.common.base.Function;
 import websiteschema.device.DeviceContext;
 import websiteschema.device.handler.WrapperHandler;
-import websiteschema.fb.core.Application;
+import websiteschema.fb.core.app.Application;
 import websiteschema.fb.core.RuntimeContext;
 import websiteschema.model.domain.Wrapper;
 
@@ -45,7 +45,7 @@ public class JobMessageReceiver implements Runnable {
 
     @Override
     public void run() {
-        while (!isStop && null != queue) {
+        while (!isStop && null != queue) {            
             Message message = queue.poll(Message.class, new Function<Message>() {
 
                 /**
@@ -66,12 +66,19 @@ public class JobMessageReceiver implements Runnable {
     private void createApplication(Message msg, Wrapper wrapper) {
         String appConfig = wrapper.getApplication();
         if ("FB".equals(wrapper.getWrapperType())) {
-            Application app = new Application();
+            Application app = new Application(msg.getTaskId());
             RuntimeContext runtimeContext = app.getContext();
             InputStream is = convert(appConfig);
             if (null != is) {
                 runtimeContext.loadConfigure(is);
-                DeviceContext.getInstance().getAppRuntime().startup(app);
+                boolean inserted = DeviceContext.getInstance().getAppRuntime().startup(app);
+                while (!inserted) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (Exception ex) {
+                    }
+                    inserted = DeviceContext.getInstance().getAppRuntime().startup(app);
+                }
             }
         }
     }

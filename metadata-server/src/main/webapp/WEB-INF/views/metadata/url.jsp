@@ -83,7 +83,7 @@
                     {
                         header: '网站ID',
                         dataIndex: 'siteId',
-                        width: 100,
+                        width: 120,
                         editor: new fm.TextField({
                             allowBlank: false
                         })
@@ -91,7 +91,7 @@
                     {
                         header: '爬虫名称',
                         dataIndex: 'jobname',
-                        width: 100,
+                        width: 120,
                         editor: new fm.TextField({
                             allowBlank: false
                         })

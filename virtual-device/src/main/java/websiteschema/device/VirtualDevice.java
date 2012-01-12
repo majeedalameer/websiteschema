@@ -19,9 +19,9 @@
 package websiteschema.device;
 
 import websiteschema.device.job.JobMessageReceiver;
-import websiteschema.fb.core.Application;
-import websiteschema.fb.core.ApplicationManager;
-import websiteschema.fb.core.ApplicationService;
+import websiteschema.fb.core.app.Application;
+import websiteschema.fb.core.app.ApplicationManager;
+import websiteschema.fb.core.app.ApplicationService;
 import websiteschema.fb.core.RuntimeContext;
 
 public class VirtualDevice {

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import websiteschema.persistence.rdbms.JobMapper;
 import websiteschema.persistence.rdbms.ScheduleMapper;
 import websiteschema.persistence.rdbms.StartURLMapper;
+import websiteschema.persistence.rdbms.TaskMapper;
 import websiteschema.persistence.rdbms.WrapperMapper;
 import websiteschema.schedule.JobScheduler;
 
@@ -37,6 +38,8 @@ public class SchedulerController {
     WrapperMapper wrapperMapper;
     @Autowired
     StartURLMapper startURLMapper;
+    @Autowired
+    TaskMapper taskMapper;
 
     public void setScheduleMapper(ScheduleMapper scheduleMapper) {
         this.scheduleMapper = scheduleMapper;
@@ -70,6 +73,7 @@ public class SchedulerController {
             scheduler.setJobMapper(jobMapper);
             scheduler.setStartURLMapper(startURLMapper);
             scheduler.setWrapperMapper(wrapperMapper);
+            scheduler.setTaskMapper(taskMapper);
             int status = scheduler.status();
             if (JobScheduler.Stopped == status
                     || JobScheduler.Error == status) {
