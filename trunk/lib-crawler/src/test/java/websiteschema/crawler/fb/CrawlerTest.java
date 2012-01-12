@@ -6,7 +6,7 @@
 package websiteschema.crawler.fb;
 
 import org.junit.Test;
-import websiteschema.fb.core.Application;
+import websiteschema.fb.core.app.Application;
 import websiteschema.fb.core.RuntimeContext;
 /**
  *

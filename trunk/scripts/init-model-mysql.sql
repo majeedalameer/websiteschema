@@ -24,6 +24,10 @@ drop table if exists Weibo;
 
 drop table if exists Wrapper;
 
+drop table if exists ScheduleTask;
+
+drop table if exists ScheduleTaskArchive;
+
 /*==============================================================*/
 /* Table: ConcernedWeibo                                        */
 /*==============================================================*/
@@ -227,3 +231,30 @@ create table Wrapper
    primary key (id, name)
 );
 
+/*==============================================================*/
+/* Table: ScheduleTask                                          */
+/*==============================================================*/
+create table ScheduleTask
+(
+   id                   bigint not null auto_increment,
+   scheId               bigint,
+   status               int,
+   message              varchar(1000),
+   createTime           datetime,
+   updateTime           datetime,
+   primary key (id)
+);
+
+/*==============================================================*/
+/* Table: ScheduleTaskArchive                                   */
+/*==============================================================*/
+create table ScheduleTaskArchive
+(
+   id                   bigint not null auto_increment,
+   scheId               bigint,
+   status               int,
+   message              varchar(1000),
+   createTime           datetime,
+   updateTime           datetime,
+   primary key (id)
+);

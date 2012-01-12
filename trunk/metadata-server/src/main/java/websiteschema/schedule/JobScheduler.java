@@ -4,6 +4,7 @@
  */
 package websiteschema.schedule;
 
+import websiteschema.persistence.rdbms.TaskMapper;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import websiteschema.persistence.rdbms.JobMapper;
@@ -38,6 +39,7 @@ public class JobScheduler {
     private ScheduleMapper scheduleMapper = null;
     private JobMapper jobMapper = null;
     private WrapperMapper wrapperMapper = null;
+    private TaskMapper taskMapper = null;
     private StartURLMapper startURLMapper = null;
     private final java.util.Random random = new java.util.Random();
     private final Logger l = Logger.getLogger(JobScheduler.class);
@@ -98,6 +100,7 @@ public class JobScheduler {
         jobDataMap.put("startURLMapper", startURLMapper);
         jobDataMap.put("jobMapper", jobMapper);
         jobDataMap.put("wrapperMapper", wrapperMapper);
+        jobDataMap.put("taskMapper", taskMapper);
         jobDataMap.put("schedulerId", sche.getId());
         jobDataMap.put("jobId", sche.getJobId());
         jobDataMap.put("startURLId", sche.getStartURLId());
@@ -154,5 +157,9 @@ public class JobScheduler {
 
     public void setWrapperMapper(WrapperMapper wrapperMapper) {
         this.wrapperMapper = wrapperMapper;
+    }
+
+    public void setTaskMapper(TaskMapper taskMapper) {
+        this.taskMapper = taskMapper;
     }
 }

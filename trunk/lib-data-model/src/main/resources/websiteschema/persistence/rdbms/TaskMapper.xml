@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="websiteschema.persistence.rdbms.TaskMapper">
+
+    <cache />
+    
+    <select id="getTotalResults" resultType="long" parameterType="java.util.Map">
+        select count(*) from ScheduleTask
+        <trim prefix="WHERE" prefixOverrides="AND |OR ">
+            <if test="status != null">
+                status = #{status}
+            </if>
+        </trim>
+    </select>
+
+    <select id="getTasks" parameterType="java.util.Map" resultType="websiteschema.model.domain.Task">
+        select * from ScheduleTask
+        <trim prefix="WHERE" prefixOverrides="AND |OR ">
+            <if test="status != null">
+                status = #{status}
+            </if>
+        </trim>
+        <if test="sort != null">
+            order by ${sort}
+        </if>
+        <if test="start != null">
+            limit #{start}, #{limit}
+        </if>
+    </select>
+
+    <!-- 查询记录，根据Id -->
+    <select id="getById" parameterType="String" resultType="websiteschema.model.domain.Task">
+        select * from ScheduleTask
+        where id = #{id}
+    </select>
+
+    <!-- 插入记录 -->
+    <insert id="insert" parameterType="websiteschema.model.domain.Task"
+        useGeneratedKeys="true" keyProperty="id">
+        insert into ScheduleTask (id, scheId, status, message, createTime, updateTime)
+        values (#{id},#{scheduleId},#{status},#{message},now(),#{updateTime})
+    </insert>
+
+    <!-- 更新任务状态记录 -->
+    <update id="update" parameterType="websiteschema.model.domain.Task">
+        update ScheduleTask
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="status != null">status=#{status},</if>
+            <if test="message != null">message=#{message},</if>
+            <if test="updateTime != null">updateTime=now()</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="websiteschema.model.domain.Task" >
+        delete from ScheduleTask
+        where id = #{id}
+    </delete>
+    
+</mapper>  

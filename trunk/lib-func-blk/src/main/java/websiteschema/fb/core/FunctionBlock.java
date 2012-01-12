@@ -24,7 +24,7 @@ public class FunctionBlock {
     public final static int INIT = 0;
     public final static int STARTED = 1;
     public final static int STOPED = 2;
-    public final Logger l = Logger.getLogger(FunctionBlock.class);
+    public final Logger l = Logger.getLogger(this.getClass());
     int status;
     String fbName;
     private RuntimeContext context;
@@ -47,7 +47,15 @@ public class FunctionBlock {
         this.context = context;
     }
 
-    public final void executeEvent(String evt) {
+    public boolean isWithECC() {
+        return withECC;
+    }
+
+    public void setWithECC(boolean withECC) {
+        this.withECC = withECC;
+    }
+
+    public final void executeEvent(String evt) throws Exception {
         ExecutionControl ec = ecc.getExecutionControl(evt);
         String algorithm = ec.getAlgorithm();
         boolean success = execute(algorithm, evt);
@@ -63,35 +71,28 @@ public class FunctionBlock {
         }
     }
 
-    public final boolean execute(String algorithm, String ei) {
+    public final boolean execute(String algorithm, String ei) throws Exception {
         l.debug("FB: " + getName() + " receive event: " + ei + " and execute algorithm: " + algorithm);
         Method[] methods = this.getClass().getMethods();
         boolean ret = true;
         for (Method method : methods) {
             if (method.isAnnotationPresent(Algorithm.class)) {
                 if (algorithm.equalsIgnoreCase(method.getAnnotation(Algorithm.class).name())) {
-                    try {
-                        Class[] params = method.getParameterTypes();
-                        if (null != params && params.length > 0) {
-                            // Method Parameter has Annotation EVT Present.
-                            if (params.length == 1) {
-                                Class param = params[0];
-                                if (param.isAnnotationPresent(EVT.class)) {
-                                    method.invoke(this, ei);
-                                }
+                    Class[] params = method.getParameterTypes();
+                    if (null != params && params.length > 0) {
+                        // Method Parameter has Annotation EVT Present.
+                        if (params.length == 1) {
+                            Class param = params[0];
+                            if (param.isAnnotationPresent(EVT.class)) {
+                                method.invoke(this, ei);
                             }
-                        } else {
-                            // Method has no parameter.
-                            method.invoke(this);
                         }
-                    } catch (Exception ex) {
-                        System.out.println(getName());
-                        ex.printStackTrace();
-                        l.error(ex);
-                        ret = false;
+                    } else {
+                        // Method has no parameter.
+                        method.invoke(this);
                     }
+                    break;
                 }
-                break;
             }
         }
         return ret;

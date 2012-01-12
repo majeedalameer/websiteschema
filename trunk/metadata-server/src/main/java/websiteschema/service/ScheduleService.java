@@ -27,10 +27,6 @@ public class ScheduleService {
     @Autowired
     private SchedulerController schedulerController;
 
-//    ScheduleService() {
-//        schedulerController = new SchedulerController();
-//    }
-
     public ListRange getResults(Map map) {
         ListRange listRange = new ListRange();
         Map params = buildParamWithInt(map, "start", "limit");
