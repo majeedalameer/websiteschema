@@ -48,14 +48,7 @@
                     params.match = Ext.getCmp('MATCH').getValue();
                     params.sort = 'updateTime desc';
                 });
-                var type_store = new Ext.data.SimpleStore(
-                {
-                    fields :['name','value'],
-                    data:[
-                        ['基于消息队列的任务','websiteschema.schedule.job.JobAMQPQueueV1'],
-                        ['更新历史新闻的转发和点击信息','websiteschema.schedule.job.RefreshJobAMQPQueueV1']
-                    ]
-                });
+                var type_store = job_type_store;
 
                 var wrapperProxy = new Ext.data.DWRProxy(WrapperService.getResults, true);
                 var wrt = new Ext.data.Record.create(wrapperRecordType);

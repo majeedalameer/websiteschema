@@ -109,6 +109,16 @@ var jobRecordType =[
 }
 ];
 
+var job_type_store = new Ext.data.SimpleStore(
+{
+    fields :['name','value'],
+    data:[
+    ['历史任务整理','websiteschema.schedule.job.JobCheckTask'],
+    ['基于消息队列的任务','websiteschema.schedule.job.JobAMQPQueueV1'],
+    ['更新历史新闻的转发和点击信息','websiteschema.schedule.job.RefreshJobAMQPQueueV1']
+    ]
+});
+
 var wrapperRecordType = [
 {
     name : 'id',

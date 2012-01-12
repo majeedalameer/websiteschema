@@ -18,6 +18,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
@@ -43,18 +45,26 @@ public class Configure {
     }
 
     public Configure(String file) {
+        this(file, null);
+    }
+
+    public Configure(String file, Map<String, String> prop) {
         properties = root.cloneToNewMap();
         try {
-            loadProperty(file);
+            loadProperty(file, prop);
         } catch (IOException ex) {
             System.out.println("Can not load configuration " + file);
         }
     }
 
     public Configure(InputStream config) {
+        this(config, null);
+    }
+
+    public Configure(InputStream config, Map<String, String> prop) {
         properties = root.cloneToNewMap();
         try {
-            loadProperty(config);
+            loadProperty(config, prop);
         } catch (IOException ex) {
             System.out.println("Can not load configuration");
         }
@@ -78,6 +88,10 @@ public class Configure {
     }
 
     private void loadProperty(String file) throws IOException {
+        loadProperty(file, null);
+    }
+
+    private void loadProperty(String file, Map<String, String> prop) throws IOException {
         InputStream is = null;
         File f = new File(file);
         try {
@@ -86,7 +100,7 @@ public class Configure {
             } else {
                 is = Configure.class.getClassLoader().getResourceAsStream(file);
             }
-            loadProperty(is);
+            loadProperty(is, prop);
         } finally {
             if (null != is) {
                 is.close();
@@ -94,7 +108,7 @@ public class Configure {
         }
     }
 
-    private void loadProperty(InputStream is) throws IOException {
+    private void loadProperty(InputStream is, Map<String, String> prop) throws IOException {
         if (null != is) {
             BufferedReader br = null;
             try {
@@ -104,7 +118,11 @@ public class Configure {
                 String line = br.readLine();
                 while (null != line) {
                     if (!"".equals(line)) {
-                        parseLine(line, ++count);
+                        if (null != prop) {
+                            parseLine(line, ++count, prop);
+                        } else {
+                            parseLine(line, ++count);
+                        }
                     }
                     line = br.readLine();
                 }
@@ -142,6 +160,42 @@ public class Configure {
                     }
                 } else {
                     putProperties(currentField, key.trim(), value.trim());
+                }
+            }
+        }
+    }
+    private final static Pattern pat = Pattern.compile("\\$\\{(.*)\\}");
+
+    private void parseLine(String line, int currentRowNumber, Map<String, String> prop) {
+        if (!line.startsWith("#") && !line.startsWith(";")) {
+            if (line.startsWith("[") && line.endsWith("]")) {
+                currentField = line.substring(1, line.length() - 1).trim().toLowerCase();
+            } else if (line.indexOf("=") > 0) {
+                int eq = line.indexOf("=");
+                String key = line.substring(0, eq).trim().toLowerCase();
+                String value = line.substring(eq + 1, line.length());
+                if ("namespace".equals(key) && Configure.DefaultField.equals(currentField)) {
+                    if (1 == currentRowNumber) {
+                        this.namespace = value;
+                    } else {
+                        throw new RuntimeException("'namespace' must be declared at first line.");
+                    }
+                } else {
+                    value = value.trim();
+                    // 从预先设定的prop中寻找是否需要替换。
+                    // 如果在prop有：abc = xyz
+                    // 如果value = ${abc}
+                    // 则value会被替换成xyz
+                    if (null != prop) {
+                        Matcher m = pat.matcher(value.trim());
+                        if (m.matches()) {
+                            String k = m.group(1);
+                            if (prop.containsKey(k)) {
+                                value = prop.get(k);
+                            }
+                        }
+                    }
+                    putProperties(currentField, key.trim(), value);
                 }
             }
         }
@@ -418,5 +472,13 @@ public class Configure {
             }
         }
         return null;
+    }
+
+    public static void main(String args[]) {
+        String a = "${abc}";
+        Matcher m = pat.matcher(a);
+        if (m.matches()) {
+            System.out.println(m.group(1));
+        }
     }
 }
