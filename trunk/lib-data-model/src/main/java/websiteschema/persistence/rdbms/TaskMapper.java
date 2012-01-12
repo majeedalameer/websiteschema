@@ -4,8 +4,10 @@
  */
 package websiteschema.persistence.rdbms;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import org.apache.ibatis.annotations.Param;
 import websiteschema.model.domain.Task;
 
 /**
@@ -22,9 +24,15 @@ public interface TaskMapper {
 
     public void update(Task task);
 
+    public void updateStatus(@Param("status") int status, @Param("list") List<Long> list);
+
     public void insert(Task task);
 
     public void delete(Task task);
 
-    public void archive(int before);
+    public void batchDelete(Date before);
+
+    public void batchDeleteArchive(Date before);
+
+    public void archive(Date before);
 }

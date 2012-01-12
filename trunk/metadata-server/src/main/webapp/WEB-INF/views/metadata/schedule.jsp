@@ -130,7 +130,7 @@
                         width: 60,
                         editor: new fm.TextField({
                             allowBlank: false,
-                            readOnly : true
+                            readOnly : false
                         })
                     },
                     {

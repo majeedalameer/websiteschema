@@ -53,9 +53,35 @@
         where id = #{id}
     </update>
 
+    <!-- 更新任务状态记录 -->
+    <update id="updateStatus">
+        UPDATE ScheduleTask
+        SET status = #{status}
+        WHERE id IN
+        <foreach item="list" index="index" collection="list" open="(" separator="," close=")">
+            #{list}
+        </foreach>
+    </update>
+
     <delete id="delete" parameterType="websiteschema.model.domain.Task" >
         delete from ScheduleTask
         where id = #{id}
     </delete>
-    
-</mapper>  
+
+    <delete id="batchDelete" parameterType="java.util.Date" >
+        delete from ScheduleTask
+        where createTime &lt;= #{before}
+    </delete>
+
+    <delete id="batchDeleteArchive" parameterType="java.util.Date" >
+        delete from ScheduleTaskArchive
+        where createTime &lt;= #{before}
+    </delete>
+
+    <insert id="archive" parameterType="java.util.Date">
+        insert into ScheduleTaskArchive (id, scheId, status, message, createTime, updateTime)
+        select * from ScheduleTask s
+        where s.createTime &lt;= #{before}
+    </insert>
+
+</mapper>
