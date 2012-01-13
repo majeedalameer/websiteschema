@@ -4,6 +4,8 @@
  */
 package websiteschema.schedule;
 
+import org.quartz.JobKey;
+import org.quartz.SimpleTrigger;
 import websiteschema.persistence.rdbms.TaskMapper;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -24,6 +26,7 @@ import websiteschema.persistence.rdbms.ScheduleMapper;
 import static org.quartz.JobBuilder.*;
 import static org.quartz.TriggerBuilder.*;
 import static org.quartz.CronScheduleBuilder.*;
+import static org.quartz.DateBuilder.*;
 
 /**
  *
@@ -50,6 +53,10 @@ public class JobScheduler {
     public JobScheduler() {
     }
 
+    /**
+     * 从数据库中加载任务。
+     * @throws SchedulerException
+     */
     public void load() throws SchedulerException {
         // 用工厂创建一个调度者
         sched = schedulerFactory.getScheduler();
@@ -59,7 +66,7 @@ public class JobScheduler {
             long jobId = sche.getJobId();
             long startURLId = sche.getStartURLId();
             if (jobId > 0 && startURLId > 0) {
-                JobDetail job = createJob(sche);
+                JobDetail job = createJob(sche, group);
                 Trigger trigger = createTrigger(sche);
                 if (null != job && null != trigger) {
                     sched.scheduleJob(job, trigger);
@@ -71,10 +78,19 @@ public class JobScheduler {
         }
     }
 
+    /**
+     * 启动scheduler
+     * @throws SchedulerException
+     */
     public void startup() throws SchedulerException {
         sched.start();
     }
 
+    /**
+     * 检查scheduler的状态
+     * @return
+     * @throws SchedulerException
+     */
     public int status() throws SchedulerException {
         if (null != sched) {
             if (sched.isShutdown()) {
@@ -88,12 +104,36 @@ public class JobScheduler {
         return Error;
     }
 
+    /**
+     * 清空scheduler，并停止
+     * @throws SchedulerException
+     */
     public void shutdown() throws SchedulerException {
         sched.clear();
         sched.shutdown();
     }
 
-    private JobDetail createJob(Schedule sche) {
+    /**
+     * 创建一个只执行一次的任务，并执行
+     * @param sche
+     * @return
+     */
+    public boolean createTempJob(Schedule sche) {
+        try {
+            if (Started == status()) {
+                String g = "group2";
+                JobDetail job = createJob(sche, g);
+                Trigger trigger = createRunOnceTrigger(job.getKey(), g);
+                sched.scheduleJob(job, trigger);
+                return true;
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return false;
+    }
+
+    private JobDetail createJob(Schedule sche, String group) {
         JobDataMap jobDataMap = new JobDataMap();
         String jobType = jobMapper.getById(sche.getJobId()).getJobType();
         l.debug("jobId: " + sche.getJobId() + " jobType: " + jobType);
@@ -137,6 +177,15 @@ public class JobScheduler {
             }
         }
         return null;
+    }
+
+    private Trigger createRunOnceTrigger(JobKey jobKey, String group) {
+        Trigger trigger = (SimpleTrigger) newTrigger().
+                withIdentity(jobKey.getName(), group).
+                startAt(futureDate(10, IntervalUnit.SECOND)). // use DateBuilder to create a date in the future
+                forJob(jobKey). // identify job with its JobKey
+                build();
+        return trigger;
     }
 
     private int getRandomSec() {

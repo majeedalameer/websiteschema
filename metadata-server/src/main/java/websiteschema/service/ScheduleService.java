@@ -64,4 +64,8 @@ public class ScheduleService {
 //        schedulerController.setScheduleMapper(scheduleMapper);
         return schedulerController.stop();
     }
+
+    public boolean createTempJob(Schedule sche) {
+        return schedulerController.createTempJob(sche);
+    }
 }

@@ -52,7 +52,7 @@ public class WrapperService {
         String config = wrapper.getApplication();
         try {
             if (null != config) {
-                String checksum = MD5.getMD5(config.getBytes("UTF-8"));
+                String checksum = MD5.getMD5(config.trim().getBytes("UTF-8"));
                 wrapper.setChecksum(checksum);
             }
         } catch (Exception ex) {

@@ -8,8 +8,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 
 /**
  *
@@ -17,12 +19,11 @@ import java.io.InputStreamReader;
  */
 public class FileUtil {
 
-    public static String read(String file) {
-        File f = new File(file);
-        if (f.exists()) {
+    public static String read(File file) {
+        if (file.exists()) {
             FileInputStream fis = null;
             try {
-                fis = new FileInputStream(f);
+                fis = new FileInputStream(file);
                 return readInputStream(fis, "utf-8");
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -37,6 +38,11 @@ public class FileUtil {
             }
         }
         return null;
+    }
+
+    public static String read(String file) {
+        File f = new File(file);
+        return read(f);
     }
 
     public static String readResource(String resource) {
@@ -64,12 +70,24 @@ public class FileUtil {
         try {
             BufferedReader br = new BufferedReader(new InputStreamReader(is, encoding));
             String line = br.readLine();
-            while(null != line) {
+            while (null != line) {
                 sb.append(line).append("\n");
                 line = br.readLine();
             }
         } catch (Exception ex) {
         }
         return sb.toString();
+    }
+
+    public static void save(File file, String content) {
+        try {
+            FileOutputStream fos = new FileOutputStream(file);
+            OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8");
+            osw.write(content);
+            osw.close();
+            fos.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 }

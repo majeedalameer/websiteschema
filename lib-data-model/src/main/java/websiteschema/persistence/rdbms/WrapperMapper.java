@@ -4,6 +4,7 @@
  */
 package websiteschema.persistence.rdbms;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import websiteschema.model.domain.Wrapper;
@@ -21,6 +22,8 @@ public interface WrapperMapper {
     public Wrapper getById(long id);
 
     public Wrapper getByName(String name);
+
+    public Date getLastUpdateTime(long id);
 
     public void update(Wrapper wrapper);
 

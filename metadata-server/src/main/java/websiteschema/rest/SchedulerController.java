@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import websiteschema.model.domain.Schedule;
 import websiteschema.persistence.rdbms.JobMapper;
 import websiteschema.persistence.rdbms.ScheduleMapper;
 import websiteschema.persistence.rdbms.StartURLMapper;
@@ -130,5 +131,9 @@ public class SchedulerController {
 
     public int status() throws SchedulerException {
         return scheduler.status();
+    }
+
+    public boolean createTempJob(Schedule sche) {
+        return scheduler.createTempJob(sche);
     }
 }

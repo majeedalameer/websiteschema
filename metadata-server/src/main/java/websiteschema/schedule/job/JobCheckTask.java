@@ -32,11 +32,23 @@ public class JobCheckTask implements Job {
 
     @Override
     public void execute(JobExecutionContext jec) throws JobExecutionException {
-        long now = System.currentTimeMillis();
-        checkTimeoutTask(Task.STARTED, now);
-        checkTimeoutTask(Task.SENT, now);
-        checkTimeoutTask(Task.UNSENT, now);
-        archive();
+        Task task = new Task(schedulerId);
+        task.setStatus(Task.STARTED);
+        taskMapper.insert(task);
+        try {
+            long now = System.currentTimeMillis();
+            checkTimeoutTask(Task.STARTED, now);
+            checkTimeoutTask(Task.SENT, now);
+            checkTimeoutTask(Task.UNSENT, now);
+            archive();
+            task.setStatus(Task.FINISHED);
+            taskMapper.update(task);
+        } catch (Exception ex) {
+            task.setStatus(Task.EXCEPTION);
+            task.setMessage(ex.getMessage());
+            taskMapper.update(task);
+            ex.printStackTrace();
+        }
     }
 
     private void archive() {
