@@ -4,6 +4,7 @@
  */
 package websiteschema.persistence.rdbms;
 
+import java.util.Date;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -40,6 +41,9 @@ public class WrapperTest {
         wrapper.setWrapperType("bcd");
 
         wrapperMapper.update(wrapper);
+
+        Date updateTime = wrapperMapper.getLastUpdateTime(wrapper.getId());
+        System.out.println(updateTime);
     }
 
     public void delete() {

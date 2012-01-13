@@ -23,8 +23,9 @@ public class TaskTest {
 
     @Test
     public void test() {
-//        updateStatus();
-        archive();
+        update();
+        updateStatus();
+//        archive();
     }
 
     private void archive() {
@@ -35,6 +36,13 @@ public class TaskTest {
         System.out.println(date);
 //        taskMapper.archive(date);
         taskMapper.batchDelete(date);
+    }
+
+    private void update() {
+        Task task = taskMapper.getById(23);
+        if (null != task) {
+            taskMapper.update(task);
+        }
     }
 
     private void updateStatus() {

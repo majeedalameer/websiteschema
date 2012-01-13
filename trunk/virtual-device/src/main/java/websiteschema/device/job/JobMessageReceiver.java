@@ -7,6 +7,9 @@ package websiteschema.device.job;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 import org.apache.log4j.Logger;
 import websiteschema.common.amqp.Message;
 import websiteschema.common.amqp.RabbitQueue;
@@ -45,7 +48,7 @@ public class JobMessageReceiver implements Runnable {
 
     @Override
     public void run() {
-        while (!isStop && null != queue) {            
+        while (!isStop && null != queue) {
             Message message = queue.poll(Message.class, new Function<Message>() {
 
                 /**
@@ -65,12 +68,13 @@ public class JobMessageReceiver implements Runnable {
 
     private void createApplication(Message msg, Wrapper wrapper) {
         String appConfig = wrapper.getApplication();
-        if ("FB".equals(wrapper.getWrapperType())) {
+        if (Wrapper.TYPE_FB.equals(wrapper.getWrapperType())) {
             Application app = new Application(msg.getTaskId());
             RuntimeContext runtimeContext = app.getContext();
-            InputStream is = convert(appConfig);
+            InputStream is = convertToInputStream(appConfig);
             if (null != is) {
-                runtimeContext.loadConfigure(is);
+                //加载Wrapper，将Job的配置转为Map，并设置为Filter。
+                runtimeContext.loadConfigure(is, convertToMap(msg.getConfigure(), msg.getUrl()));
                 boolean inserted = DeviceContext.getInstance().getAppRuntime().startup(app);
                 while (!inserted) {
                     try {
@@ -83,11 +87,30 @@ public class JobMessageReceiver implements Runnable {
         }
     }
 
-    public InputStream convert(String content) {
+    public InputStream convertToInputStream(String content) {
         try {
             return new ByteArrayInputStream(content.getBytes("UTF-8"));
         } catch (Exception ex) {
             return null;
         }
+    }
+
+    public Map<String, String> convertToMap(String properties, String url) {
+        try {
+            InputStream is = convertToInputStream(properties);
+            Properties prop = new Properties();
+            prop.load(is);
+            Map<String, String> ret = new HashMap<String, String>(prop.size());
+            for (String key : prop.stringPropertyNames()) {
+                ret.put(key, prop.getProperty(key));
+            }
+            if (null != url) {
+                ret.put("URL", url);
+            }
+            return ret;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return null;
     }
 }

@@ -28,20 +28,28 @@ public class RuntimeContext {
 
     public ApplicationContext getSpringBeanFactory() {
         String bean = config.getProperty("Bean", "SpringBeans");
-        if(null != bean) {
+        if (null != bean) {
             return getBeanFactory(bean);
         }
         return null;
     }
 
     public void loadConfigure(String cp) {
-        config = new Configure(cp);
+        loadConfigure(cp, null);
+    }
+
+    public void loadConfigure(InputStream cp) {
+        loadConfigure(cp, null);
+    }
+
+    public void loadConfigure(String cp, Map<String, String> prop) {
+        config = new Configure(cp, prop);
         String startFB = config.getProperty("StartFB");
         loadFunctionBlock(startFB);
     }
 
-    public void loadConfigure(InputStream cp) {
-        config = new Configure(cp);
+    public void loadConfigure(InputStream cp, Map<String, String> prop) {
+        config = new Configure(cp, prop);
         String startFB = config.getProperty("StartFB");
         loadFunctionBlock(startFB);
     }

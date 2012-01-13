@@ -46,7 +46,8 @@
                 });
                 proxy.on('beforeload', function(thiz, params) {
                     params.match = Ext.getCmp('MATCH').getValue();
-                    params.sort = 'updateTime desc';
+                    params.user = Ext.getCmp('CRUSER').getValue();
+                    params.sort = 'j.updateTime desc';
                 });
                 var type_store = job_type_store;
 
@@ -224,7 +225,20 @@
                             iconCls: 'icon-delete',
                             handler: handleDelete
                         }, '->',
-                        ' ', 'Job', ' ',
+                        ' ', '创建用户', ' ',
+                        {
+                            xtype: 'textfield',
+                            id: 'CRUSER',
+                            initEvents : function(){
+                                var keyPressed = function(e) {
+                                    if(e.getKey()==e.ENTER){
+                                        handleQuery();
+                                    }
+                                };
+                                this.el.on("keypress", keyPressed, this);
+                            }
+                        },
+                        ' ', '网站ID', ' ',
                         {
                             xtype: 'textfield',
                             id: 'MATCH',
@@ -315,7 +329,6 @@
                 }
 
                 function handleQuery(){
-                    alert(Ext.getCmp('MATCH').getValue());
                     store.reload();
                 }
 

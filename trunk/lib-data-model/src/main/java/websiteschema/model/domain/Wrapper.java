@@ -12,6 +12,7 @@ import java.util.Date;
  */
 public class Wrapper implements java.io.Serializable {
 
+    public static final String TYPE_FB = "FB";
     long id;
     String application = "";
     String name = "";

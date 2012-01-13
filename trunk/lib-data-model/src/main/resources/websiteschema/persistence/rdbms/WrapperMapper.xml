@@ -42,6 +42,12 @@
         where name = #{name}
     </select>
 
+    <!-- 查询更新时间，根据Id -->
+    <select id="getLastUpdateTime" parameterType="long" resultType="java.util.Date">
+        select updateTime from Wrapper
+        where id = #{id}
+    </select>
+
     <!-- 插入记录 -->
     <insert id="insert" parameterType="websiteschema.model.domain.Wrapper"
         useGeneratedKeys="true" keyProperty="id">

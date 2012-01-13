@@ -94,9 +94,9 @@
                         })
                     },
                     {
-                        header: '调度信息',
+                        header: '调度信息(分时日月周)',
                         dataIndex: 'schedule',
-                        width: 100,
+                        width: 120,
                         editor: new fm.TextField({
                             allowBlank: false
                         })
@@ -134,14 +134,19 @@
                         })
                     },
                     {
-                        header: '编辑任务配置',
-                        width: 80,
+                        header: '编辑',
+                        width: 40,
                         xtype: 'actioncolumn',
                         items: [
                             {
                                 icon   : 'resources/accept.gif',  // Use a URL in the icon config
                                 tooltip: '编辑任务配置',
                                 handler: editJob
+                            },
+                            {
+                                icon   : 'resources/cog.png',  // Use a URL in the icon config
+                                tooltip: '执行',
+                                handler: createTempJob
                             }
                         ]
                     },
@@ -360,6 +365,19 @@
                                     }]
                             });
                             AddWin.show(this);
+                        });
+                    }
+                }
+
+                function createTempJob(grid, rowIndex, colIndex) {
+                    var sche= grid.getStore().getAt(rowIndex);
+                    if(null != sche) {
+                        ScheduleService.createTempJob(sche.data, function(success){
+                            if(success) {
+                                alert("添加任务成功！");
+                            } else {
+                                alert("添加任务失败！可能是没有启动调度器，或者你刚刚提交了一个相同的任务还没有执行结束");
+                            }
                         });
                     }
                 }
