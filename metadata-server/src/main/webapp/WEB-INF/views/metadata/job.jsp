@@ -47,6 +47,7 @@
                 proxy.on('beforeload', function(thiz, params) {
                     params.match = Ext.getCmp('MATCH').getValue();
                     params.user = Ext.getCmp('CRUSER').getValue();
+                    params.jobType = Ext.getCmp('JOBTYPE').getValue();
                     params.sort = 'j.updateTime desc';
                 });
                 var type_store = job_type_store;
@@ -225,6 +226,19 @@
                             iconCls: 'icon-delete',
                             handler: handleDelete
                         }, '->',
+                        ' ', '状态', ' ',
+                        {
+                            xtype: 'combo',
+                            id: 'JOBTYPE',
+                            width: 100,
+                            valueField: 'value',
+                            displayField: 'name',
+                            mode: 'local',
+                            emptyText: '',
+                            allowblank: true,
+                            forceSelection: false,
+                            store: job_type_store
+                        }, ' ',
                         ' ', '创建用户', ' ',
                         {
                             xtype: 'textfield',
@@ -253,8 +267,15 @@
                         }, ' ',
                         {
                             text: '检索',
-                            iconCls: 'icon-query',
                             handler: handleQuery
+                        }, ' ',
+                        {
+                            text: '清空',
+                            handler: function(){
+                                Ext.getCmp('CRUSER').setValue('');
+                                Ext.getCmp('MATCH').setValue('');
+                                Ext.getCmp('JOBTYPE').setValue('');
+                            }
                         }
                     ],
                     bbar: new Ext.PagingToolbar({

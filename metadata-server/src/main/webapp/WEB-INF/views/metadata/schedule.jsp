@@ -47,6 +47,8 @@
                 });
                 proxy.on('beforeload', function(thiz, params) {
                     params.match = Ext.getCmp('MATCH').getValue();
+                    params.url = Ext.getCmp('URL').getValue();
+                    params.type = Ext.getCmp('SCHEDULETYPE').getValue();
                     params.sort = 'createTime desc';
                 });
                 
@@ -54,9 +56,9 @@
                 {
                     fields :['name','value'],
                     data:[
-                        ['开始停止次数',1],
-                        ['CRONTAB',0],
-                        ['无效类型',-1]
+                        ['开始停止次数','1'],
+                        ['CRONTAB','0'],
+                        ['无效类型','-1']
                     ]
                 });
 
@@ -211,6 +213,33 @@
                             iconCls: 'icon-delete',
                             handler: handleShutdownScheduler
                         }, '->',
+                        ' ', '类型', ' ',
+                        {
+                            xtype: 'combo',
+                            id: 'SCHEDULETYPE',
+                            width: 100,
+                            valueField: 'value',
+                            displayField: 'name',
+                            mode: 'local',
+                            emptyText: '',
+                            allowblank: true,
+                            forceSelection: false,
+                            store: type_store
+                        }, ' ',
+                        ' ', '起始URL', ' ',
+                        {
+                            xtype: 'textfield',
+                            id: 'URL',
+                            width: 100,
+                            initEvents : function(){
+                                var keyPressed = function(e) {
+                                    if(e.getKey()==e.ENTER){
+                                        handleQuery();
+                                    }
+                                };
+                                this.el.on("keypress", keyPressed, this);
+                            }
+                        }, ' ',
                         ' ', '网站ID', ' ',
                         {
                             xtype: 'textfield',
@@ -226,8 +255,15 @@
                         }, ' ',
                         {
                             text: '检索',
-                            iconCls: 'icon-query',
                             handler: handleQuery
+                        }, ' ',
+                        {
+                            text: '清空',
+                            handler: function(){
+                                Ext.getCmp('URL').setValue('');
+                                Ext.getCmp('MATCH').setValue('');
+                                Ext.getCmp('SCHEDULETYPE').setValue('');
+                            }
                         }
                     ],
                     bbar: new Ext.PagingToolbar({

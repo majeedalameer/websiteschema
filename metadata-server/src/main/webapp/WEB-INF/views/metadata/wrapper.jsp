@@ -42,6 +42,7 @@
                 });
                 proxy.on('beforeload', function(thiz, params) {
                     params.match = Ext.getCmp('MATCH').getValue();
+                    params.type = Ext.getCmp('WRAPPERTYPE').getValue();
                     params.sort = 'updateTime desc';
                 });
                 var type_store = new Ext.data.SimpleStore(
@@ -188,7 +189,20 @@
                             iconCls: 'icon-delete',
                             handler: handleDelete
                         }, '->',
-                        ' ', 'Wrapper', ' ',
+                        ' ', '类型', ' ',
+                        {
+                            xtype: 'combo',
+                            id: 'WRAPPERTYPE',
+                            width: 100,
+                            valueField: 'value',
+                            displayField: 'name',
+                            mode: 'local',
+                            emptyText: '',
+                            allowblank: true,
+                            forceSelection: false,
+                            store: type_store
+                        }, ' ',
+                        ' ', '名称', ' ',
                         {
                             xtype: 'textfield',
                             id: 'MATCH',
@@ -203,8 +217,14 @@
                         }, ' ',
                         {
                             text: '检索',
-                            iconCls: 'icon-query',
                             handler: handleQuery
+                        }, ' ',
+                        {
+                            text: '清空',
+                            handler: function(){
+                                Ext.getCmp('WRAPPERTYPE').setValue('');
+                                Ext.getCmp('MATCH').setValue('');
+                            }
                         }
                     ],
                     bbar: new Ext.PagingToolbar({
@@ -269,7 +289,6 @@
                 }
 
                 function handleQuery(){
-                    alert(Ext.getCmp('MATCH').getValue());
                     store.reload();
                 }
 

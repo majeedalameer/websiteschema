@@ -12,6 +12,12 @@
             <if test="match != null">
                 u.siteId like CONCAT('%','${match}','%' )
             </if>
+            <if test="url != null">
+                and u.startURL like CONCAT('%','${url}','%' )
+            </if>
+            <if test="type != null">
+                and s.scheduleType=#{type}
+            </if>
         </trim>
     </select>
 
@@ -23,6 +29,12 @@
         <trim prefix="WHERE" prefixOverrides="AND |OR ">
             <if test="match != null">
                 u.siteId like CONCAT('%','${match}','%' )
+            </if>
+            <if test="url != null">
+                and u.startURL like CONCAT('%','${url}','%' )
+            </if>
+            <if test="type != null">
+                and s.scheduleType=#{type}
             </if>
         </trim>
         <if test="sort != null">
