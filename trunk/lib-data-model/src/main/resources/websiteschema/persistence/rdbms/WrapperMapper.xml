@@ -13,6 +13,9 @@
             <if test="match != null">
                 name like CONCAT('%','${match}','%' )
             </if>
+            <if test="type != null">
+                and wrapperType=#{type}
+            </if>
         </trim>
     </select>
 
@@ -23,6 +26,9 @@
         <trim prefix="WHERE" prefixOverrides="AND |OR ">
             <if test="match != null">
                 name like CONCAT('%','${match}','%' )
+            </if>
+            <if test="type != null">
+                and wrapperType=#{type}
             </if>
         </trim>
         <if test="sort != null">

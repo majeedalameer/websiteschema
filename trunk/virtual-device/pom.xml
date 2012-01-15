@@ -50,6 +50,12 @@
                                 <include>**/*.log</include>
                             </includes>
                         </fileset>
+                        <fileset>
+                            <directory>${basedir}/temp</directory>
+                        </fileset>
+                        <fileset>
+                            <directory>${basedir}/cache</directory>
+                        </fileset>
                     </filesets>
                 </configuration>
             </plugin>

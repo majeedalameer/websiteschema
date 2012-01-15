@@ -47,14 +47,18 @@
                 });
                 proxy.on('beforeload', function(thiz, params) {
                     params.match = Ext.getCmp('MATCH').getValue();
+                    params.jobname = Ext.getCmp('JOBNAME').getValue();
+                    params.url = Ext.getCmp('URL').getValue();
+                    params.user = Ext.getCmp('CRUSER').getValue();
+                    params.status = Ext.getCmp('STATUS').getValue();
                     params.sort = 'updateTime desc';
                 });
                 var url_status_store = new Ext.data.SimpleStore(
                 {
                     fields :['name','value'],
                     data:[
-                        ['有效',1],
-                        ['无效',0]
+                        ['有效','1'],
+                        ['无效','0']
                     ]
                 });
 
@@ -208,10 +212,66 @@
                             iconCls: 'icon-delete',
                             handler: handleDelete
                         }, '->',
-                        ' ', 'URL', ' ',
+                        ' ', '状态', ' ',
+                        {
+                            xtype: 'combo',
+                            id: 'STATUS',
+                            width: 100,
+                            valueField: 'value',
+                            displayField: 'name',
+                            mode: 'local',
+                            emptyText: '',
+                            allowblank: true,
+                            forceSelection: false,
+                            store: url_status_store
+                        }, ' ',
+                        ' ', '创建者', ' ',
+                        {
+                            xtype: 'textfield',
+                            id: 'CRUSER',
+                            width: 100,
+                            initEvents : function(){
+                                var keyPressed = function(e) {
+                                    if(e.getKey()==e.ENTER){
+                                        handleQuery();
+                                    }
+                                };
+                                this.el.on("keypress", keyPressed, this);
+                            }
+                        }, ' ',
+                        ' ', '起始URL', ' ',
+                        {
+                            xtype: 'textfield',
+                            id: 'URL',
+                            width: 100,
+                            initEvents : function(){
+                                var keyPressed = function(e) {
+                                    if(e.getKey()==e.ENTER){
+                                        handleQuery();
+                                    }
+                                };
+                                this.el.on("keypress", keyPressed, this);
+                            }
+                        }, ' ',
+                        ' ', '爬虫名称', ' ',
+                        {
+                            xtype: 'textfield',
+                            id: 'JOBNAME',
+                            width: 100,
+                            initEvents : function(){
+                                var keyPressed = function(e) {
+                                    if(e.getKey()==e.ENTER){
+                                        handleQuery();
+                                    }
+                                };
+                                this.el.on("keypress", keyPressed, this);
+                            }
+                        }, ' ',
+                        ' ', '网站Id', ' ',
                         {
                             xtype: 'textfield',
                             id: 'MATCH',
+                            width: 100,
                             initEvents : function(){
                                 var keyPressed = function(e) {
                                     if(e.getKey()==e.ENTER){
@@ -223,8 +283,17 @@
                         }, ' ',
                         {
                             text: '检索',
-                            iconCls: 'icon-query',
                             handler: handleQuery
+                        }, ' ',
+                        {
+                            text: '清空',
+                            handler: function(){
+                                Ext.getCmp('STATUS').setValue('');
+                                Ext.getCmp('CRUSER').setValue('');
+                                Ext.getCmp('MATCH').setValue('');
+                                Ext.getCmp('JOBNAME').setValue('');
+                                Ext.getCmp('URL').setValue('');
+                            }
                         }
                     ],
                     bbar: new Ext.PagingToolbar({
@@ -342,7 +411,6 @@
                 }
 
                 function handleQuery(){
-                    alert(Ext.getCmp('MATCH').getValue());
                     store.reload();
                 }
             });

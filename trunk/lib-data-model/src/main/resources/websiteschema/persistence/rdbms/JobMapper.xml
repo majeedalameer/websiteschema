@@ -17,6 +17,9 @@
             <if test="user != null">
                 and j.createUser like CONCAT('%','${user}','%' )
             </if>
+            <if test="jobType != null">
+                and j.jobType=#{jobType}
+            </if>
         </trim>
     </select>
 
@@ -32,6 +35,9 @@
             </if>
             <if test="user != null">
                 and j.createUser like CONCAT('%','${user}','%' )
+            </if>
+            <if test="jobType != null">
+                and j.jobType=#{jobType}
             </if>
         </trim>
         <if test="sort != null">
