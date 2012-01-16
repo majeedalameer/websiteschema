@@ -55,7 +55,7 @@
                 proxy.on('beforeload', function(thiz, params) {
                     params.match = Ext.getCmp('MATCH').getValue();
                     params.sort = 'id desc';
-                    params.siteType = '';
+                    params.siteType = Ext.getCmp('SITETYPE').getValue();;
                 });
 
                 var site_type_store = new Ext.data.SimpleStore(
@@ -251,6 +251,19 @@
                             iconCls: 'icon-add',
                             handler: handleAddStartURL
                         }, '->',
+                        ' ', '类型', ' ',
+                        {
+                            xtype: 'combo',
+                            id: 'SITETYPE',
+                            width: 100,
+                            valueField: 'value',
+                            displayField: 'name',
+                            mode: 'local',
+                            emptyText: '',
+                            allowblank: true,
+                            forceSelection: false,
+                            store: site_type_store
+                        }, ' ',
                         ' ', '网站ID', ' ',
                         {
                             xtype: 'textfield',
@@ -266,8 +279,14 @@
                         }, ' ',
                         {
                             text: '检索',
-                            iconCls: 'icon-query',
                             handler: handleQuery
+                        }, ' ',
+                        {
+                            text: '清空',
+                            handler: function(){
+                                Ext.getCmp('SITETYPE').setValue('');
+                                Ext.getCmp('MATCH').setValue('');
+                            }
                         }
                     ],
                     bbar: new Ext.PagingToolbar({
