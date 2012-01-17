@@ -90,18 +90,39 @@ public class HtmlUnitWebCrawler implements Crawler {
         }
     }
 
-    @Override
-    public Document[] crawl(String url) {
+    // 迭代解析页面内的活动元素，例如：iframe and javascript
+    public Document[] crawl_act_elems(String url) {
         final WebClient webClient = getWebClient();
         try {
             URL dest = new URL(url);
             WebRequest req = new WebRequest(dest);
             WebResponse res = webClient.loadWebResponse(req);
             httpStatus = res.getStatusCode();
-            
+
             WebWindow window = webClient.getCurrentWindow();
             final Page page = webClient.loadWebResponseInto(res, window);
 
+            this.url = page.getUrl().toString();
+            return getDocuments(page);
+        } catch (IOException ex) {
+            l.error(ex);
+        } catch (FailingHttpStatusCodeException ex) {
+            l.error(ex);
+            httpStatus = ex.getStatusCode();
+        } catch (ParserConfigurationException ex) {
+            l.error(ex);
+        } finally {
+            webClient.closeAllWindows();
+        }
+        return null;
+    }
+
+    @Override
+    public Document[] crawl(String url) {
+        final WebClient webClient = getWebClient();
+        try {
+            URL dest = new URL(url);
+            final Page page = webClient.getPage(dest);// 简单获取页面
             this.url = page.getUrl().toString();
             return getDocuments(page);
         } catch (IOException ex) {
