@@ -37,7 +37,7 @@ public class LinksExtractorTest {
         DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
         domFactory.setNamespaceAware(true); // never forget this!
         DocumentBuilder builder = domFactory.newDocumentBuilder();
-        Document doc = builder.parse(new ByteArrayInputStream(content.getBytes()));
+        Document doc = builder.parse(new ByteArrayInputStream(content.getBytes("UTF-8")));
         return doc;
     }
 }
