@@ -50,7 +50,7 @@ public class HtmlUnitWebCrawler implements Crawler {
     private WebClient getWebClient() {
         final WebClient webClient = new WebClient();
         webClient.setJavaScriptEnabled(isJavaScriptEnabled());
-        webClient.setTimeout(delay);
+        webClient.setTimeout(20);// 时间问题
         webClient.setPopupBlockerEnabled(allowPopupWindow);
         webClient.setRedirectEnabled(true);
         webClient.setThrowExceptionOnScriptError(false);
@@ -90,8 +90,7 @@ public class HtmlUnitWebCrawler implements Crawler {
         }
     }
 
-    // 迭代解析页面内的活动元素，例如：iframe and javascript
-    public Document[] crawl_act_elems(String url) {
+    public Document[] crawl_old(String url) {
         final WebClient webClient = getWebClient();
         try {
             URL dest = new URL(url);
@@ -122,7 +121,7 @@ public class HtmlUnitWebCrawler implements Crawler {
         final WebClient webClient = getWebClient();
         try {
             URL dest = new URL(url);
-            final Page page = webClient.getPage(dest);// 简单获取页面
+            final Page page = webClient.getPage(dest);
             this.url = page.getUrl().toString();
             return getDocuments(page);
         } catch (IOException ex) {
