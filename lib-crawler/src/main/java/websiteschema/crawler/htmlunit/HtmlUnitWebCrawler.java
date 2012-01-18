@@ -50,7 +50,7 @@ public class HtmlUnitWebCrawler implements Crawler {
     private WebClient getWebClient() {
         final WebClient webClient = new WebClient();
         webClient.setJavaScriptEnabled(isJavaScriptEnabled());
-        webClient.setTimeout(20);// 时间问题
+        webClient.setTimeout(sec);
         webClient.setPopupBlockerEnabled(allowPopupWindow);
         webClient.setRedirectEnabled(true);
         webClient.setThrowExceptionOnScriptError(false);
