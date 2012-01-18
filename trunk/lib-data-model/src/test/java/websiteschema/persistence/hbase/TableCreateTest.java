@@ -6,6 +6,7 @@
 package websiteschema.persistence.hbase;
 
 import org.junit.Test;
+import websiteschema.model.domain.UrlLink;
 import websiteschema.model.domain.Websiteschema;
 import websiteschema.model.domain.cluster.ClusterModel;
 import websiteschema.model.domain.cluster.Sample;
@@ -24,6 +25,8 @@ public class TableCreateTest {
         HBaseMapperFactory.getInstance().createTableIfNotExists(cm.getTableName(), ClusterModel.class);
         WebsiteschemaMapper wm = new WebsiteschemaMapper();
         HBaseMapperFactory.getInstance().createTableIfNotExists(wm.getTableName(), Websiteschema.class);
+        UrlLinkMapper um = new UrlLinkMapper();
+        HBaseMapperFactory.getInstance().createTableIfNotExists(um.getTableName(), UrlLink.class);
     }
 
 }
