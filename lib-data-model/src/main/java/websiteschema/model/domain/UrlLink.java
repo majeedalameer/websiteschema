@@ -15,10 +15,11 @@ import websiteschema.persistence.hbase.annotation.RowKey;
 public class UrlLink implements HBaseBean {
 
     public final static int New = 0;
+    public final static int Redirected = 1;
     @RowKey
     String rowKey;
     @ColumnFamily(family = "c")
-    String content = null;
+    String content = null; // 采集到了，被抽取之后的结果
     @ColumnFamily
     int status = New;
     @ColumnFamily
@@ -27,6 +28,14 @@ public class UrlLink implements HBaseBean {
     Date lastUpdateTime = new Date();
     @ColumnFamily
     Date createTime = null;
+    @ColumnFamily
+    String parent = null; //父链接的rowKey
+    @ColumnFamily
+    int depth = 0;
+    @ColumnFamily
+    int httpStatus = 0;
+    @ColumnFamily
+    String jobname = null; //JobName代表了起始URL
 
     @Override
     public String getRowKey() {
@@ -76,5 +85,37 @@ public class UrlLink implements HBaseBean {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public int getDepth() {
+        return depth;
+    }
+
+    public void setDepth(int depth) {
+        this.depth = depth;
+    }
+
+    public int getHttpStatus() {
+        return httpStatus;
+    }
+
+    public void setHttpStatus(int httpStatus) {
+        this.httpStatus = httpStatus;
+    }
+
+    public String getJobname() {
+        return jobname;
+    }
+
+    public void setJobname(String jobname) {
+        this.jobname = jobname;
+    }
+
+    public String getParent() {
+        return parent;
+    }
+
+    public void setParent(String parent) {
+        this.parent = parent;
     }
 }
