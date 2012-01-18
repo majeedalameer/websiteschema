@@ -4,6 +4,7 @@
  */
 package websiteschema.fb.core;
 
+import java.lang.annotation.Annotation;
 import websiteschema.fb.core.ecc.ECC;
 import websiteschema.fb.core.ecc.ExecutionControl;
 import java.lang.reflect.Field;
@@ -82,9 +83,19 @@ public class FunctionBlock {
                     if (null != params && params.length > 0) {
                         // Method Parameter has Annotation EVT Present.
                         if (params.length == 1) {
-                            Class param = params[0];
-                            if (param.isAnnotationPresent(EVT.class)) {
-                                method.invoke(this, ei);
+                            Annotation an[][] = method.getParameterAnnotations();
+                            if (null != an && an.length > 0) {
+                                //得到方法上第一个参数的Annotation
+                                Annotation annotations[] = an[0];
+                                if (null != annotations && annotations.length > 0) {
+                                    for (Annotation a : annotations) {
+                                        //如果包含EVT的注解
+                                        if (a.annotationType().equals(EVT.class)) {
+                                            method.invoke(this, ei);
+                                            break;
+                                        }
+                                    }
+                                }
                             }
                         }
                     } else {
