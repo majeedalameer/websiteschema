@@ -17,6 +17,7 @@ import com.gargoylesoftware.htmlunit.WebResponse;
 import com.gargoylesoftware.htmlunit.WebWindow;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.XHtmlPage;
+import com.gargoylesoftware.htmlunit.util.WebConnectionWrapper;
 import com.gargoylesoftware.htmlunit.xml.XmlPage;
 import java.io.IOException;
 import java.net.URL;
@@ -45,16 +46,33 @@ public class HtmlUnitWebCrawler implements Crawler {
     int sec = 1000;
     int delay = 30 * sec;
     int httpStatus = 0;
+    int requestNumber = 0;
+    int maxRequestNumber = 1;
     Logger l = Logger.getLogger(HtmlUnitWebCrawler.class);
 
     private WebClient getWebClient() {
         final WebClient webClient = new WebClient();
-        webClient.setJavaScriptEnabled(isJavaScriptEnabled());
+        webClient.setJavaScriptEnabled(false);
+        webClient.setCssEnabled(false);
         webClient.setTimeout(sec);
         webClient.setPopupBlockerEnabled(allowPopupWindow);
         webClient.setRedirectEnabled(true);
         webClient.setThrowExceptionOnScriptError(false);
-        webClient.setThrowExceptionOnFailingStatusCode(true);
+        webClient.setThrowExceptionOnFailingStatusCode(false);
+        new WebConnectionWrapper(webClient) {
+
+            @Override
+            public WebResponse getResponse(WebRequest request) throws IOException {
+                System.err.println("__________" + request.getUrl());
+                ++requestNumber;
+                if (requestNumber > maxRequestNumber) {
+                    request.setUrl(new URL("http://www.baidu.com"));
+                }
+                WebResponse response = super.getResponse(request);
+                return response;
+            }
+        };
+
         return webClient;
     }
 
