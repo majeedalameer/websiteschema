@@ -13,12 +13,12 @@ import websiteschema.fb.core.FunctionBlock;
  *
  * @author mgd
  */
-@EI(name = {"E1", "E2"})
-@EO(name = {"CEASE"})
+@EI(name = {"E1:M", "E2:M"})
+@EO(name = {"EO"})
 public class Event2Merger extends FunctionBlock {
 
-    @Algorithm(name = "MERGE_2E")
+    @Algorithm(name = "M")
     public void merge2e() {
-        triggerEvent("CEASE");
+        triggerEvent("M");
     }
 }
