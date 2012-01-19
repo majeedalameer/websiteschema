@@ -4,21 +4,17 @@
  */
 package websiteschema.crawler.fb;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import org.apache.xerces.util.DOMUtil;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import websiteschema.element.DocumentUtil;
 import websiteschema.fb.annotation.*;
 import websiteschema.fb.core.FunctionBlock;
 import websiteschema.model.domain.cluster.Cluster;
-import websiteschema.utils.UrlLinkUtil;
 
 /**
  *
