@@ -52,7 +52,7 @@ public class FBContentExtrator extends FunctionBlock {
                 this.triggerEvent("EMPTY");
             }
         } catch (Exception ex) {
-            l.error(this.getName() + " error when extract links: " + ex.getMessage(), ex);
+            l.error(this.getName() + " error when extract contents: " + ex.getMessage(), ex);
             this.triggerEvent("FATAL");
         }
     }
@@ -63,9 +63,9 @@ public class FBContentExtrator extends FunctionBlock {
             cont_list = new ArrayList<String>();
             for (int i = 0; i < nodes.size(); i++) {
                 Node node = nodes.get(i);
-                List<String> cont_list = getContents(node);
-                if (null != cont_list) {
-                    cont_list.addAll(cont_list);
+                List<String> str_list = getContents(node);
+                if (null != str_list) {
+                    cont_list.addAll(str_list);
                 }
             }
         }
@@ -96,6 +96,6 @@ public class FBContentExtrator extends FunctionBlock {
             }
         }
 
-        return null;
+        return ret;
     }
 }
