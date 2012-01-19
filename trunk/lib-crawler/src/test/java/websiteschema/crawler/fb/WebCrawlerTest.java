@@ -15,6 +15,7 @@ import org.htmlparser.NodeFilter;
 import org.htmlparser.Parser;
 import org.htmlparser.filters.TagNameFilter;
 import org.htmlparser.http.ConnectionManager;
+import org.htmlparser.util.NodeIterator;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
 import org.junit.Test;
@@ -62,19 +63,25 @@ public class WebCrawlerTest {
         } catch (ParserException ex) {
             System.err.println(ex);
         }
-        String html_str = nodeList.elementAt(0).toHtml();
+        System.out.println(nodeList.elementAt(0).toPlainTextString());
+//        for (NodeIterator it = nodeList.elements(); it.hasMoreNodes();) {
+//            Node node = it.nextNode();
+//            System.out.println(node.toPlainTextString());
+//        }
 
-        DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
-        domFactory.setNamespaceAware(true);
-        DocumentBuilder builder = null;
-        try {
-            builder = domFactory.newDocumentBuilder();
-        } catch (ParserConfigurationException ex) {
-            System.err.println(ex);
-        }
-
-//        Document doc = builder.parse(new InputSource(new StringReader("<html><body>测试数据</body></html>")));
-        Document doc = builder.parse(new InputSource(new StringReader(html_str)));
-        System.err.println(doc.getFirstChild().getTextContent());
+//        String html_str = nodeList.elementAt(0).toHtml();
+//
+//        DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
+//        domFactory.setNamespaceAware(true);
+//        DocumentBuilder builder = null;
+//        try {
+//            builder = domFactory.newDocumentBuilder();
+//        } catch (ParserConfigurationException ex) {
+//            System.err.println(ex);
+//        }
+//
+////        Document doc = builder.parse(new InputSource(new StringReader("<html><body>测试数据</body></html>")));
+//        Document doc = builder.parse(new InputSource(new StringReader(html_str)));
+//        System.err.println(doc.getFirstChild().getTextContent());
     }
 }
