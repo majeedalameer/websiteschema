@@ -5,9 +5,7 @@
 package websiteschema.crawler.fb;
 
 import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
