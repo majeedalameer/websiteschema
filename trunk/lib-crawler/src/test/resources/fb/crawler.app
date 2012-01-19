@@ -21,6 +21,7 @@ FBType=websiteschema.crawler.fb.FBWebCrawler
 EO.SUC={"EXTRACTOR":"EXTRACT"}
 EO.FAL={"Start":"STOP"}
 DO.DOC={"EXTRACTOR":"IN"}
+#DI.CRAWLER=websiteschema.crawler.SimpleHttpCrawler
 DI.URL=http://news.163.com/12/0117/11/7NVE580G00014JB5.html?from=index
 
 [EXTRACTOR]
