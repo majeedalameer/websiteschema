@@ -43,11 +43,11 @@ public class DOMExtractorTest {
         extractor.extract();
         System.out.println("抽取结束：");
 
-        printNode(extractor.out.getDocumentElement());
+        printNodes(extractor.out.getDocumentElement());
     }
 
     // 逐层打印DOM树
-    private void printNode(Node root) {
+    private void printNodes(Node root) {
         Queue<Node> q = new LinkedList<Node>();
         q.add(root);
         Node iter_node = null;
