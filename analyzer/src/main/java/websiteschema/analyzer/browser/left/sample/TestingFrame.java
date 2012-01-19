@@ -187,7 +187,6 @@ public class TestingFrame extends javax.swing.JFrame {
             this.resultArea.append("采集结束，耗时：" + (t2 - t1) + "\n");
             source = null != docs ? docs[0] : (Document) context.getBrowser().getW3CDocument();
             if (null != source) {
-                FBDOMExtractor extractor = new FBDOMExtractor();
                 String clusterName = this.clusterNameField.getText();
                 if (null != clusterName && !"".equals(clusterName)) {
                     clusterName = clusterName.trim();
@@ -199,6 +198,7 @@ public class TestingFrame extends javax.swing.JFrame {
                     this.resultArea.append("此页面属于类：" + clusterName + "\n");
                     this.clusterNameField.setText(clusterName);
                 }
+                FBDOMExtractor extractor = new FBDOMExtractor();
                 extractor.in = source;
                 extractor.schema = websiteschema;
                 extractor.clusterName = clusterName;
