@@ -87,6 +87,9 @@ create table Job
    primary key (id)
 );
 
+insert into Job(jobType, configure, wrapperId, createTime, createUser)
+values ('websiteschema.schedule.job.JobCheckTask', '', 0, now(), 'system');
+
 /*==============================================================*/
 /* Table: Keyword                                               */
 /*==============================================================*/
@@ -250,7 +253,7 @@ create table ScheduleTask
 /*==============================================================*/
 create table ScheduleTaskArchive
 (
-   id                   bigint not null auto_increment,
+   id                   bigint not null,
    scheId               bigint,
    status               int,
    message              varchar(1000),
