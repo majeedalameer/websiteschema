@@ -89,6 +89,8 @@ create table Job
 
 insert into Job(jobType, configure, wrapperId, createTime, createUser)
 values ('websiteschema.schedule.job.JobCheckTask', '', 0, now(), 'system');
+insert into Job(jobType, configure, wrapperId, createTime, createUser)
+values ('websiteschema.schedule.job.JobAMQPQueueV1', 'XPATH=html/body/div[@class=\'area clearfix\']/div[@class=\'colLM\']/ul[@class=\'newsList dotted\']/li/span[@class=\'article\']/a\nCLS=0', 3, now(), 'system');
 
 /*==============================================================*/
 /* Table: Keyword                                               */
@@ -119,6 +121,9 @@ create table Schedule
    createTime           datetime,
    primary key (id)
 );
+
+insert into Schedule(startURLId, jobId, schedule, scheduleType, createTime)
+values (1,2,'*/10 * * * ?',0,now());
 
 /*==============================================================*/
 /* Table: Site                                                  */
@@ -176,6 +181,9 @@ create table StartURL
    lastUpdateUser       varchar(30),
    primary key (id, jobname)
 );
+
+insert into StartURL(siteId, startURL, jobname, status, createTime, createUser)
+values ('www_163_com_1','http://money.163.com/special/00252G50/macroNew.html','money_163_com_1',1,now(),'system');
 
 /*==============================================================*/
 /* Table: User                                                  */
