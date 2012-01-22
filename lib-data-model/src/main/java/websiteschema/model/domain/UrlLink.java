@@ -16,7 +16,7 @@ public class UrlLink implements HBaseBean {
 
     public final static int New = 0;
     public final static int Redirected = 1;
-    @RowKey
+    @RowKey(desc = "URL的host部分要倒置")
     String rowKey;
     @ColumnFamily(family = "c")
     String content = null; // 采集到了，被抽取之后的结果

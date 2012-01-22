@@ -74,7 +74,7 @@ public class JobMessageReceiver implements Runnable {
             InputStream is = convertToInputStream(appConfig);
             if (null != is) {
                 //加载Wrapper，将Job的配置转为Map，并设置为Filter。
-                runtimeContext.loadConfigure(is, convertToMap(msg.getConfigure(), msg.getUrl()));
+                runtimeContext.loadConfigure(is, convertToMap(msg));
                 boolean inserted = DeviceContext.getInstance().getAppRuntime().startup(app);
                 while (!inserted) {
                     try {
@@ -95,8 +95,12 @@ public class JobMessageReceiver implements Runnable {
         }
     }
 
-    public Map<String, String> convertToMap(String properties, String url) {
+    public Map<String, String> convertToMap(Message msg) {
         try {
+            String properties = msg.getConfigure();
+            String url = msg.getUrl();
+            String siteId = msg.getSiteId();
+            String jobname = msg.getJobname();
             InputStream is = convertToInputStream(properties);
             Properties prop = new Properties();
             prop.load(is);
@@ -107,6 +111,15 @@ public class JobMessageReceiver implements Runnable {
             if (null != url) {
                 ret.put("URL", url);
             }
+            if (null != siteId) {
+                ret.put("SITEID", siteId);
+            }
+            if (null != jobname) {
+                ret.put("JOBNAME", jobname);
+            }
+            ret.put("STARTURLID", String.valueOf(msg.getStartURLId()));
+            ret.put("JOBID", String.valueOf(msg.getJobId()));
+            ret.put("WRAPPERID", String.valueOf(msg.getWrapperId()));
             return ret;
         } catch (Exception ex) {
             ex.printStackTrace();

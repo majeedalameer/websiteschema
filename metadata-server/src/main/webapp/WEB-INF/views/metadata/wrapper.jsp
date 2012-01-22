@@ -106,7 +106,7 @@
                         xtype: 'actioncolumn',
                         items: [
                             {
-                                icon   : 'resources/accept.gif',  // Use a URL in the icon config
+                                icon   : 'resources/icons/fam/cog_edit.png',  // Use a URL in the icon config
                                 tooltip: '编辑抽取器',
                                 handler: editApplication
                             }

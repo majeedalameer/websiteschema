@@ -28,7 +28,7 @@ import websiteschema.fb.core.FunctionBlock;
  * @author ray
  */
 @EO(name = {"EO", "FATAL"})
-@EI(name = {"EXTRACT:EXT"})
+@EI(name = {"EI:EXT"})
 public class FBDOMExtractor extends FunctionBlock {
 
     private Map<String, String> prop;

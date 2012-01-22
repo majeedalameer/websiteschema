@@ -140,6 +140,7 @@ public class HtmlUnitWebCrawler implements Crawler {
         try {
             URL dest = new URL(url);
             final Page page = webClient.getPage(dest);
+            httpStatus = page.getWebResponse().getStatusCode();
             this.url = page.getUrl().toString();
             return getDocuments(page);
         } catch (IOException ex) {

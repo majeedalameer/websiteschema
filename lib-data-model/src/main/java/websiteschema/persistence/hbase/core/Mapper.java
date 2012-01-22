@@ -34,10 +34,29 @@ public class Mapper {
     Logger l = Logger.getRootLogger();
     String tableName;
     Configuration conf;
+    HTable table = null;
 
     public Mapper(String tableName) {
         this.tableName = tableName;
         conf = HBaseConf.getHBaseConfiguration();
+        try {
+            table = new HTable(conf, tableName);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            table = null;
+        }
+    }
+
+    protected HTable getTable() {
+        if (null != table) {
+            try {
+                table = new HTable(conf, tableName);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                return null;
+            }
+        }
+        return table;
     }
 
     public String getTableName() {
@@ -46,11 +65,10 @@ public class Mapper {
 
     public void delete(String rowKey) {
         try {
-            HTable table = new HTable(conf, getTableName());
             List list = new ArrayList();
             Delete d1 = new Delete(rowKey.getBytes());
             list.add(d1);
-            table.delete(list);
+            getTable().delete(list);
             l.debug("删除表 " + getTableName() + ", 行 " + rowKey + " 成功！");
         } catch (IOException ex) {
             l.error("Table " + getTableName(), ex);
@@ -59,7 +77,6 @@ public class Mapper {
 
     public void write(String rowKey, Map<String, String> record) {
         try {
-            HTable table = new HTable(conf, getTableName());
             Put put = new Put(Bytes.toBytes(rowKey));
             for (String key : record.keySet()) {
                 if (!"rowKey".equalsIgnoreCase(key)) {
@@ -68,12 +85,12 @@ public class Mapper {
                         put.add(Bytes.toBytes(cf[0]),
                                 Bytes.toBytes(cf[1]),
                                 Bytes.toBytes(record.get(key)));
-                        table.put(put);
+                        getTable().put(put);
                     } else {
                         put.add(Bytes.toBytes(key),
                                 Bytes.toBytes(String.valueOf(1)),
                                 Bytes.toBytes(record.get(key)));
-                        table.put(put);
+                        getTable().put(put);
                     }
                 }
             }
@@ -84,8 +101,7 @@ public class Mapper {
 
     public void write(List<Row> rows) {
         try {
-            HTable table = new HTable(conf, getTableName());
-            table.batch(rows);
+            getTable().batch(rows);
         } catch (InterruptedException ex) {
             l.error("Table " + getTableName(), ex);
         } catch (IOException ex) {
@@ -95,20 +111,28 @@ public class Mapper {
 
     public Result select(String rowKey) {
         try {
-            HTable table = new HTable(conf, getTableName());
             Get g = new Get(rowKey.getBytes());
-            return table.get(g);
+            return getTable().get(g);
         } catch (IOException ex) {
             l.error("Table " + getTableName(), ex);
             return null;
         }
     }
 
+    public boolean exists(String rowKey) {
+        try {
+            Get g = new Get(rowKey.getBytes());
+            return getTable().exists(g);
+        } catch (IOException ex) {
+            l.error("Table " + getTableName(), ex);
+            return false;
+        }
+    }
+
     public ResultScanner scan() {
         try {
-            HTable table = new HTable(conf, getTableName());
             Scan s = new Scan();
-            return table.getScanner(s);
+            return getTable().getScanner(s);
         } catch (IOException ex) {
             l.error("Table " + getTableName(), ex);
             return null;
@@ -117,10 +141,9 @@ public class Mapper {
 
     public ResultScanner scan(Filter filter) {
         try {
-            HTable table = new HTable(conf, getTableName());
             Scan s = new Scan();
             s.setFilter(filter);
-            return table.getScanner(s);
+            return getTable().getScanner(s);
         } catch (IOException ex) {
             l.error("Table " + getTableName(), ex);
             return null;
@@ -129,9 +152,8 @@ public class Mapper {
 
     public ResultScanner scan(String rangeStart, String rangeEnd) {
         try {
-            HTable table = new HTable(conf, getTableName());
             Scan s = new Scan(Bytes.toBytes(rangeStart), Bytes.toBytes(rangeEnd));
-            return table.getScanner(s);
+            return getTable().getScanner(s);
         } catch (IOException ex) {
             l.error("Table " + getTableName(), ex);
             return null;
@@ -140,10 +162,9 @@ public class Mapper {
 
     public ResultScanner scan(String rangeStart, String rangeEnd, String family) {
         try {
-            HTable table = new HTable(conf, getTableName());
             Scan s = new Scan(Bytes.toBytes(rangeStart), Bytes.toBytes(rangeEnd));
             s.addFamily(Bytes.toBytes(family));
-            return table.getScanner(s);
+            return getTable().getScanner(s);
         } catch (IOException ex) {
             l.error("Table " + getTableName(), ex);
             return null;
@@ -152,9 +173,8 @@ public class Mapper {
 
     public ResultScanner scan(String rangeStart) {
         try {
-            HTable table = new HTable(conf, getTableName());
             Scan s = new Scan(Bytes.toBytes(rangeStart));
-            return table.getScanner(s);
+            return getTable().getScanner(s);
         } catch (IOException ex) {
             l.error("Table " + getTableName(), ex);
             return null;
@@ -163,11 +183,10 @@ public class Mapper {
 
     public ResultScanner scan(String rangeStart, String rangeEnd, Filter filter) {
         try {
-            HTable table = new HTable(conf, getTableName());
             Scan s = new Scan(Bytes.toBytes(rangeStart), Bytes.toBytes(rangeEnd));
             s.setCaching(0);
             s.setFilter(filter);
-            return table.getScanner(s);
+            return getTable().getScanner(s);
         } catch (IOException ex) {
             l.error("Table " + getTableName(), ex);
             return null;

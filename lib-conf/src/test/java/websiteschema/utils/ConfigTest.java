@@ -29,7 +29,7 @@ public class ConfigTest {
      * 则value会被替换成xyz
      */
     @Test
-    public void test2() {
+    public void testFilter() {
         Configure conf0 = new Configure("configure-site.ini");
         assertEquals(conf0.getProperty("FiltedField"), "${abc}");
         //增加过滤
@@ -37,5 +37,6 @@ public class ConfigTest {
         prop.put("abc", "xyz");
         Configure conf = new Configure("configure-site.ini", prop);
         assertEquals(conf.getProperty("FiltedField"), "xyz");
+        assertEquals(conf.getProperty("TestField"), "CLS = xyz");
     }
 }

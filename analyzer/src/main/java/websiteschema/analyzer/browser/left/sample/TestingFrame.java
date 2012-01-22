@@ -14,6 +14,7 @@ import javax.swing.JOptionPane;
 import org.w3c.dom.Document;
 import websiteschema.analyzer.browser.utils.ClustererUtil;
 import websiteschema.analyzer.context.BrowserContext;
+import websiteschema.crawler.Crawler;
 import websiteschema.crawler.fb.FBDOMExtractor;
 import websiteschema.crawler.htmlunit.HtmlUnitWebCrawler;
 import websiteschema.element.DocumentUtil;
@@ -178,8 +179,14 @@ public class TestingFrame extends javax.swing.JFrame {
             this.setTitle("测试抽取: " + url);
             context.getConsole().log("开始采集：" + url);
             this.resultArea.setText("开始采集：" + url + "\n");
-            HtmlUnitWebCrawler crawler = new HtmlUnitWebCrawler();
-            crawler.setJavaScriptEnabled(isJavaScriptEnabled());
+            Crawler crawler = null;
+            if (isJavaScriptEnabled()) {
+                HtmlUnitWebCrawler huwc = new HtmlUnitWebCrawler();
+                huwc.setJavaScriptEnabled(isJavaScriptEnabled());
+                crawler = huwc;
+            } else {
+                crawler = new websiteschema.crawler.SimpleHttpCrawler();
+            }
             long t1 = System.currentTimeMillis();
             Document docs[] = crawler.crawl(url);
             long t2 = System.currentTimeMillis();

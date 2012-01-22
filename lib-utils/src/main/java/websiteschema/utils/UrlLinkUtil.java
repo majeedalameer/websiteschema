@@ -113,6 +113,24 @@ public class UrlLinkUtil {
         return charset;
     }
 
+    public String convertUrlToRowKey(URL url) {
+        String ret = null;
+
+        if (null != url) {
+            String schema = url.getProtocol();
+            String host = (new StringBuilder(url.getHost())).reverse().toString();
+            String query = url.getQuery();
+            String path = url.getPath();
+            if (null != query) {
+                ret = schema + "://" + host + "/" + path + "?" + query;
+            } else {
+                ret = schema + "://" + host + "/" + path;
+            }
+        }
+
+        return ret;
+    }
+
     public String convertUrlToRowKey(URL url, String siteId) {
         String ret = null;
 

@@ -13,7 +13,7 @@ import org.junit.Test;
 public class Event4MergerTest{
     @Test
     public void test() throws Exception{
-        Event4Merger evm = new Event4Merger();
+        QuadMerge evm = new QuadMerge();
         evm.executeEvent("EO");
     }
 }

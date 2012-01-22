@@ -9,7 +9,6 @@ import com.webrenderer.swing.dom.IElement;
 import com.webrenderer.swing.dom.IElementCollection;
 import com.webrenderer.swing.event.MouseEvent;
 import com.webrenderer.swing.event.MouseListener;
-import javax.swing.JTabbedPane;
 import org.apache.log4j.Logger;
 import websiteschema.analyzer.browser.SimpleBrowser;
 import websiteschema.analyzer.context.BrowserContext;
@@ -24,6 +23,7 @@ public class AnalyzeEventListener implements MouseListener {
     Logger l = Logger.getRootLogger();
     IMozillaBrowserCanvas browser;
     String analyzerTips = BrowserContext.getConfigure().getProperty("AnalyzerTips");
+    String urlAnalyzerTips = BrowserContext.getConfigure().getProperty("URLAnalyzerTips");
     SimpleBrowser simpleBrowser;
 
     public AnalyzeEventListener(IMozillaBrowserCanvas browser) {
@@ -45,28 +45,35 @@ public class AnalyzeEventListener implements MouseListener {
         l.trace("node type: " + nodeType + " node name: " + ele.getTagName());
         String[] attrs = ele.getAttributes();
         boolean containAnalyzerTips = false;
-        boolean containSrcAccept = true;
+        boolean containUrlAnalyzerTips = false;
         if (null != attrs) {
             for (String attr : attrs) {
                 l.trace(attr);
                 if (attr.contains(analyzerTips)) {
                     containAnalyzerTips = true;
-                    continue;
-                } else if (attr.contains("resources/accept.gif")) {
-                    containSrcAccept = true;
-                    continue;
+                } else if (attr.contains(urlAnalyzerTips)) {
+                    containUrlAnalyzerTips = true;
                 }
-                if (containAnalyzerTips && containSrcAccept) {
-                    // receive analyze command.
-                    IElement tr = ele.getParentElement().getParentElement().getParentElement();
-                    IElementCollection children = tr.getChildElements();
-                    String id = ElementUtil.getInstance().getText(children.item(1));
-                    String siteId = ElementUtil.getInstance().getText(children.item(2));
-                    l.info("Starting analysis site: " + siteId);
-//                    ele.setAttribute("src", "resources/delete.gif", 0);
-                    simpleBrowser.startAnalysis(siteId);
-                    break;
-                }
+            }
+            if (containAnalyzerTips) {
+                // receive analyze command.
+                IElement tr = ele.getParentElement().getParentElement().getParentElement();
+                IElementCollection children = tr.getChildElements();
+                String siteId = ElementUtil.getInstance().getText(children.item(2));
+                String url = ElementUtil.getInstance().getText(children.item(7));
+                l.info("Starting analysis site: " + siteId);
+                simpleBrowser.startAnalysis(siteId, url);
+                simpleBrowser.setFocusTab(1);
+            } else if (containUrlAnalyzerTips) {
+                // receive analyze command.
+                IElement tr = ele.getParentElement().getParentElement().getParentElement();
+                IElementCollection children = tr.getChildElements();
+                String siteId = ElementUtil.getInstance().getText(children.item(3));
+                String url = ElementUtil.getInstance().getText(children.item(2));
+                l.info("Starting analysis url: " + url);
+                simpleBrowser.startAnalysis(siteId, url);
+                simpleBrowser.setFocusTab(1);
+
             }
         }
     }

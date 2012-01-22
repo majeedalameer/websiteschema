@@ -4,20 +4,12 @@
  */
 package websiteschema.crawler;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import org.apache.log4j.Logger;
-import org.htmlparser.NodeFilter;
-import org.htmlparser.Parser;
-import org.htmlparser.filters.TagNameFilter;
-import org.htmlparser.http.ConnectionManager;
-import org.htmlparser.util.NodeList;
-import org.htmlparser.util.ParserException;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import websiteschema.crawler.htmlunit.HtmlUnitWebCrawler;
 import websiteschema.model.domain.cralwer.CrawlerSettings;
+import websiteschema.utils.JsoupUtil;
+import org.apache.log4j.Logger;
+import org.jsoup.Connection;
 
 /**
  *
@@ -32,52 +24,30 @@ public class SimpleHttpCrawler implements Crawler {
     String encoding = null;
     CrawlerSettings crawlerSettings;
     int sec = 1000;
-    int delay = 30 * sec;
+    int delay = 15 * sec;
     int httpStatus = 0;
     Logger l = Logger.getLogger(HtmlUnitWebCrawler.class);
 
-    private Parser getHtmlParser(String url_str, String encoding_str) {
-        Parser parser = null;
-        ConnectionManager cm = Parser.getConnectionManager();
-        try {
-            parser = new Parser(cm.openConnection(url_str));
-            if (null != encoding_str && !"".equals(encoding_str)) {
-                parser.setEncoding(encoding_str);
-            }
-        } catch (ParserException ex) {
-            l.error(ex);
-        }
-        return parser;
-    }
-
     @Override
     public Document[] crawl(String url_str) {
-        Parser parser = getHtmlParser(url_str, null);// 默认编码
-        NodeFilter nodeFilter = new TagNameFilter("body");
-        NodeList nodeList = null;
         try {
-            nodeList = parser.parse(nodeFilter);
-        } catch (ParserException ex) {
-            l.error(ex);
-        }
-        String body_str = nodeList.elementAt(0).toHtml();
+            url = url_str;
+            Connection conn = org.jsoup.Jsoup.connect(url_str);
+            conn.followRedirects(true);
+            conn.request().timeout(delay);
 
-        DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
-        domFactory.setNamespaceAware(true);
-        DocumentBuilder builder = null;
-        try {
-            builder = domFactory.newDocumentBuilder();
-        } catch (ParserConfigurationException ex) {
-            l.error(ex);
+            org.jsoup.nodes.Document doc = conn.get();
+            String title = doc.title();
+            System.out.println(title);
+            org.w3c.dom.Document document = JsoupUtil.getInstance().convert(doc);
+            httpStatus = conn.response().statusCode();
+            url = conn.response().url().toString();
+            //System.err.println(html.getTextContent());
+            return new Document[]{document};
+        } catch (Exception ex) {
+            l.error(ex.getMessage(), ex);
         }
-        Document doc = builder.newDocument();
-        Element html = doc.createElement("HTML");
-        Element body = doc.createElement("BODY");
-        body.setTextContent(body_str);
-        html.appendChild(body);
-        doc.appendChild(html);
-        //System.err.println(html.getTextContent());
-        return new Document[]{doc};
+        return null;
     }
 
     @Override

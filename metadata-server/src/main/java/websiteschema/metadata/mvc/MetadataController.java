@@ -46,8 +46,12 @@ public class MetadataController {
         String url = request.getPathInfo();
         l.trace("path:" + url + " uri: " + uri);
         Map model = new HashMap();
-        if (null != url && !"".equals(url) && url.contains("metadata/site")) {
-            model.put("AnalyzerTips", Configure.getDefaultConfigure().getProperty("AnalyzerTips"));
+        if (null != url && !"".equals(url)) {
+            if (url.contains("metadata/site")) {
+                model.put("AnalyzerTips", Configure.getDefaultConfigure().getProperty("AnalyzerTips"));
+            } else if (url.contains("metadata/url")) {
+                model.put("AnalyzerTips", Configure.getDefaultConfigure().getProperty("URLAnalyzerTips"));
+            }
         }
         return new ModelAndView(url, model);
     }

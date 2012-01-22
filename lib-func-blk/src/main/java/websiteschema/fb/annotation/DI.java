@@ -19,5 +19,7 @@ import java.lang.annotation.Target;
 @Documented
 public @interface DI {
 
-    String name();
+    public String name();
+
+    public String desc() default "";
 }

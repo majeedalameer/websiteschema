@@ -4,17 +4,14 @@
  */
 package websiteschema.crawler.fb;
 
-import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.xerces.util.DOMUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import websiteschema.cluster.analyzer.fields.ExtractUtil;
 import websiteschema.element.DocumentUtil;
 import websiteschema.fb.annotation.Description;
 import websiteschema.fb.annotation.Algorithm;
@@ -29,7 +26,7 @@ import websiteschema.utils.UrlLinkUtil;
  *
  * @author ray
  */
-@EI(name = {"EXTRACT:EXT"})
+@EI(name = {"EI:EXT"})
 @EO(name = {"EO", "FATAL", "EMPTY"})
 @Description(desc = "抽取DOM树中指定位置内的链接。")
 public class FBLinksExtractor extends FunctionBlock {

@@ -164,7 +164,7 @@ public class Configure {
             }
         }
     }
-    private final static Pattern pat = Pattern.compile("\\$\\{(.*)\\}");
+    private final static Pattern pat = Pattern.compile("(.*)\\$\\{(.*)\\}(.*)");
 
     private void parseLine(String line, int currentRowNumber, Map<String, String> prop) {
         if (!line.startsWith("#") && !line.startsWith(";")) {
@@ -189,9 +189,11 @@ public class Configure {
                     if (null != prop) {
                         Matcher m = pat.matcher(value.trim());
                         if (m.matches()) {
-                            String k = m.group(1);
+                            String k = m.group(2);
                             if (prop.containsKey(k)) {
-                                value = prop.get(k);
+                                String prefix = m.group(1);
+                                String suffix = m.group(3);
+                                value = prefix + prop.get(k) + suffix;
                             }
                         }
                     }
@@ -456,6 +458,9 @@ public class Configure {
                 if (int.class.equals(clazz) || Integer.class.equals(clazz)) {
                     T ret = (T) Integer.valueOf(getIntProperty(field, key));
                     return ret;
+                } else if (long.class.equals(clazz) || Long.class.equals(clazz)) {
+                    T ret = (T) Long.valueOf(getProperty(field, key));
+                    return ret;
                 } else if (double.class.equals(clazz) || Double.class.equals(clazz)) {
                     T ret = (T) Double.valueOf(getDoubleProperty(field, key));
                     return ret;
@@ -472,13 +477,5 @@ public class Configure {
             }
         }
         return null;
-    }
-
-    public static void main(String args[]) {
-        String a = "${abc}";
-        Matcher m = pat.matcher(a);
-        if (m.matches()) {
-            System.out.println(m.group(1));
-        }
     }
 }

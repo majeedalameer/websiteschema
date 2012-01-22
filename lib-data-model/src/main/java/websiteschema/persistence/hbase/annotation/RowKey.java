@@ -19,4 +19,6 @@ import java.lang.annotation.Target;
 @Documented
 public @interface RowKey {
 
+    public String desc() default "";
+
 }

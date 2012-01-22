@@ -21,4 +21,6 @@ public @interface ColumnFamily {
 
     public String family() default "cf";
 
+    public String desc() default "";
+
 }

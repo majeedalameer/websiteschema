@@ -34,6 +34,14 @@ public class RuntimeContext {
         return null;
     }
 
+    public <T> T getSpringBean(String bean, Class<T> clazz) {
+        ApplicationContext ctx = getSpringBeanFactory();
+        if (null != ctx) {
+            return ctx.getBean(bean, clazz);
+        }
+        return null;
+    }
+
     public void loadConfigure(String cp) {
         loadConfigure(cp, null);
     }

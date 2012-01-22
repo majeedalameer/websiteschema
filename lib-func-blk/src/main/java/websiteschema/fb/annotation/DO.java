@@ -19,7 +19,9 @@ import java.lang.annotation.Target;
 @Documented
 public @interface DO {
 
-    String name();
+    public String name();
 
-    String[] relativeEvents();
+    public String[] relativeEvents();
+
+    public String desc() default "";
 }

@@ -28,7 +28,7 @@ public class RabbitQueue<T> {
         this(host, -1, queueName, sender);
     }
 
-    public RabbitQueue(String host, int port, String queueName, boolean sender) throws IOException {
+    public RabbitQueue(String host, int port, String queueName, boolean producer) throws IOException {
         factory = new ConnectionFactory();
         factory.setHost(host);
         if (port > 0) {
@@ -42,7 +42,7 @@ public class RabbitQueue<T> {
         // 声明一个可持久化的队列
         channel.queueDeclare(queueName, true, false, false, null);
 
-        if (!sender) {
+        if (!producer) {
             // 声明此队列的消费者
             channel.basicQos(1);
             consumer = new QueueingConsumer(channel);

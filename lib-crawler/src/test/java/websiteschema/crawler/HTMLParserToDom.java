@@ -4,8 +4,6 @@
  */
 package websiteschema.crawler;
 
-import com.gargoylesoftware.htmlunit.TextPage;
-import java.util.Stack;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -14,7 +12,6 @@ import org.htmlparser.Tag;
 import org.htmlparser.util.NodeIterator;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
-import org.htmlparser.visitors.NodeVisitor;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 

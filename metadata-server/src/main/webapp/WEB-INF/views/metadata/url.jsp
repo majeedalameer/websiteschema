@@ -2,6 +2,7 @@
 <%
             String path = request.getContextPath();
             String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
+            String analyzerTips = (String) request.getAttribute("AnalyzerTips");
 %>
 <html>
     <head>
@@ -129,9 +130,19 @@
                         xtype: 'actioncolumn',
                         items: [
                             {
-                                icon   : 'resources/accept.gif',  // Use a URL in the icon config
+                                icon   : 'resources/icons/fam/add.gif',  // Use a URL in the icon config
                                 tooltip: '添加调度配置',
                                 handler: handleAddScheduler
+                            },
+                            {
+                                icon   : 'resources/icons/fam/accept.gif',  // Use a URL in the icon config
+                                tooltip: '<%=analyzerTips%>',
+                                handler: function(grid, rowIndex, colIndex) {
+                                    var cookie = getCookie("websiteschema");
+                                    if("analyzer" != cookie) {
+                                        MsgTip.msg("", "您使用的浏览器不是websiteschema analyzer！", true, 5);
+                                    }
+                                }
                             }
                         ]
                     },
@@ -387,14 +398,28 @@
                                             job.set("configure",configure);
                                             job.set("jobType",jobType);
                                             job.set("wrapperId", wrapperId);
-                                            JobService.insert(job.data, function(jobId){
-                                                var ScheduleRecordType = new Ext.data.Record.create(scheduleRecordType);
-                                                var sche = new ScheduleRecordType();
-                                                sche.set("startURLId",startURLId);
-                                                sche.set("scheduleType",scheduleType);
-                                                sche.set("schedule",schedule);
-                                                sche.set("jobId",jobId);
-                                                ScheduleService.insert(sche.data);
+                                            JobService.insert(job.data,
+                                            {
+                                                callback:function(jobId){
+                                                    var ScheduleRecordType = new Ext.data.Record.create(scheduleRecordType);
+                                                    var sche = new ScheduleRecordType();
+                                                    sche.set("startURLId",startURLId);
+                                                    sche.set("scheduleType",scheduleType);
+                                                    sche.set("schedule",schedule);
+                                                    sche.set("jobId",jobId);
+                                                    ScheduleService.insert(sche.data,
+                                                    {
+                                                        callback:function(scheId){
+                                                            MsgTip.msg("", "任务和调度添加成功", true, 3);
+                                                        },
+                                                        errorHandler:function(errorString, exception) {
+                                                            MsgTip.msg("", "任务和调度添加失败: " + errorString, true, 5);
+                                                        }
+                                                    });
+                                                },
+                                                errorHandler:function(errorString, exception) {
+                                                    MsgTip.msg("", "任务和调度添加失败: " + errorString, true, 5);
+                                                }
                                             });
                                         }
                                         AddWin.close();
