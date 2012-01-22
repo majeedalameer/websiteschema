@@ -8,27 +8,36 @@ SpringBeans=spring-beans.xml
 
 [Start]
 FBType=websiteschema.fb.E_RESTART
-EO.COLD={"WebsiteschemaFactory":"INIT"}
+EO.COLD={"WebsiteschemaFactory":"EI"}
 
 [WebsiteschemaFactory]
 FBType=websiteschema.crawler.fb.FBWebsiteschema
-EO.SUC={"CRAWLER":"FETCH"}
+EO.EO={"CRAWLER":"FETCH"}
+EO.FAIL={"EXIT":"EI1"}
 DO.OUT={"CRAWLER":"SCHEMA","EXTRACTOR":"SCHEMA"}
 DI.SITE=www_163_com_1
 
 [CRAWLER]
 FBType=websiteschema.crawler.fb.FBWebCrawler
-EO.SUC={"EXTRACTOR":"EXTRACT"}
-EO.FAL={"Start":"STOP"}
+EO.SUC={"EXTRACTOR":"EI"}
+EO.FAL={"EXIT":"EI2"}
 DO.DOC={"EXTRACTOR":"IN"}
-#DI.CRAWLER=websiteschema.crawler.SimpleHttpCrawler
-DI.URL=http://news.163.com/12/0117/11/7NVE580G00014JB5.html?from=index
+DO.URL={"EXTRACTOR":"URL"}
+DI.CRAWLER=websiteschema.crawler.SimpleHttpCrawler
+#RowKey=http://moc.361.yenom//12/0121/13/7OA1HC8J00253B0H.html
+DI.URL=http://money.163.com/12/0121/13/7OA1HC8J00253B0H.html
+
 
 [EXTRACTOR]
 FBType=websiteschema.crawler.fb.FBDOMExtractor
-EO.EO={"Convertor":"TRAN"}
-DI.CLS = 1
-DO.OUT={"Convertor":"DOC"}
+EO.EO={"SAVE_CONTENT":"SAVE"}
+DI.CLS = 0
+DO.OUT={"SAVE_CONTENT":"DOC", "Convertor":"DOC"}
+
+[SAVE_CONTENT]
+FBType=websiteschema.crawler.fb.FBURLStorage
+EO.SAVE={"Convertor":"TRAN"}
+DI.URL=http://money.163.com/12/0121/13/7OA1HC8J00253B0H.html
 
 [Convertor]
 FBType=websiteschema.crawler.fb.FBXMLToString

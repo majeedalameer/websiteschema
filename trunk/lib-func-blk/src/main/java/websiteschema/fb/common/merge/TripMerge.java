@@ -3,6 +3,7 @@
  * and open the template in the editor.
  */
 package websiteschema.fb.common.merge;
+
 import websiteschema.fb.annotation.Algorithm;
 import websiteschema.fb.annotation.EI;
 import websiteschema.fb.annotation.EO;
@@ -10,13 +11,14 @@ import websiteschema.fb.core.FunctionBlock;
 
 /**
  *
- * @author st
+ * @author mgd
  */
-@EI(name  = {"E1:M","E2:M","E3:M","E4:M"})
+@EI(name = {"EI1:M", "EI2:M", "EI3:M"})
 @EO(name = {"EO"})
-public class Event4Merger extends FunctionBlock{
+public class TripMerge extends FunctionBlock {
+
     @Algorithm(name = "M")
-    public void Merge4(){
-        triggerEvent("EO");
+    public void merge3e() {
+        triggerEvent("M");
     }
 }

@@ -50,8 +50,12 @@ public class DocumentTest {
         DocumentBuilder builder = domFactory.newDocumentBuilder();
         Document doc = builder.parse(new ByteArrayInputStream(content.getBytes()));
         List<Node> nodes = getByXPath(doc, "//publisher");
-        assert(nodes.size() == 3);
-        for(Node node : nodes) {
+        assert (nodes.size() == 3);
+        for (Node node : nodes) {
+            System.out.println(node.getNodeName() + " : " + node.getNodeValue() + " " + node.getTextContent());
+        }
+        nodes = getByXPath(doc, "inventory/book[1]/publisher[1]");
+        for (Node node : nodes) {
             System.out.println(node.getNodeName() + " : " + node.getNodeValue() + " " + node.getTextContent());
         }
     }

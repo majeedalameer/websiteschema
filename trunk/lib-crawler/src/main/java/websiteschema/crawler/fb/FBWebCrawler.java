@@ -31,12 +31,15 @@ public class FBWebCrawler extends FunctionBlock {
     public Websiteschema schema;
     @DO(name = "DOC", relativeEvents = {"SUC"})
     public Document out;
+    @DO(name = "URL", relativeEvents = {"SUC"})
+    public String do_url;
 
     @Algorithm(name = "FETCH")
     public void fetch() {
         try {
             Crawler c = createCrawler();
             Document[] docs = c.crawl(url);
+            do_url = c.getUrl();
             if (null != docs && docs.length > 0) {
                 out = docs[0];
                 this.triggerEvent("SUC");

@@ -153,16 +153,12 @@
                         xtype: 'actioncolumn',
                         items: [
                             {
-                                icon   : 'resources/accept.gif',  // Use a URL in the icon config
+                                icon   : 'resources/icons/fam/accept.gif',  // Use a URL in the icon config
                                 tooltip: '<%=analyzerTips%>', //这是analyzer用来触发分析事件的属性，需要特别的记住。
                                 handler: function(grid, rowIndex, colIndex) {
                                     var cookie = getCookie("websiteschema");
                                     if("analyzer" != cookie) {
-                                        Ext.Msg.show({
-                                            title:'Websiteschema',
-                                            msg: '您使用的浏览器不是websiteschema analyzer！',
-                                            buttons: Ext.Msg.OK
-                                        });
+                                        MsgTip.msg("", "您使用的浏览器不是websiteschema analyzer！", true, 5);
                                     }
                                 }
                             }

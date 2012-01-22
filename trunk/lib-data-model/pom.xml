@@ -58,6 +58,10 @@
                     <artifactId>jsp-api</artifactId>
                     <groupId>javax.servlet</groupId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>ant</artifactId>
+                    <groupId>ant</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>

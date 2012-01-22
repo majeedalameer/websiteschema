@@ -17,7 +17,7 @@ import websiteschema.model.domain.Schedule;
 public class SchedulerTest {
 
     ApplicationContext ctx = new ClassPathXmlApplicationContext("spring-beans.xml");
-    ScheduleMapper schedulerMapper = ctx.getBean("schedulerMapper", ScheduleMapper.class);
+    ScheduleMapper schedulerMapper = ctx.getBean("scheduleMapper", ScheduleMapper.class);
     long startURLId = 1;
 
     @Test

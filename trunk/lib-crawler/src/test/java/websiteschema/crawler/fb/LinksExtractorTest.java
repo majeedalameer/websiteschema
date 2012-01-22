@@ -29,6 +29,7 @@ public class LinksExtractorTest {
         extractor.url = url;
         extractor.extract();
         List<String> results = extractor.links;
+        System.out.println(results);
         assert (results.size() == 26);
     }
 

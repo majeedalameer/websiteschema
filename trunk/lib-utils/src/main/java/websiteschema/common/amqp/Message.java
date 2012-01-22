@@ -16,28 +16,25 @@ public class Message implements java.io.Serializable {
     private long createTime;
     private String url;
     private String configure;
+    private String siteId;
+    private String jobname;
 
     public Message() {
     }
 
-    public Message(long jobId, long startURLId, long wrapperId, String url, String configure) {
-        this.jobId = jobId;
-        this.startURLId = startURLId;
-        this.wrapperId = wrapperId;
-        this.url = url;
-        this.configure = configure;
-        depth = 0;
-        hash = (url + jobId).hashCode();
-        createTime = System.currentTimeMillis();
+    public Message(long jobId, long startURLId, long wrapperId, String siteId, String jobname, String url, String configure) {
+        this(jobId, startURLId, wrapperId, siteId, jobname, url, configure, 0);
     }
 
-    public Message(long jobId, long startURLId, long wrapperId, String url, String configure, int depth) {
+    public Message(long jobId, long startURLId, long wrapperId, String siteId, String jobname, String url, String configure, int depth) {
         this.jobId = jobId;
         this.startURLId = startURLId;
         this.wrapperId = wrapperId;
         this.url = url;
         this.configure = configure;
         this.depth = depth;
+        this.siteId = siteId;
+        this.jobname = jobname;
         hash = (url + jobId).hashCode();
         createTime = System.currentTimeMillis();
     }
@@ -104,6 +101,22 @@ public class Message implements java.io.Serializable {
 
     public void setTaskId(long taskId) {
         this.taskId = taskId;
+    }
+
+    public String getJobname() {
+        return jobname;
+    }
+
+    public void setJobname(String jobname) {
+        this.jobname = jobname;
+    }
+
+    public String getSiteId() {
+        return siteId;
+    }
+
+    public void setSiteId(String siteId) {
+        this.siteId = siteId;
     }
 
     @Override

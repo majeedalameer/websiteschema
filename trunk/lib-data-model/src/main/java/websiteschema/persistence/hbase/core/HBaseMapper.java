@@ -31,7 +31,7 @@ public class HBaseMapper<T extends HBaseBean> extends Mapper {
         Result result = select(rowKey);
         return wrapper.getBean(result, clazz);
     }
-
+    
     public void scan(Function<T> func) {
         ResultScanner rs = scan();
         if (null != rs) {

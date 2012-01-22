@@ -89,8 +89,11 @@ public class SimpleBrowser extends javax.swing.JFrame {
         displayBrowserInfo();
     }
 
-    public void startAnalysis(String siteId) {
-        this.browserTab.setSelectedIndex(1);
+    public void setFocusTab(int i) {
+        this.browserTab.setSelectedIndex(i);
+    }
+
+    public void startAnalysis(String siteId, String url) {
         SiteMapper siteMapper = BrowserContext.getSpringContext().getBean("siteMapper", SiteMapper.class);
         Site site = siteMapper.getBySiteId(siteId);
 
@@ -106,7 +109,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
 
         analysisPanel.setSiteId(siteId);
         analysisPanel.startAnalysis(site);
-        String url = site.getUrl();
+//        String url = site.getUrl();
         this.urlTextField.setText(url);
         this.openUrl(url);
     }

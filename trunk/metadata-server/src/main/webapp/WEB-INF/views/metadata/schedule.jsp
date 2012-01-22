@@ -141,12 +141,12 @@
                         xtype: 'actioncolumn',
                         items: [
                             {
-                                icon   : 'resources/accept.gif',  // Use a URL in the icon config
+                                icon   : 'resources/icons/fam/cog_edit.png',  // Use a URL in the icon config
                                 tooltip: '编辑任务配置',
                                 handler: editJob
                             },
                             {
-                                icon   : 'resources/cog.png',  // Use a URL in the icon config
+                                icon   : 'resources/icons/fam/cog.png',  // Use a URL in the icon config
                                 tooltip: '执行',
                                 handler: createTempJob
                             }
