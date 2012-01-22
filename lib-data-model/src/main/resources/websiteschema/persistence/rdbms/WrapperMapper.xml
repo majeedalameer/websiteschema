@@ -63,16 +63,18 @@
 
     <!-- 更新任务状态记录 -->
     <update id="update" parameterType="websiteschema.model.domain.Wrapper">
-        update Wrapper set
-        application = #{application},
-        wrapperType = #{wrapperType},
-        name = #{name},
-        visualConfig = #{visualConfig},
-        checksum = #{checksum},
-        createTime = #{createTime},
-        createUser = #{createUser},
-        updateTime = #{updateTime},
-        lastUpdateUser = #{lastUpdateUser}
+        update Wrapper
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="application != null">application = #{application},</if>
+            <if test="wrapperType != null">wrapperType = #{wrapperType},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="visualConfig != null">visualConfig = #{visualConfig},</if>
+            <if test="checksum != null">checksum = #{checksum},</if>
+            <if test="createTime != null">createTime = #{createTime},</if>
+            <if test="createUser != null">createUser = #{createUser},</if>
+            <if test="updateTime != null">updateTime = #{updateTime},</if>
+            <if test="lastUpdateUser != null">lastUpdateUser = #{lastUpdateUser}</if>
+        </trim>
         where id = #{id}
     </update>
 
