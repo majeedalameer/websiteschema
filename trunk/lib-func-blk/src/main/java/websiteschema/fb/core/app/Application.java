@@ -23,6 +23,8 @@ public class Application implements IApplication {
     private boolean running = true;
     private long taskId = 0;
     private AppStatus status = new AppStatus();
+    private long startTime = 0;
+    private int timeout = -1;
 
     public Application() {
     }
@@ -60,7 +62,16 @@ public class Application implements IApplication {
         return this.status;
     }
 
+    public int getTimeout() {
+        return timeout;
+    }
+
+    public void setTimeout(int timeout) {
+        this.timeout = timeout;
+    }
+
     public AppStatus call() throws Exception {
+        startTime = System.currentTimeMillis();
         Configure config = context.getConfig();
         String initEvent = config.getProperty("InitEvent");
         FunctionBlock start = context.getStartFB();
@@ -88,6 +99,16 @@ public class Application implements IApplication {
                 } else {
                     l.trace("no more event to handle, waiting...");
                     Thread.sleep(100);
+                }
+                //如果设定了超时，则检查是否超时，如果超时则跳出循环
+                if(timeout > 0) {
+                    long now = System.currentTimeMillis();
+                    long elaps = now - startTime;
+                    if(timeout < elaps) {
+                        status.setMessage("Execution time out: " + elaps);
+                        status.setStatus(AppStatus.ERROR);
+                        break;
+                    }
                 }
             } catch (Exception ex) {
                 running = false;
