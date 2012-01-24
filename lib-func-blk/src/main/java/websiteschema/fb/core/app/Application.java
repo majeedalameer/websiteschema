@@ -107,7 +107,7 @@ public class Application implements IApplication {
                     if(timeout < elaps) {
                         status.setMessage("Execution time out: " + elaps);
                         status.setStatus(AppStatus.ERROR);
-                        break;
+                        running = false;
                     }
                 }
             } catch (Exception ex) {
