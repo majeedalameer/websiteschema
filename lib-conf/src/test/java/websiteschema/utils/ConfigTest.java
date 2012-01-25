@@ -39,4 +39,19 @@ public class ConfigTest {
         assertEquals(conf.getProperty("FiltedField"), "xyz");
         assertEquals(conf.getProperty("TestField"), "CLS = xyz");
     }
+
+    @Test
+    public void testMultiLine() {
+        Configure conf = new Configure("configure-site.ini");
+        Map map = conf.getMapProperty("URLCharset", "CharsetMap");
+        System.out.println(conf.getProperty("URLCharset", "CharsetMap"));
+        assert(map.containsKey("x-gbk"));
+        assertEquals(map.get("x-gbk"), "gbk");
+
+        String value = conf.getProperty("Test", "key");
+        System.out.println(value);
+        assertEquals(value, "''''");
+
+        assertEquals(conf.getProperty("Test", "abc"), "efg");
+    }
 }

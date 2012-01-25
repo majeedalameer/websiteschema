@@ -14,7 +14,7 @@ import websiteschema.fb.core.RuntimeContext;
  */
 public class WebCrawlerTest {
 
-    @Test
+//    @Test
     public void test() throws InterruptedException {
         Application app = new Application();
         RuntimeContext context = app.getContext();
@@ -25,7 +25,7 @@ public class WebCrawlerTest {
         t.join();
     }
 
-//    @Test
+    @Test
     public void testCrawler() throws InterruptedException {
         Application app = new Application();
         RuntimeContext context = app.getContext();

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import org.w3c.dom.Document;
+import websiteschema.cluster.analyzer.Doc;
 import websiteschema.element.DocumentUtil;
 import websiteschema.fb.annotation.Description;
 import websiteschema.fb.annotation.Algorithm;
@@ -31,7 +32,7 @@ import websiteschema.utils.UrlLinkUtil;
 public class FBURLStorage extends FunctionBlock {
 
     @DI(name = "DOC", desc = "抽取后的内容")
-    public Document in;
+    public Doc in;
     @DI(name = "URL", desc = "抽取内容的目标链接")
     public String url;
     @DI(name = "STATUS", desc = "采集时的HTTP Status")
@@ -94,19 +95,19 @@ public class FBURLStorage extends FunctionBlock {
                 if (mapper.exists(rowKey)) {
                     UrlLink old = mapper.get(rowKey);
                     old.setStatus(status);
-                    old.setContent(DocumentUtil.getXMLString(in));
+                    old.setContent(DocumentUtil.getXMLString(in.toW3CDocument()));
                     mapper.put(old);
                 } else {
                     UrlLink newUrlLink = new UrlLink();
                     newUrlLink.setRowKey(rowKey);
                     newUrlLink.setUrl(url);
-                    newUrlLink.setContent(DocumentUtil.getXMLString(in));
+                    newUrlLink.setContent(DocumentUtil.getXMLString(in.toW3CDocument()));
                     newUrlLink.setCreateTime(new Date());
                     newUrlLink.setDepth(1000);
                     mapper.put(newUrlLink);
                 }
             }
-            out = in;
+            out = in.toW3CDocument();
             triggerEvent("SAVE");
         } catch (Exception ex) {
             triggerEvent("FATAL");

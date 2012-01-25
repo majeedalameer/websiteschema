@@ -14,6 +14,7 @@ import javax.swing.JOptionPane;
 import org.w3c.dom.Document;
 import websiteschema.analyzer.browser.utils.ClustererUtil;
 import websiteschema.analyzer.context.BrowserContext;
+import websiteschema.cluster.analyzer.Doc;
 import websiteschema.crawler.Crawler;
 import websiteschema.crawler.fb.FBDOMExtractor;
 import websiteschema.crawler.htmlunit.HtmlUnitWebCrawler;
@@ -213,9 +214,9 @@ public class TestingFrame extends javax.swing.JFrame {
                 this.resultArea.append("开始尝试抽取页面：\n");
                 extractor.extract();
                 context.getConsole().log("抽取结束：");
-                Document result = extractor.out;
+                Doc result = extractor.out;
                 if (null != result) {
-                    this.resultArea.setText(DocumentUtil.getXMLString(result));
+                    this.resultArea.setText(DocumentUtil.getXMLString(result.toW3CDocument()));
                 } else {
                     JOptionPane.showMessageDialog(this, "无法抽取出数据！");
                 }
