@@ -11,12 +11,10 @@ import websiteschema.cluster.analyzer.AnalysisResult;
 import java.util.List;
 import websiteschema.model.domain.Websiteschema;
 import websiteschema.element.XPathAttributes;
-import org.w3c.dom.Element;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import websiteschema.fb.annotation.DO;
 import java.util.Map;
 import org.w3c.dom.Document;
+import websiteschema.cluster.analyzer.Doc;
 import websiteschema.fb.annotation.Algorithm;
 import websiteschema.fb.annotation.DI;
 import websiteschema.fb.annotation.EI;
@@ -41,7 +39,7 @@ public class FBDOMExtractor extends FunctionBlock {
     @DI(name = "CLS")
     public String clusterName = AnalysisResult.DefaultClusterName;
     @DO(name = "OUT", relativeEvents = {"EO"})
-    public Document out;
+    public Doc out;
 
     @Algorithm(name = "EXT")
     public void extract() {
@@ -66,7 +64,7 @@ public class FBDOMExtractor extends FunctionBlock {
      * @param in
      * @param fieldAnalyzerNames
      */
-    private void extractFields(Document in, Document out, Map<String, String> fieldAnalyzerNames, Map<String, String> fieldExtractorNames) {
+    private void extractFields(Document in, Doc out, Map<String, String> fieldAnalyzerNames, Map<String, String> fieldExtractorNames) {
         List<IFieldExtractor> list = new ArrayList<IFieldExtractor>();
         for (String fieldName : fieldAnalyzerNames.keySet()) {
             String clazzName = fieldAnalyzerNames.get(fieldName);
@@ -85,7 +83,7 @@ public class FBDOMExtractor extends FunctionBlock {
         extractFields(in, out, list);
     }
 
-    private void extractFields(Document in, Document out, List<IFieldExtractor> fields) {
+    private void extractFields(Document in, Doc doc, List<IFieldExtractor> fields) {
         for (IFieldExtractor extractor : fields) {
             //创建字段抽取器
             extractor.setXPathAttr(xpathAttr);
@@ -102,12 +100,9 @@ public class FBDOMExtractor extends FunctionBlock {
                             //开始抽取
                             Collection<String> result = extractor.extract(in);
                             if (null != result && !result.isEmpty()) {
-                                Element root = out.getDocumentElement();
                                 //添加抽取结果到doc中
                                 for (String res : result) {
-                                    Element ele = out.createElement(extractor.getFieldName());
-                                    ele.setTextContent(res);
-                                    root.appendChild(ele);
+                                    doc.addField(extractor.getFieldName(), res);
                                 }
                                 //如果抽取到结果，就结束抽取
                                 break;
@@ -135,19 +130,8 @@ public class FBDOMExtractor extends FunctionBlock {
         return null;
     }
 
-    private Document createDocument() {
-        if (null == out) {
-            try {
-                DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
-                DocumentBuilder builder = domFactory.newDocumentBuilder();
-                out = builder.newDocument();
-                Element eleRoot = out.createElement("DOCUMENT");
-                out.appendChild(eleRoot);
-                return out;
-            } catch (Exception ex) {
-                l.error("Can not create Document: ", ex);
-            }
-        }
-        return null;
+    private Doc createDocument() {
+        out = new Doc();
+        return out;
     }
 }

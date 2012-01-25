@@ -115,16 +115,16 @@ public class Configure {
                 br = new BufferedReader(
                         new InputStreamReader(is, "UTF-8"));
                 int count = 0;
-                String line = br.readLine();
+                String line = readLine(br);
                 while (null != line) {
                     if (!"".equals(line)) {
                         if (null != prop) {
                             parseLine(line, ++count, prop);
                         } else {
-                            parseLine(line, ++count);
+                            parseLine(line, ++count, null);
                         }
                     }
-                    line = br.readLine();
+                    line = readLine(br);
                 }
             } catch (IOException ex) {
             } finally {
@@ -140,35 +140,78 @@ public class Configure {
      * @param br
      * @return
      */
-    private String readLine(BufferedReader br) {
-        throw new java.lang.UnsupportedOperationException();
-    }
-
-    private void parseLine(String line, int currentRowNumber) {
-        if (!line.startsWith("#") && !line.startsWith(";")) {
-            if (line.startsWith("[") && line.endsWith("]")) {
-                currentField = line.substring(1, line.length() - 1).trim().toLowerCase();
-            } else if (line.indexOf("=") > 0) {
-                int eq = line.indexOf("=");
-                String key = line.substring(0, eq).trim().toLowerCase();
-                String value = line.substring(eq + 1, line.length());
-                if ("namespace".equals(key) && Configure.DefaultField.equals(currentField)) {
-                    if (1 == currentRowNumber) {
-                        this.namespace = value;
-                    } else {
-                        throw new RuntimeException("'namespace' must be declared at first line.");
-                    }
-                } else {
-                    putProperties(currentField, key.trim(), value.trim());
+    private String readLine(BufferedReader br) throws IOException {
+        String line = br.readLine();
+        if (!isComments(line) && !isField(line)) {
+            if (isMultiLine(line)) {
+                String multiLine = readMultiLine(line, br);
+                if (null != multiLine) {
+                    return multiLine;
                 }
             }
         }
+        return line;
     }
-    private final static Pattern pat = Pattern.compile("(.*)\\$\\{(.*)\\}(.*)");
+
+    private String readMultiLine(String firstLine, BufferedReader br) throws IOException {
+        String first = firstLine.trim();
+        if (first.endsWith("'''")) {
+            return first;
+        }
+        br.mark(100000);
+        StringBuilder sb = new StringBuilder();
+        sb.append(firstLine).append("\n");
+        String line = br.readLine();
+        boolean end = false;
+        while (null != line) {
+            if (line.trim().endsWith("'''")) {
+                sb.append(line.trim());
+                end = true;
+                break;
+            } else {
+                sb.append(line).append("\n");
+            }
+            line = br.readLine();
+        }
+        if (end) {
+            return sb.toString();
+        } else {
+            br.reset();
+        }
+        return null;
+    }
+
+    private boolean isMultiLine(String line) {
+        if (null != line) {
+            int i = line.indexOf('=');
+            if (i > 0) {
+                String value = line.substring(i + 1).trim();
+                return value.startsWith("'''");
+            }
+        }
+        return false;
+    }
+
+    private boolean isComments(String line) {
+        if (null != line) {
+            return line.startsWith("#") || line.startsWith(";");
+        } else {
+            return false;
+        }
+    }
+
+    private boolean isField(String line) {
+        if (null != line) {
+            return line.startsWith("[") && line.endsWith("]");
+        } else {
+            return false;
+        }
+    }
+    private final static Pattern pat = Pattern.compile("(.*?)\\$\\{(.*?)\\}(.*)");
 
     private void parseLine(String line, int currentRowNumber, Map<String, String> prop) {
-        if (!line.startsWith("#") && !line.startsWith(";")) {
-            if (line.startsWith("[") && line.endsWith("]")) {
+        if (!isComments(line)) {
+            if (isField(line)) {
                 currentField = line.substring(1, line.length() - 1).trim().toLowerCase();
             } else if (line.indexOf("=") > 0) {
                 int eq = line.indexOf("=");
@@ -182,6 +225,12 @@ public class Configure {
                     }
                 } else {
                     value = value.trim();
+                    if (value.startsWith("'''") && value.endsWith("'''")) {
+                        try {
+                            value = value.substring(3, value.length() - 3);
+                        } catch (Exception ex) {
+                        }
+                    }
                     // 从预先设定的prop中寻找是否需要替换。
                     // 如果在prop有：abc = xyz
                     // 如果value = ${abc}

@@ -43,7 +43,7 @@ public class DOMExtractorTest {
         extractor.extract();
         System.out.println("抽取结束：");
 
-        printNodes(extractor.out.getDocumentElement());
+        printNodes(extractor.out.toW3CDocument());
     }
 
     // 逐层打印DOM树

@@ -32,12 +32,13 @@ DI.URL=http://money.163.com/12/0121/13/7OA1HC8J00253B0H.html
 FBType=websiteschema.crawler.fb.FBDOMExtractor
 EO.EO={"SAVE_CONTENT":"SAVE"}
 DI.CLS = 0
-DO.OUT={"SAVE_CONTENT":"DOC", "Convertor":"DOC"}
+DO.OUT={"SAVE_CONTENT":"DOC"}
 
 [SAVE_CONTENT]
 FBType=websiteschema.crawler.fb.FBURLStorage
 EO.SAVE={"Convertor":"TRAN"}
 DI.URL=http://money.163.com/12/0121/13/7OA1HC8J00253B0H.html
+DO.DOC={"Convertor":"DOC"}
 
 [Convertor]
 FBType=websiteschema.crawler.fb.FBXMLToString
