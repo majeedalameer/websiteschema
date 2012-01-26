@@ -277,7 +277,7 @@ public class Configure {
         map.put(k, value);
     }
 
-    private String getNamespace() {
+    public String getNamespace() {
         if ("".equals(namespace)) {
             return "";
         } else {
