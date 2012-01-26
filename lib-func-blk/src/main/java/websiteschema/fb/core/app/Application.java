@@ -11,6 +11,7 @@ import websiteschema.fb.core.Event;
 import websiteschema.fb.core.FBInfo;
 import websiteschema.fb.core.FunctionBlock;
 import websiteschema.fb.core.RuntimeContext;
+import websiteschema.fb.core.compiler.ApplicationCompiler;
 
 /**
  *
@@ -71,6 +72,10 @@ public class Application implements IApplication {
     }
 
     public AppStatus call() throws Exception {
+        ApplicationCompiler compiler = new ApplicationCompiler();
+        compiler.setConfig(context.getConfig());
+        compiler.compile();
+
         startTime = System.currentTimeMillis();
         Configure config = context.getConfig();
         String initEvent = config.getProperty("InitEvent");
@@ -101,10 +106,10 @@ public class Application implements IApplication {
                     Thread.sleep(100);
                 }
                 //如果设定了超时，则检查是否超时，如果超时则跳出循环
-                if(timeout > 0) {
+                if (timeout > 0) {
                     long now = System.currentTimeMillis();
                     long elaps = now - startTime;
-                    if(timeout < elaps) {
+                    if (timeout < elaps) {
                         status.setMessage("Execution time out: " + elaps);
                         status.setStatus(AppStatus.ERROR);
                         running = false;

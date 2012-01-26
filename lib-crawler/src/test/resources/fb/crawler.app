@@ -40,6 +40,10 @@ EO.SAVE={"Convertor":"TRAN"}
 DI.URL=http://money.163.com/12/0121/13/7OA1HC8J00253B0H.html
 DO.DOC={"Convertor":"DOC"}
 
+[EXIT]
+FBType=websiteschema.fb.common.merge.QuadMerge
+EO.EO={"Start":"STOP"}
+
 [Convertor]
 FBType=websiteschema.crawler.fb.FBXMLToString
 EO.EO={"Console":"PRINT","Start":"STOP"}
