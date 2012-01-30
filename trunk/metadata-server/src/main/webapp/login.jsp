@@ -11,7 +11,7 @@
 <html>
     <head>
         <title>Login Page</title>
-<!--        <link rel="stylesheet" type="text/css" href="resources/css/xtheme-gray.css" />-->
+        <!--        <link rel="stylesheet" type="text/css" href="resources/css/xtheme-gray.css" />-->
         <link rel="stylesheet" type="text/css" href="resources/docs.css" />
         <!-- GC -->
         <style type="text/css" >
@@ -28,22 +28,26 @@
                 vertical-align:middle;
                 margin-right:auto;
                 margin-left:auto;
-/*                margin-left:auto;
-                width:500px;
-                height:100%;*/
+                /*                margin-left:auto;
+                                width:500px;
+                                height:100%;*/
             }
-        </style> 
+        </style>
+        <script language="JavaScript">
+            if (window != top)
+                top.location.href = location.href;
+        </script>   
     </head>
     <body>
         <table class="main" id="main">
             <tr>
                 <td>&nbsp;</td>
                 <td>
-                    
+
                     <form name='f' action='/security_check' method='POST'>
                         <table  class="login" id="login">
                             <tr>
-                                <h3>登录Websiteschema</h3>
+                            <h3>登录Websiteschema</h3>
                             </tr>
                             <tr>
                                 <td>用户名:</td><td><input type='text' name='j_username' value=''></td>
