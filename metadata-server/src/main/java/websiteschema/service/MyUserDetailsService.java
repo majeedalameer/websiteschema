@@ -33,8 +33,8 @@ public class MyUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username)
             throws DataAccessException {
         User user = userMapper.getUserByUserId(username);
-        System.out.println(user.getUserId() + " " + user.getRole());
         if (null != user) {
+            System.out.println(user.getUserId() + " " + user.getRole());
 
             Set<GrantedAuthority> auth = new HashSet<GrantedAuthority>();
 
@@ -52,7 +52,14 @@ public class MyUserDetailsService implements UserDetailsService {
                     true,
                     auth);
         } else {
-            return null;
+            return new org.springframework.security.core.userdetails.User(
+                    username,
+                    "",
+                    true,
+                    true,
+                    true,
+                    true,
+                    new HashSet<GrantedAuthority>());
         }
     }
 }
