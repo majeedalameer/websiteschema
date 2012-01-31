@@ -1,0 +1,44 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package websiteschema.crawler.fb;
+
+import org.junit.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.w3c.dom.Document;
+import websiteschema.crawler.Crawler;
+import websiteschema.persistence.hbase.ClusterModelMapper;
+import websiteschema.persistence.hbase.WebsiteschemaMapper;
+
+/**
+ *
+ * @author ray
+ */
+public class ClusterTest {
+
+    ApplicationContext ctx = new ClassPathXmlApplicationContext("spring-beans.xml");
+    ClusterModelMapper clusterModelMapper = ctx.getBean("clusterModelMapper", ClusterModelMapper.class);
+    WebsiteschemaMapper websiteschemaMapper = ctx.getBean("websiteschemaMapper", WebsiteschemaMapper.class);
+
+    @Test
+    public void clustering() {
+        String siteId = "www_163_com_1";
+        String url = "http://money.163.com/12/0121/13/7OA1HC8J00253B0H.html";
+        Document source = null;
+        Crawler crawler = new websiteschema.crawler.SimpleHttpCrawler();
+        long t1 = System.currentTimeMillis();
+        Document docs[] = crawler.crawl(url);
+        long t2 = System.currentTimeMillis();
+        source = null != docs ? docs[0] : null;
+
+        FBClustering clusterer = new FBClustering();
+        clusterer.cm = clusterModelMapper.get(siteId);
+        clusterer.websiteschema = websiteschemaMapper.get(siteId);
+        clusterer.doc = source;
+
+        clusterer.clustering();
+        System.out.println(clusterer.cluster);
+    }
+}

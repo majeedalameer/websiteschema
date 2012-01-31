@@ -16,6 +16,10 @@ import websiteschema.model.domain.cluster.Sample;
  */
 public interface IClusterTypeRecognizer {
 
+    public final static String TYPE_DOCUMENT = "DOCUMENT";
+    public final static String TYPE_INVALID = "INVALID";
+    public final static String TYPE_LINK = "LINKS";
+
     /**
      * 识别Cluster的类型
      * @param clusters
