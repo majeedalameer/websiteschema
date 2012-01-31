@@ -89,21 +89,21 @@ public class SimpleClusterTypeRecognizer implements IClusterTypeRecognizer {
                 String type = null;
                 switch (wc.classify(vec)) {
                     case 0:
-                        type = "DOCUMENT";
+                        type = TYPE_DOCUMENT;
                         break;
                     case 1 :
-                        type = "INVALID";
+                        type = TYPE_INVALID;
                         break;
                     case 2 :
-                        type = "LINKS";
+                        type = TYPE_LINK;
                         break;
                     default :
-                        type = "INVALID";
+                        type = TYPE_INVALID;
                         break;
                 }
                 cluster.setType(type);
             } else {
-                String type = "INVALID";
+                String type = TYPE_INVALID;
                 cluster.setType(type);
             }
         }
