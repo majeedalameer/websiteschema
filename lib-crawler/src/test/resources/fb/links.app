@@ -61,8 +61,7 @@ DI.DEPTH=1
 FBType=websiteschema.fb.common.merge.QuadMerge
 EO.EO={"Start":"STOP"}
 
-
 [Console]
 FBType=websiteschema.fb.STDOUT
-EO.EO={"Start":"STOP"}
+EO.EO={"EXIT":"EI4"}
 DI.STR=hello world
