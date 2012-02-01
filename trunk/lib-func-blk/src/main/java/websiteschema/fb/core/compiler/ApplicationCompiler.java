@@ -21,7 +21,7 @@ public class ApplicationCompiler {
     }
 
     public void compile() throws MissStartFBException, EventOutputMissDestFBException, DataOutputMissDestFBException {
-        String startFB = !"".equals(config.getNamespace())
+        String startFB = null != config.getNamespace() && !"".equals(config.getNamespace())
                 ? config.getNamespace() + "." + config.getProperty("StartFB") : config.getProperty("StartFB");
         Map<String, FBInfo> fbs = getAllFunctionBlockInfo();
         if (!fbs.containsKey(startFB.toLowerCase())) {
@@ -41,7 +41,7 @@ public class ApplicationCompiler {
             if (null != map) {
                 for (String dest : map.keySet()) {
                     String ei = map.get(dest);
-                    String destFBName = "".equals(conf.getNamespace()) ? dest : conf.getNamespace() + "." + dest;
+                    String destFBName = null == conf.getNamespace() || "".equals(conf.getNamespace()) ? dest : conf.getNamespace() + "." + dest;
                     FBInfo destFB = fbs.get(destFBName.toLowerCase());
                     if (null == destFB) {
                         throw new EventOutputMissDestFBException(fbName + " EO." + eo + "=" + dest + ":" + ei);
@@ -54,7 +54,7 @@ public class ApplicationCompiler {
                 if (null != links) {
                     for (String dest : links.keySet()) {
                         String di = links.get(dest);
-                        String destFBName = "".equals(conf.getNamespace()) ? dest : conf.getNamespace() + "." + dest;
+                        String destFBName = null == conf.getNamespace() || "".equals(conf.getNamespace()) ? dest : conf.getNamespace() + "." + dest;
                         FBInfo destFB = fbs.get(destFBName.toLowerCase());
                         if (null == destFB) {
                             throw new DataOutputMissDestFBException(fbName + " DO." + DO + "=" + dest + ":" + di);
