@@ -74,7 +74,14 @@ public class Application implements IApplication {
     public AppStatus call() throws Exception {
         ApplicationCompiler compiler = new ApplicationCompiler();
         compiler.setConfig(context.getConfig());
-        compiler.compile();
+        try {
+            compiler.compile();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            status.setMessage("ERROR: " + ex.getMessage());
+            status.setStatus(AppStatus.ERROR);
+            return status;
+        }
 
         startTime = System.currentTimeMillis();
         Configure config = context.getConfig();
