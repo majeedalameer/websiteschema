@@ -43,7 +43,7 @@ public class DeviceContext {
 
     DeviceContext() {
         try {
-            conf = Configure.createConfigure("configure-site.ini");
+            conf = new Configure("configure-site.ini");
             if (null != conf) {
                 home = conf.getProperty("Device", "home", "");
                 //获取Home的绝对路径
