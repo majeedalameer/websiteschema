@@ -24,6 +24,7 @@
         <jdbc-url>jdbc:mysql://192.168.4.173:3306/websiteschema</jdbc-url>-->
         <metadata-deploy-host>localhost</metadata-deploy-host>
         <hbase.master>localhost</hbase.master>
+        <rabbitmq-server>localhost</rabbitmq-server>
         <hbase.zookeeper.quorum>localhost</hbase.zookeeper.quorum>
         <jdbc-url>jdbc:mysql://localhost:3306/websiteschema</jdbc-url>
         <jdbc-username>websiteschema</jdbc-username>
