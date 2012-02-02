@@ -29,9 +29,10 @@ public class JobMessageReceiver implements Runnable {
     private RabbitQueue<Message> queue;
     private boolean isStop = false;
     private Logger l = Logger.getLogger(JobMessageReceiver.class);
+    private String host = null;
 
     public JobMessageReceiver() {
-        String host = DeviceContext.getInstance().getConf().
+        host = DeviceContext.getInstance().getConf().
                 getProperty("URLQueue", "ServerHost", "localhost");
         String queueName = DeviceContext.getInstance().getConf().
                 getProperty("URLQueue", "QueueName", "url_queue");
@@ -120,6 +121,7 @@ public class JobMessageReceiver implements Runnable {
             ret.put("STARTURLID", String.valueOf(msg.getStartURLId()));
             ret.put("JOBID", String.valueOf(msg.getJobId()));
             ret.put("WRAPPERID", String.valueOf(msg.getWrapperId()));
+            ret.put("QUEUE_SERVER", host);
             return ret;
         } catch (Exception ex) {
             ex.printStackTrace();
