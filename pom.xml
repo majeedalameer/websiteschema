@@ -13,23 +13,24 @@
         <spring-security.version>3.0.5.RELEASE</spring-security.version>
         <spring-social.version>1.0.0.RELEASE</spring-social.version>
         <org.slf4j.version>1.5.10</org.slf4j.version>
-        <webrenderer.version>6.0b11</webrenderer.version>
+        <webrenderer.version>6.0b3</webrenderer.version>
         <hive-version>0.7.1-cdh3u1</hive-version>
         <hbase-version>0.90.3-cdh3u1</hbase-version>
         <hadoop-version>0.20.2-cdh3u1</hadoop-version>
         <avro-version>1.5.4</avro-version>
-<!--        <metadata-deploy-host>192.168.4.173</metadata-deploy-host>
+        <rabbitmq-server>192.168.4.173</rabbitmq-server>
+        <metadata-deploy-host>192.168.4.173</metadata-deploy-host>
         <hbase.master>hadoop-hbase1</hbase.master>
         <hbase.zookeeper.quorum>hadoop-hbase1</hbase.zookeeper.quorum>
-        <jdbc-url>jdbc:mysql://192.168.4.173:3306/websiteschema</jdbc-url>-->
-        <metadata-deploy-host>localhost</metadata-deploy-host>
+        <jdbc-url>jdbc:mysql://192.168.4.173:3306/websiteschema</jdbc-url>
+<!--        <metadata-deploy-host>localhost</metadata-deploy-host>
         <hbase.master>localhost</hbase.master>
         <rabbitmq-server>localhost</rabbitmq-server>
         <hbase.zookeeper.quorum>localhost</hbase.zookeeper.quorum>
-        <jdbc-url>jdbc:mysql://localhost:3306/websiteschema</jdbc-url>
+        <jdbc-url>jdbc:mysql://localhost:3306/websiteschema</jdbc-url>-->
         <jdbc-username>websiteschema</jdbc-username>
         <jdbc-passwd>websiteschema</jdbc-passwd>
-        <webrenderer.classifier>linux64</webrenderer.classifier>
+        <webrenderer.classifier>windows32</webrenderer.classifier>
     </properties>
 
     <dependencyManagement>
