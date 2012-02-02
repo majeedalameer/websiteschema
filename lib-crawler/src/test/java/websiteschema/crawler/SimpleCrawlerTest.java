@@ -14,7 +14,7 @@ import websiteschema.element.DocumentUtil;
  */
 public class SimpleCrawlerTest {
 
-    private static String URL_STR = "http://www.baidu.com/";
+    private static String URL_STR = "http://mil.news.sohu.com/s2005/junshiguonei.shtml";
 
     @Test
     public void test() throws Exception {
