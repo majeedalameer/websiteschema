@@ -64,7 +64,7 @@ public class JsoupUtil {
                                     a.setValue(value);
                                     ele.setAttributeNode(a);
                                 } catch (Exception ex) {
-                                    l.error("出错键值对---->键：" + key + "   &   值：" + value);
+                                    l.error("bad key-value!!! ----> the key[" + key + "]   &   the value[" + value + "]");
                                 }
                             }
                         }
