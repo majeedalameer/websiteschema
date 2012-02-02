@@ -8,6 +8,7 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import org.apache.log4j.Logger;
 import org.jsoup.nodes.*;
 
 /**
@@ -16,6 +17,7 @@ import org.jsoup.nodes.*;
  */
 public class JsoupUtil {
 
+    Logger l = Logger.getLogger(JsoupUtil.class);
     private static JsoupUtil ins = new JsoupUtil();
 
     public static JsoupUtil getInstance() {
@@ -57,9 +59,13 @@ public class JsoupUtil {
                             for (Attribute attr : list) {
                                 String key = attr.getKey();
                                 String value = attr.getValue();
-                                org.w3c.dom.Attr a = doc.createAttribute(key);
-                                a.setValue(value);
-                                ele.setAttributeNode(a);
+                                try {
+                                    org.w3c.dom.Attr a = doc.createAttribute(key);
+                                    a.setValue(value);
+                                    ele.setAttributeNode(a);
+                                } catch (Exception ex) {
+                                    l.error("出错键值对---->键：" + key + "   &   值：" + value);
+                                }
                             }
                         }
                         n.appendChild(ele);
