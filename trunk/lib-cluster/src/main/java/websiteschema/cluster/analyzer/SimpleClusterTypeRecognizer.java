@@ -92,10 +92,10 @@ public class SimpleClusterTypeRecognizer implements IClusterTypeRecognizer {
                         type = TYPE_DOCUMENT;
                         break;
                     case 1 :
-                        type = TYPE_INVALID;
+                        type = TYPE_LINK;
                         break;
                     case 2 :
-                        type = TYPE_LINK;
+                        type = TYPE_INVALID;
                         break;
                     default :
                         type = TYPE_INVALID;
