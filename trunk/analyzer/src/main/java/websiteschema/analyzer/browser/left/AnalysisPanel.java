@@ -26,6 +26,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
+import org.apache.log4j.Logger;
 import websiteschema.analyzer.browser.SimpleBrowser;
 import websiteschema.analyzer.browser.left.sample.ClusterFrame;
 import websiteschema.analyzer.browser.left.sample.ClustererFrame;
@@ -54,6 +55,7 @@ public class AnalysisPanel extends javax.swing.JPanel implements IConfigureHandl
 
     BrowserContext context;
     SimpleBrowser simpleBrowser = null;
+    Logger log = Logger.getLogger(AnalysisPanel.class);
 
     /**
      * Creates new form AnalysisPanel
@@ -703,6 +705,7 @@ public class AnalysisPanel extends javax.swing.JPanel implements IConfigureHandl
             Sample sample = new Sample();
             String rowKey = UrlLinkUtil.getInstance().convertUriToRowKey(uri, getSiteId());
             sample.setRowKey(rowKey);
+            log.debug(rowKey);
             sample.setUrl(url);
             sample.setSiteId(getSiteId());
             sample.setCreateTime(new Date());
