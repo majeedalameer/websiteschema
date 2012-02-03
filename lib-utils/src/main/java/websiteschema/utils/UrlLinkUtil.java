@@ -202,6 +202,65 @@ public class UrlLinkUtil {
             return false;
         }
     }
+
+    //简单匹配（正则match，会因元字符等问题抛出PatternSyntaxException）
+    public boolean match_simple(String url, String[] mustHave, String[] dontHave) {
+        if (null != url) {
+            // 必须同时包含设置中的参数。
+            if (null != mustHave) {
+                for (String must : mustHave) {
+                    if (!"".equals(must)) {
+                        if (!url.contains(must)) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            // 不能包含任意一个
+            if (null != dontHave) {
+                for (String dont : dontHave) {
+                    if (!"".equals(dont)) {
+                        if (url.contains(dont)) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    //正则匹配
+    public boolean match_reg(String url, String[] mustHave, String[] dontHave) {
+        if (null != url) {
+            // 必须同时包含设置中的参数。
+            if (null != mustHave) {
+                for (String must : mustHave) {
+                    if (!"".equals(must)) {
+                        if (!url.matches(must)) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            // 不能包含任意一个
+            if (null != dontHave) {
+                for (String dont : dontHave) {
+                    if (!"".equals(dont)) {
+                        if (url.matches(dont)) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 //    public static void main(String args[]) throws URISyntaxException {
 //        System.out.println(UrlLinkUtil.getInstance().getURL("http://utility.baidu.com/traf/click.php?id=215&url=http://www.baidu.com", "test"));
 //        System.out.println(UrlLinkUtil.getInstance().getURL("http://utility.baidu.com/traf/click.php?id=215&url=http://www.baidu.com", ""));
