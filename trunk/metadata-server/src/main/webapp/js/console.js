@@ -10,6 +10,7 @@ Console.actionData = [
                             text:"数据管理",id:"dh-fetch",title:"数据管理",cls:"cls",singleClickExpand:true,
                             children:[
                                 {href:"views/metadata/site",text:"网站配置",id:"site",title:"网站配置",cls:"cls",iconCls:"icon-cls",leaf:true},
+                                {href:"views/metadata/category",text:"分类管理",id:"category",title:"分类管理",cls:"cls",iconCls:"icon-cls",leaf:true},
                                 {href:"views/metadata/keyword",text:"关键词管理",id:"keyword",title:"关键词管理",cls:"cls",iconCls:"icon-cls",leaf:true}
                             ]
                         },

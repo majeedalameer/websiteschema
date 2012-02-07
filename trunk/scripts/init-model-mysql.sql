@@ -3,6 +3,9 @@
 /* Created on:     2011-11-26 23:34:57                          */
 /*==============================================================*/
 
+drop table if exists Category;
+
+drop table if exists Channel;
 
 drop table if exists ConcernedWeibo;
 
@@ -11,6 +14,8 @@ drop table if exists Follow;
 drop table if exists Job;
 
 drop table if exists Keyword;
+
+drop table if exists RelatedCategory;
 
 drop table if exists Schedule;
 
@@ -27,6 +32,39 @@ drop table if exists Wrapper;
 drop table if exists ScheduleTask;
 
 drop table if exists ScheduleTaskArchive;
+
+/*==============================================================*/
+/* Table: Category                                              */
+/*==============================================================*/
+create table Category
+(
+   id                   bigint not null auto_increment,
+   name                 varchar(300),
+   description          varchar(1000),
+   parentId             bigint,
+   status               int,
+   leaf                 int,
+   createTime           datetime,
+   createUser           varchar(30),
+   updateTime           datetime,
+   lastUpdateUser       varchar(30),
+   primary key (id)
+);
+insert into Category(name,parentId,status,leaf,createTime,createUser) 
+values ('网站类型',0,0,0,now(),'system');
+
+/*==============================================================*/
+/* Table: Channel                                               */
+/*==============================================================*/
+create table Channel
+(
+   id                   bigint not null auto_increment,
+   channel              varchar(300),
+   siteId               varchar(100),
+   createTime           datetime,
+   primary key (id)
+);
+
 
 /*==============================================================*/
 /* Table: ConcernedWeibo                                        */
@@ -107,8 +145,20 @@ create table Keyword
    lastUpdateUser       varchar(30),
    primary key (id)
 );
-
+/*=============================================================*/
+/* Table: RelatedCategory                                             */
 /*==============================================================*/
+create table RelatedCategory
+(
+   id                   bigint not null auto_increment,
+   objectId             bigint,
+   objectType           int,
+   cateId               bigint,
+   createTime           datetime,
+   createUser           varchar(30),
+   primary key (id)
+);
+/*=============================================================*/
 /* Table: Schedule                                             */
 /*==============================================================*/
 create table Schedule
