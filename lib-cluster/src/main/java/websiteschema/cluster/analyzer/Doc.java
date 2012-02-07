@@ -45,6 +45,10 @@ public class Doc {
         }
     }
 
+    public Set<String> keySet() {
+        return data.keySet();
+    }
+
     public Collection<String> getValues(String field) {
         if (null != data) {
             return data.get(field.toUpperCase());
