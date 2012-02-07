@@ -57,7 +57,7 @@ public class JobAMQPQueueV1 implements Job {
 
     private Message create(websiteschema.model.domain.Job job) {
         StartURL startURL = startURLMapper.getById(startURLId);
-        return new Message(jobId, startURLId, job.getWrapperId(), startURL.getSiteId(), startURL.getJobname(), startURL.getStartURL(), job.getConfigure());
+        return new Message(jobId, startURLId, schedulerId, job.getWrapperId(), startURL.getSiteId(), startURL.getJobname(), startURL.getStartURL(), job.getConfigure());
     }
 
     public long getJobId() {

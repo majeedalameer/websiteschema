@@ -3,6 +3,48 @@
  * and open the template in the editor.
  */
 
+var categoryRecordType = [
+{
+    name : 'id',
+    type : 'long'
+},
+{
+    name : 'name',
+    type : 'string'
+},
+{
+    name : 'description',
+    type : 'string'
+},
+{
+    name : 'status',
+    type : 'int'
+},
+{
+    name : 'parentId',
+    type : 'long'
+},
+{
+    name : 'leaf',
+    type : 'int'
+},
+{
+    name : 'createTime',
+    type : 'date'
+},
+{
+    name : 'createUser',
+    type : 'string'
+},
+{
+    name : 'updateTime',
+    type : 'date'
+},
+{
+    name : 'lastUpdateUser',
+    type : 'string'
+}
+];
 
 var scheduleRecordType = [
 {

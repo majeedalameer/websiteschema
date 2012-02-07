@@ -13,3 +13,4 @@ document.write("<script type=\"text/javascript\" src=\"js/ext-all-debug.js\"></"
 document.write("<script type=\"text/javascript\" src=\"js/domain-record-type.js\"></"+"script>");
 document.write("<script type=\"text/javascript\" src=\"js/constant.js\"></"+"script>");
 document.write("<script type=\"text/javascript\" src=\"js/utils.js\"></"+"script>");
+document.write("<script type=\"text/javascript\" src=\"ux/TabCloseMenu.js\"></"+"script>");

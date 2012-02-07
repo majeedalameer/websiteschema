@@ -120,6 +120,7 @@ public class JobMessageReceiver implements Runnable {
             }
             ret.put("STARTURLID", String.valueOf(msg.getStartURLId()));
             ret.put("JOBID", String.valueOf(msg.getJobId()));
+            ret.put("SCHEID", String.valueOf(msg.getScheId()));
             ret.put("WRAPPERID", String.valueOf(msg.getWrapperId()));
             ret.put("QUEUE_SERVER", host);
             return ret;

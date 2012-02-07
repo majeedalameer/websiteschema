@@ -13,6 +13,8 @@ import websiteschema.fb.annotation.DI;
 import websiteschema.fb.annotation.EI;
 import websiteschema.fb.annotation.EO;
 import websiteschema.fb.core.FunctionBlock;
+import websiteschema.model.domain.Task;
+import websiteschema.persistence.rdbms.TaskMapper;
 
 /**
  *
@@ -39,6 +41,8 @@ public class FBURLQueue extends FunctionBlock {
     public String siteId;
     @DI(name = "SID", desc = "startURLId")
     public long startURLId;
+    @DI(name = "SCHEID", desc = "scheId")
+    public long scheId;
     @DI(name = "WID", desc = "wrapperId")
     public long wrapperId;
     @DI(name = "JID", desc = "jobId")
@@ -52,7 +56,7 @@ public class FBURLQueue extends FunctionBlock {
     public void addOne() {
         try {
             RabbitQueue<Message> queue = new RabbitQueue<Message>(host, port, queueName, true);
-            Message msg = new Message(jobId, startURLId, wrapperId,
+            Message msg = new Message(jobId, startURLId, scheId, wrapperId,
                     siteId, jobname,
                     url, //URL
                     configure, depth);
@@ -69,15 +73,25 @@ public class FBURLQueue extends FunctionBlock {
             if (null != links && links.size() > 0) {
                 RabbitQueue<Message> queue = new RabbitQueue<Message>(host, port, queueName, true);
                 for (String u : links) {
-                    Message msg = new Message(jobId, startURLId, wrapperId,
+                    Message msg = new Message(jobId, startURLId, scheId, wrapperId,
                             siteId, jobname,
                             u, //URL
                             configure, depth);
+
+                    TaskMapper taskMapper = this.getContext().getSpringBean("taskMapper", TaskMapper.class);
+                    if (null != taskMapper) {
+                        Task task = new Task();
+                        task.setScheduleId(scheId);
+                        task.setStatus(Task.SENT);
+                        taskMapper.insert(task);
+                        msg.setTaskId(task.getId());
+                    }
                     queue.offer(msg);
                 }
             }
             triggerEvent("EO");
         } catch (Exception ex) {
+            l.error(ex.getMessage(), ex);
             triggerEvent("FATAL");
         }
     }

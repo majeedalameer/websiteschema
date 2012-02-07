@@ -51,9 +51,13 @@ public class ApplicationServiceImpl implements ApplicationService {
                 return t;
             }
         });
+        //初始化检查任务状态的线程。
         initTimer();
     }
 
+    /**
+     * 初始化一个线程，每隔30秒检查一次当前有多少任务在运行，并记录已经完成的任务的状态。
+     */
     private void initTimer() {
         timer = new java.util.Timer(ApplicationServiceImpl.class.getName(), true);
         timerTask = new java.util.TimerTask() {
@@ -69,6 +73,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     private boolean addTask(Application task) {
         int Running = getRunningThreadNumber();
         if (Running > MaxTaskNumber) {
+            //当前任务数已经超过了设定的上限，拒绝添加新任务。
             return false;
         } else {
             boolean ret = true;
@@ -80,6 +85,7 @@ public class ApplicationServiceImpl implements ApplicationService {
                     updateTaskStatusWhenStart(task.getStatus());
                 }
             } catch (RejectedExecutionException ex) {
+                //pool大小已经满了，拒绝添加新任务。
                 ret = false;
             }
             return ret;
@@ -106,6 +112,10 @@ public class ApplicationServiceImpl implements ApplicationService {
         return fList.size();
     }
 
+    /**
+     * 声明任务已经开始。
+     * @param sta
+     */
     private void updateTaskStatusWhenStart(AppStatus sta) {
         long taskId = null != sta ? sta.getTaskId() : 0;
         if (taskId > 0) {
@@ -118,6 +128,10 @@ public class ApplicationServiceImpl implements ApplicationService {
         }
     }
 
+    /**
+     * 如果任务id大于0，则根据功能块网络的执行情况，更新任务的状态。
+     * @param sta
+     */
     private void updateTaskStatus(AppStatus sta) {
         long taskId = null != sta ? sta.getTaskId() : 0;
         if (taskId > 0) {

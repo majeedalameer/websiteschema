@@ -18,6 +18,10 @@
         </dependency>
         <dependency>
             <groupId>websiteschema</groupId>
+            <artifactId>lib-additional-plugins</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>websiteschema</groupId>
             <artifactId>lib-conf</artifactId>
         </dependency>
         <dependency>

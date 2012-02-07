@@ -11,6 +11,7 @@ public class Message implements java.io.Serializable {
     private int depth;
     private long jobId;
     private long startURLId;
+    private long scheId;
     private long wrapperId;
     private long taskId;
     private long createTime;
@@ -22,13 +23,14 @@ public class Message implements java.io.Serializable {
     public Message() {
     }
 
-    public Message(long jobId, long startURLId, long wrapperId, String siteId, String jobname, String url, String configure) {
-        this(jobId, startURLId, wrapperId, siteId, jobname, url, configure, 0);
+    public Message(long jobId, long startURLId, long scheId, long wrapperId, String siteId, String jobname, String url, String configure) {
+        this(jobId, startURLId, scheId, wrapperId, siteId, jobname, url, configure, 0);
     }
 
-    public Message(long jobId, long startURLId, long wrapperId, String siteId, String jobname, String url, String configure, int depth) {
+    public Message(long jobId, long startURLId, long scheId, long wrapperId, String siteId, String jobname, String url, String configure, int depth) {
         this.jobId = jobId;
         this.startURLId = startURLId;
+        this.scheId = scheId;
         this.wrapperId = wrapperId;
         this.url = url;
         this.configure = configure;
@@ -109,6 +111,14 @@ public class Message implements java.io.Serializable {
 
     public void setJobname(String jobname) {
         this.jobname = jobname;
+    }
+
+    public long getScheId() {
+        return scheId;
+    }
+
+    public void setScheId(long scheId) {
+        this.scheId = scheId;
     }
 
     public String getSiteId() {
