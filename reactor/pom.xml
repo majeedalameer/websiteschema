@@ -21,6 +21,7 @@
                 <module>../lib-conf</module>
                 <module>../metadata-server</module>
                 <module>../virtual-device</module>
+                <module>../lib-additional-plugins</module>
             </modules>
         </profile>
     </profiles>
