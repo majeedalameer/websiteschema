@@ -31,7 +31,7 @@
             var start = 0;
             var pageSize = 20;
             Ext.onReady(function(){
-
+                Ext.QuickTips.init();
                 var proxy = new Ext.data.DWRProxy(ScheduleService.getResults, true);
                 var recordType = new Ext.data.Record.create(scheduleRecordType);
                 var store=new Ext.data.Store({
@@ -48,6 +48,8 @@
                 proxy.on('beforeload', function(thiz, params) {
                     params.match = Ext.getCmp('MATCH').getValue();
                     params.url = Ext.getCmp('URL').getValue();
+                    params.jobname = Ext.getCmp('JOBNAME').getValue();
+                    params.channelName = Ext.getCmp('CHANNELNAME').getValue();
                     params.type = Ext.getCmp('SCHEDULETYPE').getValue();
                     params.sort = 'createTime desc';
                 });
@@ -57,8 +59,16 @@
                     fields :['name','value'],
                     data:[
                         ['开始停止次数','1'],
-                        ['CRONTAB','0'],
-                        ['无效类型','-1']
+                        ['CRONTAB','0']
+                    ]
+                });
+
+                var status_type_store = new Ext.data.SimpleStore(
+                {
+                    fields :['name','value'],
+                    data:[
+                        ['有效','1'],
+                        ['无效','0']
                     ]
                 });
 
@@ -96,9 +106,17 @@
                         })
                     },
                     {
-                        header: '调度信息(分时日月周)',
+                        header: '栏目简称',
+                        dataIndex: 'channelName',
+                        width: 80,
+                        editor: new fm.TextField({
+                            allowBlank: false
+                        })
+                    },
+                    {
+                        header: '调度信息',
                         dataIndex: 'schedule',
-                        width: 120,
+                        width: 80,
                         editor: new fm.TextField({
                             allowBlank: false
                         })
@@ -106,7 +124,7 @@
                     {
                         header: '类型',
                         dataIndex: 'scheduleType',
-                        width: 100,
+                        width: 70,
                         hidden : false,
                         editor: new fm.ComboBox({
                             store : type_store,
@@ -127,9 +145,32 @@
                         }
                     },
                     {
-                        header: '任务配置',
+                        header: '状态',
+                        dataIndex: 'status',
+                        width: 50,
+                        hidden : false,
+                        editor: new fm.ComboBox({
+                            store : status_type_store,
+                            triggerAction: 'all',
+                            allowBlank: false,
+                            forceSelection: true,
+                            mode: 'local',
+                            displayField:'name',
+                            valueField:'value'
+
+                        }),
+                        renderer: function(value,metadata,record){
+                            var index = status_type_store.find('value',value);
+                            if(index!=-1){
+                                return status_type_store.getAt(index).data.name;
+                            }
+                            return value;
+                        }
+                    },
+                    {
+                        header: '任务ID',
                         dataIndex: 'jobId',
-                        width: 60,
+                        width: 50,
                         editor: new fm.TextField({
                             allowBlank: false,
                             readOnly : false
@@ -212,12 +253,74 @@
                             tooltip: '关闭调度器',
                             iconCls: 'icon-delete',
                             handler: handleShutdownScheduler
+                        }, '-',
+                        {
+                            text: '调度器状态',
+                            tooltip: '查看调度器的状态',
+                            handler: getStatusOfScheduler
                         }, '->',
+                        ' ', '网站ID', ' ',
+                        {
+                            xtype: 'textfield',
+                            id: 'MATCH',
+                            width: 80,
+                            initEvents : function(){
+                                var keyPressed = function(e) {
+                                    if(e.getKey()==e.ENTER){
+                                        handleQuery();
+                                    }
+                                };
+                                this.el.on("keypress", keyPressed, this);
+                            }
+                        }, ' ',
+                        ' ', 'JOBNAME', ' ',
+                        {
+                            xtype: 'textfield',
+                            id: 'JOBNAME',
+                            width: 80,
+                            initEvents : function(){
+                                var keyPressed = function(e) {
+                                    if(e.getKey()==e.ENTER){
+                                        handleQuery();
+                                    }
+                                };
+                                this.el.on("keypress", keyPressed, this);
+                            }
+                        }, ' ',
+                        ' ', '栏目名称', ' ',
+                        {
+                            xtype: 'textfield',
+                            id: 'CHANNELNAME',
+                            width: 80,
+                            initEvents : function(){
+                                var keyPressed = function(e) {
+                                    if(e.getKey()==e.ENTER){
+                                        handleQuery();
+                                    }
+                                };
+                                this.el.on("keypress", keyPressed, this);
+                            }
+                        }, ' ',
+                        ' ', '起始URL', ' ',
+                        {
+                            xtype: 'textfield',
+                            id: 'URL',
+                            width: 80,
+                            initEvents : function(){
+                                var keyPressed = function(e) {
+                                    if(e.getKey()==e.ENTER){
+                                        handleQuery();
+                                    }
+                                };
+                                this.el.on("keypress", keyPressed, this);
+                            }
+                        }, ' ',
+
                         ' ', '类型', ' ',
                         {
                             xtype: 'combo',
                             id: 'SCHEDULETYPE',
-                            width: 100,
+                            width: 80,
                             valueField: 'value',
                             displayField: 'name',
                             mode: 'local',
@@ -225,33 +328,6 @@
                             allowblank: true,
                             forceSelection: false,
                             store: type_store
-                        }, ' ',
-                        ' ', '起始URL', ' ',
-                        {
-                            xtype: 'textfield',
-                            id: 'URL',
-                            width: 100,
-                            initEvents : function(){
-                                var keyPressed = function(e) {
-                                    if(e.getKey()==e.ENTER){
-                                        handleQuery();
-                                    }
-                                };
-                                this.el.on("keypress", keyPressed, this);
-                            }
-                        }, ' ',
-                        ' ', '网站ID', ' ',
-                        {
-                            xtype: 'textfield',
-                            id: 'MATCH',
-                            initEvents : function(){
-                                var keyPressed = function(e) {
-                                    if(e.getKey()==e.ENTER){
-                                        handleQuery();
-                                    }
-                                };
-                                this.el.on("keypress", keyPressed, this);
-                            }
                         }, ' ',
                         {
                             text: '检索',
@@ -306,6 +382,7 @@
                     p.set("startURLId","0");
                     p.set("schedule",defaultSchedule)
                     p.set("scheduleType","0");
+                    p.set("status","0");
                     store.insert(0, p);
                     grid.startEditing(0, 0);
                     ScheduleService.insert(p.data, function(){
@@ -358,6 +435,20 @@
                             alert("关闭调度器成功！");
                         } else {
                             alert("关闭调度器失败！");
+                        }
+                    });
+                }
+
+                function getStatusOfScheduler(){
+                    ScheduleService.getStatusOfScheduler(function(data){
+                        if(data == 1) {
+                            alert("调度器正在运行！");
+                        } else if(data == 2) {
+                            alert("调度器已停止！");
+                        } else if(data == 3) {
+                            alert("调度器准备就绪！");
+                        } else {
+                            alert("调度器没有启动或状态异常！");
                         }
                     });
                 }

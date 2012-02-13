@@ -85,6 +85,8 @@ public class DateDetectTest {
         pat = "yy年MM月dd日";
         res = DateDetectUtil.getInstance().parseDate(date, pat, "yyyy-MM-dd");
         assert("2011-12-31".equals(res));
+
+        res = DateDetectUtil.getInstance().parseDate("2011-11-30 09:25 来源: 中国证券报", "yyyy-MM-dd HH:mm:SS", "yyyy-MM-dd HH:mm:SS");
     }
 
     @Test

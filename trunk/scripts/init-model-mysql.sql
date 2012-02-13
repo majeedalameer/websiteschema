@@ -23,6 +23,8 @@ drop table if exists Site;
 
 drop table if exists StartURL;
 
+drop table if exists SysConf;
+
 drop table if exists User;
 
 drop table if exists Weibo;
@@ -168,12 +170,13 @@ create table Schedule
    jobId                bigint,
    schedule             varchar(1000),
    scheduleType         int,
+   status               int,
    createTime           datetime,
    primary key (id)
 );
 
-insert into Schedule(startURLId, jobId, schedule, scheduleType, createTime)
-values (1,2,'*/10 * * * ?',0,now());
+insert into Schedule(startURLId, jobId, schedule, scheduleType, status, createTime)
+values (1,2,'*/10 * * * ?',0,0,now());
 
 /*==============================================================*/
 /* Table: Site                                                  */
@@ -224,6 +227,7 @@ create table StartURL
    siteId               varchar(100),
    startURL             varchar(8192),
    jobname              varchar(100) not null,
+   name                 varchar(100),
    status               int,
    createTime           datetime,
    createUser           varchar(30),
@@ -232,9 +236,32 @@ create table StartURL
    primary key (id, jobname)
 );
 
-insert into StartURL(siteId, startURL, jobname, status, createTime, createUser)
-values ('www_163_com_1','http://money.163.com/special/00252G50/macroNew.html','money_163_com_1',1,now(),'system');
+insert into StartURL(siteId, startURL, jobname, name, status, createTime, createUser)
+values ('www_163_com_1','http://money.163.com/special/00252G50/macroNew.html','money_163_com_1','网易财经',1,now(),'system');
 
+/*==============================================================*/
+/* Table: SysConf                                               */
+/*==============================================================*/
+create table SysConf
+(
+   id                   bigint not null auto_increment,
+   field                varchar(100),
+   name                 varchar(100),
+   value                varchar(100),
+   description          varchar(1000),
+   createTime           datetime,
+   createUser           varchar(30),
+   updateTime           datetime,
+   lastUpdateUser       varchar(30),
+   primary key (id)
+);
+
+insert into SysConf(field, name, value, description, createTime, createUser)
+values ('URLQueue','ServerHost','localhost','Rabbitmq Server for URL Queue',now(),'system');
+insert into SysConf(field, name, value, description, createTime, createUser)
+values ('URLQueue','QueueName','url_queue','URL Queue Name',now(),'system');
+insert into SysConf(field, name, value, description, createTime, createUser)
+values ('default','VirtualDevices','["localhost:12207"]','Crawlers',now(),'system');
 /*==============================================================*/
 /* Table: User                                                  */
 /*==============================================================*/

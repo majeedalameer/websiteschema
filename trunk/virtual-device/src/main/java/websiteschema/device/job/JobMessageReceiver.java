@@ -68,10 +68,14 @@ public class JobMessageReceiver implements Runnable {
     }
 
     private void createApplication(Message msg, Wrapper wrapper) {
-        String appConfig = wrapper.getApplication();
         if (Wrapper.TYPE_FB.equals(wrapper.getWrapperType())) {
             Application app = new Application(msg.getTaskId());
+            // 功能块网络运行5分钟超时
+            int timeout = DeviceContext.getInstance().getConf().
+                    getIntProperty("Device", "AppTimeout", 5 * 60 * 1000);
+            app.setTimeout(timeout);
             RuntimeContext runtimeContext = app.getContext();
+            String appConfig = wrapper.getApplication();
             InputStream is = convertToInputStream(appConfig);
             if (null != is) {
                 //加载Wrapper，将Job的配置转为Map，并设置为Filter。
@@ -96,6 +100,11 @@ public class JobMessageReceiver implements Runnable {
         }
     }
 
+    private Map<String, String> getDefaultConfig() {
+        return DeviceContext.getInstance().getConf().
+                getAllPropertiesInField("FBApp");
+    }
+
     public Map<String, String> convertToMap(Message msg) {
         try {
             String properties = msg.getConfigure();
@@ -105,7 +114,13 @@ public class JobMessageReceiver implements Runnable {
             InputStream is = convertToInputStream(properties);
             Properties prop = new Properties();
             prop.load(is);
-            Map<String, String> ret = new HashMap<String, String>(prop.size());
+            Map<String, String> def = getDefaultConfig();
+            Map<String, String> ret = null;
+            if (null == def) {
+                ret = new HashMap<String, String>(prop.size());
+            } else {
+                ret = new HashMap<String, String>(def);
+            }
             for (String key : prop.stringPropertyNames()) {
                 ret.put(key, prop.getProperty(key));
             }

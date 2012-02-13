@@ -12,6 +12,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import websiteschema.conf.Configure;
 import websiteschema.device.runtime.ApplicationServiceImpl;
 import websiteschema.fb.core.app.ApplicationService;
+import websiteschema.persistence.rdbms.SysConfMapper;
 import websiteschema.persistence.rdbms.TaskMapper;
 
 /**
@@ -45,6 +46,10 @@ public class DeviceContext {
         try {
             conf = new Configure("configure-site.ini");
             if (null != conf) {
+                //加载数据库中的配置
+                SysConfMapper sysConfMapper = getBean("sysConfMapper", SysConfMapper.class);
+                conf.setPropLoader(sysConfMapper);
+                //获取路径信息
                 home = conf.getProperty("Device", "home", "");
                 //获取Home的绝对路径
                 if (!"".equals(home)) {

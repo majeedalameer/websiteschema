@@ -11,6 +11,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,6 +24,8 @@ import java.util.regex.Pattern;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
+import websiteschema.conf.other.PropLoader;
+import websiteschema.conf.other.Row;
 
 /**
  *
@@ -32,6 +35,7 @@ public class Configure {
 
     private static final String DefaultField = "default";
     private static final Configure root = new Configure();
+    private static PrintStream logger = System.err;
     private String currentField = DefaultField;
     private String namespace = null;
     private Map<String, Map<String, String>> properties = new HashMap<String, Map<String, String>>();
@@ -40,7 +44,7 @@ public class Configure {
         try {
             loadProperty("configure-default.ini");
         } catch (IOException ex) {
-            System.out.println("Can not load configuration configure-default.ini");
+            log("Can not load configuration configure-default.ini");
         }
     }
 
@@ -53,7 +57,7 @@ public class Configure {
         try {
             loadProperty(file, prop);
         } catch (IOException ex) {
-            System.out.println("Can not load configuration " + file);
+            log("Can not load configuration " + file);
         }
     }
 
@@ -66,7 +70,7 @@ public class Configure {
         try {
             loadProperty(config, prop);
         } catch (IOException ex) {
-            System.out.println("Can not load configuration");
+            log("Can not load configuration");
         }
     }
 
@@ -74,8 +78,23 @@ public class Configure {
         return root;
     }
 
+    public static void setLogger(PrintStream logger) {
+        Configure.logger = logger;
+    }
+
     public static Configure createConfigure(String config) throws UnsupportedEncodingException {
         return new Configure(new ByteArrayInputStream(config.getBytes("UTF-8")));
+    }
+
+    public void setPropLoader(PropLoader loader) {
+        if (null != loader) {
+            List<Row> rows = loader.getRows();
+            if (null != rows) {
+                for (Row row : rows) {
+                    putProperties(null, row.getField(), row.getName(), row.getValue());
+                }
+            }
+        }
     }
 
     private Map<String, Map<String, String>> cloneToNewMap() {
@@ -97,8 +116,10 @@ public class Configure {
         try {
             if (f.exists()) {
                 is = new FileInputStream(f);
+                log("load from file: " + f.getAbsolutePath());
             } else {
                 is = Configure.class.getClassLoader().getResourceAsStream(file);
+                log("load from resource: " + Configure.class.getClassLoader().getResource(file));
             }
             loadProperty(is, prop);
         } finally {
@@ -526,5 +547,11 @@ public class Configure {
             }
         }
         return null;
+    }
+
+    private static void log(String msg) {
+        if (null != logger) {
+            logger.println(msg);
+        }
     }
 }

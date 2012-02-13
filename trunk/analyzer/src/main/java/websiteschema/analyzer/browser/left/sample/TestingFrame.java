@@ -10,6 +10,8 @@
  */
 package websiteschema.analyzer.browser.left.sample;
 
+import java.util.HashMap;
+import java.util.Map;
 import javax.swing.JOptionPane;
 import org.w3c.dom.Document;
 import websiteschema.analyzer.browser.utils.ClustererUtil;
@@ -17,6 +19,7 @@ import websiteschema.analyzer.context.BrowserContext;
 import websiteschema.cluster.analyzer.Doc;
 import websiteschema.crawler.Crawler;
 import websiteschema.crawler.fb.FBDOMExtractor;
+import websiteschema.crawler.fb.FBFieldFilter;
 import websiteschema.crawler.htmlunit.HtmlUnitWebCrawler;
 import websiteschema.element.DocumentUtil;
 import websiteschema.model.domain.Websiteschema;
@@ -169,14 +172,9 @@ public class TestingFrame extends javax.swing.JFrame {
         }
     };
 
-    private void start() {
-        this.startButton.setEnabled(false);
-        try {
-            WebsiteschemaMapper mapper = BrowserContext.getSpringContext().getBean("websiteschemaMapper", WebsiteschemaMapper.class);
-            Websiteschema websiteschema = mapper.get(getSiteId());
-
+    private Document crawl(String url) {
+        if (null != url) {
             Document source = null;//(Document) context.getBrowser().getW3CDocument();
-            String url = context.getBrowser().getURL();
             this.setTitle("测试抽取: " + url);
             context.getConsole().log("开始采集：" + url);
             this.resultArea.setText("开始采集：" + url + "\n");
@@ -194,27 +192,65 @@ public class TestingFrame extends javax.swing.JFrame {
             context.getConsole().log("采集结束，耗时：" + (t2 - t1));
             this.resultArea.append("采集结束，耗时：" + (t2 - t1) + "\n");
             source = null != docs ? docs[0] : (Document) context.getBrowser().getW3CDocument();
+            return source;
+        } else {
+            return null;
+        }
+    }
+
+    private String getDocumentBelongToCluster(Document source) {
+        String clusterName = this.clusterNameField.getText();
+        if (null != clusterName && !"".equals(clusterName)) {
+            clusterName = clusterName.trim();
+        } else {
+            context.getConsole().log("开始分类");
+            this.resultArea.append("开始分类\n");
+            clusterName = ClustererUtil.getInstance().classify(getSiteId(), source);
+            context.getConsole().log("此页面属于类：" + clusterName);
+            this.resultArea.append("此页面属于类：" + clusterName + "\n");
+            this.clusterNameField.setText(clusterName);
+        }
+        return clusterName;
+    }
+
+    private Doc extractDocument(Websiteschema websiteschema, String clusterName, Document source) {
+        FBDOMExtractor extractor = new FBDOMExtractor();
+        extractor.in = source;
+        extractor.schema = websiteschema;
+        extractor.clusterName = clusterName;
+        context.getConsole().log("开始尝试抽取页面：");
+        this.resultArea.append("开始尝试抽取页面：\n");
+        extractor.extract();
+        context.getConsole().log("抽取结束：");
+        Doc result = extractor.out;
+        return result;
+    }
+
+    private Doc filteringDocument(Doc orig) {
+        Map<String, String> fields = new HashMap<String, String>();
+        fields.put("SOURCENAME", "websiteschema.cluster.analyzer.fields.SourceNameFilter");
+        FBFieldFilter filter = new FBFieldFilter();
+        filter.doc = orig;
+        filter.filters = fields;
+        filter.filtering();
+        return filter.doc;
+    }
+
+    private void start() {
+        this.startButton.setEnabled(false);
+        try {
+            WebsiteschemaMapper mapper = BrowserContext.getSpringContext().getBean("websiteschemaMapper", WebsiteschemaMapper.class);
+            Websiteschema websiteschema = mapper.get(getSiteId());
+            //采集指定URL
+            Document source = crawl(context.getBrowser().getURL());
             if (null != source) {
-                String clusterName = this.clusterNameField.getText();
-                if (null != clusterName && !"".equals(clusterName)) {
-                    clusterName = clusterName.trim();
-                } else {
-                    context.getConsole().log("开始分类");
-                    this.resultArea.append("开始分类\n");
-                    clusterName = ClustererUtil.getInstance().classify(getSiteId(), source);
-                    context.getConsole().log("此页面属于类：" + clusterName);
-                    this.resultArea.append("此页面属于类：" + clusterName + "\n");
-                    this.clusterNameField.setText(clusterName);
-                }
-                FBDOMExtractor extractor = new FBDOMExtractor();
-                extractor.in = source;
-                extractor.schema = websiteschema;
-                extractor.clusterName = clusterName;
-                context.getConsole().log("开始尝试抽取页面：");
-                this.resultArea.append("开始尝试抽取页面：\n");
-                extractor.extract();
-                context.getConsole().log("抽取结束：");
-                Doc result = extractor.out;
+                //为采集到的文档进行分类
+                String clusterName = getDocumentBelongToCluster(source);
+                //抽取文档
+                Doc result = extractDocument(websiteschema, clusterName, source);
+                //对某些参数进行过滤
+                result = filteringDocument(result);
+                //对结果进行输出
                 if (null != result) {
                     this.resultArea.setText(DocumentUtil.getXMLString(result.toW3CDocument()));
                 } else {

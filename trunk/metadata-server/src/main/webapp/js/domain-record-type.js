@@ -3,6 +3,71 @@
  * and open the template in the editor.
  */
 
+var urlLinkRecordType = [
+{
+    name : 'rowKey',
+    type : 'string'
+},
+{
+    name : 'content',
+    type : 'string'
+},
+{
+    name : 'url',
+    type : 'string'
+}
+];
+
+var urlLogRecordType = [
+{
+    name : 'rowKey',
+    type : 'string'
+},
+{
+    name : 'createTime',
+    type : 'long'
+}
+];
+
+var sysConfRecordType = [
+{
+    name : 'id',
+    type : 'long'
+},
+{
+    name : 'field',
+    type : 'string'
+},
+{
+    name : 'name',
+    type : 'string'
+},
+{
+    name : 'value',
+    type : 'string'
+},
+{
+    name : 'description',
+    type : 'string'
+},
+{
+    name : 'createTime',
+    type : 'date'
+},
+{
+    name : 'createUser',
+    type : 'string'
+},
+{
+    name : 'updateTime',
+    type : 'date'
+},
+{
+    name : 'lastUpdateUser',
+    type : 'string'
+}
+];
+
 var categoryRecordType = [
 {
     name : 'id',
@@ -60,6 +125,10 @@ var scheduleRecordType = [
     type : 'string'
 },
 {
+    name : 'channelName',
+    type : 'string'
+},
+{
     name : 'jobId',
     type : 'string'
 },
@@ -69,6 +138,10 @@ var scheduleRecordType = [
 },
 {
     name : 'scheduleType',
+    type : 'int'
+},
+{
+    name : 'status',
     type : 'int'
 },
 {
@@ -92,6 +165,10 @@ var startURLRecordType = [
 },
 {
     name : 'jobname',
+    type : 'string'
+},
+{
+    name : 'name',
     type : 'string'
 },
 {

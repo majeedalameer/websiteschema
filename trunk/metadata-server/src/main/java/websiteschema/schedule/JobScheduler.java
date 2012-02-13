@@ -63,13 +63,65 @@ public class JobScheduler {
 
         List<Schedule> all = scheduleMapper.getAll();
         for (Schedule sche : all) {
+            load(sche);
+        }
+    }
+
+    public void add(Schedule sche) throws SchedulerException {
+        if (Started == status()) {
+            load(sche);
+        }
+    }
+
+    private void load(Schedule sche) throws SchedulerException {
+        if (null != sched) {
             long jobId = sche.getJobId();
             long startURLId = sche.getStartURLId();
-            if (jobId > 0 && startURLId > 0) {
+            int status = sche.getStatus();
+            if (status == Schedule.STATUS_VALID
+                    && jobId > 0 && startURLId > 0) {
                 JobDetail job = createJob(sche, group);
-                Trigger trigger = createTrigger(sche);
+                Trigger trigger = createTrigger(sche, group);
                 if (null != job && null != trigger) {
                     sched.scheduleJob(job, trigger);
+                    l.debug("add job: " + job.getKey());
+                }
+            } else {
+                l.debug("schedule: " + sche.getId() + " is invalid. "
+                        + "which jobId is " + sche.getJobId() + " and startURLId is " + sche.getStartURLId());
+            }
+        }
+    }
+
+    public void remove(Schedule sche) throws SchedulerException {
+        if (Started == status()) {
+            long id = sche.getId();
+            if (id > 0) {
+                JobKey jobKey = new JobKey(String.valueOf(id), group);
+                if (null != jobKey) {
+                    sched.deleteJob(jobKey);
+                    l.debug("delete job: " + jobKey);
+                }
+            } else {
+                l.debug("schedule: " + sche.getId() + " is invalid.");
+
+            }
+        }
+    }
+
+    public void reload(Schedule sche) throws SchedulerException {
+        if (Started == status()) {
+            long jobId = sche.getJobId();
+            long startURLId = sche.getStartURLId();
+            int status = sche.getStatus();
+            if (status == Schedule.STATUS_VALID
+                    && jobId > 0 && startURLId > 0) {
+                JobDetail job = createJob(sche, group);
+                Trigger trigger = createTrigger(sche, group);
+                if (null != job && null != trigger) {
+                    sched.deleteJob(job.getKey());
+                    sched.scheduleJob(job, trigger);
+                    l.debug("rescheduled job: " + job.getKey());
                 }
             } else {
                 l.debug("schedule: " + sche.getId() + " is invalid. "
@@ -160,8 +212,8 @@ public class JobScheduler {
         return null;
     }
 
-    private Trigger createTrigger(Schedule sche) {
-        if (Schedule.CRON == sche.getScheduleType()) {
+    private Trigger createTrigger(Schedule sche, String group) {
+        if (Schedule.TYPE_CRON == sche.getScheduleType()) {
             try {
                 String schedule = getRandomSec() + " " + sche.getSchedule();
                 Trigger trigger =

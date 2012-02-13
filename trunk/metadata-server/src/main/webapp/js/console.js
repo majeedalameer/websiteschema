@@ -44,6 +44,9 @@ Console.actionData = [
                         },
                         {
                             href:"views/personInfo", text:"个人信息",id:"personal-admin.task",title:"个人信息",cls:"cls",leaf:true
+                        },
+                        {
+                            href:"views/metadata/sysconf",text:"系统配置",id:"sysconf",title:"系统配置",cls:"cls",leaf:true
                         }
                     ]
        }

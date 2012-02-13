@@ -26,7 +26,7 @@
             var start = 0;
             var pageSize = 10;
             Ext.onReady(function(){
-
+                Ext.QuickTips.init();
                 var proxy = new Ext.data.DWRProxy(UserService.getResults, true);
                 var recordType = new Ext.data.Record.create([
                     {

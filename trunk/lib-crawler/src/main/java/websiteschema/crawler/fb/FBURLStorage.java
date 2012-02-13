@@ -19,7 +19,9 @@ import websiteschema.fb.annotation.EI;
 import websiteschema.fb.annotation.EO;
 import websiteschema.fb.core.FunctionBlock;
 import websiteschema.model.domain.UrlLink;
+import websiteschema.model.domain.UrlLog;
 import websiteschema.persistence.hbase.UrlLinkMapper;
+import websiteschema.persistence.hbase.UrlLogMapper;
 import websiteschema.utils.UrlLinkUtil;
 
 /**
@@ -55,6 +57,7 @@ public class FBURLStorage extends FunctionBlock {
         try {
             added.clear();
             UrlLinkMapper mapper = getContext().getSpringBean("urlLinkMapper", UrlLinkMapper.class);
+            UrlLogMapper urlLogMapper = getContext().getSpringBean("urlLogMapper", UrlLogMapper.class);
             for (String u : links) {
                 URL link = new URL(u);
                 String rowKey = UrlLinkUtil.getInstance().convertUrlToRowKey(link);
@@ -68,6 +71,9 @@ public class FBURLStorage extends FunctionBlock {
                     newUrlLink.setHttpStatus(0);
                     newUrlLink.setCreateTime(new Date());
                     mapper.put(newUrlLink);
+                    //在数据库中记录下该URL
+                    UrlLog log = new UrlLog(jobname, link);
+                    urlLogMapper.put(log);
                     added.add(u);
                 } else {
                     UrlLink old = mapper.get(rowKey);
@@ -94,13 +100,14 @@ public class FBURLStorage extends FunctionBlock {
                 String rowKey = UrlLinkUtil.getInstance().convertUrlToRowKey(link);
                 if (mapper.exists(rowKey)) {
                     UrlLink old = mapper.get(rowKey);
-                    old.setStatus(status);
+                    old.setHttpStatus(status);
                     old.setContent(DocumentUtil.getXMLString(in.toW3CDocument()));
                     mapper.put(old);
                 } else {
                     UrlLink newUrlLink = new UrlLink();
                     newUrlLink.setRowKey(rowKey);
                     newUrlLink.setUrl(url);
+                    newUrlLink.setHttpStatus(status);
                     newUrlLink.setContent(DocumentUtil.getXMLString(in.toW3CDocument()));
                     newUrlLink.setCreateTime(new Date());
                     newUrlLink.setDepth(1000);

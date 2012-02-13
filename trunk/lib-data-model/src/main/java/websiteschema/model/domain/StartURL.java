@@ -16,6 +16,7 @@ public class StartURL implements java.io.Serializable {
     String siteId;
     String startURL;
     String jobname;
+    String name;
     int status;
     Date createTime = new Date();
     String createUser = "system";
@@ -68,6 +69,14 @@ public class StartURL implements java.io.Serializable {
 
     public void setLastUpdateUser(String lastUpdateUser) {
         this.lastUpdateUser = lastUpdateUser;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getStartURL() {

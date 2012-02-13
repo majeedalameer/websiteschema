@@ -31,7 +31,7 @@
             var start = 0;
             var pageSize = 20;
             Ext.onReady(function(){
-
+                Ext.QuickTips.init();
                 var proxy = new Ext.data.DWRProxy(StartURLService.getResults, true);
                 var recordType = new Ext.data.Record.create(startURLRecordType);
                 var Scheduler = new Ext.data.Record.create(scheduleRecordType);
@@ -49,6 +49,7 @@
                 proxy.on('beforeload', function(thiz, params) {
                     params.match = Ext.getCmp('MATCH').getValue();
                     params.jobname = Ext.getCmp('JOBNAME').getValue();
+                    params.name = Ext.getCmp('NAME').getValue();
                     params.url = Ext.getCmp('URL').getValue();
                     params.user = Ext.getCmp('CRUSER').getValue();
                     params.status = Ext.getCmp('STATUS').getValue();
@@ -89,6 +90,7 @@
                         header: '网站ID',
                         dataIndex: 'siteId',
                         width: 120,
+                        hidden:true,
                         editor: new fm.TextField({
                             allowBlank: false
                         })
@@ -97,6 +99,14 @@
                         header: '爬虫名称',
                         dataIndex: 'jobname',
                         width: 120,
+                        editor: new fm.TextField({
+                            allowBlank: false
+                        })
+                    },
+                    {
+                        header: '栏目简称',
+                        dataIndex: 'name',
+                        width: 80,
                         editor: new fm.TextField({
                             allowBlank: false
                         })
@@ -143,6 +153,11 @@
                                         MsgTip.msg("", "您使用的浏览器不是websiteschema analyzer！", true, 5);
                                     }
                                 }
+                            },
+                            {
+                                icon   : 'resources/icons/fam/application_view_list.png',  // Use a URL in the icon config
+                                tooltip: '查看采集到的数据',
+                                handler: handleViewLog
                             }
                         ]
                     },
@@ -223,34 +238,7 @@
                             iconCls: 'icon-delete',
                             handler: handleDelete
                         }, '->',
-                        ' ', '状态', ' ',
-                        {
-                            xtype: 'combo',
-                            id: 'STATUS',
-                            width: 100,
-                            valueField: 'value',
-                            displayField: 'name',
-                            mode: 'local',
-                            emptyText: '',
-                            allowblank: true,
-                            forceSelection: false,
-                            store: url_status_store
-                        }, ' ',
-                        ' ', '创建者', ' ',
-                        {
-                            xtype: 'textfield',
-                            id: 'CRUSER',
-                            width: 100,
-                            initEvents : function(){
-                                var keyPressed = function(e) {
-                                    if(e.getKey()==e.ENTER){
-                                        handleQuery();
-                                    }
-                                };
-                                this.el.on("keypress", keyPressed, this);
-                            }
-                        }, ' ',
-                        ' ', '起始URL', ' ',
+                        ' ', 'URL', ' ',
                         {
                             xtype: 'textfield',
                             id: 'URL',
@@ -268,7 +256,7 @@
                         {
                             xtype: 'textfield',
                             id: 'JOBNAME',
-                            width: 100,
+                            width: 80,
                             initEvents : function(){
                                 var keyPressed = function(e) {
                                     if(e.getKey()==e.ENTER){
@@ -282,7 +270,7 @@
                         {
                             xtype: 'textfield',
                             id: 'MATCH',
-                            width: 100,
+                            width: 80,
                             initEvents : function(){
                                 var keyPressed = function(e) {
                                     if(e.getKey()==e.ENTER){
@@ -291,6 +279,47 @@
                                 };
                                 this.el.on("keypress", keyPressed, this);
                             }
+                        }, ' ',
+                        ' ', '栏目名称', ' ',
+                        {
+                            xtype: 'textfield',
+                            id: 'NAME',
+                            width: 80,
+                            initEvents : function(){
+                                var keyPressed = function(e) {
+                                    if(e.getKey()==e.ENTER){
+                                        handleQuery();
+                                    }
+                                };
+                                this.el.on("keypress", keyPressed, this);
+                            }
+                        }, ' ',
+                        ' ', '创建者', ' ',
+                        {
+                            xtype: 'textfield',
+                            id: 'CRUSER',
+                            width: 50,
+                            initEvents : function(){
+                                var keyPressed = function(e) {
+                                    if(e.getKey()==e.ENTER){
+                                        handleQuery();
+                                    }
+                                };
+                                this.el.on("keypress", keyPressed, this);
+                            }
+                        }, ' ',
+                        ' ', '状态', ' ',
+                        {
+                            xtype: 'combo',
+                            id: 'STATUS',
+                            width: 50,
+                            valueField: 'value',
+                            displayField: 'name',
+                            mode: 'local',
+                            emptyText: '',
+                            allowblank: true,
+                            forceSelection: false,
+                            store: url_status_store
                         }, ' ',
                         {
                             text: '检索',
@@ -303,6 +332,7 @@
                                 Ext.getCmp('CRUSER').setValue('');
                                 Ext.getCmp('MATCH').setValue('');
                                 Ext.getCmp('JOBNAME').setValue('');
+                                Ext.getCmp('NAME').setValue('');
                                 Ext.getCmp('URL').setValue('');
                             }
                         }
@@ -433,6 +463,22 @@
                         });
                         AddWin.show(this);
                     }
+                }
+
+                function handleViewLog(grid, rowIndex, colIndex){
+                    var record= grid.getStore().getAt(rowIndex);
+                    var jobname = record.data.jobname;
+                    var win = new Ext.Window({
+                        id:'win',
+                        width:600,
+                        height:535,
+                        closable:true,
+                        resizable:true,
+                        minimizable:true,
+                        maximizable:true,
+                        html: "<iframe src='views/metadata/url_log?jobname="+record.data.jobname+"' style='width:100%; height:100%;'></iframe>"
+                    });
+                    win.show();
                 }
 
                 function handleQuery(){

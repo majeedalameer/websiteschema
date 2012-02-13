@@ -25,10 +25,10 @@ import websiteschema.fb.core.FunctionBlock;
 public class FBFieldFilter extends FunctionBlock {
 
     @DI(name = "FILTER", desc = "抽取后的内容")
-    Map<String, String> filters = null;
+    public Map<String, String> filters = null;
     @DI(name = "DOC", desc = "抽取后的内容")
     @DO(name = "DOC", relativeEvents = {"EO"})
-    Doc doc = null;
+    public Doc doc = null;
 
     @Algorithm(name = "FILTERING")
     public void filtering() {

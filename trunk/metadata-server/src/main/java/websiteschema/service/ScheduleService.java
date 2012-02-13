@@ -5,6 +5,7 @@
 package websiteschema.service;
 
 import java.io.IOException;
+import org.quartz.SchedulerException;
 import websiteschema.rest.SchedulerController;
 import java.util.Map;
 import websiteschema.dwr.response.ListRange;
@@ -47,12 +48,34 @@ public class ScheduleService {
     @Transactional
     public void update(Schedule sche) {
         scheduleMapper.update(sche);
+        Schedule old = scheduleMapper.getById(sche.getId());
+        try {
+            if (old.getStatus() == Schedule.STATUS_VALID
+                    && sche.getStatus() == Schedule.STATUS_INVALID) {
+                //原来的状态是有效，现在变成无效，需要删除调度器。
+                SchedulerController.getScheduler().remove(sche);
+            } else if (old.getStatus() == Schedule.STATUS_INVALID
+                    && sche.getStatus() == Schedule.STATUS_VALID) {
+                //原来的状态是无效，现在变成无效，需要增加Job至调度器
+                SchedulerController.getScheduler().add(sche);
+            } else if (sche.getStatus() == Schedule.STATUS_VALID) {
+                //如果状态不变，则需要重新加载Job
+                SchedulerController.getScheduler().reload(sche);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     @Transactional
     public void deleteRecord(Schedule sche) {
         System.out.println("delete " + sche.getId());
         scheduleMapper.delete(sche);
+        try {
+            SchedulerController.getScheduler().remove(sche);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     public boolean launchScheduler() throws IOException {
@@ -65,7 +88,11 @@ public class ScheduleService {
         return schedulerController.stop();
     }
 
+    public int getStatusOfScheduler() throws SchedulerException {
+        return SchedulerController.getScheduler().status();
+    }
+
     public boolean createTempJob(Schedule sche) {
-        return schedulerController.createTempJob(sche);
+        return SchedulerController.getScheduler().createTempJob(sche);
     }
 }

@@ -226,12 +226,14 @@ public class DateAnalyzer extends AbstractFieldExtractor implements IFieldAnalyz
     public Collection<String> extract(Document doc) {
         Set<String> ret = new HashSet<String>();
         List<Node> nodes = DocumentUtil.getByXPath(doc, xpath);
-        for (Node node : nodes) {
-            String text = ExtractUtil.getInstance().getNodeText(node);
-            if (null != text && !"".equals(text)) {
-                String date = DateDetectUtil.getInstance().parseDate(text.trim(), pattern, format);
-                if (null != date && !"".equals(date)) {
-                    ret.add(date);
+        if (null != nodes) {
+            for (Node node : nodes) {
+                String text = ExtractUtil.getInstance().getNodeText(node);
+                if (null != text && !"".equals(text)) {
+                    String date = DateDetectUtil.getInstance().parseDate(text.trim(), pattern, format);
+                    if (null != date && !"".equals(date)) {
+                        ret.add(date);
+                    }
                 }
             }
         }

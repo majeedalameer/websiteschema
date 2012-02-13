@@ -77,6 +77,12 @@
         <url-pattern>/rest/*</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>Bootstrap</servlet-name>
+        <servlet-class>websiteschema.metadata.Bootstrap</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
     <welcome-file-list>
         <welcome-file>/index.jsp</welcome-file>
     </welcome-file-list>

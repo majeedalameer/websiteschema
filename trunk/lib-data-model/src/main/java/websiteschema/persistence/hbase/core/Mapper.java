@@ -119,6 +119,17 @@ public class Mapper {
         }
     }
 
+    public Result select(String rowKey, String family) {
+        try {
+            Get g = new Get(rowKey.getBytes());
+            g.addFamily(Bytes.toBytes(family));
+            return getTable().get(g);
+        } catch (IOException ex) {
+            l.error("Table " + getTableName(), ex);
+            return null;
+        }
+    }
+
     public boolean exists(String rowKey) {
         try {
             Get g = new Get(rowKey.getBytes());

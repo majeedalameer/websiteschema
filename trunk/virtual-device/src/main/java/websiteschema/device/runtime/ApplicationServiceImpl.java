@@ -120,11 +120,13 @@ public class ApplicationServiceImpl implements ApplicationService {
         long taskId = null != sta ? sta.getTaskId() : 0;
         if (taskId > 0) {
             Task t = taskMapper.getById(taskId);
-            t.setStatus(Task.STARTED);
-            if (null != sta.getMessage()) {
-                t.setMessage(sta.getMessage());
+            if (null != t) {
+                t.setStatus(Task.STARTED);
+                if (null != sta.getMessage()) {
+                    t.setMessage(sta.getMessage());
+                }
+                taskMapper.update(t);
             }
-            taskMapper.update(t);
         }
     }
 
@@ -136,15 +138,17 @@ public class ApplicationServiceImpl implements ApplicationService {
         long taskId = null != sta ? sta.getTaskId() : 0;
         if (taskId > 0) {
             Task t = taskMapper.getById(taskId);
-            if (sta.getStatus() == AppStatus.END) {
-                t.setStatus(Task.FINISHED);
-            } else {
-                t.setStatus(Task.EXCEPTION);
+            if (null != t) {
+                if (sta.getStatus() == AppStatus.END) {
+                    t.setStatus(Task.FINISHED);
+                } else {
+                    t.setStatus(Task.EXCEPTION);
+                }
+                if (null != sta.getMessage()) {
+                    t.setMessage(sta.getMessage());
+                }
+                taskMapper.update(t);
             }
-            if (null != sta.getMessage()) {
-                t.setMessage(sta.getMessage());
-            }
-            taskMapper.update(t);
         }
     }
 

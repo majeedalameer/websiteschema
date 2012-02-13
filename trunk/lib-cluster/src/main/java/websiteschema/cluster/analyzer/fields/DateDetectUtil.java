@@ -110,11 +110,41 @@ public class DateDetectUtil {
                     return DateUtil.format(d, format);
                 }
             }
+        } else {
+            //Heuristic(启发式搜索)
+            pattern = buildPatYmd(pat);
+            if (date.matches(pattern)) {
+                Pattern p = Pattern.compile(pattern);
+                Matcher m = p.matcher(date);
+                if (m.matches()) {
+                    String res = m.group(2);
+                    if (null != res) {
+                        Date d = DateUtil.parseDate(res, pat);
+                        if (null != d) {
+                            return DateUtil.format(d, format);
+                        } else {
+                            pat = pat.replaceAll(".SS", "");
+                            d = DateUtil.parseDate(res, pat);
+                            if (null == d) {
+                                pat = pat.replaceAll(".mm", "");
+                                d = DateUtil.parseDate(res, pat);
+                                if (null == d) {
+                                    pat = pat.replaceAll(".HH", "");
+                                    d = DateUtil.parseDate(res, pat);
+                                }
+                            }
+                            if(null != d) {
+                                return DateUtil.format(d, format);
+                            }
+                        }
+                    }
+                }
+            }
         }
         return null;
     }
 
-    public String buildPat(String pat) {
+    private String buildPat(String pat) {
         pat = pat.replaceAll("\\.", "\\\\.");
         pat = pat.replaceAll("y+", "([0-9]{2}|[0-9]{4})");
         pat = pat.replaceAll("M+", "([0-9]{1,2})");
@@ -122,6 +152,17 @@ public class DateDetectUtil {
         pat = pat.replaceAll("H+", "([0-9]{1,2})");
         pat = pat.replaceAll("m+", "([0-9]{1,2})");
         pat = pat.replaceAll("S+", "([0-9]{1,2})");
+        pat = "(^|.*?)(" + pat + ")($|.*?)";
+        return pat;
+    }
+
+    private String buildPatYmd(String pat) {
+        pat = pat.replaceAll("\\.", "\\\\.");
+        pat = pat.replaceAll("y+", "([0-9]{2}|[0-9]{4})");
+        pat = pat.replaceAll("M+", "([0-9]{1,2})");
+        pat = pat.replaceAll("d+", "([0-9]{1,2})");
+        pat = pat.replaceAll("H.*", "");
+        pat += "(([0-9]{1,2})([:：\\-]([0-9]{1,2})([:：\\-]([0-9]{1,2}))?)?)?";
         pat = "(^|.*?)(" + pat + ")($|.*?)";
         return pat;
     }
