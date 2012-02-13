@@ -10,15 +10,12 @@
  */
 package websiteschema.analyzer.browser.left;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import javax.swing.JOptionPane;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
-import net.sf.json.util.JSONUtils;
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.JsonGenerator;
 import websiteschema.analyzer.browser.utils.TextAreaSearch;
-import websiteschema.cluster.analyzer.SimpleLogger;
 import websiteschema.utils.PojoMapper;
 
 /**
@@ -36,7 +33,7 @@ public class PropEditFrame extends javax.swing.JFrame {
     public PropEditFrame() {
         initComponents();
 
-        tas = new TextAreaSearch(this.displayArea);
+        tas = new TextAreaSearch(this.displayArea, false);
 
         int screenWidth = ((int) java.awt.Toolkit.getDefaultToolkit().getScreenSize().width);
         int screenHeight = ((int) java.awt.Toolkit.getDefaultToolkit().getScreenSize().height);
@@ -65,6 +62,7 @@ public class PropEditFrame extends javax.swing.JFrame {
         wrapLineCheckBox = new javax.swing.JCheckBox();
         searchField = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
+        searchButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -101,6 +99,13 @@ public class PropEditFrame extends javax.swing.JFrame {
 
         jLabel1.setText("搜索:");
 
+        searchButton.setText("搜索");
+        searchButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                searchButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -113,7 +118,9 @@ public class PropEditFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(searchField, javax.swing.GroupLayout.DEFAULT_SIZE, 392, Short.MAX_VALUE)
+                .addComponent(searchField, javax.swing.GroupLayout.DEFAULT_SIZE, 326, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(searchButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(wrapLineCheckBox))
         );
@@ -126,7 +133,8 @@ public class PropEditFrame extends javax.swing.JFrame {
                     .addComponent(resetButton)
                     .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(wrapLineCheckBox)
-                    .addComponent(jLabel1))
+                    .addComponent(jLabel1)
+                    .addComponent(searchButton))
                 .addContainerGap(12, Short.MAX_VALUE))
         );
 
@@ -175,6 +183,12 @@ public class PropEditFrame extends javax.swing.JFrame {
         tas.next(target);
     }//GEN-LAST:event_searchFieldActionPerformed
 
+    private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchButtonActionPerformed
+        // TODO add your handling code here:
+        String target = this.searchField.getText();
+        tas.next(target);
+    }//GEN-LAST:event_searchButtonActionPerformed
+
     private Object str2json(String json_str) {
         Object obj_JSON = null;
 //        if (json_str.startsWith("[")) {
@@ -221,7 +235,15 @@ public class PropEditFrame extends javax.swing.JFrame {
     public void setPropValue(String propValue) {
         this.propValue = propValue;
         try {
-            this.displayArea.setText(PojoMapper.toJson(str2json(propValue), true));
+            class pp extends org.codehaus.jackson.impl.DefaultPrettyPrinter {
+
+                @Override
+                public void writeArrayValueSeparator(JsonGenerator jg) throws IOException, JsonGenerationException {
+                    super.writeArrayValueSeparator(jg);
+                    jg.writeRaw('\n');
+                }
+            }
+            this.displayArea.setText(PojoMapper.toJson(str2json(propValue), new pp()));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -234,6 +256,7 @@ public class PropEditFrame extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton resetButton;
+    private javax.swing.JButton searchButton;
     private javax.swing.JTextField searchField;
     private javax.swing.JCheckBox wrapLineCheckBox;
     // End of variables declaration//GEN-END:variables

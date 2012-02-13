@@ -47,11 +47,25 @@
         <create creator="spring" javascript="ConcernedWeiboService" >
             <param name="beanName" value="concernedWeiboService"></param>
         </create>
+
         <create creator="spring" javascript="FollowService" >
             <param name="beanName" value="followService"></param>
         </create>
+
         <create creator="spring" javascript="CategoryService" >
             <param name="beanName" value="categoryService"></param>
+        </create>
+
+        <create creator="spring" javascript="SysConfService" >
+            <param name="beanName" value="sysConfService"></param>
+        </create>
+
+        <create creator="spring" javascript="SystemCheckService" >
+            <param name="beanName" value="systemCheckService"></param>
+        </create>
+
+        <create creator="spring" javascript="UrlLogService" >
+            <param name="beanName" value="urlLogService"></param>
         </create>
     </allow>
 </dwr>

@@ -43,6 +43,22 @@ public class HBaseMapperFactory {
         }
     }
 
+    public boolean checkTableWhetherExists(String tableName, Class clazz) {
+        try {
+            if (!admin.tableExists(tableName)) {
+                l.debug("表 " + tableName + " 不存在！");
+                return false;
+            } else {
+                l.debug("表 " + tableName + " 已经存在！");
+                return true;
+            }
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return false;
+    }
+
     public void createTableIfNotExists(String tableName, Class clazz) {
         try {
             if (!admin.tableExists(tableName)) {

@@ -30,7 +30,7 @@
             var start = 0;
             var pageSize = 20;
             Ext.onReady(function(){
-
+                Ext.QuickTips.init();
                 var proxy = new Ext.data.DWRProxy(JobService.getResults, true);
                 var recordType = new Ext.data.Record.create(jobRecordType);
                 var store=new Ext.data.Store({

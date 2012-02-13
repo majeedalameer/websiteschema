@@ -122,9 +122,9 @@ public class UrlLinkUtil {
             String query = url.getQuery();
             String path = url.getPath();
             if (null != query) {
-                ret = schema + "://" + host + "/" + path + "?" + query;
+                ret = schema + "://" + host + path + "?" + query;
             } else {
-                ret = schema + "://" + host + "/" + path;
+                ret = schema + "://" + host + path;
             }
         }
 
@@ -144,9 +144,9 @@ public class UrlLinkUtil {
             host = (new StringBuilder(host)).reverse().toString();
 
             if (null != query) {
-                ret = siteId + "+" + date + "+" + schema + "://" + host + "/" + path + "?" + query;
+                ret = siteId + "+" + date + "+" + schema + "://" + host + path + "?" + query;
             } else {
-                ret = siteId + "+" + date + "+" + schema + "://" + host + "/" + path;
+                ret = siteId + "+" + date + "+" + schema + "://" + host + path;
             }
         }
 
@@ -166,9 +166,9 @@ public class UrlLinkUtil {
             host = (new StringBuilder(host)).reverse().toString();
 
             if (null != query) {
-                ret = siteId + "+" + date + "+" + schema + "://" + host + "/" + path + "?" + query;
+                ret = siteId + "+" + date + "+" + schema + "://" + host + path + "?" + query;
             } else {
-                ret = siteId + "+" + date + "+" + schema + "://" + host + "/" + path;
+                ret = siteId + "+" + date + "+" + schema + "://" + host + path;
             }
         }
 

@@ -12,6 +12,7 @@ import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.PrettyPrinter;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -44,6 +45,17 @@ public class PojoMapper {
         JsonGenerator jg = jf.createJsonGenerator(sw);
         if (prettyPrint) {
             jg.useDefaultPrettyPrinter();
+        }
+        m.writeValue(jg, pojo);
+        return sw.toString();
+    }
+
+    public static String toJson(Object pojo, PrettyPrinter prettyPrint)
+            throws JsonMappingException, JsonGenerationException, IOException {
+        StringWriter sw = new StringWriter();
+        JsonGenerator jg = jf.createJsonGenerator(sw);
+        if (null != prettyPrint) {
+            jg.setPrettyPrinter(prettyPrint);
         }
         m.writeValue(jg, pojo);
         return sw.toString();

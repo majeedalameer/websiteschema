@@ -4,10 +4,13 @@
  */
 package websiteschema.utils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.map.JsonMappingException;
 import websiteschema.common.amqp.Message;
 import org.junit.Test;
@@ -60,6 +63,37 @@ public class JSONTest {
             System.out.println(res);
             json = toJson(res, true);
             System.out.println(json);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            assert (false);
+        }
+    }
+
+    @Test
+    public void testCustomPrettyPrint() {
+        class pp extends org.codehaus.jackson.impl.DefaultPrettyPrinter {
+
+            @Override
+            public void writeArrayValueSeparator(JsonGenerator jg) throws IOException, JsonGenerationException {
+                super.writeArrayValueSeparator(jg);
+                jg.writeRaw('\n');
+            }
+        }
+        try {
+            String json = "[\"1\",\"2\"]";
+            List res = fromJson(json, List.class);
+            System.out.println(res);
+            json = toJson(res, new pp());
+            System.out.println(json);
+            List res2 = fromJson(json, List.class);
+
+            for (int i = 0; i < res.size(); i++) {
+                assert (res.get(i).equals(res2.get(i)));
+            }
+
+            String obj = "\"abc\"";
+            String o = fromJson(obj, String.class);
+            System.out.println(o);
         } catch (Exception ex) {
             ex.printStackTrace();
             assert (false);

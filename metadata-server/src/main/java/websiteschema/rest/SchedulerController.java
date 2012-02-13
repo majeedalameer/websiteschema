@@ -122,18 +122,34 @@ public class SchedulerController {
     public void status(HttpServletRequest request, HttpServletResponse response) throws IOException {
         l.debug("status");
         try {
-            int status = status();
+            int status = scheduler.status();
             response.getWriter().print("{success:true,status:" + status + "}");
         } catch (SchedulerException e) {
             response.getWriter().print("{success:false}");
         }
     }
 
-    public int status() throws SchedulerException {
-        return scheduler.status();
+    public static JobScheduler getScheduler() {
+        return scheduler;
     }
 
-    public boolean createTempJob(Schedule sche) {
-        return scheduler.createTempJob(sche);
-    }
+//    public int status() throws SchedulerException {
+//        return scheduler.status();
+//    }
+//
+//    public boolean createTempJob(Schedule sche) {
+//        return scheduler.createTempJob(sche);
+//    }
+//
+//    public void reload(Schedule sche) throws SchedulerException {
+//        scheduler.reload(sche);
+//    }
+//
+//    public void remove(Schedule sche) throws SchedulerException {
+//        scheduler.remove(sche);
+//    }
+//
+//    public void add(Schedule sche) throws SchedulerException {
+//        scheduler.add(sche);
+//    }
 }

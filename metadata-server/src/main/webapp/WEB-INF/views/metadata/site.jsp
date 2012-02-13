@@ -35,7 +35,7 @@
             }
             
             Ext.onReady(function(){
-
+                Ext.QuickTips.init();
                 var proxy = new Ext.data.DWRProxy(SiteService.getResults, true);
                 var recordType = new Ext.data.Record.create(siteRecordType);
 

@@ -12,17 +12,28 @@ import java.util.Date;
  */
 public class Schedule implements java.io.Serializable {
 
-    public final static int CRON = 0;
-    public final static int StartEndTimes = 1;
-    public final static int Invalid = -1;
+    public final static int TYPE_CRON = 0;
+    public final static int TYPE_START_END_TIMES = 1;
+    public final static int STATUS_INVALID = 0;
+    public final static int STATUS_VALID = 1;
     long id;
     long startURLId;
+    String channelName;
     String startURL;
     long jobId;
     long priority = 0;
     String schedule;
-    int scheduleType = CRON;
+    int scheduleType = TYPE_CRON;
+    int status = STATUS_INVALID;
     Date createTime = new Date();
+
+    public String getChannelName() {
+        return channelName;
+    }
+
+    public void setChannelName(String channelName) {
+        this.channelName = channelName;
+    }
 
     public Date getCreateTime() {
         return createTime;
@@ -86,5 +97,13 @@ public class Schedule implements java.io.Serializable {
 
     public void setStartURL(String startURL) {
         this.startURL = startURL;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 }

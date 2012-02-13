@@ -31,7 +31,7 @@ public class HBaseMapper<T extends HBaseBean> extends Mapper {
         Result result = select(rowKey);
         return wrapper.getBean(result, clazz);
     }
-    
+
     public void scan(Function<T> func) {
         ResultScanner rs = scan();
         if (null != rs) {
@@ -91,6 +91,36 @@ public class HBaseMapper<T extends HBaseBean> extends Mapper {
                     for (Result r : rs) {
                         T obj = wrapper.getBean(r, clazz);
                         ret.add(obj);
+                    }
+                } finally {
+                    rs.close();
+                }
+                return ret;
+            }
+        }
+        return null;
+
+    }
+
+    public List<T> getList(String start, String end, String family, int maxResults) {
+        if (null != start && !"".equals(start)) {
+            ResultScanner rs = null;
+            if (null != family) {
+                rs = scan(start, end, family);
+            } else {
+                rs = scan(start, end);
+            }
+            if (null != rs) {
+                List<T> ret = new ArrayList<T>();
+                try {
+                    int count = 0;
+                    for (Result r : rs) {
+                        if (maxResults >= 0 && count >= maxResults) {
+                            break;
+                        }
+                        T obj = wrapper.getBean(r, clazz);
+                        ret.add(obj);
+                        count++;
                     }
                 } finally {
                     rs.close();

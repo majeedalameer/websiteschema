@@ -18,15 +18,85 @@
  */
 package websiteschema.device;
 
+import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.mortbay.jetty.Handler;
+import org.mortbay.jetty.Request;
+import org.mortbay.jetty.Server;
+import org.mortbay.jetty.handler.AbstractHandler;
 import websiteschema.device.job.JobMessageReceiver;
 
 public class VirtualDevice {
 
+    Server server = null;
+    JobMessageReceiver receiver = new JobMessageReceiver();
+    boolean stop = false;
+
     public static void main(String[] args) throws Exception {
-        JobMessageReceiver receiver = new JobMessageReceiver();
-        Thread t = new Thread(receiver);
-        t.setDaemon(true);
-        t.start();
-        t.join();
+        VirtualDevice device = new VirtualDevice();
+        device.startJetty();
+        while (!device.isStop()) {
+            Thread t = new Thread(device.getReceiver());
+            t.setDaemon(true);
+            t.start();
+
+            t.join();
+            //如果receiver结束了，则等待120秒，重新尝试连接rabbitmq
+            sleep(120000);
+        }
+        device.stopJetty();
+    }
+
+    private static void sleep(long millis) throws InterruptedException {
+        Thread.sleep(millis);
+    }
+
+    public JobMessageReceiver getReceiver() {
+        return receiver;
+    }
+
+    public boolean isStop() {
+        return stop;
+    }
+
+    public void startJetty() throws Exception {
+        Handler handler = new AbstractHandler() {
+
+            @Override
+            public void handle(String target, HttpServletRequest request, HttpServletResponse response, int dispatch)
+                    throws IOException, ServletException {
+                response.setContentType("text/xml");
+                response.getWriter().println(getStatus());
+                response.setStatus(HttpServletResponse.SC_OK);
+                ((Request) request).setHandled(true);
+            }
+        };
+
+        server = new Server(DeviceContext.getInstance().getConf().getIntProperty("Device", "port", 12207));
+        server.setHandler(handler);
+        server.start();
+    }
+
+    public String getStatus() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("<?xml version=\"1.0\"?>").
+                append("<response>").
+                append("<action>GETSTATUS</action>").
+                append("<response>SUCCESS</response>").
+                append("<responsedata>").
+                append("<product>VIRTUAL-DEVICE</product>").
+                append("<serviceport>").
+                append(DeviceContext.getInstance().getConf().getProperty("Device", "port", "12207")).
+                append("</serviceport>").
+                append("</responsedata>").
+                append("</response>");
+        return sb.toString();
+    }
+
+    public void stopJetty() throws Exception {
+        server.stop();
     }
 }
