@@ -4,6 +4,7 @@
  */
 package websiteschema.utils;
 
+import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 import websiteschema.conf.Configure;
@@ -45,7 +46,7 @@ public class ConfigTest {
         Configure conf = new Configure("configure-site.ini");
         Map map = conf.getMapProperty("URLCharset", "CharsetMap");
         System.out.println(conf.getProperty("URLCharset", "CharsetMap"));
-        assert(map.containsKey("x-gbk"));
+        assert (map.containsKey("x-gbk"));
         assertEquals(map.get("x-gbk"), "gbk");
 
         String value = conf.getProperty("Test", "key");
@@ -53,5 +54,17 @@ public class ConfigTest {
         assertEquals(value, "''''");
 
         assertEquals(conf.getProperty("Test", "abc"), "efg");
+    }
+
+    @Test
+    public void testGetList() {
+        Configure conf = new Configure("configure-site.ini");
+        List<String> inlineNodeNames = conf.getListProperty("VIPS", "InlineNodeName");
+        List<String> nodeNames = conf.getBean("VIPS", "InlineNodeName", List.class);
+        for (int i = 0; i < inlineNodeNames.size(); i++) {
+            String s1 = inlineNodeNames.get(i);
+            String s2 = nodeNames.get(i);
+            assertEquals(s1, s2);
+        }
     }
 }

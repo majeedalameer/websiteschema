@@ -56,6 +56,8 @@ public class ClustererFrame extends javax.swing.JFrame {
         infoArea = new javax.swing.JTextArea();
         jToolBar1 = new javax.swing.JToolBar();
         startButton = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        retrainCheckBox = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -76,6 +78,15 @@ public class ClustererFrame extends javax.swing.JFrame {
             }
         });
         jToolBar1.add(startButton);
+
+        jLabel1.setText("训练全新的模型");
+        jToolBar1.add(jLabel1);
+
+        retrainCheckBox.setToolTipText("如果训练全新的模型，请选择，否则就在目前训练结果的基础上再训练。");
+        retrainCheckBox.setFocusable(false);
+        retrainCheckBox.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        retrainCheckBox.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(retrainCheckBox);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -99,6 +110,7 @@ public class ClustererFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         WebsiteschemaClusterer clusterer = new WebsiteschemaClusterer();
         clusterer.setSiteId(getSiteId());
+        clusterer.setRetrain(this.retrainCheckBox.isSelected());
         clusterer.setParentComponent(this);
         clusterer.setSampleMapper(BrowserContext.getSpringContext().getBean("sampleMapper", SampleMapper.class));
         clusterer.setCmMapper(BrowserContext.getSpringContext().getBean("clusterModelMapper", ClusterModelMapper.class));
@@ -167,8 +179,10 @@ public class ClustererFrame extends javax.swing.JFrame {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextArea infoArea;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JToolBar jToolBar1;
+    private javax.swing.JCheckBox retrainCheckBox;
     private javax.swing.JButton startButton;
     // End of variables declaration//GEN-END:variables
 }

@@ -37,7 +37,11 @@ public class RuntimeContext {
     public <T> T getSpringBean(String bean, Class<T> clazz) {
         ApplicationContext ctx = getSpringBeanFactory();
         if (null != ctx) {
-            return ctx.getBean(bean, clazz);
+            try {
+                return ctx.getBean(bean, clazz);
+            } catch (Exception ex) {
+                l.error(ex.getMessage(), ex);
+            }
         }
         return null;
     }

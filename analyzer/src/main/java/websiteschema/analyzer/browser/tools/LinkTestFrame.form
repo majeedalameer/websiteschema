@@ -22,8 +22,8 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="jToolBar1" alignment="1" pref="461" max="32767" attributes="0"/>
-          <Component id="jScrollPane1" alignment="0" pref="461" max="32767" attributes="0"/>
+          <Component id="jToolBar1" alignment="0" pref="541" max="32767" attributes="0"/>
+          <Component id="jScrollPane1" alignment="0" pref="541" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
@@ -31,27 +31,12 @@
           <Group type="102" alignment="0" attributes="0">
               <Component id="jToolBar1" min="-2" pref="25" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="jScrollPane1" pref="205" max="32767" attributes="0"/>
+              <Component id="jScrollPane1" pref="309" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
   </Layout>
   <SubComponents>
-    <Container class="javax.swing.JScrollPane" name="jScrollPane1">
-      <AuxValues>
-        <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
-      </AuxValues>
-
-      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
-      <SubComponents>
-        <Component class="javax.swing.JTextArea" name="infoArea">
-          <Properties>
-            <Property name="columns" type="int" value="20"/>
-            <Property name="rows" type="int" value="5"/>
-          </Properties>
-        </Component>
-      </SubComponents>
-    </Container>
     <Container class="javax.swing.JToolBar" name="jToolBar1">
       <Properties>
         <Property name="rollover" type="boolean" value="true"/>
@@ -61,8 +46,7 @@
       <SubComponents>
         <Component class="javax.swing.JButton" name="startButton">
           <Properties>
-            <Property name="text" type="java.lang.String" value="&#x5f00;&#x59cb;&#x805a;&#x7c7b;"/>
-            <Property name="toolTipText" type="java.lang.String" value="&#x5f00;&#x59cb;&#x805a;&#x7c7b;&#x5206;&#x6790;websiteschema"/>
+            <Property name="text" type="java.lang.String" value="&#x5f00;&#x59cb;"/>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>
             <Property name="verticalTextPosition" type="int" value="3"/>
@@ -71,17 +55,58 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="startButtonActionPerformed"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JLabel" name="jLabel1">
+        <Component class="javax.swing.JLabel" name="jLabel3">
           <Properties>
-            <Property name="text" type="java.lang.String" value="&#x8bad;&#x7ec3;&#x5168;&#x65b0;&#x7684;&#x6a21;&#x578b;"/>
+            <Property name="text" type="java.lang.String" value="XPath: "/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JCheckBox" name="retrainCheckBox">
+        <Component class="javax.swing.JTextField" name="xpathField">
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel1">
           <Properties>
-            <Property name="toolTipText" type="java.lang.String" value="&#x5982;&#x679c;&#x8bad;&#x7ec3;&#x5168;&#x65b0;&#x7684;&#x6a21;&#x578b;&#xff0c;&#x8bf7;&#x9009;&#x62e9;&#xff0c;&#x5426;&#x5219;&#x5c31;&#x5728;&#x76ee;&#x524d;&#x8bad;&#x7ec3;&#x7ed3;&#x679c;&#x7684;&#x57fa;&#x7840;&#x4e0a;&#x518d;&#x8bad;&#x7ec3;&#x3002;"/>
+            <Property name="text" type="java.lang.String" value="&#x91c7;&#x96c6;&#x5668;:"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JComboBox" name="crawlerCombo">
+          <Properties>
+            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+              <StringArray count="3">
+                <StringItem index="0" value="SimpleHTTPCrawler"/>
+                <StringItem index="1" value="HtmlUnitWebCrawler"/>
+                <StringItem index="2" value="BrowserWebCrawler"/>
+              </StringArray>
+            </Property>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel2">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="&#x81ea;&#x52a8;&#x6362;&#x884c;:"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="wrapLineCheckBox">
+          <Properties>
+            <Property name="selected" type="boolean" value="true"/>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>
             <Property name="verticalTextPosition" type="int" value="3"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="wrapLineCheckBoxActionPerformed"/>
+          </Events>
+        </Component>
+      </SubComponents>
+    </Container>
+    <Container class="javax.swing.JScrollPane" name="jScrollPane1">
+      <AuxValues>
+        <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
+      </AuxValues>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+      <SubComponents>
+        <Component class="javax.swing.JTextArea" name="resultArea">
+          <Properties>
+            <Property name="columns" type="int" value="20"/>
+            <Property name="rows" type="int" value="5"/>
           </Properties>
         </Component>
       </SubComponents>

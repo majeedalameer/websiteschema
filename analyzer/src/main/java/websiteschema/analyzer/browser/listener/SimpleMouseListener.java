@@ -9,6 +9,7 @@ import com.webrenderer.swing.event.MouseEvent;
 import com.webrenderer.swing.event.MouseListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URL;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import org.apache.log4j.Logger;
@@ -22,6 +23,7 @@ import websiteschema.element.XPathAttributes;
 import websiteschema.element.factory.StyleSheetFactory;
 import websiteschema.element.factory.XPathAttrFactory;
 import websiteschema.utils.ElementUtil;
+import websiteschema.utils.UrlLinkUtil;
 import websiteschema.vips.extraction.VipsBlockExtractor;
 
 /**
@@ -53,16 +55,25 @@ public class SimpleMouseListener implements MouseListener, ActionListener {
             IElement ele = me.getTargetElement();
             if (null != ele) {
                 drawRectangleInPage(ele);
+                //计算所选节点的两种XPATH
                 Rectangle rect = new RectangleFactory().create(ele);
                 String xpath = XPathAttrFactory.getInstance().create(ele);
                 attr = simpleBrowser.getXPathAttr();
                 String xpath2 = XPathAttrFactory.getInstance().create(ele, attr);
-                simpleBrowser.displaySelectedElement(xpath, xpath2);
+                simpleBrowser.displaySelectedElement(xpath, xpath2); //将XPATH显示在UI上
 
                 String text = ele.getInnerHTML();
-                simpleBrowser.displayNodeValue(text);
+                simpleBrowser.displayNodeValue(text);//将所选节点的html标签显示在UI上
 
                 l.debug("Elememnt Type: " + ele.getTagName());
+                if ("A".equals(ele.getTagName())) {
+                    //如果所选节点是A，则将URL显示在UI上
+                    String href = ele.getAttribute("href", 0);
+                    URL url = UrlLinkUtil.getInstance().getURL(context.getBrowser().getURL(), href);
+                    if (null != url) {
+                        simpleBrowser.displaySelectedAnchor(url.toString());
+                    }
+                }
                 context.getConsole().log("Tag Name: " + ele.getTagName() + " -- Node Type: " + ElementUtil.getInstance().getNodeType(ele) + " -- XPath: " + xpath);
                 l.debug(rect);
                 String referrer1 = context.getBrowser().getDocument().getReferrer();

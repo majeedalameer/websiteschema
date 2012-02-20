@@ -5,12 +5,12 @@
     <parent>
         <groupId>websiteschema</groupId>
         <artifactId>websiteschema</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0-ALPHA</version>
         <relativePath>..</relativePath>
     </parent>
     <artifactId>lib-func-blk</artifactId>
     <packaging>jar</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>${parent.version}</version>
     <name>lib-func-blk</name>
     
     <dependencies>

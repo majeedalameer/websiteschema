@@ -230,7 +230,9 @@ public class DateAnalyzer extends AbstractFieldExtractor implements IFieldAnalyz
             for (Node node : nodes) {
                 String text = ExtractUtil.getInstance().getNodeText(node);
                 if (null != text && !"".equals(text)) {
-                    String date = DateDetectUtil.getInstance().parseDate(text.trim(), pattern, format);
+                    //对多行的文本，则先将文本中的换行符替换，因为正则表达式支持多行比较麻烦
+                    text = text.trim().replaceAll("[\r\n]+", " ");
+                    String date = DateDetectUtil.getInstance().parseDate(text, pattern, format);
                     if (null != date && !"".equals(date)) {
                         ret.add(date);
                     }

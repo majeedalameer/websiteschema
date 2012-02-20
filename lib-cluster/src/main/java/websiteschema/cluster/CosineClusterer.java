@@ -24,9 +24,9 @@ public class CosineClusterer extends Clusterer {
     private ClusterModel clustering(List<DocVector> space) {
         List<Cluster> listCluster = new ArrayList<Cluster>();
         // 增量聚类（包含历史数据的聚类）
-//        if (null != clusters) {
-//            listCluster.addAll(Arrays.asList(clusters));
-//        }
+        if (null != clusters) {
+            listCluster.addAll(Arrays.asList(clusters));
+        }
 
         for (DocVector vect : space) {
             add(vect, listCluster);
@@ -55,16 +55,41 @@ public class CosineClusterer extends Clusterer {
             }
         }
         if (index > -1) {
+            //发现相似的类，将样本添加到该类中
             Cluster cluster = listCluster.get(index);
             List<String> sameKindInstancs = cluster.getSamples();
-            sameKindInstancs.add(vect.getName());
+            if (!sameKindInstancs.contains(vect.getName())) {
+                sameKindInstancs.add(vect.getName());
+            }
         } else {
+            //创建新的Cluster，然后增加进去。
             Cluster cluster = createCluster(vect);
-            int size = listCluster.size();
-            cluster.setCustomName(String.valueOf(size));
+            int size = findMaxCustomName(listCluster) + 1;
+            cluster.setCustomName(String.valueOf(size));//cluster的名字默认以数字命名
             listCluster.add(cluster);
         }
         return;
+    }
+
+    /**
+     * 遍历所有Cluster，找到以数字命名的Cluster，并返回最大的一个数字
+     * @param listCluster
+     * @return
+     */
+    private int findMaxCustomName(List<Cluster> listCluster) {
+        int ret = -1;
+
+        for (Cluster cluster : listCluster) {
+            try {
+                int num = Integer.parseInt(cluster.getCustomName());
+                if (num > ret) {
+                    ret = num;
+                }
+            } catch (Exception ex) {
+            }
+        }
+
+        return ret;
     }
 
     private Cluster createCluster(DocVector vect) {
@@ -133,7 +158,7 @@ public class CosineClusterer extends Clusterer {
         DocVectorConvertor convertor = new DocVectorConvertor();
         DocVector vect = convertor.convert(sample, statInfo);
         int index = -1;
-        double membership = 0.0;
+        double membership = 0.5;
         for (int i = 0; i < clusters.length; i++) {
             Cluster c = clusters[i];
             double sim = membershipDegree(vect, c.getCentralPoint());

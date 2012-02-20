@@ -1,6 +1,6 @@
 
 <assembly>
-    <id>bundle</id>
+    <id>linux64</id>
     <formats>
         <format>zip</format>
     </formats>

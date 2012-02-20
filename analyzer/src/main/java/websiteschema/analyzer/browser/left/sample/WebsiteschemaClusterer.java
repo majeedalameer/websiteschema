@@ -36,6 +36,7 @@ public class WebsiteschemaClusterer implements Runnable {
     Component parentComponent;
     AnalysisPanel panel;
     JTextArea textArea;
+    boolean retrain = false;
 
     @Override
     public void run() {
@@ -43,8 +44,12 @@ public class WebsiteschemaClusterer implements Runnable {
         String end = siteId + "+" + now;
         textArea.append("正在加载样本...\n");
         List<Sample> samples = sampleMapper.getList(siteId, end);
+        ClusterModel cm = cmMapper.get(siteId);
         if (null != samples && !samples.isEmpty()) {
             Clusterer cc = new CosineClusterer(siteId);
+            if (!retrain) {
+                cc.appendCluster(Arrays.asList(cm.getClusters()));
+            }
             cc.appendSample(samples);
             textArea.append("开始统计特征值...\n");
             cc.statFeature();
@@ -89,6 +94,10 @@ public class WebsiteschemaClusterer implements Runnable {
 
     public void setAnalyzer(ClusterAnalyzer analyzer) {
         this.analyzer = analyzer;
+    }
+
+    public void setRetrain(boolean retrain) {
+        this.retrain = retrain;
     }
 
     public void setWebsiteschemaMapper(WebsiteschemaMapper websiteschemaMapper) {

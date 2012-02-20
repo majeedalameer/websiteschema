@@ -142,8 +142,14 @@ Ext.onReady(function(){
         {
             text: '检查状态',
             tooltip: '检查服务器状态',
-            iconCls: 'icon-delete',
+            iconCls: 'icon-edit',
             handler: checkStatus
+        }, '-',
+        {
+            text: '更新配置',
+            tooltip: '更新metadata-server和slaves的配置',
+            iconCls: 'icon-edit',
+            handler: updateConfig
         }, '->',
         ' ', '用户名', ' ',
         {
@@ -257,6 +263,13 @@ Ext.onReady(function(){
                 });
             }
             win.show(this);
+        });
+    }
+
+    //删除数据
+    function updateConfig(){
+        SysConfService.updateConfig(function(ret){
+            MsgTip.msg("更新配置", ret, true, 5);
         });
     }
 });

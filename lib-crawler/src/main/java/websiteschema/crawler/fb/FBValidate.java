@@ -31,11 +31,11 @@ import websiteschema.fb.core.FunctionBlock;
 public class FBValidate extends FunctionBlock {
 
     @DI(name = "MUSTHAVE", desc = "抽取后的内容")
-    List<String> listNotEmpty = null;
+    public List<String> listNotEmpty = null;
     @DI(name = "DOC", desc = "抽取后的内容")
-    Doc doc = null;
+    public Doc doc = null;
     @DO(name = "REASON", relativeEvents = {"NO"})
-    String reason = "";
+    public String reason = "";
 
     @Algorithm(name = "VALID", desc = "检查是否包含必须的字段")
     public void validateEmpty() {

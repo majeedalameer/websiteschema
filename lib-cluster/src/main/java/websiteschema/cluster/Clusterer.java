@@ -29,13 +29,21 @@ public abstract class Clusterer {
     public abstract double membershipDegree(DocVector v1, DocVector v2);
 
     public void appendCluster(List<Cluster> list) {
-        int pos = this.clusters.length;
-        Cluster[] tmp = new Cluster[pos + list.size()];
-        System.arraycopy(this.clusters, 0, tmp, 0, pos);
-        for (int i = 0; i < list.size(); i++) {
-            tmp[pos + i] = list.get(i);
+        if (null != clusters) {
+            int pos = clusters.length;
+            Cluster[] tmp = new Cluster[pos + list.size()];
+            System.arraycopy(this.clusters, 0, tmp, 0, pos);
+            for (int i = 0; i < list.size(); i++) {
+                tmp[pos + i] = list.get(i);
+            }
+            this.clusters = tmp;
+        } else {
+            Cluster[] tmp = new Cluster[list.size()];
+            for (int i = 0; i < list.size(); i++) {
+                tmp[i] = list.get(i);
+            }
+            this.clusters = tmp;
         }
-        this.clusters = tmp;
     }
 
     public void appendSample(List<Sample> list) {

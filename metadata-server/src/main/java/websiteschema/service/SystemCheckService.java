@@ -50,7 +50,7 @@ public class SystemCheckService {
         sb.append("<span>");
         for (String device : devices) {
             try {
-                URL url = new URL("http://" + device);
+                URL url = new URL("http://" + device + "/action=getstatus");
                 url.getContent();
                 sb.append("<h3>").append(device).append("：状态正常</h3>");
             } catch (Exception ex) {

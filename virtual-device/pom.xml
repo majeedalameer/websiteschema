@@ -4,13 +4,13 @@
     <parent>
         <groupId>websiteschema</groupId>
         <artifactId>websiteschema</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0-ALPHA</version>
         <relativePath>..</relativePath>
     </parent>
     <artifactId>virtual-device</artifactId>
     <packaging>jar</packaging>
     <name>virtual-device</name>
-    <version>1.0-SNAPSHOT</version>
+    <version>${parent.version}</version>
     <dependencies>
         <dependency>
             <groupId>websiteschema</groupId>

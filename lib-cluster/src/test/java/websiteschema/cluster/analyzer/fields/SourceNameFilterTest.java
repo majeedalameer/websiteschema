@@ -35,4 +35,15 @@ public class SourceNameFilterTest {
         System.out.println(doc.getValues("SOURCENAME"));
         assert (doc.getValue("SOURCENAME").equals("腾讯科技"));
     }
+
+    @Test
+    public void test3() {
+        SourceNameFilter snf = new SourceNameFilter();
+        Doc doc = new Doc();
+        doc.addField("SOURCENAME", "来源：中国证券网-中证网");
+        doc.addField("SOURCENAME", "[字体");
+        snf.filtering(doc);
+        System.out.println(doc.getValues("SOURCENAME"));
+        assert (doc.getValue("SOURCENAME").equals("中国证券网-中证网"));
+    }
 }

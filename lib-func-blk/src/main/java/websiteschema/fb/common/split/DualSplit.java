@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package websiteschema.fb.common.merge;
+package websiteschema.fb.common.split;
 
 import websiteschema.fb.annotation.Algorithm;
 import websiteschema.fb.annotation.EI;
@@ -13,12 +13,13 @@ import websiteschema.fb.core.FunctionBlock;
  *
  * @author mgd
  */
-@EI(name = {"EI1:M", "EI2:M"})
-@EO(name = {"EO"})
-public class DualMerge extends FunctionBlock {
+@EI(name = {"EI:S"})
+@EO(name = {"EO1", "EO2"})
+public class DualSplit extends FunctionBlock {
 
-    @Algorithm(name = "M")
-    public void merge2e() {
-        triggerEvent("EO");
+    @Algorithm(name = "S")
+    public void split2e() {
+        triggerEvent("EO1");
+        triggerEvent("EO2");
     }
 }

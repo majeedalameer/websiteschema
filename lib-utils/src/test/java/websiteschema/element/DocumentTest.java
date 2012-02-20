@@ -25,7 +25,7 @@ import static org.junit.Assert.*;
 public class DocumentTest {
 
     @Test
-    public void testXPath1() {
+    public void testBuildXPath() {
         assertEquals(buildXPath("//html", "pre"), "//pre:html");
         assertEquals(buildXPath("html", "pre"), "pre:html");
         assertEquals(buildXPath("html[@id='attr']/meta", "pre"), "pre:html[@id='attr']/pre:meta");
@@ -43,7 +43,7 @@ public class DocumentTest {
     }
 
     @Test
-    public void testXPath2() throws ParserConfigurationException, IOException, SAXException {
+    public void testXPath() throws ParserConfigurationException, IOException, SAXException {
         String content = FileUtil.readResource("book.xml");
         DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
         domFactory.setNamespaceAware(true); // never forget this!
@@ -55,6 +55,20 @@ public class DocumentTest {
             System.out.println(node.getNodeName() + " : " + node.getNodeValue() + " " + node.getTextContent());
         }
         nodes = getByXPath(doc, "inventory/book[1]/publisher[1]");
+        for (Node node : nodes) {
+            System.out.println(node.getNodeName() + " : " + node.getNodeValue() + " " + node.getTextContent());
+        }
+    }
+
+    @Test
+    public void testXPath2() throws ParserConfigurationException, IOException, SAXException {
+        String content = FileUtil.readResource("same-id.xml");
+        DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
+        domFactory.setNamespaceAware(true); // never forget this!
+        DocumentBuilder builder = domFactory.newDocumentBuilder();
+        Document doc = builder.parse(new ByteArrayInputStream(content.getBytes()));
+        List<Node> nodes = getByXPath(doc, "html/body/div[@id='123']/div[@id='123']/title");
+        assert (nodes.size() == 1);
         for (Node node : nodes) {
             System.out.println(node.getNodeName() + " : " + node.getNodeValue() + " " + node.getTextContent());
         }

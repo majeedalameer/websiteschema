@@ -43,6 +43,10 @@ public class DeviceContext {
     private Logger l = Logger.getLogger(DeviceContext.class);
 
     DeviceContext() {
+        load();
+    }
+
+    public final void load() {
         try {
             conf = new Configure("configure-site.ini");
             if (null != conf) {

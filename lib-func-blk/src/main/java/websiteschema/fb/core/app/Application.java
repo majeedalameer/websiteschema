@@ -99,13 +99,19 @@ public class Application implements IApplication {
                         stop();
                         status.setStatus(AppStatus.END);
                     } else {
-                        if (!fb.isWithECC()) {
-                            Class clazz = fb.getClass();
-                            FBInfo fbInfo = context.getFunctionBlockInfo(clazz);
-                            String algorithm = fbInfo.getEIRelatedAlgorithm(ei);
-                            fb.execute(algorithm, ei);
+                        if (null != fb) {
+                            if (!fb.isWithECC()) {
+                                Class clazz = fb.getClass();
+                                FBInfo fbInfo = context.getFunctionBlockInfo(clazz);
+                                String algorithm = fbInfo.getEIRelatedAlgorithm(ei);
+                                fb.execute(algorithm, ei);
+                            } else {
+                                fb.executeEvent(ei);
+                            }
                         } else {
-                            fb.executeEvent(ei);
+                            stop();
+                            status.setMessage("Invalid Event.");
+                            status.setStatus(AppStatus.ERROR);
                         }
                     }
                 } else {
@@ -124,6 +130,7 @@ public class Application implements IApplication {
                 }
             } catch (Exception ex) {
                 running = false;
+                ex.printStackTrace();
                 l.error("FATAL ERROR: exit.", ex);
                 status.setMessage("ERROR: " + ex.getMessage());
                 status.setStatus(AppStatus.ERROR);

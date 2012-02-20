@@ -11,6 +11,7 @@
 package websiteschema.analyzer.browser.left;
 
 import com.webrenderer.swing.IMozillaBrowserCanvas;
+import com.webrenderer.swing.dom.IDocument;
 import com.webrenderer.swing.dom.IElement;
 import com.webrenderer.swing.dom.IElementCollection;
 import java.awt.BorderLayout;
@@ -18,6 +19,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -485,14 +487,15 @@ public class AnalysisPanel extends javax.swing.JPanel implements IConfigureHandl
         }
     };
 
-    private void sampleUrls() {
-        IMozillaBrowserCanvas browser = context.getBrowser();
-        IElementCollection links = browser.getDocument().getLinks();
+    private int sampleUrls(IDocument doc) {
+        int count = 0; // 返回采样到了多少URL
+        IElementCollection links = doc.getLinks();
         String pageUrl = context.getReference();
-        String charset = browser.getDocument().getCharSet();
+        String charset = doc.getCharSet();
         String siteId = getSiteId();
         if (null != links && null != siteId && !"".equals(siteId)) {
             List<URI> urls = new ArrayList<URI>();
+            Set<String> uniqSet = new HashSet<String>(); // URL排重使用
             //收集所有的链接
             for (int i = 0; i < links.length(); i++) {
                 IElement ele = links.item(i);
@@ -500,14 +503,18 @@ public class AnalysisPanel extends javax.swing.JPanel implements IConfigureHandl
                 String def = BrowserContext.getConfigure().getProperty("URLCharset", "DefaultCharset");
                 Map<String, String> charsetMap = BrowserContext.getConfigure().getMapProperty("URLCharset", "CharsetMap");
                 URI uri = UrlLinkUtil.getInstance().getURI(pageUrl, href, charset, charsetMap, def);
-                if (null != uri) {
-                    urls.add(uri);
+                if (null != uri && legalUrl(uri)) {
+                    //URI不为空，并且是有效的
+                    String url = uri.toString();
+                    if (!uniqSet.contains(url)) {
+                        urls.add(uri);
+                        uniqSet.add(uri.toString());
+                    }
                 }
             }
             //对收集到的链接进行聚类，然后抽样加入到样本中
             URLClusterer uc = new URLClusterer();
             List<URLCluster> result = uc.clustering(urls);
-            int url_count = 0;
             if (null != result) {
                 for (URLCluster cluster : result) {
                     List<URLObj> list = cluster.sampling(10);
@@ -516,15 +523,33 @@ public class AnalysisPanel extends javax.swing.JPanel implements IConfigureHandl
                         if (null != uri && "http".equals(uri.getScheme())) {
                             context.getConsole().log("add sample: " + uri.toString());
                             if (addSampleUrl_(uri)) {
-                                ++url_count;
+                                ++count;
                             }
                         }
                     }
                 }
             }
+        }
+        return count;
+    }
+
+    private void sampleUrls() {
+        String siteId = getSiteId();
+        if (null != siteId && !"".equals(siteId)) {
+            IMozillaBrowserCanvas browser = context.getBrowser();
+            int url_count = sampleUrls(browser.getDocument());
+            if (url_count < 50) {
+                //主页面没有多少链接，可能是iframe的框架，所以需要采集嵌入iframe内的链接。
+                IDocument frames[] = browser.getDocument().getChildFrames();
+                if (null != frames) {
+                    for (IDocument frame : frames) {
+                        url_count += sampleUrls(frame);
+                    }
+                }
+            }
             JOptionPane.showMessageDialog(this, "添加完毕，链接数目为：" + url_count);
         } else {
-            JOptionPane.showMessageDialog(this, "无法获取链接或者siteId是空或无效！");
+            JOptionPane.showMessageDialog(this, "siteId是空或无效！");
         }
     }
 
@@ -536,6 +561,7 @@ public class AnalysisPanel extends javax.swing.JPanel implements IConfigureHandl
     private void saveSettingsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveSettingsButtonActionPerformed
         // TODO add your handling code here:
         save();
+        JOptionPane.showMessageDialog(this, "Crawler设置保存成功！");
     }//GEN-LAST:event_saveSettingsButtonActionPerformed
 
     private Websiteschema getWebsiteschema() {
@@ -567,7 +593,6 @@ public class AnalysisPanel extends javax.swing.JPanel implements IConfigureHandl
             websiteschema.setProperties(prop);
             mapper.put(websiteschema);
         }
-        JOptionPane.showMessageDialog(this, "Crawler设置保存成功！");
     }
 
     private void collectSampleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_collectSampleButtonActionPerformed
@@ -694,23 +719,30 @@ public class AnalysisPanel extends javax.swing.JPanel implements IConfigureHandl
         }
     }
 
-    private boolean addSampleUrl_(URI uri) {
+    private boolean legalUrl(URI uri) {
         String url = uri.toString();
         CrawlerSettings settings = getCrawlerSettings();
         String[] mustHave = settings.getMustHave();
         String[] dontHave = settings.getDontHave();
         boolean legalUrl = UrlLinkUtil.getInstance().match_simple(url, mustHave, dontHave);
-        if (legalUrl) {
+        return legalUrl;
+    }
+
+    public boolean addSampleUrl_(URI uri) {
+        try {
             SampleMapper mapper = BrowserContext.getSpringContext().getBean("sampleMapper", SampleMapper.class);
             Sample sample = new Sample();
             String rowKey = UrlLinkUtil.getInstance().convertUriToRowKey(uri, getSiteId());
             sample.setRowKey(rowKey);
             log.debug(rowKey);
+            String url = uri.toString();
             sample.setUrl(url);
             sample.setSiteId(getSiteId());
             sample.setCreateTime(new Date());
             mapper.put(sample);
             return true;
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
         return false;
     }

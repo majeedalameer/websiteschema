@@ -67,10 +67,25 @@ public class VirtualDevice {
             @Override
             public void handle(String target, HttpServletRequest request, HttpServletResponse response, int dispatch)
                     throws IOException, ServletException {
-                response.setContentType("text/xml");
-                response.getWriter().println(getStatus());
-                response.setStatus(HttpServletResponse.SC_OK);
-                ((Request) request).setHandled(true);
+                String path = request.getPathInfo();
+                System.out.println(path);
+                if ("/action=reload".equalsIgnoreCase(path)) {
+                    DeviceContext.getInstance().load();
+                    response.setContentType("text/plain");
+                    response.getWriter().println("{\"success\":\"true\"}");
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    ((Request) request).setHandled(true);
+                } else if ("/action=getstatus".equalsIgnoreCase(path)) {
+                    response.setContentType("text/xml");
+                    response.getWriter().println(getStatus());
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    ((Request) request).setHandled(true);
+                } else {
+                    response.setContentType("text/xml");
+                    response.getWriter().println(getUnknownAction(path));
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    ((Request) request).setHandled(true);
+                }
             }
         };
 
@@ -91,6 +106,24 @@ public class VirtualDevice {
                 append("<serviceport>").
                 append(DeviceContext.getInstance().getConf().getProperty("Device", "port", "12207")).
                 append("</serviceport>").
+                append("</responsedata>").
+                append("</response>");
+        return sb.toString();
+    }
+
+    public String getUnknownAction(String action) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<?xml version=\"1.0\"?>").
+                append("<response>").
+                append("<action>").
+                append(action).
+                append("</action>").
+                append("<response>ERROR</response>").
+                append("<responsedata>").
+                append("<error>").
+                append("<errorstring>The action you attempted is not recognized</errorstring>").
+                append("<errorcode>UNKNOWN</errorcode>").
+                append("</error>").
                 append("</responsedata>").
                 append("</response>");
         return sb.toString();

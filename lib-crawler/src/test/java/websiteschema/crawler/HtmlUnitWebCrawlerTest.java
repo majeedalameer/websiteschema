@@ -16,9 +16,9 @@ import websiteschema.crawler.htmlunit.HtmlUnitWebCrawler;
  */
 public class HtmlUnitWebCrawlerTest {
 
-    @Test
+//    @Test
     public void test() throws InterruptedException {
-        String url = "http://localhost:8080/";
+        String url = "http://www.baidu.com/";
         Crawler crawler = new HtmlUnitWebCrawler();
         Document[] docs = crawler.crawl(url);
         System.out.println("----" + System.currentTimeMillis());
@@ -26,6 +26,21 @@ public class HtmlUnitWebCrawlerTest {
 
         Document doc = docs[0];
         print(doc);
+    }
+
+    @Test
+    public void testIFrame() throws InterruptedException {
+        String url = "http://www.xinhuanet.com/finance/gpq/gg.htm";
+        Crawler crawler = new HtmlUnitWebCrawler();
+        Document[] docs = crawler.crawl(url);
+        System.out.println("----" + System.currentTimeMillis());
+        crawler = null;
+        if (null != docs) {
+            for (Document doc : docs) {
+//                Document doc = docs[0];
+                print(doc);
+            }
+        }
     }
 
     public static void print(Node node) {
