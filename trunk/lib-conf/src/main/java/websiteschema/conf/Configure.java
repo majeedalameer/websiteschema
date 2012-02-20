@@ -523,7 +523,11 @@ public class Configure {
         String jsonText = getProperty(ns, field, key, null);
         if (null != jsonText) {
             try {
-                return (T) JSONObject.toBean(JSONObject.fromObject(jsonText), clazz);
+                if (List.class.equals(clazz)) {
+                    return (T) JSONArray.fromObject(jsonText);
+                } else {
+                    return (T) JSONObject.toBean(JSONObject.fromObject(jsonText), clazz);
+                }
             } catch (JSONException ex) {
                 if (int.class.equals(clazz) || Integer.class.equals(clazz)) {
                     T ret = (T) Integer.valueOf(getIntProperty(field, key));

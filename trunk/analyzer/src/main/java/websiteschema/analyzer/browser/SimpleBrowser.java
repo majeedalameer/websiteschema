@@ -18,12 +18,16 @@ import com.webrenderer.swing.BrowserFactory;
 import com.webrenderer.swing.IBrowserCanvas;
 import com.webrenderer.swing.IMozillaBrowserCanvas;
 import com.webrenderer.swing.RenderingOptimization;
+import com.webrenderer.swing.dom.IDocument;
 import com.webrenderer.swing.dom.IElement;
 import java.awt.BorderLayout;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
+import java.net.URI;
 import java.util.List;
+import java.util.Map;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.event.TreeSelectionListener;
 import org.w3c.dom.*;
@@ -31,7 +35,10 @@ import websiteschema.analyzer.browser.bottom.PageInfoPanel;
 import websiteschema.analyzer.browser.bottom.PageSourcePanel;
 import static websiteschema.element.DocumentUtil.*;
 import websiteschema.analyzer.browser.listener.*;
+import websiteschema.analyzer.browser.tools.LinkTestFrame;
 import websiteschema.analyzer.context.BrowserContext;
+import websiteschema.cluster.analyzer.AnalysisResult;
+import websiteschema.cluster.analyzer.BasicAnalysisResult;
 import websiteschema.element.XPathAttributes;
 import websiteschema.model.domain.Site;
 import websiteschema.model.domain.Websiteschema;
@@ -63,6 +70,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
 
     /** Creates new form SimpleAnalyzer */
     public SimpleBrowser() {
+//        setUndecorated(true);//取消标题栏
         initComponents();
         //初始化Context
         context = new BrowserContext();
@@ -81,6 +89,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
         initBottomPagePanels();
 
         //关闭consolePane
+        this.consolePane.setSelectedIndex(1);//选择节点信息窗口作为首选
         this.consolePane.setVisible(this.hideConsoleMenu.isSelected());
         //一打开窗口，就最大化
         setExtendedState(javax.swing.JFrame.MAXIMIZED_BOTH);
@@ -316,6 +325,10 @@ public class SimpleBrowser extends javax.swing.JFrame {
         jButton2 = new javax.swing.JButton();
         xpathField = new javax.swing.JTextField();
         XQueryButton = new javax.swing.JButton();
+        clickedURLField = new javax.swing.JTextField();
+        openUrlButton = new javax.swing.JButton();
+        addToSampleButton = new javax.swing.JButton();
+        addToInvalidNodeButton = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         nodeValueTextArea = new javax.swing.JTextArea();
         browserTab = new javax.swing.JTabbedPane();
@@ -331,6 +344,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
         drawBorderMenu = new javax.swing.JMenuItem();
         jMenu4 = new javax.swing.JMenu();
         gcMenu = new javax.swing.JMenuItem();
+        linkTestMenu = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Simple Browser");
@@ -481,8 +495,8 @@ public class SimpleBrowser extends javax.swing.JFrame {
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 848, Short.MAX_VALUE)
-            .addComponent(jToolBar2, javax.swing.GroupLayout.DEFAULT_SIZE, 848, Short.MAX_VALUE)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 849, Short.MAX_VALUE)
+            .addComponent(jToolBar2, javax.swing.GroupLayout.DEFAULT_SIZE, 849, Short.MAX_VALUE)
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -498,7 +512,8 @@ public class SimpleBrowser extends javax.swing.JFrame {
 
         jLabel1.setText("默认XPath:");
 
-        jButton1.setText("添加到剪切版");
+        jButton1.setText("复制");
+        jButton1.setToolTipText("复制到剪切板");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -519,7 +534,8 @@ public class SimpleBrowser extends javax.swing.JFrame {
 
         jLabel4.setText("自定义XPath:");
 
-        jButton2.setText("添加到剪切板");
+        jButton2.setText("复制");
+        jButton2.setToolTipText("复制到剪切板");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
@@ -533,6 +549,30 @@ public class SimpleBrowser extends javax.swing.JFrame {
             }
         });
 
+        openUrlButton.setText("打开");
+        openUrlButton.setToolTipText("在浏览器中打开此URL");
+        openUrlButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                openUrlButtonActionPerformed(evt);
+            }
+        });
+
+        addToSampleButton.setText("样本");
+        addToSampleButton.setToolTipText("添加此URL作为样本");
+        addToSampleButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addToSampleButtonActionPerformed(evt);
+            }
+        });
+
+        addToInvalidNodeButton.setText("加入无效节点");
+        addToInvalidNodeButton.setToolTipText("将该XPATH设置成无效节点");
+        addToInvalidNodeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addToInvalidNodeButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
@@ -542,9 +582,15 @@ public class SimpleBrowser extends javax.swing.JFrame {
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(defaultXPathField, javax.swing.GroupLayout.DEFAULT_SIZE, 632, Short.MAX_VALUE)
+                        .addComponent(defaultXPathField, javax.swing.GroupLayout.PREFERRED_SIZE, 279, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton1))
+                        .addComponent(jButton1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(clickedURLField, javax.swing.GroupLayout.DEFAULT_SIZE, 268, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(openUrlButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(addToSampleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
@@ -557,16 +603,18 @@ public class SimpleBrowser extends javax.swing.JFrame {
                                 .addComponent(useIdCheckBox)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(useClassCheckBox)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 202, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 203, Short.MAX_VALUE)
                                 .addComponent(jLabel3)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(otherAttrTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 218, Short.MAX_VALUE))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
-                                .addComponent(xpathField, javax.swing.GroupLayout.DEFAULT_SIZE, 553, Short.MAX_VALUE)
+                                .addComponent(xpathField, javax.swing.GroupLayout.DEFAULT_SIZE, 488, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(XQueryButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton2)))))
+                                .addComponent(jButton2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(addToInvalidNodeButton)))))
                 .addContainerGap())
         );
         jPanel6Layout.setVerticalGroup(
@@ -575,7 +623,10 @@ public class SimpleBrowser extends javax.swing.JFrame {
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(defaultXPathField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1))
+                    .addComponent(jButton1)
+                    .addComponent(clickedURLField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(openUrlButton)
+                    .addComponent(addToSampleButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
@@ -587,8 +638,9 @@ public class SimpleBrowser extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
-                    .addComponent(jButton2)
                     .addComponent(xpathField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(addToInvalidNodeButton)
+                    .addComponent(jButton2)
                     .addComponent(XQueryButton)))
         );
 
@@ -602,7 +654,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 848, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 849, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -618,7 +670,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
         configFrame.getContentPane().setLayout(configFrameLayout);
         configFrameLayout.setHorizontalGroup(
             configFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 842, Short.MAX_VALUE)
+            .addGap(0, 843, Short.MAX_VALUE)
         );
         configFrameLayout.setVerticalGroup(
             configFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -631,7 +683,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
         analyzerFrame.getContentPane().setLayout(analyzerFrameLayout);
         analyzerFrameLayout.setHorizontalGroup(
             analyzerFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 842, Short.MAX_VALUE)
+            .addGap(0, 843, Short.MAX_VALUE)
         );
         analyzerFrameLayout.setVerticalGroup(
             analyzerFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -696,6 +748,14 @@ public class SimpleBrowser extends javax.swing.JFrame {
         });
         jMenu4.add(gcMenu);
 
+        linkTestMenu.setText("测试链接抽取");
+        linkTestMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                linkTestMenuActionPerformed(evt);
+            }
+        });
+        jMenu4.add(linkTestMenu);
+
         jMenuBar1.add(jMenu4);
 
         setJMenuBar(jMenuBar1);
@@ -704,13 +764,13 @@ public class SimpleBrowser extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 1086, Short.MAX_VALUE)
+            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 1087, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addComponent(analysisPane, javax.swing.GroupLayout.PREFERRED_SIZE, 223, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(browserTab, javax.swing.GroupLayout.DEFAULT_SIZE, 857, Short.MAX_VALUE)
-                    .addComponent(consolePane, javax.swing.GroupLayout.DEFAULT_SIZE, 857, Short.MAX_VALUE)))
+                    .addComponent(browserTab, javax.swing.GroupLayout.DEFAULT_SIZE, 858, Short.MAX_VALUE)
+                    .addComponent(consolePane, javax.swing.GroupLayout.DEFAULT_SIZE, 858, Short.MAX_VALUE)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -810,11 +870,31 @@ public class SimpleBrowser extends javax.swing.JFrame {
         Document doc1 = (Document) context.getBrowser().getW3CDocument();
         try {
             List<Node> nodes = getByXPath(doc1, xpathExpr);
-            this.nodeValueTextArea.setText("");
-            for (Node node : nodes) {
-                this.nodeValueTextArea.append(node.getNodeName());
-                this.nodeValueTextArea.append(node.getNodeValue());
-                this.nodeValueTextArea.append("\n");
+            if (null != nodes && !nodes.isEmpty()) {
+                this.nodeValueTextArea.setText("");
+                for (Node node : nodes) {
+                    this.nodeValueTextArea.append(node.getNodeName());
+                    this.nodeValueTextArea.append(node.getNodeValue());
+                    this.nodeValueTextArea.append("\n");
+                }
+            } else {
+                IDocument frames[] = context.getBrowser().getDocument().getChildFrames();
+                if (null != frames) {
+                    for (IDocument frame : frames) {
+                        Document iframe = frame.getBody().convertToW3CNode().getOwnerDocument();
+                        nodes = getByXPath(iframe, xpathExpr);
+                        if (null != nodes && !nodes.isEmpty()) {
+                            this.nodeValueTextArea.setText("");
+                            for (Node node : nodes) {
+                                this.nodeValueTextArea.append(node.getNodeName());
+                                this.nodeValueTextArea.append(node.getNodeValue());
+                                this.nodeValueTextArea.append("\n");
+                            }
+                            this.nodeValueTextArea.append("----注意：这些节点从FRAME中获得\n");
+                            break;
+                        }
+                    }
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -839,6 +919,52 @@ public class SimpleBrowser extends javax.swing.JFrame {
         StringSelection textInfoSelected = new StringSelection(xpathField.getText());
         clipboard.setContents(textInfoSelected, null);
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void linkTestMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_linkTestMenuActionPerformed
+        // TODO add your handling code here:
+        LinkTestFrame frame = new LinkTestFrame();
+        frame.setContext(context);
+        frame.setVisible(true);
+    }//GEN-LAST:event_linkTestMenuActionPerformed
+
+    private void openUrlButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openUrlButtonActionPerformed
+        // TODO add your handling code here:
+        String url = this.clickedURLField.getText();
+        if (null != url) {
+            openUrl(url);
+        }
+    }//GEN-LAST:event_openUrlButtonActionPerformed
+
+    private void addToSampleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addToSampleButtonActionPerformed
+        // TODO add your handling code here:
+        String url = this.clickedURLField.getText();
+        try {
+            URI uri = new URI(url);
+            boolean suc = this.analysisPanel.addSampleUrl_(uri);
+            if (suc) {
+                JOptionPane.showMessageDialog(this, "添加成功！");
+            } else {
+                JOptionPane.showMessageDialog(this, "添加失败！");
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "添加失败：" + ex.getMessage());
+        }
+    }//GEN-LAST:event_addToSampleButtonActionPerformed
+
+    private void addToInvalidNodeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addToInvalidNodeButtonActionPerformed
+        // TODO add your handling code here:
+        String xpath = xpathField.getText();
+        if (null != xpath && !"".equals(xpath)) {
+            Map<String, String> prop = this.analysisPanel.getProperties();
+            AnalysisResult ar = new AnalysisResult();
+            ar.init(prop);
+            BasicAnalysisResult bar = ar.getBasicAnalysisResult();
+            bar.getInvalidNodes().add(xpath);
+            this.analysisPanel.setProperties(prop);
+            this.analysisPanel.save();
+            JOptionPane.showMessageDialog(this, "Crawler设置保存成功！");
+        }
+    }//GEN-LAST:event_addToInvalidNodeButtonActionPerformed
 
     public void openUrl(String url) {
         if (url.startsWith("ftp://")) {
@@ -876,6 +1002,10 @@ public class SimpleBrowser extends javax.swing.JFrame {
         this.xpathField.setText(xpath2);
     }
 
+    public void displaySelectedAnchor(String url) {
+        this.clickedURLField.setText(url);
+    }
+
     public void displayNodeValue(String text) {
         this.nodeValueTextArea.setText(text);
     }
@@ -906,12 +1036,15 @@ public class SimpleBrowser extends javax.swing.JFrame {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton XQueryButton;
+    private javax.swing.JButton addToInvalidNodeButton;
+    private javax.swing.JButton addToSampleButton;
     private javax.swing.JTabbedPane analysisPane;
     private javax.swing.JInternalFrame analyzerFrame;
     private javax.swing.JButton backButton;
     private javax.swing.JProgressBar browserProgress;
     private javax.swing.JTabbedPane browserTab;
     private javax.swing.JButton clearButton;
+    private javax.swing.JTextField clickedURLField;
     private javax.swing.JInternalFrame configFrame;
     private javax.swing.JTabbedPane consolePane;
     private javax.swing.JTextArea consoleTextArea;
@@ -944,7 +1077,9 @@ public class SimpleBrowser extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JToolBar jToolBar2;
+    private javax.swing.JMenuItem linkTestMenu;
     private javax.swing.JTextArea nodeValueTextArea;
+    private javax.swing.JButton openUrlButton;
     private javax.swing.JTextField otherAttrTextField;
     private javax.swing.JButton refreshButton;
     private javax.swing.JButton stopButton;

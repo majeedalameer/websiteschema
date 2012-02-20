@@ -33,6 +33,8 @@ public class FBLinksExtractor extends FunctionBlock {
 
     @DI(name = "IN")
     public Document in;
+    @DI(name = "DOCS")
+    public Document[] docs;
     @DI(name = "XPATH")
     public String xpath = null;
     @DI(name = "URL")
@@ -56,17 +58,37 @@ public class FBLinksExtractor extends FunctionBlock {
     }
 
     private void extractLinks() {
-        if (null != in && null != xpath && null != url) {
-            List<Node> nodes = DocumentUtil.getByXPath(in, xpath.trim());
+        if (null != docs && null != xpath && null != url) {
             links = new ArrayList<String>();
-            for (int i = 0; i < nodes.size(); i++) {
-                Node node = nodes.get(i);
-                List<String> urls = getLinks(node);
+            for (Document doc : docs) {
+                List<String> urls = extractLinks(doc);
                 if (null != urls) {
                     links.addAll(urls);
                 }
             }
+        } else if (null != in && null != xpath && null != url) {
+            links = new ArrayList<String>();
+            List<String> urls = extractLinks(in);
+            if (null != urls) {
+                links.addAll(urls);
+            }
         }
+    }
+
+    private List<String> extractLinks(Document doc) {
+        if (null != doc && null != xpath && null != url) {
+            List<Node> nodes = DocumentUtil.getByXPath(doc, xpath.trim());
+            List<String> ret = new ArrayList<String>();
+            for (int i = 0; i < nodes.size(); i++) {
+                Node node = nodes.get(i);
+                List<String> urls = getLinks(node);
+                if (null != urls) {
+                    ret.addAll(urls);
+                }
+            }
+            return ret;
+        }
+        return null;
     }
 
     private List<String> getLinks(Node node) {

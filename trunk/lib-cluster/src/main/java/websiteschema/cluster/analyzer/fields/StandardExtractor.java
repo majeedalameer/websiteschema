@@ -38,30 +38,34 @@ public class StandardExtractor extends AbstractFieldExtractor {
 
     private Collection<String> extractByXPath(Document doc) {
         List<String> ret = new ArrayList<String>();
-        List<Node> nodes = DocumentUtil.getByXPath(doc, xpath.trim());
-        for (Node node : nodes) {
-            String t = ExtractUtil.getInstance().getNodeText(node);
-            if (null != t && !"".equals(t)) {
-                t = t.trim();
-                if (!ret.contains(t)) {
-                    ret.add(t.trim());
+        if (null != doc) {
+            List<Node> nodes = DocumentUtil.getByXPath(doc, xpath.trim());
+            for (Node node : nodes) {
+                String t = ExtractUtil.getInstance().getNodeText(node);
+                if (null != t && !"".equals(t)) {
+                    t = t.trim();
+                    if (!ret.contains(t)) {
+                        ret.add(t.trim());
+                    }
                 }
             }
         }
         return ret;
     }
 
-    private Set<String> extractByPattern(String prefix, String suffix, Document doc) {
-        Set<String> ret = new HashSet<String>();
+    private List<String> extractByPattern(String prefix, String suffix, Document doc) {
+        List<String> ret = new ArrayList<String>();
 
         String text = DocumentUtil.getXMLString(doc);
         int start = text.indexOf(prefix);
         while (start >= 0) {
             int end = text.indexOf(suffix, start + prefix.length());
             if (end > 0) {
-                String title = text.substring(start + prefix.length(), end);
-                if (null != title && !"".equals(title)) {
-                    ret.add(title);
+                String res = text.substring(start + prefix.length(), end);
+                if (null != res && !"".equals(res)) {
+                    if (!ret.contains(res)) {
+                        ret.add(res);
+                    }
                 }
                 start = text.indexOf(prefix, end + suffix.length());
             } else {

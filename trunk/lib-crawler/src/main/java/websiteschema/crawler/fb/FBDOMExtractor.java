@@ -34,6 +34,8 @@ public class FBDOMExtractor extends FunctionBlock {
     private AnalysisResult analysisResult = new AnalysisResult();
     @DI(name = "IN")
     public Document in;
+    @DI(name = "DOCS")
+    public Document[] docs;
     @DI(name = "SCHEMA")
     public Websiteschema schema;
     @DI(name = "CLS")
@@ -47,9 +49,13 @@ public class FBDOMExtractor extends FunctionBlock {
             prop = schema.getProperties();
             xpathAttr = schema.getXpathAttr();
             analysisResult.init(prop);
+            //如果in为空，而docs又不为空，则in=docs[0]
+            if(null == in && null != docs) {
+                in = docs[0];
+            }
             //初始化Document out
             createDocument();
-            //抽取其他标签
+            //抽取标签
             extractFields(in, out, analysisResult.getFieldAnalyzers(), analysisResult.getFieldExtractors());
             this.triggerEvent("EO");
         } catch (Exception ex) {

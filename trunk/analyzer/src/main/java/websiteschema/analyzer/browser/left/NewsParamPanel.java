@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -91,6 +92,14 @@ public class NewsParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
         }
     }
 
+    private String getClusterName() {
+        String clusterName = clusterField.getText();
+        if (null != clusterName && !"".equals(clusterName)) {
+            return clusterName;
+        }
+        return AnalysisResult.DefaultClusterName;
+    }
+
     private void initProp() throws IOException {
         Map<String, String> prop = this.confHandler.getProperties(); //获取当前的配置
         //初始化参数
@@ -98,29 +107,29 @@ public class NewsParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
         this.contentExtractor.setBasicAnalysisResult(ar.getBasicAnalysisResult());
         this.contentExtractor.setXPathAttr(schema.getXpathAttr());
         //设置各个字段
-        setTitle(ar.getFieldAnalysisResult(AnalysisResult.DefaultClusterName, titleAnalyzer.getFieldName()));
-        setDate(ar.getFieldAnalysisResult(AnalysisResult.DefaultClusterName, dateAnalyzer.getFieldName()));
-        setContent(ar.getFieldExtractorConfig(AnalysisResult.DefaultClusterName, contentExtractor.getFieldName()));
+        setTitle(ar.getFieldAnalysisResult(getClusterName(), titleAnalyzer.getFieldName()));
+        setDate(ar.getFieldAnalysisResult(getClusterName(), dateAnalyzer.getFieldName()));
+        setContent(ar.getFieldExtractorConfig(getClusterName(), contentExtractor.getFieldName()));
         setStandardExtractor(sourceExtractor,
-                ar.getFieldExtractorConfig(AnalysisResult.DefaultClusterName, sourceExtractor.getFieldName()),
+                ar.getFieldExtractorConfig(getClusterName(), sourceExtractor.getFieldName()),
                 sourceResultField, sourceXPathField, sourcePrefixField, sourceSuffixField);
         setStandardExtractor(authorExtractor,
-                ar.getFieldExtractorConfig(AnalysisResult.DefaultClusterName, authorExtractor.getFieldName()),
+                ar.getFieldExtractorConfig(getClusterName(), authorExtractor.getFieldName()),
                 authorResultField, authorXPathField, authorPrefixField, authorSuffixField);
         setXPathExtractor(commentsExtractor,
-                ar.getFieldExtractorConfig(AnalysisResult.DefaultClusterName, commentsExtractor.getFieldName()),
+                ar.getFieldExtractorConfig(getClusterName(), commentsExtractor.getFieldName()),
                 commentResultField, commentXPathField);
         setXPathExtractor(clicksExtractor,
-                ar.getFieldExtractorConfig(AnalysisResult.DefaultClusterName, clicksExtractor.getFieldName()),
+                ar.getFieldExtractorConfig(getClusterName(), clicksExtractor.getFieldName()),
                 clickResultField, clickXPathField);
         setXPathExtractor(transmitExtractor,
-                ar.getFieldExtractorConfig(AnalysisResult.DefaultClusterName, transmitExtractor.getFieldName()),
+                ar.getFieldExtractorConfig(getClusterName(), transmitExtractor.getFieldName()),
                 transmitResultField, transmitXPathField);
         setXPathExtractor(summaryExtractor,
-                ar.getFieldExtractorConfig(AnalysisResult.DefaultClusterName, summaryExtractor.getFieldName()),
+                ar.getFieldExtractorConfig(getClusterName(), summaryExtractor.getFieldName()),
                 summaryResultField, summaryXPathField);
         setXPathExtractor(chnlExtractor,
-                ar.getFieldExtractorConfig(AnalysisResult.DefaultClusterName, chnlExtractor.getFieldName()),
+                ar.getFieldExtractorConfig(getClusterName(), chnlExtractor.getFieldName()),
                 channelResultField, channelXPathField);
         //
     }
@@ -413,14 +422,6 @@ public class NewsParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
     private Document getDocument() {
         Document doc = (Document) context.getBrowser().getW3CDocument();
         return doc;
-    }
-
-    private String getClusterName() {
-        String name = this.clusterField.getText();
-        if (null != name && !name.equals("")) {
-            return name;
-        }
-        return AnalysisResult.DefaultClusterName;
     }
 
     @Override
@@ -1048,6 +1049,7 @@ public class NewsParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
         this.confHandler.setProperties(ar.getResult());
         this.confHandler.save();
         this.statusLabel.setText("保存完毕");
+        JOptionPane.showMessageDialog(this, "Crawler设置保存成功！");
     }//GEN-LAST:event_saveButtonActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField authorPrefixField;

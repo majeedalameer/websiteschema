@@ -107,23 +107,25 @@ public class JobMessageReceiver implements Runnable {
 
     public Map<String, String> convertToMap(Message msg) {
         try {
-            String properties = msg.getConfigure();
-            String url = msg.getUrl();
-            String siteId = msg.getSiteId();
-            String jobname = msg.getJobname();
-            InputStream is = convertToInputStream(properties);
-            Properties prop = new Properties();
-            prop.load(is);
             Map<String, String> def = getDefaultConfig();
             Map<String, String> ret = null;
+            //首先添加配置文件中的默认配置
             if (null == def) {
-                ret = new HashMap<String, String>(prop.size());
+                ret = new HashMap<String, String>();
             } else {
                 ret = new HashMap<String, String>(def);
             }
+            //添加由msg中接收到的参数
+            String properties = msg.getConfigure();
+            InputStream is = convertToInputStream(properties);
+            Properties prop = new Properties();
+            prop.load(is);
             for (String key : prop.stringPropertyNames()) {
                 ret.put(key, prop.getProperty(key));
             }
+            String url = msg.getUrl();
+            String siteId = msg.getSiteId();
+            String jobname = msg.getJobname();
             if (null != url) {
                 ret.put("URL", url);
             }

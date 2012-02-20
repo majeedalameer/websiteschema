@@ -26,7 +26,7 @@ WrapperEditorFormPanel = function(){
             hiddenName: 'name',
             id: 'fp_name',
             width: 200,
-            height: 20,
+            height: '6%',
             xtype: 'textfield',
             allowBlank: false
         }, {
@@ -34,7 +34,7 @@ WrapperEditorFormPanel = function(){
             hiddenName: 'wrapperType',
             id: 'fp_wrapperType',
             width: 200,
-            height: 20,
+            height: '6%',
             xtype: 'combo',
             valueField: 'value',
             displayField: 'name',
@@ -51,7 +51,7 @@ WrapperEditorFormPanel = function(){
             name: 'application',
             id: 'fp_application',
             width: '100%',
-            height: '100%',
+            height: '88%',
             xtype: 'textarea',
             allowBlank: true
         }

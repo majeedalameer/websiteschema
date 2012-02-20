@@ -29,7 +29,7 @@ import websiteschema.utils.UrlLinkUtil;
  * @author ray
  */
 @EI(name = {"ADD:ADD", "SAVE:SAVE"})
-@EO(name = {"ADD", "SAVE", "FATAL"})
+@EO(name = {"ADD", "SAVE"})
 @Description(desc = "保存链接和抽取的结果")
 public class FBURLStorage extends FunctionBlock {
 
@@ -87,7 +87,7 @@ public class FBURLStorage extends FunctionBlock {
             l.info("saved " + added.size() + " links.");
             triggerEvent("ADD");
         } catch (Exception ex) {
-            triggerEvent("FATAL");
+            throw new RuntimeException(ex.getMessage());
         }
     }
 
@@ -110,14 +110,14 @@ public class FBURLStorage extends FunctionBlock {
                     newUrlLink.setHttpStatus(status);
                     newUrlLink.setContent(DocumentUtil.getXMLString(in.toW3CDocument()));
                     newUrlLink.setCreateTime(new Date());
-                    newUrlLink.setDepth(1000);
+                    newUrlLink.setDepth(depth != 0 ? depth : 1000);//如果depth为0，则将depth设为1000，表示很深
                     mapper.put(newUrlLink);
                 }
             }
             out = in.toW3CDocument();
             triggerEvent("SAVE");
         } catch (Exception ex) {
-            triggerEvent("FATAL");
+            throw new RuntimeException(ex.getMessage());
         }
     }
 }

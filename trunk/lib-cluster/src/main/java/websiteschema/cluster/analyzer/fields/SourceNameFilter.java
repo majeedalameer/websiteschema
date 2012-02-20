@@ -32,13 +32,17 @@ public class SourceNameFilter implements IFieldFilter {
             if (null != sourcename) {
                 doc.remove(getFieldName());
                 doc.addField(getFieldName(), sourcename);
+            } else {
+                if(res.size() > 1) {
+                    res.removeAll(res);
+                }
             }
         }
     }
 
     private String filtering(String sourcename) {
         if (null != sourcename) {
-            if (sourcename.matches("[一-龥]+")) {
+            if (sourcename.matches("([一-龥]+)(-[一-龥]+)?")) {
                 //来源全部是汉字，并且长度小于15。
                 if (sourcename.length() < 15) {
                     return sourcename;
@@ -46,14 +50,17 @@ public class SourceNameFilter implements IFieldFilter {
                     return null;
                 }
             } else {
-                Pattern pat = Pattern.compile(".*(来源|来自)([:： 　]+)([一-龥]+\\b).*");
+                Pattern pat = Pattern.compile(".*(来源|来自)([:： 　]+)(([一-龥]+)(-[一-龥]+)?)\\b.*");
                 Matcher m = pat.matcher(sourcename);
                 if (m.matches()) {
-                    return m.group(3);
+                    String ret = m.group(3);
+                    if (!ret.endsWith("-") && !ret.startsWith("-")) {
+                        return ret;
+                    }
                 } else {
                     String[] array = sourcename.split("[ 　]+");
                     for (String candidate : array) {
-                        if (candidate.matches("[一-龥]+")) {
+                        if (candidate.matches("([一-龥]+)(-[一-龥]+)?")) {
                             if (candidate.matches("(.*(网|报|社))|((网易|搜狐|新浪|腾讯).*)")) {
                                 return candidate;
                             } else {

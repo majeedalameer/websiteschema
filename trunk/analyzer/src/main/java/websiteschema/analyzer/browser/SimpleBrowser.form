@@ -73,6 +73,14 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="gcMenuActionPerformed"/>
               </Events>
             </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="linkTestMenu">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="&#x6d4b;&#x8bd5;&#x94fe;&#x63a5;&#x62bd;&#x53d6;"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="linkTestMenuActionPerformed"/>
+              </Events>
+            </MenuItem>
           </SubComponents>
         </Menu>
       </SubComponents>
@@ -101,13 +109,13 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="jToolBar1" alignment="0" pref="1086" max="32767" attributes="0"/>
+          <Component id="jToolBar1" alignment="0" pref="1087" max="32767" attributes="0"/>
           <Group type="102" alignment="1" attributes="0">
               <Component id="analysisPane" min="-2" pref="223" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="browserTab" pref="857" max="32767" attributes="0"/>
-                  <Component id="consolePane" alignment="0" pref="857" max="32767" attributes="0"/>
+                  <Component id="browserTab" pref="858" max="32767" attributes="0"/>
+                  <Component id="consolePane" alignment="0" pref="858" max="32767" attributes="0"/>
               </Group>
           </Group>
       </Group>
@@ -313,8 +321,8 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane2" alignment="0" pref="848" max="32767" attributes="0"/>
-                  <Component id="jToolBar2" alignment="0" pref="848" max="32767" attributes="0"/>
+                  <Component id="jScrollPane2" alignment="0" pref="849" max="32767" attributes="0"/>
+                  <Component id="jToolBar2" alignment="0" pref="849" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
@@ -378,7 +386,7 @@
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="jPanel6" alignment="0" max="32767" attributes="0"/>
-                  <Component id="jScrollPane1" alignment="0" pref="848" max="32767" attributes="0"/>
+                  <Component id="jScrollPane1" alignment="0" pref="849" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
@@ -408,10 +416,16 @@
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="defaultXPathField" pref="632" max="32767" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" max="-2" attributes="0"/>
+                                  <Component id="defaultXPathField" min="-2" pref="279" max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" max="-2" attributes="0"/>
                                   <Component id="jButton1" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" max="-2" attributes="0"/>
+                                  <Component id="clickedURLField" pref="268" max="32767" attributes="0"/>
+                                  <EmptySpace min="-2" max="-2" attributes="0"/>
+                                  <Component id="openUrlButton" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" max="-2" attributes="0"/>
+                                  <Component id="addToSampleButton" min="-2" pref="60" max="-2" attributes="0"/>
                               </Group>
                               <Group type="102" attributes="0">
                                   <Group type="103" groupAlignment="0" attributes="0">
@@ -426,22 +440,24 @@
                                           <Component id="useIdCheckBox" min="-2" max="-2" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
                                           <Component id="useClassCheckBox" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace pref="202" max="32767" attributes="0"/>
+                                          <EmptySpace pref="203" max="32767" attributes="0"/>
                                           <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
                                           <Component id="otherAttrTextField" pref="218" max="32767" attributes="0"/>
                                       </Group>
                                       <Group type="102" alignment="1" attributes="0">
-                                          <Component id="xpathField" pref="553" max="32767" attributes="0"/>
+                                          <Component id="xpathField" pref="488" max="32767" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
                                           <Component id="XQueryButton" min="-2" max="-2" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
                                           <Component id="jButton2" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="addToInvalidNodeButton" min="-2" max="-2" attributes="0"/>
                                       </Group>
                                   </Group>
                               </Group>
                           </Group>
-                          <EmptySpace max="-2" attributes="0"/>
+                          <EmptySpace min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -452,6 +468,9 @@
                               <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="defaultXPathField" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="jButton1" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="clickedURLField" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="openUrlButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="addToSampleButton" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
@@ -465,8 +484,9 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="jLabel4" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="jButton2" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="xpathField" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="addToInvalidNodeButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="jButton2" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="XQueryButton" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -483,7 +503,8 @@
                 </Component>
                 <Component class="javax.swing.JButton" name="jButton1">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="&#x6dfb;&#x52a0;&#x5230;&#x526a;&#x5207;&#x7248;"/>
+                    <Property name="text" type="java.lang.String" value="&#x590d;&#x5236;"/>
+                    <Property name="toolTipText" type="java.lang.String" value="&#x590d;&#x5236;&#x5230;&#x526a;&#x5207;&#x677f;"/>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton1ActionPerformed"/>
@@ -525,7 +546,8 @@
                 </Component>
                 <Component class="javax.swing.JButton" name="jButton2">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="&#x6dfb;&#x52a0;&#x5230;&#x526a;&#x5207;&#x677f;"/>
+                    <Property name="text" type="java.lang.String" value="&#x590d;&#x5236;"/>
+                    <Property name="toolTipText" type="java.lang.String" value="&#x590d;&#x5236;&#x5230;&#x526a;&#x5207;&#x677f;"/>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton2ActionPerformed"/>
@@ -539,6 +561,35 @@
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="XQueryButtonActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JTextField" name="clickedURLField">
+                </Component>
+                <Component class="javax.swing.JButton" name="openUrlButton">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="&#x6253;&#x5f00;"/>
+                    <Property name="toolTipText" type="java.lang.String" value="&#x5728;&#x6d4f;&#x89c8;&#x5668;&#x4e2d;&#x6253;&#x5f00;&#x6b64;URL"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="openUrlButtonActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JButton" name="addToSampleButton">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="&#x6837;&#x672c;"/>
+                    <Property name="toolTipText" type="java.lang.String" value="&#x6dfb;&#x52a0;&#x6b64;URL&#x4f5c;&#x4e3a;&#x6837;&#x672c;"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="addToSampleButtonActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JButton" name="addToInvalidNodeButton">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="&#x52a0;&#x5165;&#x65e0;&#x6548;&#x8282;&#x70b9;"/>
+                    <Property name="toolTipText" type="java.lang.String" value="&#x5c06;&#x8be5;XPATH&#x8bbe;&#x7f6e;&#x6210;&#x65e0;&#x6548;&#x8282;&#x70b9;"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="addToInvalidNodeButtonActionPerformed"/>
                   </Events>
                 </Component>
               </SubComponents>
@@ -579,7 +630,7 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="842" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="843" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
@@ -601,7 +652,7 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="842" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="843" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">

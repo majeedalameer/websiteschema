@@ -15,12 +15,14 @@ import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.WebResponse;
 import com.gargoylesoftware.htmlunit.WebWindow;
+import com.gargoylesoftware.htmlunit.html.FrameWindow;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.XHtmlPage;
 import com.gargoylesoftware.htmlunit.util.WebConnectionWrapper;
 import com.gargoylesoftware.htmlunit.xml.XmlPage;
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -44,7 +46,7 @@ public class HtmlUnitWebCrawler implements Crawler {
     String encoding = null;
     CrawlerSettings crawlerSettings;
     int sec = 1000;
-    int delay = 30 * sec;
+    int delay = 10 * sec;
     int httpStatus = 0;
     int requestNumber = 0;
     int maxRequestNumber = 1;
@@ -54,7 +56,7 @@ public class HtmlUnitWebCrawler implements Crawler {
         final WebClient webClient = new WebClient();
         webClient.setJavaScriptEnabled(false);
         webClient.setCssEnabled(false);
-        webClient.setTimeout(sec);
+        webClient.setTimeout(delay);
         webClient.setPopupBlockerEnabled(allowPopupWindow);
         webClient.setRedirectEnabled(true);
         webClient.setThrowExceptionOnScriptError(false);
@@ -65,9 +67,9 @@ public class HtmlUnitWebCrawler implements Crawler {
             public WebResponse getResponse(WebRequest request) throws IOException {
                 System.err.println("__________" + request.getUrl());
                 ++requestNumber;
-                if (requestNumber > maxRequestNumber) {
-                    request.setUrl(new URL("http://www.baidu.com"));
-                }
+//                if (requestNumber > maxRequestNumber) {
+//                    request.setUrl(new URL("http://www.baidu.com"));
+//                }
                 WebResponse response = super.getResponse(request);
                 return response;
             }
@@ -78,13 +80,35 @@ public class HtmlUnitWebCrawler implements Crawler {
 
     private Document[] getDocuments(Page page) throws ParserConfigurationException {
         if (page instanceof HtmlPage) {
-            return new Document[]{(HtmlPage) page};
+            HtmlPage htmlPage = (HtmlPage) page;
+            final List<FrameWindow> window = htmlPage.getFrames();
+            if (null != window && window.size() > 0) {
+                Document[] ret = new Document[window.size() + 1];
+                ret[0] = (HtmlPage) page;
+                for (int i = 0; i < window.size(); i++) {
+                    ret[i + 1] = (HtmlPage) window.get(i).getEnclosedPage();
+                }
+                return ret;
+            } else {
+                return new Document[]{(HtmlPage) page};
+            }
         } else if (page instanceof SgmlPage) {
             return new Document[]{(SgmlPage) page};
         } else if (page instanceof XmlPage) {
             return new Document[]{(XmlPage) page};
         } else if (page instanceof XHtmlPage) {
-            return new Document[]{(XHtmlPage) page};
+            XHtmlPage htmlPage = (XHtmlPage) page;
+            final List<FrameWindow> window = htmlPage.getFrames();
+            if (null != window && window.size() > 0) {
+                Document[] ret = new Document[window.size() + 1];
+                ret[0] = (XHtmlPage) page;
+                for (int i = 0; i < window.size(); i++) {
+                    ret[i + 1] = (HtmlPage) window.get(i).getEnclosedPage();
+                }
+                return ret;
+            } else {
+                return new Document[]{(HtmlPage) page};
+            }
         } else if (page instanceof TextPage) {
             TextPage text = (TextPage) page;
             DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
@@ -108,7 +132,7 @@ public class HtmlUnitWebCrawler implements Crawler {
         }
     }
 
-    public Document[] crawl_old(String url) {
+    private Document[] crawl_old(String url) {
         final WebClient webClient = getWebClient();
         try {
             URL dest = new URL(url);

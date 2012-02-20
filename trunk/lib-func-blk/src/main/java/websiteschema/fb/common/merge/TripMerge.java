@@ -19,6 +19,6 @@ public class TripMerge extends FunctionBlock {
 
     @Algorithm(name = "M")
     public void merge3e() {
-        triggerEvent("M");
+        triggerEvent("EO");
     }
 }

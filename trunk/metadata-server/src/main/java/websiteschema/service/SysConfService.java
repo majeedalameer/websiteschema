@@ -4,6 +4,10 @@
  */
 package websiteschema.service;
 
+import websiteschema.utils.PojoMapper;
+import websiteschema.utils.HttpClientUtil;
+import java.util.List;
+import websiteschema.metadata.utils.MetadataServerContext;
 import websiteschema.model.domain.SysConf;
 import websiteschema.persistence.rdbms.SysConfMapper;
 import java.util.Map;
@@ -64,5 +68,35 @@ public class SysConfService {
     @Transactional
     public void deleteById(long id) {
         sysConfMapper.deleteById(id);
+    }
+
+    public String updateConfig() {
+        StringBuilder sb = new StringBuilder();
+        MetadataServerContext.getInstance().reload();
+        sb.append("metadata-server reloaded configuration successfully.\n");
+        List<String> devices = MetadataServerContext.getInstance().
+                getConf().getListProperty("VirtualDevices");
+        for (String device : devices) {
+            String url = "http://" + device + "/action=reload";
+            String res = HttpClientUtil.getInstance().getURLContent(url);
+            try {
+                if (null != res) {
+                    Map<String, String> map = PojoMapper.fromJson(res, Map.class);
+                    if (map.containsKey("success")) {
+                        String suc = map.get("success");
+                        if ("true".equalsIgnoreCase(suc)) {
+                            sb.append("slave : ").append(device).append(" reloaded configuration sucessfully.\n");
+                        } else {
+                            sb.append("slave : ").append(device).append(" reloaded configuration fail.\n");
+                        }
+                    } else {
+                        sb.append("slave : ").append(device).append(" reloaded configuration fail.\n");
+                    }
+                }
+            } catch (Exception ex) {
+                sb.append("slave : ").append(device).append(" reload configuration fail.\n");
+            }
+        }
+        return sb.toString();
     }
 }

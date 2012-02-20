@@ -4,14 +4,14 @@
     <parent>
         <groupId>websiteschema</groupId>
         <artifactId>websiteschema</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0-ALPHA</version>
         <relativePath>..</relativePath>
     </parent>
     <groupId>websiteschema</groupId>
     <artifactId>lib-additional-plugins</artifactId>
     <packaging>jar</packaging>
     <name>lib-additional-plugins</name>
-    <version>1.0-SNAPSHOT</version>
+    <version>${parent.version}</version>
 
     <dependencies>
         <dependency>

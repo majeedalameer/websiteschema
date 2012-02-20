@@ -12,14 +12,8 @@ import com.webrenderer.swing.dom.IDocument;
 import com.webrenderer.swing.dom.IElement;
 import com.webrenderer.swing.dom.IElementCollection;
 import java.awt.BorderLayout;
-import java.net.URI;
 import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.*;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -84,6 +78,7 @@ public class BrowserWebCrawler implements Crawler {
         BrowserFactory.setLicenseData(user, serial);
         //Core function to create browser
         browser = BrowserFactory.spawnMozilla();
+        browser.enableCache();
         // Improves scrolling performance on pages with windowless flash.
         RenderingOptimization renOps = new RenderingOptimization();
         renOps.setWindowlessFlashSmoothScrolling(true);
@@ -120,14 +115,12 @@ public class BrowserWebCrawler implements Crawler {
             for (int i = 1; i < len; i++) {
                 updateDocumentEncoding(encoding, frames[i - 1]);
                 IElement body = frames[i - 1].getBody();
-                DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
                 try {
-                    DocumentBuilder builder = domFactory.newDocumentBuilder();
-                    Document f = builder.newDocument();
-//                    f.appendChild(body.getParentElement().convertToW3CNode().cloneNode(true));
-//                    ret[i] = f;
-                } catch (ParserConfigurationException ex) {
-                    Logger.getLogger(BrowserWebCrawler.class.getName()).log(Level.SEVERE, null, ex);
+                    if (null != body) {
+                        ret[i] = body.convertToW3CNode().getOwnerDocument();
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
             }
         }
