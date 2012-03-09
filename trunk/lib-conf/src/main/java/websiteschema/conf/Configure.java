@@ -129,6 +129,17 @@ public class Configure {
         }
     }
 
+    private Map<String, String> cloneMap(Map<String, String> old) {
+        if (null != old) {
+            Map<String, String> ret = new HashMap<String, String>(old.size());
+            for (String key : old.keySet()) {
+                ret.put(key.toLowerCase(), old.get(key));
+            }
+            return ret;
+        }
+        return null;
+    }
+
     private void loadProperty(InputStream is, Map<String, String> prop) throws IOException {
         if (null != is) {
             BufferedReader br = null;
@@ -140,7 +151,7 @@ public class Configure {
                 while (null != line) {
                     if (!"".equals(line)) {
                         if (null != prop) {
-                            parseLine(line, ++count, prop);
+                            parseLine(line, ++count, cloneMap(prop));
                         } else {
                             parseLine(line, ++count, null);
                         }
@@ -259,7 +270,7 @@ public class Configure {
                     if (null != prop) {
                         Matcher m = pat.matcher(value.trim());
                         if (m.matches()) {
-                            String k = m.group(2);
+                            String k = m.group(2).toLowerCase();
                             if (prop.containsKey(k)) {
                                 String prefix = m.group(1);
                                 String suffix = m.group(3);
@@ -320,7 +331,7 @@ public class Configure {
      * @return
      */
     public Map<String, String> getAllPropertiesInField(String field) {
-        return properties.get(field);
+        return properties.get(field.toLowerCase());
     }
 
     /**

@@ -27,7 +27,11 @@
         <intercept-url pattern="/listAccounts.html" access="isRememberMe()" />
         <intercept-url pattern="/post.html" access="hasRole('ROLE_TELLER')" />
         -->
-        <intercept-url pattern="/**" access="permitAll" />
+        <intercept-url pattern="/resources/**" access="permitAll" />
+        <intercept-url pattern="/static/**" access="permitAll" />
+        <intercept-url pattern="/style/**" access="permitAll" />
+        <intercept-url pattern="/js/**" access="permitAll" />
+        <intercept-url pattern="/ux/**" access="permitAll" />
         <form-login
             login-page="/login.jsp"
             authentication-failure-url="/login.jsp?login_error=1"

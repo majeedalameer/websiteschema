@@ -39,6 +39,8 @@ public class UrlLinkUtil {
             }
         } catch (URISyntaxException ex) {
             ex.printStackTrace();
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
         return null;
     }
@@ -58,6 +60,8 @@ public class UrlLinkUtil {
         } catch (URISyntaxException ex) {
             ex.printStackTrace();
         } catch (MalformedURLException ex) {
+            ex.printStackTrace();
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
         return null;

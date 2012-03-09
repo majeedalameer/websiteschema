@@ -4,12 +4,16 @@
  */
 package websiteschema.crawler;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.w3c.dom.Document;
 import websiteschema.crawler.htmlunit.HtmlUnitWebCrawler;
 import websiteschema.model.domain.cralwer.CrawlerSettings;
 import websiteschema.utils.JsoupUtil;
 import org.apache.log4j.Logger;
 import org.jsoup.Connection;
+import org.jsoup.Connection.Response;
+import websiteschema.utils.StringUtil;
 
 /**
  *
@@ -26,6 +30,7 @@ public class SimpleHttpCrawler implements Crawler {
     int sec = 1000;
     int delay = 15 * sec;
     int httpStatus = 0;
+    Map<String, String> header = new HashMap<String, String>(2);
     Logger l = Logger.getLogger(HtmlUnitWebCrawler.class);
 
     @Override
@@ -35,8 +40,28 @@ public class SimpleHttpCrawler implements Crawler {
             Connection conn = org.jsoup.Jsoup.connect(url_str);
             conn.followRedirects(true);
             conn.request().timeout(delay);
+            if (!header.isEmpty()) {
+                for (String iter : header.keySet()) {
+                    conn.request().header(iter, header.get(iter));
+                }
+            }
 
-            org.jsoup.nodes.Document doc = conn.get();
+            org.jsoup.nodes.Document doc = null;
+            if (StringUtil.isNotEmpty(encoding)) {
+                byte datas[] = conn.execute().bodyAsBytes();
+                String html = new String(datas, encoding);
+                doc = JsoupUtil.getInstance().parse(html);
+            } else {
+                Response res = conn.execute();
+                String charset = null != res.charset() ? res.charset() : "";
+                if (charset.equalsIgnoreCase("ISO-8859-1")) {
+                    byte datas[] = res.bodyAsBytes();
+                    String html = new String(datas, defaultEncoding);
+                    doc = JsoupUtil.getInstance().parse(html);
+                } else {
+                    doc = res.parse();
+                }
+            }
             String title = doc.title();
             System.out.println(title);
             org.w3c.dom.Document document = JsoupUtil.getInstance().convert(doc);
@@ -112,5 +137,15 @@ public class SimpleHttpCrawler implements Crawler {
     @Override
     public void setTimeout(int timeout) {
         this.delay = timeout;
+    }
+
+    @Override
+    public void addHeader(String key, String value) {
+        header.put(key, value);
+    }
+
+    @Override
+    public void setCookie(String cookies) {
+        header.put("Cookie", cookies);
     }
 }

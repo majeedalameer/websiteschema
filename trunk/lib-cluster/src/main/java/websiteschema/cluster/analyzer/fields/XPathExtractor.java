@@ -11,6 +11,7 @@ import java.util.Map;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import websiteschema.element.DocumentUtil;
+import websiteschema.utils.StringUtil;
 
 /**
  *
@@ -19,7 +20,9 @@ import websiteschema.element.DocumentUtil;
 public class XPathExtractor extends AbstractFieldExtractor {
 
     private String xpath = null;
+    private String regex = null;
     public final static String xpathKey = "XPath";
+    public final static String regexKey = "Regex";
 
     public Collection<String> extract(Document doc) {
         if (null != xpath && !"".equals(xpath)) {
@@ -32,11 +35,15 @@ public class XPathExtractor extends AbstractFieldExtractor {
         List<String> ret = new ArrayList<String>();
         List<Node> nodes = DocumentUtil.getByXPath(doc, xpath.trim());
         for (Node node : nodes) {
-            String t = ExtractUtil.getInstance().getNodeText(node);
-            if (null != t && !"".equals(t)) {
-                t = t.trim();
-                if (!ret.contains(t)) {
-                    ret.add(t.trim());
+            String res = ExtractUtil.getInstance().getNodeText(node);
+            if (null != res && !"".equals(res)) {
+                res = StringUtil.trim(res);
+                if (null != regex && !"".equals(regex)) {
+                    if (res.matches(regex) && !ret.contains(res)) {
+                        ret.add(res);
+                    }
+                } else if (!ret.contains(res)) {
+                    ret.add(res);
                 }
             }
         }
@@ -45,5 +52,6 @@ public class XPathExtractor extends AbstractFieldExtractor {
 
     public void init(Map<String, String> params) {
         xpath = params.containsKey(xpathKey) ? params.get(xpathKey) : "";
+        regex = params.containsKey(regexKey) ? params.get(regexKey) : "";
     }
 }

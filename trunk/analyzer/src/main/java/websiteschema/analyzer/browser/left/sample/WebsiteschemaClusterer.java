@@ -47,7 +47,7 @@ public class WebsiteschemaClusterer implements Runnable {
         ClusterModel cm = cmMapper.get(siteId);
         if (null != samples && !samples.isEmpty()) {
             Clusterer cc = new CosineClusterer(siteId);
-            if (!retrain) {
+            if (!retrain && null != cm) {
                 cc.appendCluster(Arrays.asList(cm.getClusters()));
             }
             cc.appendSample(samples);

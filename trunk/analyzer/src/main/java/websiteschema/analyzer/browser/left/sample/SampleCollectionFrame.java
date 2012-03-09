@@ -194,8 +194,8 @@ public class SampleCollectionFrame extends javax.swing.JFrame {
         public void run() {
             final SampleMapper mapper = BrowserContext.getSpringContext().getBean("sampleMapper", SampleMapper.class);
             final WebsiteschemaMapper wMapper = BrowserContext.getSpringContext().getBean("websiteschemaMapper", WebsiteschemaMapper.class);
-            Websiteschema w = wMapper.get(getSiteId());
-            SampleCrawler sc = new SampleCrawler();
+            final Websiteschema w = wMapper.get(getSiteId());
+            final SampleCrawler sc = new SampleCrawler();
             sc.setCrawlerClazzName(crawlerClazzName);
             sc.setXPathAttributes(w.getXpathAttr());
             start = true;

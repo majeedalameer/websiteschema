@@ -20,9 +20,11 @@ import websiteschema.element.W3CDOMUtil;
 public class Doc {
 
     private Map<String, Collection<String>> data;
+    private Map<String, Collection<Map<String, String>>> extData;
 
     public Doc() {
         data = new HashMap<String, Collection<String>>();
+        extData = new HashMap<String, Collection<Map<String, String>>>();
     }
 
     public Doc(Document doc) {
@@ -50,13 +52,28 @@ public class Doc {
     }
 
     public Collection<String> getValues(String field) {
-        if (null != data) {
+        if (null != field) {
             return data.get(field.toUpperCase());
         }
         return null;
     }
 
+    public Collection<Map<String, String>> getExtValues(String field) {
+        if (null != field) {
+            return extData.get(field.toUpperCase());
+        }
+        return null;
+    }
+
     public String getValue(String field) {
+        Collection<String> values = getValues(field);
+        if (null != values) {
+            return values.iterator().next();
+        }
+        return null;
+    }
+
+    public String getExtValue(String field) {
         Collection<String> values = getValues(field);
         if (null != values) {
             return values.iterator().next();
@@ -71,8 +88,16 @@ public class Doc {
         }
     }
 
+    public void setExtValues(String field, Collection<Map<String, String>> values) {
+        if (null != field && null != values) {
+            field = field.toUpperCase();
+            extData.put(field, values);
+        }
+    }
+
     public void remove(String field) {
         data.remove(field);
+        extData.remove(field);
     }
 
     public void remove(String field, String value) {
@@ -109,6 +134,47 @@ public class Doc {
         }
     }
 
+    // not been tested!
+    @Deprecated
+    public void addValues(String field, Collection<String> values) {
+        if (null != field && null != values) {
+            field = field.toUpperCase();
+            Collection<String> tmpValues = null;
+            if (data.containsKey(field)) {
+                tmpValues = data.get(field);
+                if (null == tmpValues) {
+                    tmpValues = new ArrayList<String>();
+                }
+            } else {
+                tmpValues = new ArrayList<String>();
+            }
+            tmpValues.addAll(values);
+            data.put(field, tmpValues);
+        }
+    }
+
+    public void addExtField(String field, Map<String, String> value) {
+        if (null != field && null != value) {
+            field = field.toUpperCase();
+            if (extData.containsKey(field)) {
+                Collection<Map<String, String>> values = extData.get(field);
+                if (null != values) {
+                    if (!values.contains(value)) {
+                        values.add(value);
+                    }
+                } else {
+                    values = new ArrayList<Map<String, String>>();
+                    values.add(value);
+                    extData.put(field, values);
+                }
+            } else {
+                Collection<Map<String, String>> values = new ArrayList<Map<String, String>>();
+                values.add(value);
+                extData.put(field, values);
+            }
+        }
+    }
+
     public Document toW3CDocument() {
         Document ret = create();
         Element root = ret.createElement("DOCUMENT");
@@ -121,6 +187,24 @@ public class Doc {
                 for (String value : list) {
                     Element ele = ret.createElement(field);
                     ele.setTextContent(value);
+                    root.appendChild(ele);
+                }
+            }
+        }
+
+        for (String field : extData.keySet()) {
+            Collection<Map<String, String>> list = extData.get(field);
+            if (null != list && !list.isEmpty()) {
+                for (Map<String, String> obj : list) {
+                    Element ele = ret.createElement(field);
+
+                    for (String key : obj.keySet()) {
+                        String value = obj.get(key);
+                        Element child = ret.createElement(key);
+                        child.setTextContent(value);
+                        ele.appendChild(child);
+                    }
+
                     root.appendChild(ele);
                 }
             }

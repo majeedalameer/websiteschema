@@ -4,6 +4,7 @@
  */
 package websiteschema.schedule;
 
+import websiteschema.persistence.rdbms.ChannelMapper;
 import org.quartz.JobKey;
 import org.quartz.SimpleTrigger;
 import websiteschema.persistence.rdbms.TaskMapper;
@@ -41,6 +42,7 @@ public class JobScheduler {
     private Scheduler sched = null;
     private ScheduleMapper scheduleMapper = null;
     private JobMapper jobMapper = null;
+    private ChannelMapper channelMapper = null;
     private WrapperMapper wrapperMapper = null;
     private TaskMapper taskMapper = null;
     private StartURLMapper startURLMapper = null;
@@ -193,6 +195,7 @@ public class JobScheduler {
         jobDataMap.put("jobMapper", jobMapper);
         jobDataMap.put("wrapperMapper", wrapperMapper);
         jobDataMap.put("taskMapper", taskMapper);
+        jobDataMap.put("channelMapper", channelMapper);
         jobDataMap.put("schedulerId", sche.getId());
         jobDataMap.put("jobId", sche.getJobId());
         jobDataMap.put("startURLId", sche.getStartURLId());
@@ -262,5 +265,13 @@ public class JobScheduler {
 
     public void setTaskMapper(TaskMapper taskMapper) {
         this.taskMapper = taskMapper;
+    }
+
+    public ChannelMapper getChannelMapper() {
+        return channelMapper;
+    }
+
+    public void setChannelMapper(ChannelMapper channelMapper) {
+        this.channelMapper = channelMapper;
     }
 }

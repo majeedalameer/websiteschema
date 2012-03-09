@@ -27,14 +27,18 @@ import java.awt.datatransfer.StringSelection;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
+import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.event.TreeSelectionListener;
 import org.w3c.dom.*;
+import websiteschema.analyzer.browser.bottom.domtree.DOMPanel;
 import websiteschema.analyzer.browser.bottom.PageInfoPanel;
 import websiteschema.analyzer.browser.bottom.PageSourcePanel;
+import websiteschema.analyzer.browser.tools.TestUnitFrame;
 import static websiteschema.element.DocumentUtil.*;
 import websiteschema.analyzer.browser.listener.*;
+import websiteschema.analyzer.browser.tools.CrawlerTestFrame;
 import websiteschema.analyzer.browser.tools.LinkTestFrame;
 import websiteschema.analyzer.context.BrowserContext;
 import websiteschema.cluster.analyzer.AnalysisResult;
@@ -65,6 +69,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
     AnalysisPanel analysisPanel;
     PageInfoPanel pageInfoPanel;
     PageSourcePanel pageSourcePanel;
+    DOMPanel domPanel;
     private javax.swing.JScrollPane vipsTreePane;
     private VipsTree vipsTree = null;
 
@@ -102,6 +107,10 @@ public class SimpleBrowser extends javax.swing.JFrame {
         this.browserTab.setSelectedIndex(i);
     }
 
+    public AnalysisPanel getAnalysisPanel() {
+        return this.analysisPanel;
+    }
+
     public void startAnalysis(String siteId, String url) {
         SiteMapper siteMapper = BrowserContext.getSpringContext().getBean("siteMapper", SiteMapper.class);
         Site site = siteMapper.getBySiteId(siteId);
@@ -121,6 +130,10 @@ public class SimpleBrowser extends javax.swing.JFrame {
 //        String url = site.getUrl();
         this.urlTextField.setText(url);
         this.openUrl(url);
+    }
+
+    public DOMPanel getDOMPanel() {
+        return this.domPanel;
     }
 
     private void initAnalysisPanel() {
@@ -149,9 +162,13 @@ public class SimpleBrowser extends javax.swing.JFrame {
         pageInfoPanel = new PageInfoPanel();
         pageInfoPanel.setContext(context);
         pageSourcePanel = new PageSourcePanel();
+        {
+            domPanel = new DOMPanel();
+        }
 
         consolePane.addTab("页面信息", pageInfoPanel);
         consolePane.addTab("页面源代码", pageSourcePanel);
+        consolePane.addTab("DOM树", domPanel);
     }
 
     private void setupVipsTree(VisionBlock block) {
@@ -234,6 +251,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
 
         //Core function to create browser
         browser = BrowserFactory.spawnMozilla();
+        browser.setHTTPHeadersEnabled(true);
 
         RenderingOptimization renOps = new RenderingOptimization();
         renOps.setWindowlessFlashSmoothScrolling(true);
@@ -280,6 +298,10 @@ public class SimpleBrowser extends javax.swing.JFrame {
 
         console.log("mozilla path: " + mozPath);
         console.log("xulrunner version: " + mozVersion);
+    }
+
+    public JInternalFrame getAnalyzerFrame() {
+        return this.analyzerFrame;
     }
 
     /** This method is called from within the constructor to
@@ -341,13 +363,21 @@ public class SimpleBrowser extends javax.swing.JFrame {
         jMenu3 = new javax.swing.JMenu();
         hideAnalysisMenu = new javax.swing.JCheckBoxMenuItem();
         hideConsoleMenu = new javax.swing.JCheckBoxMenuItem();
+        domTreeMenu = new javax.swing.JMenuItem();
+        jMenu5 = new javax.swing.JMenu();
+        utf8Menu = new javax.swing.JMenuItem();
+        gbkMenu = new javax.swing.JMenuItem();
+        iso8859Menu = new javax.swing.JMenuItem();
+        jSeparator1 = new javax.swing.JPopupMenu.Separator();
         drawBorderMenu = new javax.swing.JMenuItem();
         jMenu4 = new javax.swing.JMenu();
         gcMenu = new javax.swing.JMenuItem();
         linkTestMenu = new javax.swing.JMenuItem();
+        crawlerTestMenu = new javax.swing.JMenuItem();
+        crawlerTestMenu1 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Simple Browser");
+        setTitle("Websiteschema Analyzer 1.0-Alpha");
 
         jToolBar1.setRollover(true);
 
@@ -454,7 +484,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 590, Short.MAX_VALUE)
+            .addGap(0, 588, Short.MAX_VALUE)
         );
 
         analysisPane.addTab("基本分析", jPanel1);
@@ -467,7 +497,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 590, Short.MAX_VALUE)
+            .addGap(0, 588, Short.MAX_VALUE)
         );
 
         analysisPane.addTab("VB树", jPanel4);
@@ -503,7 +533,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 159, Short.MAX_VALUE))
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 157, Short.MAX_VALUE))
         );
 
         consolePane.addTab("日志", jPanel3);
@@ -674,7 +704,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
         );
         configFrameLayout.setVerticalGroup(
             configFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 335, Short.MAX_VALUE)
+            .addGap(0, 330, Short.MAX_VALUE)
         );
 
         browserTab.addTab("Configure", configFrame);
@@ -687,7 +717,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
         );
         analyzerFrameLayout.setVerticalGroup(
             analyzerFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 335, Short.MAX_VALUE)
+            .addGap(0, 330, Short.MAX_VALUE)
         );
 
         browserTab.addTab("Analyzer", analyzerFrame);
@@ -710,6 +740,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
 
         jMenu3.setText("视图");
 
+        hideAnalysisMenu.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.ALT_MASK | java.awt.event.InputEvent.CTRL_MASK));
         hideAnalysisMenu.setSelected(true);
         hideAnalysisMenu.setText("分析栏");
         hideAnalysisMenu.addActionListener(new java.awt.event.ActionListener() {
@@ -719,6 +750,8 @@ public class SimpleBrowser extends javax.swing.JFrame {
         });
         jMenu3.add(hideAnalysisMenu);
 
+        hideConsoleMenu.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_I, java.awt.event.InputEvent.ALT_MASK | java.awt.event.InputEvent.CTRL_MASK));
+        hideConsoleMenu.setSelected(true);
         hideConsoleMenu.setText("信息栏");
         hideConsoleMenu.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -726,6 +759,43 @@ public class SimpleBrowser extends javax.swing.JFrame {
             }
         });
         jMenu3.add(hideConsoleMenu);
+
+        domTreeMenu.setText("DOM树");
+        domTreeMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                domTreeMenuActionPerformed(evt);
+            }
+        });
+        jMenu3.add(domTreeMenu);
+
+        jMenu5.setText("页面编码");
+
+        utf8Menu.setText("UTF-8");
+        utf8Menu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                utf8MenuActionPerformed(evt);
+            }
+        });
+        jMenu5.add(utf8Menu);
+
+        gbkMenu.setText("GBK");
+        gbkMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                gbkMenuActionPerformed(evt);
+            }
+        });
+        jMenu5.add(gbkMenu);
+
+        iso8859Menu.setText("ISO-8859-1");
+        iso8859Menu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                iso8859MenuActionPerformed(evt);
+            }
+        });
+        jMenu5.add(iso8859Menu);
+
+        jMenu3.add(jMenu5);
+        jMenu3.add(jSeparator1);
 
         drawBorderMenu.setText("显示所有块的边框");
         drawBorderMenu.addActionListener(new java.awt.event.ActionListener() {
@@ -756,6 +826,22 @@ public class SimpleBrowser extends javax.swing.JFrame {
         });
         jMenu4.add(linkTestMenu);
 
+        crawlerTestMenu.setText("测试采集器");
+        crawlerTestMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                crawlerTestMenuActionPerformed(evt);
+            }
+        });
+        jMenu4.add(crawlerTestMenu);
+
+        crawlerTestMenu1.setText("测试Unit Extrator");
+        crawlerTestMenu1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                crawlerTestMenu1ActionPerformed(evt);
+            }
+        });
+        jMenu4.add(crawlerTestMenu1);
+
         jMenuBar1.add(jMenu4);
 
         setJMenuBar(jMenuBar1);
@@ -764,13 +850,13 @@ public class SimpleBrowser extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 1087, Short.MAX_VALUE)
+            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addComponent(analysisPane, javax.swing.GroupLayout.PREFERRED_SIZE, 223, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(browserTab, javax.swing.GroupLayout.DEFAULT_SIZE, 858, Short.MAX_VALUE)
-                    .addComponent(consolePane, javax.swing.GroupLayout.DEFAULT_SIZE, 858, Short.MAX_VALUE)))
+                    .addComponent(browserTab)
+                    .addComponent(consolePane)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -779,10 +865,10 @@ public class SimpleBrowser extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(browserTab, javax.swing.GroupLayout.DEFAULT_SIZE, 394, Short.MAX_VALUE)
+                        .addComponent(browserTab, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(consolePane, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(analysisPane, javax.swing.GroupLayout.DEFAULT_SIZE, 621, Short.MAX_VALUE)))
+                    .addComponent(analysisPane)))
         );
 
         pack();
@@ -960,11 +1046,72 @@ public class SimpleBrowser extends javax.swing.JFrame {
             ar.init(prop);
             BasicAnalysisResult bar = ar.getBasicAnalysisResult();
             bar.getInvalidNodes().add(xpath);
-            this.analysisPanel.setProperties(prop);
+            this.analysisPanel.setProperties(ar.getResult());
             this.analysisPanel.save();
             JOptionPane.showMessageDialog(this, "Crawler设置保存成功！");
         }
     }//GEN-LAST:event_addToInvalidNodeButtonActionPerformed
+
+    private void gbkMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gbkMenuActionPerformed
+        // TODO add your handling code here:
+//        IDocument doc = context.getBrowser().getDocument();
+//        IElement head = ElementUtil.getInstance().getHead(doc);
+//        if (null != head) {
+//            IElementCollection children = head.getChildElements();
+//            boolean found = false;
+//            for (int i = 0; i < children.length(); i++) {
+//                IElement meta = children.item(i);
+//                if ("meta".equalsIgnoreCase(meta.getTagName())) {
+//                    String attr = meta.getAttribute("http-equiv", 0);
+//                    if ("Content-Type".equalsIgnoreCase(attr)) {
+//                        found = true;
+//                        String contentType = meta.getAttribute("content", 0);
+//                        if (null != contentType) {
+//                            contentType = contentType.substring(0, contentType.indexOf(";")) + "; charset=gbk";
+//                        } else {
+//                            contentType = "text/html; charset=gbk";
+//                        }
+//                        meta.setAttribute("content", contentType, 0);
+//                        break;
+//                    }
+//                }
+//            }
+//            if(!found) {
+//                head.insertAdjacentHTML("afterbegin", "<meta content=\"text/html; charset=gbk\" http-equiv=\"Content-Type\"/>");
+//            }
+//        }
+        JOptionPane.showMessageDialog(this, "暂未实现编码选择");
+    }//GEN-LAST:event_gbkMenuActionPerformed
+
+    private void utf8MenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_utf8MenuActionPerformed
+        // TODO add your handling code here:
+        JOptionPane.showMessageDialog(this, "暂未实现编码选择");
+    }//GEN-LAST:event_utf8MenuActionPerformed
+
+    private void iso8859MenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_iso8859MenuActionPerformed
+        // TODO add your handling code here:
+        JOptionPane.showMessageDialog(this, "暂未实现编码选择");
+    }//GEN-LAST:event_iso8859MenuActionPerformed
+
+    private void crawlerTestMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_crawlerTestMenuActionPerformed
+        // TODO add your handling code here:
+        CrawlerTestFrame frame = new CrawlerTestFrame();
+//        frame.setContext(context);
+        frame.setVisible(true);
+    }//GEN-LAST:event_crawlerTestMenuActionPerformed
+
+    private void domTreeMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_domTreeMenuActionPerformed
+        // TODO add your handling code here:
+        consolePane.setSelectedComponent(getDOMPanel());
+        getDOMPanel().setupDOMTree(context.getBrowser().getDocument());
+    }//GEN-LAST:event_domTreeMenuActionPerformed
+
+    private void crawlerTestMenu1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_crawlerTestMenu1ActionPerformed
+        // TODO add your handling code here:
+        TestUnitFrame tf = new TestUnitFrame();
+        tf.setContext(context);
+        tf.setVisible(true);
+    }//GEN-LAST:event_crawlerTestMenu1ActionPerformed
 
     public void openUrl(String url) {
         if (url.startsWith("ftp://")) {
@@ -974,6 +1121,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
         }
         context.getURLAndMIME().clear();
         context.setReference(url);
+        getAnalyzerFrame().setTitle("");
         browser.loadURL(url);
     }
 
@@ -1048,14 +1196,19 @@ public class SimpleBrowser extends javax.swing.JFrame {
     private javax.swing.JInternalFrame configFrame;
     private javax.swing.JTabbedPane consolePane;
     private javax.swing.JTextArea consoleTextArea;
+    private javax.swing.JMenuItem crawlerTestMenu;
+    private javax.swing.JMenuItem crawlerTestMenu1;
     private javax.swing.JTextField defaultXPathField;
+    private javax.swing.JMenuItem domTreeMenu;
     private javax.swing.JMenuItem drawBorderMenu;
     private javax.swing.JButton forwardButton;
+    private javax.swing.JMenuItem gbkMenu;
     private javax.swing.JMenuItem gcMenu;
     private javax.swing.JButton goButton;
     private javax.swing.JCheckBoxMenuItem hideAnalysisMenu;
     private javax.swing.JCheckBoxMenuItem hideConsoleMenu;
     private javax.swing.JButton homeButton;
+    private javax.swing.JMenuItem iso8859Menu;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
@@ -1066,6 +1219,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenu jMenu4;
+    private javax.swing.JMenu jMenu5;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPanel jPanel1;
@@ -1075,6 +1229,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JToolBar jToolBar2;
     private javax.swing.JMenuItem linkTestMenu;
@@ -1087,6 +1242,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
     private javax.swing.JCheckBox useClassCheckBox;
     private javax.swing.JCheckBox useIdCheckBox;
     private javax.swing.JCheckBox usePosCheckBox;
+    private javax.swing.JMenuItem utf8Menu;
     private javax.swing.JButton vipsButton;
     private javax.swing.JTextField xpathField;
     // End of variables declaration//GEN-END:variables

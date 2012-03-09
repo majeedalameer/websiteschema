@@ -13,6 +13,8 @@ import com.webrenderer.swing.dom.IElement;
 import com.webrenderer.swing.dom.IElementCollection;
 import java.awt.BorderLayout;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import javax.swing.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -54,6 +56,7 @@ public class BrowserWebCrawler implements Crawler {
     int sec = 1000;
     long delay = 30 * sec;
     int httpStatus = 0;
+    Map<String, String> header = new HashMap<String, String>(2);
 
     @Override
     public void finalize() {
@@ -245,5 +248,15 @@ public class BrowserWebCrawler implements Crawler {
     @Override
     public void setTimeout(int timeout) {
         this.delay = timeout;
+    }
+
+    @Override
+    public void addHeader(String key, String value) {
+        header.put(key, value);
+    }
+
+    @Override
+    public void setCookie(String cookies) {
+        header.put("Cookie", cookies);
     }
 }

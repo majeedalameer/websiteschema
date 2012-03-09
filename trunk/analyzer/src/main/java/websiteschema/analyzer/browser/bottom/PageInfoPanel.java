@@ -13,7 +13,12 @@ package websiteschema.analyzer.browser.bottom;
 import com.webrenderer.swing.dom.IDocument;
 import java.util.Map;
 import java.util.Set;
+import javax.swing.ButtonGroup;
+import javax.swing.JOptionPane;
 import websiteschema.analyzer.context.BrowserContext;
+import websiteschema.model.domain.Cipher;
+import websiteschema.persistence.rdbms.CipherMapper;
+import websiteschema.utils.StringUtil;
 
 /**
  *
@@ -22,11 +27,15 @@ import websiteschema.analyzer.context.BrowserContext;
 public class PageInfoPanel extends javax.swing.JPanel {
 
     BrowserContext context;
-    Map<String, String> urlAndMIME;
+    ButtonGroup group;
 
     /** Creates new form PageInfoPanel */
     public PageInfoPanel() {
         initComponents();
+        group = new ButtonGroup();
+        group.add(responseRadioButton);
+        group.add(requestRadioButton);
+        responseRadioButton.setSelected(true);
     }
 
     /** This method is called from within the constructor to
@@ -42,7 +51,6 @@ public class PageInfoPanel extends javax.swing.JPanel {
         charsetField = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         urlArea = new javax.swing.JTextArea();
-        jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -57,6 +65,10 @@ public class PageInfoPanel extends javax.swing.JPanel {
         jLabel7 = new javax.swing.JLabel();
         contentTypeFilterField = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
+        responseRadioButton = new javax.swing.JRadioButton();
+        requestRadioButton = new javax.swing.JRadioButton();
+        jLabel2 = new javax.swing.JLabel();
+        saveCookieButton = new javax.swing.JButton();
 
         jLabel1.setText("Charset:");
 
@@ -71,8 +83,6 @@ public class PageInfoPanel extends javax.swing.JPanel {
             }
         });
         jScrollPane1.setViewportView(urlArea);
-
-        jLabel2.setText("HTTPResponse with MIME Message:");
 
         jLabel3.setText("URL:");
 
@@ -103,6 +113,29 @@ public class PageInfoPanel extends javax.swing.JPanel {
 
         jLabel8.setText(")");
 
+        responseRadioButton.setText("Response");
+        responseRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                responseRadioButtonActionPerformed(evt);
+            }
+        });
+
+        requestRadioButton.setText("Request");
+        requestRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                requestRadioButtonActionPerformed(evt);
+            }
+        });
+
+        jLabel2.setText("Header");
+
+        saveCookieButton.setText("保存Cookie");
+        saveCookieButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveCookieButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -128,18 +161,26 @@ public class PageInfoPanel extends javax.swing.JPanel {
                                 .addGap(39, 39, 39)
                                 .addComponent(jLabel7)
                                 .addGap(14, 14, 14)
-                                .addComponent(contentTypeFilterField, javax.swing.GroupLayout.DEFAULT_SIZE, 121, Short.MAX_VALUE)
+                                .addComponent(contentTypeFilterField, javax.swing.GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabel8))
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 237, Short.MAX_VALUE))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 235, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 226, Short.MAX_VALUE))
-                        .addGap(12, 12, 12)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 230, Short.MAX_VALUE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(responseRadioButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(requestRadioButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel2)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel6)
-                            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 227, Short.MAX_VALUE))))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addComponent(jLabel6)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 74, Short.MAX_VALUE)
+                                .addComponent(saveCookieButton))
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 225, Short.MAX_VALUE))))
                 .addContainerGap())
             .addComponent(jSeparator1, javax.swing.GroupLayout.DEFAULT_SIZE, 738, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
@@ -163,21 +204,28 @@ public class PageInfoPanel extends javax.swing.JPanel {
                 .addGap(1, 1, 1)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(jLabel6)
                     .addComponent(jLabel7)
                     .addComponent(contentTypeFilterField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel8)
-                    .addComponent(jLabel2))
+                    .addComponent(responseRadioButton)
+                    .addComponent(requestRadioButton)
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel6)
+                    .addComponent(saveCookieButton))
                 .addGap(2, 2, 2)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 97, Short.MAX_VALUE)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 97, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 97, Short.MAX_VALUE)))
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 91, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 91, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 91, Short.MAX_VALUE)))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void urlAreaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_urlAreaMouseClicked
         // TODO add your handling code here:
+        selectLine();
+    }//GEN-LAST:event_urlAreaMouseClicked
+
+    private void selectLine() {
         String text = urlArea.getText();
         if (!"".equals(text)) {
             int pos = urlArea.getCaretPosition();
@@ -185,16 +233,57 @@ public class PageInfoPanel extends javax.swing.JPanel {
             start = start >= 0 ? start : 0;
             int end = text.indexOf("\n", pos);
             String url = text.substring(start, end).trim();
-            String mime = urlAndMIME.get(url);
-            this.MIMEArea.setText(mime);
+            if (responseRadioButton.isSelected()) {
+                this.MIMEArea.setText(context.getResponseHeader(url));
+            } else {
+                this.MIMEArea.setText(context.getRequestHeader(url));
+            }
             this.MIMEArea.setCaretPosition(0);
         }
-    }//GEN-LAST:event_urlAreaMouseClicked
+    }
 
     private void contentTypeFilterFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_contentTypeFilterFieldActionPerformed
         // TODO add your handling code here:
         update();
     }//GEN-LAST:event_contentTypeFilterFieldActionPerformed
+
+    private void requestRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_requestRadioButtonActionPerformed
+        // TODO add your handling code here:
+        selectLine();
+    }//GEN-LAST:event_requestRadioButtonActionPerformed
+
+    private void responseRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_responseRadioButtonActionPerformed
+        // TODO add your handling code here:
+        selectLine();
+    }//GEN-LAST:event_responseRadioButtonActionPerformed
+
+    private void saveCookieButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveCookieButtonActionPerformed
+        // TODO add your handling code here:
+        IDocument doc = context.getBrowser().getDocument();
+        String cookie = doc.getCookie();
+        if (StringUtil.isNotEmpty(cookie)) {
+            String siteId = context.getSimpleBrowser().getAnalysisPanel().getSiteId();
+            if (StringUtil.isNotEmpty(siteId)) {
+                CipherMapper cipherMapper = context.getSpringContext().getBean("cipherMapper", CipherMapper.class);
+                Cipher cipher = cipherMapper.getBySiteId(siteId);
+                if (null != cipher) {
+                    cipher.setCookie(cookie);
+                    cipherMapper.update(cipher);
+                    JOptionPane.showMessageDialog(this.getParent(), "成功更新cookie！");
+                } else {
+                    cipher = new Cipher();
+                    cipher.setSiteId(siteId);
+                    cipher.setCookie(cookie);
+                    cipherMapper.insert(cipher);
+                    JOptionPane.showMessageDialog(this.getParent(), "成功添加cookie！");
+                }
+            } else {
+                JOptionPane.showMessageDialog(this.getParent(), "siteId是空或无效！");
+            }
+        } else {
+            JOptionPane.showMessageDialog(this.getParent(), "Cookie是空或无效！");
+        }
+    }//GEN-LAST:event_saveCookieButtonActionPerformed
 
     public void clean() {
         this.urlArea.setText("");
@@ -223,8 +312,7 @@ public class PageInfoPanel extends javax.swing.JPanel {
             }
         }
 
-        urlAndMIME = context.getURLAndMIME();
-        Set<String> urls = urlAndMIME.keySet();
+        Set<String> urls = context.getURLAndMIME().keySet();
 
         String contentTypeFilter = this.contentTypeFilterField.getText();
         for (String url : urls) {
@@ -240,8 +328,11 @@ public class PageInfoPanel extends javax.swing.JPanel {
             }
         }
         String url = getLine(urlArea, 0);
-        String mime = urlAndMIME.get(url);
-        this.MIMEArea.setText(mime);
+        if (responseRadioButton.isSelected()) {
+            this.MIMEArea.setText(context.getResponseHeader(url));
+        } else {
+            this.MIMEArea.setText(context.getRequestHeader(url));
+        }
         this.cookieArea.setCaretPosition(0);
         this.urlArea.setCaretPosition(0);
         this.MIMEArea.setCaretPosition(0);
@@ -278,6 +369,9 @@ public class PageInfoPanel extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JRadioButton requestRadioButton;
+    private javax.swing.JRadioButton responseRadioButton;
+    private javax.swing.JButton saveCookieButton;
     private javax.swing.JTextField sessionField;
     private javax.swing.JTextArea urlArea;
     // End of variables declaration//GEN-END:variables

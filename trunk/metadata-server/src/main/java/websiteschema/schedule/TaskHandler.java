@@ -17,10 +17,10 @@ import websiteschema.metadata.utils.MetadataServerContext;
 public class TaskHandler {
 
     private static TaskHandler ins = new TaskHandler();
+
     public static TaskHandler getInstance() {
         return ins;
     }
-
     RabbitQueue<Message> queue;
     private Logger l = Logger.getLogger(TaskHandler.class);
 
@@ -29,11 +29,7 @@ public class TaskHandler {
                 getProperty("URLQueue", "ServerHost", "localhost");
         String queueName = MetadataServerContext.getInstance().getConf().
                 getProperty("URLQueue", "QueueName", "url_queue");
-        try {
-            queue = new RabbitQueue<Message>(host, queueName, true);
-        } catch (IOException ex) {
-            l.error("can not initialize URL Queue.", ex);
-        }
+        queue = new RabbitQueue<Message>(host, queueName);
     }
 
     public RabbitQueue<Message> getQueue() {

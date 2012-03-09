@@ -1,0 +1,161 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package websiteschema.schedule.job;
+
+import java.io.IOException;
+import java.util.List;
+import org.apache.log4j.Logger;
+import org.quartz.Job;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
+import org.quartz.JobKey;
+import websiteschema.common.amqp.Message;
+import websiteschema.common.amqp.RabbitQueue;
+import websiteschema.model.domain.Channel;
+import websiteschema.model.domain.StartURL;
+import websiteschema.model.domain.Task;
+import websiteschema.persistence.rdbms.*;
+import websiteschema.schedule.TaskHandler;
+
+/**
+ *
+ * @author ray
+ */
+public class JobMultiStartURL implements Job {
+
+    private long jobId;
+    private long schedulerId;
+    private long startURLId;
+    private ChannelMapper channelMapper;
+    private JobMapper jobMapper;
+    private WrapperMapper wrapperMapper;
+    private StartURLMapper startURLMapper;
+    private TaskMapper taskMapper;
+    Logger l = Logger.getLogger(JobMultiStartURL.class);
+
+    @Override
+    public void execute(JobExecutionContext context) throws JobExecutionException {
+        JobKey key = context.getJobDetail().getKey();
+        l.debug("Instance " + key + " of schedulerId: " + schedulerId + ", and jobId is: " + jobId + ", and startURLId is: " + startURLId);
+        websiteschema.model.domain.Job job = jobMapper.getById(jobId);
+        StartURL startURL = startURLMapper.getById(startURLId);
+        String siteId = startURL.getSiteId();
+        l.debug("getChannelsBySiteId " + siteId);
+        List<Channel> channels = channelMapper.getChannelsBySiteId(siteId);
+
+        l.debug(job.getConfigure());
+        if (null != channels) {
+            RabbitQueue<Message> queue = TaskHandler.getInstance().getQueue();
+            com.rabbitmq.client.Channel channel = null;
+            try {
+                channel = queue.getChannel();
+                if (null != channel) {
+                    for (Channel chl : channels) {
+                        if (chl.getStatus() == Channel.STATUS_VALID) {
+                            //仅发送有效的栏目。
+                            Task task = new Task(schedulerId);
+                            try {
+                                taskMapper.insert(task);
+                                // 把栏目的URL添加到消息中，并发送出去。
+                                Message msg = create(job, chl.getUrl());
+                                msg.setTaskId(task.getId());
+                                queue.offer(channel, msg);
+                                l.debug("Message about Job " + jobId + " has been emitted to queue: " + queue.getQueueName());
+                                task.setStatus(Task.SENT);
+                                taskMapper.update(task);
+                            } catch (Exception ex) {
+                                task.setStatus(Task.UNSENT);
+                                task.setMessage(ex.getMessage());
+                                taskMapper.update(task);
+                                ex.printStackTrace();
+                                break;
+                            }
+                        }
+                    }
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            } finally {
+                // Close channel
+                if (null != channel) {
+                    try {
+                        channel.close();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
+    private Message create(websiteschema.model.domain.Job job, String url) {
+        StartURL startURL = startURLMapper.getById(startURLId);
+        return new Message(jobId, startURLId, schedulerId, job.getWrapperId(), startURL.getSiteId(), startURL.getJobname(), url, job.getConfigure());
+    }
+
+    public long getJobId() {
+        return jobId;
+    }
+
+    public void setJobId(long jobId) {
+        this.jobId = jobId;
+    }
+
+    public long getSchedulerId() {
+        return schedulerId;
+    }
+
+    public void setSchedulerId(long schedulerId) {
+        this.schedulerId = schedulerId;
+    }
+
+    public long getStartURLId() {
+        return startURLId;
+    }
+
+    public void setStartURLId(long startURLId) {
+        this.startURLId = startURLId;
+    }
+
+    public JobMapper getJobMapper() {
+        return jobMapper;
+    }
+
+    public void setJobMapper(JobMapper jobMapper) {
+        this.jobMapper = jobMapper;
+    }
+
+    public StartURLMapper getStartURLMapper() {
+        return startURLMapper;
+    }
+
+    public void setStartURLMapper(StartURLMapper startURLMapper) {
+        this.startURLMapper = startURLMapper;
+    }
+
+    public WrapperMapper getWrapperMapper() {
+        return wrapperMapper;
+    }
+
+    public void setWrapperMapper(WrapperMapper wrapperMapper) {
+        this.wrapperMapper = wrapperMapper;
+    }
+
+    public TaskMapper getTaskMapper() {
+        return taskMapper;
+    }
+
+    public void setTaskMapper(TaskMapper taskMapper) {
+        this.taskMapper = taskMapper;
+    }
+
+    public ChannelMapper getChannelMapper() {
+        return channelMapper;
+    }
+
+    public void setChannelMapper(ChannelMapper channelMapper) {
+        this.channelMapper = channelMapper;
+    }
+}

@@ -5,6 +5,7 @@
 package websiteschema.rest;
 
 import java.io.IOException;
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
@@ -13,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import websiteschema.model.domain.Schedule;
+import websiteschema.persistence.rdbms.ChannelMapper;
 import websiteschema.persistence.rdbms.JobMapper;
 import websiteschema.persistence.rdbms.ScheduleMapper;
 import websiteschema.persistence.rdbms.StartURLMapper;
@@ -41,22 +42,28 @@ public class SchedulerController {
     StartURLMapper startURLMapper;
     @Autowired
     TaskMapper taskMapper;
+    @Autowired
+    ChannelMapper channelMapper;
 
-    public void setScheduleMapper(ScheduleMapper scheduleMapper) {
-        this.scheduleMapper = scheduleMapper;
-    }
-
-    public void setJobMapper(JobMapper jobMapper) {
-        this.jobMapper = jobMapper;
-    }
-
-    public void setStartURLMapper(StartURLMapper startURLMapper) {
-        this.startURLMapper = startURLMapper;
-    }
-
-    public void setWrapperMapper(WrapperMapper wrapperMapper) {
-        this.wrapperMapper = wrapperMapper;
-    }
+//    public void setScheduleMapper(ScheduleMapper scheduleMapper) {
+//        this.scheduleMapper = scheduleMapper;
+//    }
+//
+//    public void setJobMapper(JobMapper jobMapper) {
+//        this.jobMapper = jobMapper;
+//    }
+//
+//    public void setStartURLMapper(StartURLMapper startURLMapper) {
+//        this.startURLMapper = startURLMapper;
+//    }
+//
+//    public void setWrapperMapper(WrapperMapper wrapperMapper) {
+//        this.wrapperMapper = wrapperMapper;
+//    }
+//
+//    public void setChannelMapper(ChannelMapper channelMapper) {
+//        this.channelMapper = channelMapper;
+//    }
 
     @RequestMapping(value = "/start", method = RequestMethod.GET)
     public void start(HttpServletResponse response) throws IOException {
@@ -68,6 +75,7 @@ public class SchedulerController {
         }
     }
 
+    @PostConstruct
     public boolean start() throws IOException {
         try {
             scheduler.setScheduleMapper(scheduleMapper);
@@ -75,6 +83,7 @@ public class SchedulerController {
             scheduler.setStartURLMapper(startURLMapper);
             scheduler.setWrapperMapper(wrapperMapper);
             scheduler.setTaskMapper(taskMapper);
+            scheduler.setChannelMapper(channelMapper);
             int status = scheduler.status();
             if (JobScheduler.Stopped == status
                     || JobScheduler.Error == status) {

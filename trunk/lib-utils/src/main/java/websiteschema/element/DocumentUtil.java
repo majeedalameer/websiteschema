@@ -8,15 +8,10 @@ import org.jaxen.SimpleNamespaceContext;
 import java.util.List;
 import org.jaxen.dom.DOMXPath;
 import org.w3c.dom.NamedNodeMap;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.StringWriter;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+import java.util.Collections;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -59,16 +54,6 @@ public class DocumentUtil {
         return result;
     }
 
-    public static Document getCopy(Document doc)
-            throws ParserConfigurationException, SAXException, IOException {
-        DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
-        domFactory.setNamespaceAware(true); // never forget this!
-        DocumentBuilder builder = domFactory.newDocumentBuilder();
-        Document ret = builder.parse(new ByteArrayInputStream(toString(doc).getBytes()));
-
-        return ret;
-    }
-
     public static List<Node> getByXPath(Document doc, String xpathExpr) {
         List<Node> nodes = null;
         try {
@@ -79,7 +64,18 @@ public class DocumentUtil {
                 nsContext.addNamespace("pre", ns);
                 xpath.setNamespaceContext(nsContext);
             }
+            String clazz = doc.getClass().getName();
+//            System.out.println("----DOM class name: " + clazz);
             nodes = xpath.selectNodes(doc);
+            if (null != nodes) {
+                if (clazz.startsWith("org.apache.xerces.dom")) {
+                    //Jsoup
+                } else if (clazz.startsWith("com.gargoylesoftware.htmlunit.html")) {
+                    //HtmlUnit
+                } else if (clazz.startsWith("$Proxy")) {
+                    Collections.reverse(nodes);
+                }
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }

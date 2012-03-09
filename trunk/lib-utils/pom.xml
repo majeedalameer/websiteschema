@@ -95,6 +95,13 @@
             <artifactId>amqp-client</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.rabbitmq</groupId>
+            <artifactId>amqp-client</artifactId>
+            <version>2.7.0</version>
+            <optional>true</optional>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
         </dependency>

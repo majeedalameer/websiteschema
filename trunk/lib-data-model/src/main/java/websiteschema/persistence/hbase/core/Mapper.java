@@ -24,6 +24,7 @@ import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.filter.Filter;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.log4j.Logger;
+import websiteschema.utils.StringUtil;
 
 /**
  *
@@ -41,6 +42,7 @@ public class Mapper {
         conf = HBaseConf.getHBaseConfiguration();
         try {
             table = new HTable(conf, tableName);
+            table.setAutoFlush(false);
         } catch (Exception ex) {
             ex.printStackTrace();
             table = null;
@@ -77,37 +79,72 @@ public class Mapper {
 
     public void write(String rowKey, Map<String, String> record) {
         try {
-            Put put = new Put(Bytes.toBytes(rowKey));
-            for (String key : record.keySet()) {
-                if (!"rowKey".equalsIgnoreCase(key)) {
-                    if (key.indexOf(':') > 0) {
-                        String cf[] = key.split(":");
-                        put.add(Bytes.toBytes(cf[0]),
-                                Bytes.toBytes(cf[1]),
-                                Bytes.toBytes(record.get(key)));
-                        getTable().put(put);
-                    } else {
-                        put.add(Bytes.toBytes(key),
-                                Bytes.toBytes(String.valueOf(1)),
-                                Bytes.toBytes(record.get(key)));
-                        getTable().put(put);
+            if (StringUtil.isNotEmpty(rowKey)) {
+                Put put = new Put(Bytes.toBytes(rowKey));
+                for (String key : record.keySet()) {
+                    String value = record.get(key);
+                    if (StringUtil.isNotEmpty(value)) {
+                        if (key.indexOf(':') > 0) {
+                            String cf[] = key.split(":");
+                            put.add(Bytes.toBytes(cf[0]),
+                                    Bytes.toBytes(cf[1]),
+                                    Bytes.toBytes(value));
+                        } else {
+                            put.add(Bytes.toBytes(key),
+                                    Bytes.toBytes(String.valueOf(1)),
+                                    Bytes.toBytes(value));
+                        }
                     }
                 }
+                l.debug(rowKey + " -> " + record);
+                getTable().put(put);
             }
         } catch (IOException ex) {
             l.error("Table " + getTableName(), ex);
         }
     }
 
-    public void write(List<Row> rows) {
+    public void write(List<Map<String, String>> lst) {
         try {
-            getTable().batch(rows);
-        } catch (InterruptedException ex) {
-            l.error("Table " + getTableName(), ex);
+            List<Put> puts = new ArrayList<Put>();
+            for (Map<String, String> record : lst) {
+                String rowKey = record.get("rowKey");
+                if (StringUtil.isNotEmpty(rowKey)) {
+                    Put put = new Put(Bytes.toBytes(rowKey));
+                    for (String key : record.keySet()) {
+                        String value = record.get(key);
+                        if (StringUtil.isNotEmpty(value) && !"rowKey".equals(key)) {
+                            if (key.indexOf(':') > 0) {
+                                String cf[] = key.split(":");
+                                put.add(Bytes.toBytes(cf[0]),
+                                        Bytes.toBytes(cf[1]),
+                                        Bytes.toBytes(value));
+                            } else {
+                                put.add(Bytes.toBytes(key),
+                                        Bytes.toBytes(String.valueOf(1)),
+                                        Bytes.toBytes(value));
+                            }
+                        }
+                    }
+                    puts.add(put);
+                    l.debug(rowKey + " -> " + record);
+                }
+                getTable().put(puts);
+            }
         } catch (IOException ex) {
             l.error("Table " + getTableName(), ex);
         }
     }
+
+//    public void write(List<Row> rows) {
+//        try {
+//            getTable().batch(rows);
+//        } catch (InterruptedException ex) {
+//            l.error("Table " + getTableName(), ex);
+//        } catch (IOException ex) {
+//            l.error("Table " + getTableName(), ex);
+//        }
+//    }
 
     public Result select(String rowKey) {
         try {

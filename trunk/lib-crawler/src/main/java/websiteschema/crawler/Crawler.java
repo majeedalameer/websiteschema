@@ -13,6 +13,8 @@ import websiteschema.model.domain.cralwer.CrawlerSettings;
  */
 public interface Crawler {
 
+    public final static String defaultEncoding = "gbk";
+
     public Document[] crawl(String url);
 
     public void stopLoad();
@@ -38,5 +40,9 @@ public interface Crawler {
     public void setCrawlerSettings(CrawlerSettings setting);
 
     public void setTimeout(int timeout);
+
+    public void addHeader(String key, String value);
+
+    public void setCookie(String cookies);
 
 }

@@ -24,15 +24,6 @@ wrapper_type_store.load({
     }
 });
 
-var job_type_store = new Ext.data.SimpleStore(
-{
-    fields :['name','value'],
-    data:[
-    ['基于消息队列的任务','websiteschema.schedule.job.JobAMQPQueueV1'],
-    ['更新历史新闻的转发和点击信息','websiteschema.schedule.job.RefreshJobAMQPQueueV1']
-    ]
-});
-
 var schedule_type_store = new Ext.data.SimpleStore(
 {
     fields :['name','value'],

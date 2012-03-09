@@ -13,10 +13,7 @@ import java.util.TimerTask;
 import javax.swing.JProgressBar;
 import javax.swing.JTextField;
 import org.apache.log4j.Logger;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 import websiteschema.analyzer.context.BrowserContext;
-import websiteschema.vips.VIPSImpl;
 
 /**
  *
@@ -99,6 +96,7 @@ public class SimpleNetworkListener implements NetworkListener {
             addressTextField.setText(ne.getURL());
             String title = null != context.getBrowser().getDocument() ? context.getBrowser().getDocument().getTitle() : "";
             context.getConsole().log("title: " + title);
+            context.getSimpleBrowser().getAnalyzerFrame().setTitle(title);
             // 更新页面信息
             context.getSimpleBrowser().getPageInfoPanel().update();
 
@@ -132,13 +130,18 @@ public class SimpleNetworkListener implements NetworkListener {
 //        l.debug("onHTTPResponse\n" + ne.getResponseHeaders());
         l.debug("onHTTPResponse\n" + ne.getURL() + " : " + ne.getStatus() + " : " + ne.getStatusText());
         l.debug("onHTTPResponse\n" + ne.getFrame());
-        context.getURLAndMIME().put(ne.getURL(), ne.getResponseHeaders());
+        context.addResponseHeader(ne.getURL(), ne.getResponseHeaders());
     }
 
     @Override
     public void onHTTPInterceptHeaders(NetworkEvent ne) {
         l.debug("onHTTPInterceptHeaders " + ne.getURL());
         l.trace("Send Request Header:\n" + ne.getMutableRequestHeaders());
+        String userAgent = BrowserContext.getConfigure().getProperty("Browser", "User-Agent");
+        if (null != userAgent) {
+            ne.getMutableRequestHeaders().addHeader("User-Agent", userAgent, true);
+        }
+        context.addRequestHeader(ne.getURL(), ne.getMutableRequestHeaders().toString());
     }
 
     public JProgressBar getProgress() {

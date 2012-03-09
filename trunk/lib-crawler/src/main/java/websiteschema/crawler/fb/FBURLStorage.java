@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 import org.w3c.dom.Document;
 import websiteschema.cluster.analyzer.Doc;
+import websiteschema.cluster.analyzer.Link;
 import websiteschema.element.DocumentUtil;
 import websiteschema.fb.annotation.Description;
 import websiteschema.fb.annotation.Algorithm;
@@ -44,13 +45,13 @@ public class FBURLStorage extends FunctionBlock {
     @DI(name = "PARENT", desc = "翻页时的父URL")
     public String parent;
     @DI(name = "LINKS", desc = "需要保存的链接列表")
-    public List<String> links;
+    public List<Link> links;
     @DI(name = "JOBNAME", desc = "起始URL的jobname")
     public String jobname;
     @DI(name = "DEPTH", desc = "URL深度")
     public int depth;
     @DO(name = "ADDED", relativeEvents = "ADD")
-    public List<String> added = new ArrayList<String>();
+    public List<Link> added = new ArrayList<Link>();
 
     @Algorithm(name = "ADD", desc = "将添加链接保存至HBase存储")
     public void add() {
@@ -58,22 +59,26 @@ public class FBURLStorage extends FunctionBlock {
             added.clear();
             UrlLinkMapper mapper = getContext().getSpringBean("urlLinkMapper", UrlLinkMapper.class);
             UrlLogMapper urlLogMapper = getContext().getSpringBean("urlLogMapper", UrlLogMapper.class);
-            for (String u : links) {
-                URL link = new URL(u);
+            List<UrlLog> logs = new ArrayList<UrlLog>();
+            List<UrlLink> lnks = new ArrayList<UrlLink>();
+            for (Link u : links) {
+                URL link = new URL(u.getHref());
                 String rowKey = UrlLinkUtil.getInstance().convertUrlToRowKey(link);
                 if (!mapper.exists(rowKey)) {
                     UrlLink newUrlLink = new UrlLink();
                     newUrlLink.setRowKey(rowKey);
-                    newUrlLink.setUrl(u);
+                    newUrlLink.setUrl(u.getHref());
                     newUrlLink.setDepth(depth);
                     newUrlLink.setJobname(jobname);
                     newUrlLink.setParent(parent);
                     newUrlLink.setHttpStatus(0);
                     newUrlLink.setCreateTime(new Date());
-                    mapper.put(newUrlLink);
+                    lnks.add(newUrlLink);
+//                    mapper.put(newUrlLink);
                     //在数据库中记录下该URL
                     UrlLog log = new UrlLog(jobname, link);
-                    urlLogMapper.put(log);
+                    logs.add(log);
+//                    urlLogMapper.put(log);
                     added.add(u);
                 } else {
                     UrlLink old = mapper.get(rowKey);
@@ -84,9 +89,16 @@ public class FBURLStorage extends FunctionBlock {
                     }
                 }
             }
+
+            if (!lnks.isEmpty()) {
+                mapper.put(lnks);
+                urlLogMapper.put(logs);
+            }
+
             l.info("saved " + added.size() + " links.");
             triggerEvent("ADD");
         } catch (Exception ex) {
+            ex.printStackTrace();
             throw new RuntimeException(ex.getMessage());
         }
     }
@@ -117,6 +129,7 @@ public class FBURLStorage extends FunctionBlock {
             out = in.toW3CDocument();
             triggerEvent("SAVE");
         } catch (Exception ex) {
+            ex.printStackTrace();
             throw new RuntimeException(ex.getMessage());
         }
     }

@@ -71,6 +71,11 @@ public class MyNetworkListener implements NetworkListener {
     public void onHTTPInterceptHeaders(NetworkEvent ne) {
 //        l.debug("onHTTPInterceptHeaders " + ne.getURL());
 //        l.trace("Send Request Header:\n" + ne.getMutableRequestHeaders());
+        if (!crawler.header.isEmpty()) {
+            for (String iter : crawler.header.keySet()) {
+                ne.getMutableRequestHeaders().addHeader(iter, crawler.header.get(iter), true);
+            }
+        }
     }
 
     public void setLoadImage(boolean yes) {

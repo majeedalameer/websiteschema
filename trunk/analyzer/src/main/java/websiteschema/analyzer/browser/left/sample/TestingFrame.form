@@ -22,8 +22,8 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="jToolBar1" alignment="0" pref="541" max="32767" attributes="0"/>
-          <Component id="jScrollPane1" alignment="0" pref="541" max="32767" attributes="0"/>
+          <Component id="jToolBar1" alignment="0" pref="634" max="32767" attributes="0"/>
+          <Component id="jScrollPane1" alignment="0" pref="634" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
@@ -64,14 +64,18 @@
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel1">
           <Properties>
-            <Property name="text" type="java.lang.String" value="&#x52a0;&#x8f7d;JavaScript:"/>
+            <Property name="text" type="java.lang.String" value="&#x91c7;&#x96c6;&#x5668;:"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JCheckBox" name="javaScriptEnabledCheckBox">
+        <Component class="javax.swing.JComboBox" name="crawlerCombo">
           <Properties>
-            <Property name="focusable" type="boolean" value="false"/>
-            <Property name="horizontalTextPosition" type="int" value="0"/>
-            <Property name="verticalTextPosition" type="int" value="3"/>
+            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+              <StringArray count="3">
+                <StringItem index="0" value="SimpleHTTPCrawler"/>
+                <StringItem index="1" value="HtmlUnitWebCrawler"/>
+                <StringItem index="2" value="BrowserWebCrawler"/>
+              </StringArray>
+            </Property>
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel2">
@@ -89,6 +93,18 @@
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="wrapLineCheckBoxActionPerformed"/>
           </Events>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel4">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="&#x81ea;&#x52a8;&#x7ffb;&#x9875;"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="pagingCheckBox">
+          <Properties>
+            <Property name="focusable" type="boolean" value="false"/>
+            <Property name="horizontalTextPosition" type="int" value="0"/>
+            <Property name="verticalTextPosition" type="int" value="3"/>
+          </Properties>
         </Component>
       </SubComponents>
     </Container>

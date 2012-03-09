@@ -80,7 +80,8 @@ public class DeviceContext {
                 l.error("Can not load configuration file: configure-site.ini");
                 System.exit(0);
             }
-            ApplicationServiceImpl as = new ApplicationServiceImpl();
+            int poolSize = conf.getIntProperty("Device", "PoolSize", 16);
+            ApplicationServiceImpl as = new ApplicationServiceImpl(poolSize);
             as.setTaskMapper(ctx.getBean("taskMapper", TaskMapper.class));
             appRuntime = as;
         } catch (Exception ex) {
