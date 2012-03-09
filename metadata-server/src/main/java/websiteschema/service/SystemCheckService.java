@@ -107,7 +107,7 @@ public class SystemCheckService {
         String host = MetadataServerContext.getInstance().
                 getConf().getProperty("URLQueue", "ServerHost", "localhost");
         try {
-            RabbitQueue<Message> queue = new RabbitQueue<Message>(host, "testing", false);
+            RabbitQueue<Message> queue = new RabbitQueue<Message>(host, "testing");
             sb.append("<h3>RabbitMQ: ").append(host).append(" 状态正常</h3>");
         } catch (Exception ex) {
             ex.printStackTrace();

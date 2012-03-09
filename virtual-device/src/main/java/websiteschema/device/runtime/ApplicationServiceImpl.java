@@ -16,6 +16,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.locks.ReentrantLock;
+import org.apache.log4j.Logger;
 import websiteschema.fb.core.app.AppStatus;
 import websiteschema.model.domain.Task;
 import websiteschema.persistence.rdbms.TaskMapper;
@@ -28,15 +29,21 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     public static final long MaxTaskNumber = 200;
     List<Future<AppStatus>> fList = new ArrayList<Future<AppStatus>>();
-    private int poolSize = 50;
+    private int poolSize = 16;
     private ExecutorService pool = null;
     private ClassLoader classLoader = ApplicationServiceImpl.class.getClassLoader();
     private TaskMapper taskMapper = null;
     private final ReentrantLock lock = new ReentrantLock();
     java.util.Timer timer;
     java.util.TimerTask timerTask;
+    private Logger l = Logger.getLogger(getClass());
 
     public ApplicationServiceImpl() {
+        this(16);
+    }
+
+    public ApplicationServiceImpl(int poolSize) {
+        this.poolSize = poolSize;
         init(poolSize);
     }
 
@@ -135,20 +142,25 @@ public class ApplicationServiceImpl implements ApplicationService {
      * @param sta
      */
     private void updateTaskStatus(AppStatus sta) {
-        long taskId = null != sta ? sta.getTaskId() : 0;
-        if (taskId > 0) {
-            Task t = taskMapper.getById(taskId);
-            if (null != t) {
-                if (sta.getStatus() == AppStatus.END) {
-                    t.setStatus(Task.FINISHED);
-                } else {
-                    t.setStatus(Task.EXCEPTION);
+        if (null != sta) {
+            long taskId = sta.getTaskId();
+            l.debug(" [x] Task " + taskId + " finished: " + sta.getMessage() + " with status: " + sta.getStatus());
+            if (taskId > 0) {
+                Task t = taskMapper.getById(taskId);
+                if (null != t) {
+                    if (sta.getStatus() == AppStatus.END) {
+                        t.setStatus(Task.FINISHED);
+                    } else {
+                        t.setStatus(Task.EXCEPTION);
+                    }
+                    if (null != sta.getMessage()) {
+                        t.setMessage(sta.getMessage());
+                    }
+                    taskMapper.update(t);
                 }
-                if (null != sta.getMessage()) {
-                    t.setMessage(sta.getMessage());
-                }
-                taskMapper.update(t);
             }
+        } else {
+            l.debug(" [x] Task finished: " + sta);
         }
     }
 

@@ -23,6 +23,22 @@ public class ElementUtil {
         return instance;
     }
 
+    public IElement getHead(IDocument doc) {
+        if (null != doc) {
+            IElement html = null != doc.getBody() ? doc.getBody().getParentElement() : null;
+            if (null != html) {
+                IElementCollection children = html.getChildElements();
+                for(int i = 0; i < children.length(); i++) {
+                    IElement head = children.item(i);
+                    if("head".equalsIgnoreCase(head.getTagName())) {
+                        return head;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     public void drawRectangleInPage(IElement ele) {
         String lastStyle = ele.getAttribute("style", 0);
         String additionStyle = "border-style: solid; border-width: 3px;";

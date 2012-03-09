@@ -104,10 +104,11 @@ public class SimpleMouseListener implements MouseListener, ActionListener {
             }
         }
         lastStyle = ele.getAttribute("style", 0);
+        String styleAdded = "background-color: LightSteelBlue;";
         if (null != lastStyle && !"".equals(lastStyle)) {
-            ele.setAttribute("style", lastStyle + ";border-style: solid; border-width: 5px; border-color: black;", 0);
+            ele.setAttribute("style", lastStyle + styleAdded, 0);
         } else {
-            ele.setAttribute("style", "border-style: solid; border-width: 5px; border-color: black;", 0);
+            ele.setAttribute("style", styleAdded, 0);
         }
         lastClickedElement = ele;
     }

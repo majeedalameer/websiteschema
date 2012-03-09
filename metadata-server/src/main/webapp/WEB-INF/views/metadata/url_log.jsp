@@ -1,9 +1,12 @@
+<%@page import="websiteschema.utils.DateUtil"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
             String path = request.getContextPath();
             String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
             String jobname = (String) request.getParameter("jobname");
             jobname = jobname != null ? jobname : "";
+
+            String today = DateUtil.format2(new Date());
 %>
 <html>
     <head>
@@ -113,6 +116,7 @@
                             xtype: 'textfield',
                             id: 'STARTTIME',
                             width: 150,
+                            value: '<%=today%>',
                             initEvents : function(){
                                 var keyPressed = function(e) {
                                     if(e.getKey()==e.ENTER){

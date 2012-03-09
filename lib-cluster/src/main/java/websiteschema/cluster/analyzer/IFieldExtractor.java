@@ -5,6 +5,7 @@
 package websiteschema.cluster.analyzer;
 
 import java.util.Collection;
+import java.util.Map;
 import org.w3c.dom.Document;
 import websiteschema.common.base.JObject;
 import websiteschema.element.XPathAttributes;
@@ -29,6 +30,13 @@ public interface IFieldExtractor extends JObject {
      * @return
      */
     public Collection<String> extract(Document doc);
+
+    /**
+     * 抽取数据，结果可能是一个集合
+     * @param doc
+     * @return
+     */
+    public Collection<Map<String, String>> extractExtData(Document doc);
 
     /**
      * 设置基本分析结果

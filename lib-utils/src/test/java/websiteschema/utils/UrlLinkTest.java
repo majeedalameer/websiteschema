@@ -52,4 +52,15 @@ public class UrlLinkTest {
             ex.printStackTrace();
         }
     }
+
+    @Test
+    public void testResolveURL() {
+        String url = "http://house.chinadaily.com.cn/2012-02/27/content_14701935.htm";
+        try {
+            URL resolved = UrlLinkUtil.getInstance().getURL(url, "content_14701935_2.htm");
+            System.out.println(resolved.toString());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
 }

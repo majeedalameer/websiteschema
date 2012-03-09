@@ -54,6 +54,10 @@ DO.CLS={"抽取内容":"CLS"}
 FBType=websiteschema.fb.common.merge.DualMerge
 EO.EO={"抽取链接":"EI"}
 
+#--------------------------
+#  抽取链接
+#--------------------------
+
 [抽取链接]
 FBType=websiteschema.crawler.fb.FBLinksExtractor
 EO.EO={"保存链接":"ADD"}
@@ -84,10 +88,15 @@ DI.JID=${JOBID}
 DI.CFG=
 DI.DEPTH=1
 
+#--------------------------
+#  抽取内容
+#--------------------------
+
 [抽取内容]
 FBType=websiteschema.crawler.fb.FBDOMExtractor
 EO.EO={"过滤抽取结果":"EI"}
 #DI.CLS = 30
+DI.URL = ${URL}
 DO.OUT={"过滤抽取结果":"DOC"}
 
 [过滤抽取结果]
@@ -107,6 +116,19 @@ FBType=websiteschema.crawler.fb.FBURLStorage
 EO.SAVE={"XML2Str":"TRAN"}
 DI.URL=${URL}
 DO.DOC={"XML2Str":"DOC"}
+
+#[转换为IDX]
+#FBType=com.apc.websiteschema.fb.DocToIdxFB
+#EO.EO={"XML2Str":"TRAN"}
+#DI.MAP={"TITLE":"DRETITLE","CONTENT":"DRECONTENT","URL":"DREREFERENCE"}
+#DI.DEF={"DREDBNAME":"NEWS"}
+#DI.ENCODE=["DREREFERENCE"]
+#DO.IDX={"XML2Str":"DOC"}
+#
+#[发送IDX]
+#FBType=com.apc.websiteschema.fb.DreAddDataFB
+#EO.EO={"终止2":"EI4"}
+#DI.SERVER=${DIH}
 
 [终止1]
 FBType=websiteschema.fb.common.merge.QuadMerge

@@ -37,4 +37,23 @@ public class W3CDOMUtil {
         }
         return null;
     }
+    public void getNodeTextRecursive(Node node,StringBuilder content) {
+        if (node != null) {
+            if (node.getNodeType() == Node.TEXT_NODE) {
+                content.append(node.getNodeValue());
+            } else if (node.getNodeType() == Node.ELEMENT_NODE) {
+                NodeList children = node.getChildNodes();
+                for (int i = 0; i < children.getLength(); i++) {
+                    Node child = children.item(i);
+                    if (Node.TEXT_NODE == child.getNodeType()) {
+                        content.append(child.getNodeValue());
+                    }else if (Node.ELEMENT_NODE == child.getNodeType()) {
+                        getNodeTextRecursive(child,content);
+                    }
+
+                }
+            }
+        }
+    }
+
 }

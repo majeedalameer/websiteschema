@@ -37,27 +37,36 @@ public class JobAMQPQueueV1 implements Job {
         l.debug("Instance " + key + " of schedulerId: " + schedulerId + ", and jobId is: " + jobId + ", and startURLId is: " + startURLId);
         websiteschema.model.domain.Job job = jobMapper.getById(jobId);
         l.debug(job.getConfigure());
-        Task task = new Task(schedulerId);
-        taskMapper.insert(task);
         try {
+            Task task = new Task(schedulerId);
+            taskMapper.insert(task);
+            l.debug("created task " + task.getId());
+            boolean suc = false;
             RabbitQueue<Message> queue = TaskHandler.getInstance().getQueue();
             Message msg = create(job);
             msg.setTaskId(task.getId());
-            queue.offer(msg);
-            l.debug("Message about Job " + jobId + " has been emitted to queue: " + queue.getQueueName());
-            task.setStatus(Task.SENT);
-            taskMapper.update(task);
+            suc = queue.offer(msg);
+            if (suc) {
+                l.debug("Message about Job " + jobId + " has been emitted to queue: " + queue.getQueueName());
+                task.setStatus(Task.SENT);
+                taskMapper.update(task);
+            } else {
+                task.setStatus(Task.UNSENT);
+                l.debug("Message about Job " + jobId + " can not send to queue: " + queue.getQueueName());
+                task.setMessage("Message can not send to queue.");
+                taskMapper.update(task);
+            }
         } catch (Exception ex) {
-            task.setStatus(Task.UNSENT);
-            task.setMessage(ex.getMessage());
-            taskMapper.update(task);
             ex.printStackTrace();
         }
     }
 
     private Message create(websiteschema.model.domain.Job job) {
         StartURL startURL = startURLMapper.getById(startURLId);
-        return new Message(jobId, startURLId, schedulerId, job.getWrapperId(), startURL.getSiteId(), startURL.getJobname(), startURL.getStartURL(), job.getConfigure());
+        if (null != startURL) {
+            return new Message(jobId, startURLId, schedulerId, job.getWrapperId(), startURL.getSiteId(), startURL.getJobname(), startURL.getStartURL(), job.getConfigure());
+        }
+        return new Message(jobId, startURLId, schedulerId, job.getWrapperId(), null, null, null, job.getConfigure());
     }
 
     public long getJobId() {

@@ -136,4 +136,16 @@ public class HBaseMapper<T extends HBaseBean> extends Mapper {
         Map<String, String> record = wrapper.getMap(obj, clazz);
         write(obj.getRowKey(), record);
     }
+
+    public void put(List<T> lst) {
+        List<Map<String, String>> records = new ArrayList<Map<String, String>>();
+        for (T obj : lst) {
+            Map<String, String> record = wrapper.getMap(obj, clazz);
+            record.put("rowKey", obj.getRowKey());
+            records.add(record);
+        }
+        if (!records.isEmpty()) {
+            write(records);
+        }
+    }
 }

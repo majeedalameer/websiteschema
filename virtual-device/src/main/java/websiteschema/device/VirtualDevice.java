@@ -27,6 +27,7 @@ import org.mortbay.jetty.Request;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.AbstractHandler;
 import websiteschema.device.job.JobMessageReceiver;
+import websiteschema.device.runtime.ApplicationServiceImpl;
 
 public class VirtualDevice {
 
@@ -106,6 +107,9 @@ public class VirtualDevice {
                 append("<serviceport>").
                 append(DeviceContext.getInstance().getConf().getProperty("Device", "port", "12207")).
                 append("</serviceport>").
+                append("<tasks>").
+                append(((ApplicationServiceImpl) DeviceContext.getInstance().getAppRuntime()).getRunningThreadNumber()).
+                append("</tasks>").
                 append("</responsedata>").
                 append("</response>");
         return sb.toString();

@@ -36,11 +36,8 @@ public class JobMessageReceiver implements Runnable {
                 getProperty("URLQueue", "ServerHost", "localhost");
         String queueName = DeviceContext.getInstance().getConf().
                 getProperty("URLQueue", "QueueName", "url_queue");
-        try {
-            queue = new RabbitQueue<Message>(host, queueName, false);
-        } catch (IOException ex) {
-            l.error("can not initialize URL Queue.", ex);
-        }
+        queue = new RabbitQueue<Message>(host, queueName);
+
     }
 
     public void stop() {
@@ -50,7 +47,7 @@ public class JobMessageReceiver implements Runnable {
     @Override
     public void run() {
         while (!isStop && null != queue) {
-            Message message = queue.poll(Message.class, new Function<Message>() {
+            Message message = queue.poll(Message.class, 10000, new Function<Message>() {
 
                 /**
                  * 保存消息，然后将消息添加到AppRuntime中运行。

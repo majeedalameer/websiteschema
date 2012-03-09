@@ -7,10 +7,12 @@ package websiteschema.cluster.analyzer;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import websiteschema.utils.PojoMapper;
+import websiteschema.utils.StringUtil;
 
 /**
  *
@@ -51,10 +53,12 @@ public final class AnalysisResult {
 
     public Map<String, String> getResult() {
         try {
-            result.put("ValidNodes", PojoMapper.toJson(basicAnalysisResult.getValidNodes()));
-            result.put("InvalidNodes", PojoMapper.toJson(basicAnalysisResult.getInvalidNodes()));
-            result.put("TitlePrefix", PojoMapper.toJson(basicAnalysisResult.getTitlePrefix()));
-            result.put("TitleSuffix", PojoMapper.toJson(basicAnalysisResult.getTitleSuffix()));
+            if (null != basicAnalysisResult) {
+                result.put("ValidNodes", PojoMapper.toJson(basicAnalysisResult.getValidNodes()));
+                result.put("InvalidNodes", PojoMapper.toJson(basicAnalysisResult.getInvalidNodes()));
+                result.put("TitlePrefix", PojoMapper.toJson(basicAnalysisResult.getTitlePrefix()));
+                result.put("TitleSuffix", PojoMapper.toJson(basicAnalysisResult.getTitleSuffix()));
+            }
             if (null != fieldAnalyzers && !fieldAnalyzers.isEmpty()) {
                 result.put("FieldAnalyzers", PojoMapper.toJson(fieldAnalyzers));
             }
@@ -320,16 +324,16 @@ public final class AnalysisResult {
             BasicAnalysisResult ret = new BasicAnalysisResult();
             try {
                 String vnode = map.get("ValidNodes");
-                Set<String> validNodes = null != vnode ? (Set<String>) PojoMapper.fromJson(vnode, Set.class) : null;
+                Set<String> validNodes = StringUtil.isNotEmpty(vnode) ? (Set<String>) PojoMapper.fromJson(vnode, Set.class) : new HashSet<String>();
                 ret.setValidNodes(validNodes);
                 String ivnode = map.get("InvalidNodes");
-                Set<String> invalidNodes = null != ivnode ? (Set<String>) PojoMapper.fromJson(ivnode, Set.class) : null;
+                Set<String> invalidNodes = StringUtil.isNotEmpty(ivnode) ? (Set<String>) PojoMapper.fromJson(ivnode, Set.class) : new HashSet<String>();
                 ret.setInvalidNodes(invalidNodes);
                 String tp = map.get("TitlePrefix");
-                Set<String> titlePrefix = null != tp ? (Set<String>) PojoMapper.fromJson(tp, Set.class) : null;
+                Set<String> titlePrefix = StringUtil.isNotEmpty(tp) ? (Set<String>) PojoMapper.fromJson(tp, Set.class) : new HashSet<String>();
                 ret.setTitlePrefix(titlePrefix);
                 String ts = map.get("TitleSuffix");
-                Set<String> titleSuffix = null != ts ? (Set<String>) PojoMapper.fromJson(ts, Set.class) : null;
+                Set<String> titleSuffix = StringUtil.isNotEmpty(ts) ? (Set<String>) PojoMapper.fromJson(ts, Set.class) : new HashSet<String>();
                 ret.setTitleSuffix(titleSuffix);
             } catch (Exception ex) {
                 ex.printStackTrace();

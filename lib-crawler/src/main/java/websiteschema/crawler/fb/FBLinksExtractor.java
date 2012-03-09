@@ -5,14 +5,20 @@
 package websiteschema.crawler.fb;
 
 import java.net.URL;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
 import org.apache.xerces.util.DOMUtil;
+import org.jaxen.JaxenException;
+import org.jaxen.dom.DOMXPath;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import websiteschema.cluster.analyzer.Link;
 import websiteschema.element.DocumentUtil;
+import websiteschema.element.W3CDOMUtil;
 import websiteschema.fb.annotation.Description;
 import websiteschema.fb.annotation.Algorithm;
 import websiteschema.fb.annotation.DI;
@@ -20,6 +26,7 @@ import websiteschema.fb.annotation.DO;
 import websiteschema.fb.annotation.EI;
 import websiteschema.fb.annotation.EO;
 import websiteschema.fb.core.FunctionBlock;
+import websiteschema.utils.StringUtil;
 import websiteschema.utils.UrlLinkUtil;
 
 /**
@@ -27,7 +34,7 @@ import websiteschema.utils.UrlLinkUtil;
  * @author ray
  */
 @EI(name = {"EI:EXT"})
-@EO(name = {"EO", "FATAL", "EMPTY"})
+@EO(name = {"EO", "EMPTY"})
 @Description(desc = "抽取DOM树中指定位置内的链接。")
 public class FBLinksExtractor extends FunctionBlock {
 
@@ -40,7 +47,7 @@ public class FBLinksExtractor extends FunctionBlock {
     @DI(name = "URL")
     public String url;
     @DO(name = "OUT", relativeEvents = {"EO"})
-    public List<String> links = null;
+    public List<Link> links = null;
 
     @Algorithm(name = "EXT")
     public void extract() {
@@ -53,64 +60,71 @@ public class FBLinksExtractor extends FunctionBlock {
             }
         } catch (Exception ex) {
             l.error(this.getName() + " error when extract links: " + ex.getMessage(), ex);
-            this.triggerEvent("FATAL");
+            throw new RuntimeException(ex.getMessage());
         }
     }
 
     private void extractLinks() {
         if (null != docs && null != xpath && null != url) {
-            links = new ArrayList<String>();
+            links = new ArrayList<Link>();
             for (Document doc : docs) {
-                List<String> urls = extractLinks(doc);
+                List<Link> urls = extractLinks(doc);
                 if (null != urls) {
                     links.addAll(urls);
                 }
             }
         } else if (null != in && null != xpath && null != url) {
-            links = new ArrayList<String>();
-            List<String> urls = extractLinks(in);
+            links = new ArrayList<Link>();
+            List<Link> urls = extractLinks(in);
             if (null != urls) {
                 links.addAll(urls);
             }
         }
     }
 
-    private List<String> extractLinks(Document doc) {
+    private List<Link> extractLinks(Document doc) {
         if (null != doc && null != xpath && null != url) {
             List<Node> nodes = DocumentUtil.getByXPath(doc, xpath.trim());
-            List<String> ret = new ArrayList<String>();
-            for (int i = 0; i < nodes.size(); i++) {
-                Node node = nodes.get(i);
-                List<String> urls = getLinks(node);
-                if (null != urls) {
-                    ret.addAll(urls);
+            if (null != nodes) {
+                List<Link> ret = new ArrayList<Link>();
+                for (int i = 0; i < nodes.size(); i++) {
+                    Node node = nodes.get(i);
+                    List<Link> urls = getLinks(node);
+                    if (null != urls) {
+                        ret.addAll(urls);
+                    }
                 }
+                return ret;
             }
-            return ret;
         }
         return null;
     }
 
-    private List<String> getLinks(Node node) {
+    private List<Link> getLinks(Node node) {
         if (node.getNodeType() == Node.ELEMENT_NODE) {
             String nodeName = node.getNodeName();
             if (nodeName.equalsIgnoreCase("A")) {
                 String href = DOMUtil.getAttrValue((Element) node, "href");
+                StringBuilder text = new StringBuilder();
+                W3CDOMUtil.getInstance().getNodeTextRecursive(node, text);
                 if (null != href) {
                     URL link = UrlLinkUtil.getInstance().getURL(url, href);
                     if (null != link) {
-                        List<String> ret = new ArrayList<String>();
-                        ret.add(link.toString());
+                        List<Link> ret = new ArrayList<Link>();
+                        Link lnk = new Link();
+                        lnk.setHref(link.toString());
+                        lnk.setText(StringUtil.trim(text.toString()));
+                        ret.add(lnk);
                         return ret;
                     }
                 }
             } else {
-                List<String> ret = new ArrayList<String>();
+                List<Link> ret = new ArrayList<Link>();
                 NodeList children = node.getChildNodes();
                 if (null != children) {
                     for (int i = 0; i < children.getLength(); i++) {
                         Node child = children.item(i);
-                        List<String> urls = getLinks(child);
+                        List<Link> urls = getLinks(child);
                         if (null != urls) {
                             ret.addAll(urls);
                         }
@@ -122,5 +136,75 @@ public class FBLinksExtractor extends FunctionBlock {
             }
         }
         return null;
+    }
+
+    // 非递归版本（已通过单元测试）
+    private List<Link> getLinks_nonRecur(Node root) {
+        if (root.getNodeType() != Node.ELEMENT_NODE) {
+            return null;
+        }
+        Queue<Node> qNodes = new ArrayDeque<Node>();
+        qNodes.add(root);
+        List<Link> retLinks = new ArrayList<Link>(50);// 经验值
+        while (!qNodes.isEmpty()) {
+            root = qNodes.poll();
+            String nodeName = root.getNodeName();
+            if (nodeName.equalsIgnoreCase("A")) {
+                String href = DOMUtil.getAttrValue((Element) root, "href");
+                StringBuilder text = new StringBuilder();
+                W3CDOMUtil.getInstance().getNodeTextRecursive(root, text);
+                if (null != href) {
+                    URL link = UrlLinkUtil.getInstance().getURL(url, href);
+                    if (null != link) {
+                        Link lnk = new Link();
+                        lnk.setHref(link.toString());
+                        lnk.setText(StringUtil.trim(text.toString()));
+                        retLinks.add(lnk);
+                    }
+                }
+            } else {
+                NodeList children = root.getChildNodes();
+                if (null != children) {
+                    for (int i = 0; i < children.getLength(); i++) {
+                        Node child = children.item(i);
+                        if (root.getNodeType() == Node.ELEMENT_NODE) {
+                            qNodes.add(child);
+                        }
+                    }
+                }
+            }
+        }
+        return retLinks;
+    }
+
+    // XPath查询法（未通过单元测试）
+    private List<Link> getLinks_bySelect(Node root) {
+        DOMXPath xpath = null;
+        List<Node> nodes = null;
+        try {
+            xpath = new DOMXPath("//A|//a");
+            nodes = xpath.selectNodes(root);
+        } catch (JaxenException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+
+        List<Link> retLinks = new ArrayList<Link>(50);// 经验值
+        for (Node node : nodes) {
+            String href = DOMUtil.getAttrValue((Element) node, "href");
+            StringBuilder text = new StringBuilder();
+            W3CDOMUtil.getInstance().getNodeTextRecursive(node, text);
+            if (null != href) {
+                URL link = UrlLinkUtil.getInstance().getURL(url, href);
+                if (null != link) {
+                    Link lnk = new Link();
+                    lnk.setHref(link.toString());
+                    lnk.setText(StringUtil.trim(text.toString()));
+                    retLinks.add(lnk);
+                }
+            }
+        }
+
+        return retLinks;
     }
 }

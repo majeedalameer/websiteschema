@@ -681,7 +681,7 @@ public class AnalysisPanel extends javax.swing.JPanel implements IConfigureHandl
         Site site = siteMapper.getBySiteId(siteId);
         if (null != site) {
             String siteType = site.getSiteType();
-            String panelClazz = BrowserContext.getConfigure().getProperty("PageAnalysisGUI", siteType, null);
+            String panelClazz = BrowserContext.getConfigure().getProperty("PageAnalysisGUI", siteType, "websiteschema.analyzer.browser.left.NewsParamPanel");
             if (null != panelClazz) {
                 try {
                     Class clazz = Class.forName(panelClazz);

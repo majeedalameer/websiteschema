@@ -4,7 +4,9 @@
  */
 package websiteschema.crawler.fb;
 
+import java.util.ArrayList;
 import java.util.List;
+import websiteschema.cluster.analyzer.Link;
 import websiteschema.common.amqp.Message;
 import websiteschema.common.amqp.RabbitQueue;
 import websiteschema.fb.annotation.Description;
@@ -34,7 +36,7 @@ public class FBURLQueue extends FunctionBlock {
     @DI(name = "URL", desc = "需要采集的链接")
     public String url;
     @DI(name = "LINKS", desc = "需要采集的链接")
-    public List<String> links;
+    public List<Link> links;
     @DI(name = "JOBNAME", desc = "起始URL的jobname")
     public String jobname;
     @DI(name = "SITEID", desc = "起始URL的站点ID")
@@ -54,8 +56,8 @@ public class FBURLQueue extends FunctionBlock {
 
     @Algorithm(name = "ADDONE", desc = "将添加链接保存至HBase存储")
     public void addOne() {
+        RabbitQueue<Message> queue = new RabbitQueue<Message>(host, port, queueName);
         try {
-            RabbitQueue<Message> queue = new RabbitQueue<Message>(host, port, queueName, true);
             Message msg = new Message(jobId, startURLId, scheId, wrapperId,
                     siteId, jobname,
                     url, //URL
@@ -64,18 +66,23 @@ public class FBURLQueue extends FunctionBlock {
             triggerEvent("EO");
         } catch (Exception ex) {
             triggerEvent("FATAL");
+        } finally {
+            if (null != queue) {
+                queue.close();
+            }
         }
     }
 
     @Algorithm(name = "ADD", desc = "将添加链接保存至HBase存储")
     public void add() {
+        RabbitQueue<Message> queue = new RabbitQueue<Message>(host, port, queueName);
         try {
             if (null != links && links.size() > 0) {
-                RabbitQueue<Message> queue = new RabbitQueue<Message>(host, port, queueName, true);
-                for (String u : links) {
+                List<Message> addList = new ArrayList<Message>();
+                for (Link u : links) {
                     Message msg = new Message(jobId, startURLId, scheId, wrapperId,
                             siteId, jobname,
-                            u, //URL
+                            u.getHref(), //URL
                             configure, depth);
 
                     TaskMapper taskMapper = this.getContext().getSpringBean("taskMapper", TaskMapper.class);
@@ -86,13 +93,18 @@ public class FBURLQueue extends FunctionBlock {
                         taskMapper.insert(task);
                         msg.setTaskId(task.getId());
                     }
-                    queue.offer(msg);
+                    addList.add(msg);
                 }
+                queue.offer(addList.toArray(new Message[0]));
             }
             triggerEvent("EO");
         } catch (Exception ex) {
             l.error(ex.getMessage(), ex);
             triggerEvent("FATAL");
+        } finally {
+            if (null != queue) {
+                queue.close();
+            }
         }
     }
 }

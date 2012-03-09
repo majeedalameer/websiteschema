@@ -100,6 +100,14 @@
                             <Class-Path>../etc/</Class-Path>
                         </manifestEntries>
                     </archive>
+                    <excludes>
+                        <exclude>configure-site.ini</exclude>
+                        <exclude>hbase-site.xml</exclude>
+                        <exclude>spring-beans.xml</exclude>
+                        <exclude>log4j.properties</exclude>
+                        <exclude>assemblies/*</exclude>
+                        <exclude>fb/*</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
         </plugins>

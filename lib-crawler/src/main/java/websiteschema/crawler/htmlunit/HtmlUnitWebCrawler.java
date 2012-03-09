@@ -9,6 +9,7 @@ import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.JavaScriptPage;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.SgmlPage;
+import com.gargoylesoftware.htmlunit.StringWebResponse;
 import com.gargoylesoftware.htmlunit.TextPage;
 import com.gargoylesoftware.htmlunit.UnexpectedPage;
 import com.gargoylesoftware.htmlunit.WebClient;
@@ -22,7 +23,9 @@ import com.gargoylesoftware.htmlunit.util.WebConnectionWrapper;
 import com.gargoylesoftware.htmlunit.xml.XmlPage;
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -31,6 +34,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import websiteschema.crawler.Crawler;
 import websiteschema.model.domain.cralwer.CrawlerSettings;
+import websiteschema.utils.StringUtil;
 
 /**
  *
@@ -41,7 +45,7 @@ public class HtmlUnitWebCrawler implements Crawler {
     boolean loadImage = false;
     boolean loadEmbeddedFrame = false;
     boolean allowPopupWindow = false;
-    boolean javaScriptEnabled = false;
+    boolean javaScriptEnabled = true;
     String url = null;
     String encoding = null;
     CrawlerSettings crawlerSettings;
@@ -50,17 +54,24 @@ public class HtmlUnitWebCrawler implements Crawler {
     int httpStatus = 0;
     int requestNumber = 0;
     int maxRequestNumber = 1;
+    Map<String, String> header = new HashMap<String, String>(2);
     Logger l = Logger.getLogger(HtmlUnitWebCrawler.class);
 
     private WebClient getWebClient() {
         final WebClient webClient = new WebClient();
-        webClient.setJavaScriptEnabled(false);
+        webClient.setJavaScriptEnabled(isJavaScriptEnabled());
         webClient.setCssEnabled(false);
         webClient.setTimeout(delay);
         webClient.setPopupBlockerEnabled(allowPopupWindow);
         webClient.setRedirectEnabled(true);
         webClient.setThrowExceptionOnScriptError(false);
         webClient.setThrowExceptionOnFailingStatusCode(false);
+        if (!header.isEmpty()) {
+                for (String iter : header.keySet()) {
+                    webClient.addRequestHeader(iter, header.get(iter));
+                }
+            }
+
         new WebConnectionWrapper(webClient) {
 
             @Override
@@ -68,9 +79,22 @@ public class HtmlUnitWebCrawler implements Crawler {
                 System.err.println("__________" + request.getUrl());
                 ++requestNumber;
 //                if (requestNumber > maxRequestNumber) {
-//                    request.setUrl(new URL("http://www.baidu.com"));
+//                    request.setUrl(...);
 //                }
                 WebResponse response = super.getResponse(request);
+                if (response.getContentType().contains("text")) {
+                    String charset = response.getContentCharset();
+                    charset = null != charset ? charset : "";
+                    if (StringUtil.isNotEmpty(encoding)) {
+                        if (!charset.equalsIgnoreCase(encoding)) {
+                            String html = response.getContentAsString(encoding);
+                            response = new StringWebResponse(html, encoding, request.getUrl());
+                        }
+                    } else if (charset.equalsIgnoreCase("ISO-8859-1") || !StringUtil.isNotEmpty(charset)) {
+                        String html = response.getContentAsString(defaultEncoding);
+                        response = new StringWebResponse(html, defaultEncoding, request.getUrl());
+                    }
+                }
                 return response;
             }
         };
@@ -78,7 +102,7 @@ public class HtmlUnitWebCrawler implements Crawler {
         return webClient;
     }
 
-    private Document[] getDocuments(Page page) throws ParserConfigurationException {
+    private Document[] getDocuments(final Page page) throws ParserConfigurationException {
         if (page instanceof HtmlPage) {
             HtmlPage htmlPage = (HtmlPage) page;
             final List<FrameWindow> window = htmlPage.getFrames();
@@ -250,5 +274,15 @@ public class HtmlUnitWebCrawler implements Crawler {
 
     public void setJavaScriptEnabled(boolean javaScriptEnabled) {
         this.javaScriptEnabled = javaScriptEnabled;
+    }
+
+    @Override
+    public void addHeader(String key, String value) {
+        header.put(key, value);
+    }
+
+    @Override
+    public void setCookie(String cookies) {
+        header.put("Cookie", cookies);
     }
 }

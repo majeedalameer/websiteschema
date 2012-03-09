@@ -90,7 +90,7 @@
                         header: '网站ID',
                         dataIndex: 'siteId',
                         width: 120,
-                        hidden:true,
+                        //                        hidden:true,
                         editor: new fm.TextField({
                             allowBlank: false
                         })

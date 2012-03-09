@@ -1,6 +1,5 @@
 namespace=fb.crawler
 
-
 StartFB=Start
 InitEvent=COLD
 

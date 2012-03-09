@@ -79,10 +79,10 @@
     <update id="update" parameterType="websiteschema.model.domain.StartURL">
         update StartURL
         <trim prefix="SET" suffixOverrides=",">
-            <if test="siteId != null">startURLId = #{startURLId},</if>
-            <if test="startURL != null">jobId = #{jobId},</if>
-            <if test="jobname != null">schedule = #{schedule},</if>
-            <if test="name != null">scheduleType = #{scheduleType},</if>
+            <if test="siteId != null">siteId = #{siteId},</if>
+            <if test="startURL != null">startURL = #{startURL},</if>
+            <if test="jobname != null">jobname = #{jobname},</if>
+            <if test="name != null">name = #{name},</if>
             <if test="status != null">status = #{status},</if>
             <if test="updateTime != null">updateTime = #{updateTime},</if>
             <if test="lastUpdateUser != null">lastUpdateUser = #{lastUpdateUser}</if>

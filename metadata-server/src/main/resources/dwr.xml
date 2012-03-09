@@ -67,5 +67,13 @@
         <create creator="spring" javascript="UrlLogService" >
             <param name="beanName" value="urlLogService"></param>
         </create>
+
+        <create creator="spring" javascript="ChannelService" >
+            <param name="beanName" value="channelService"></param>
+        </create>
+
+        <create creator="spring" javascript="CipherService" >
+            <param name="beanName" value="cipherService"></param>
+        </create>
     </allow>
 </dwr>

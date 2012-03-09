@@ -40,6 +40,8 @@ public class FBDOMExtractor extends FunctionBlock {
     public Websiteschema schema;
     @DI(name = "CLS")
     public String clusterName = AnalysisResult.DefaultClusterName;
+    @DI(name = "URL")
+    public String url = null;
     @DO(name = "OUT", relativeEvents = {"EO"})
     public Doc out;
 
@@ -50,7 +52,7 @@ public class FBDOMExtractor extends FunctionBlock {
             xpathAttr = schema.getXpathAttr();
             analysisResult.init(prop);
             //如果in为空，而docs又不为空，则in=docs[0]
-            if(null == in && null != docs) {
+            if (null == in && null != docs) {
                 in = docs[0];
             }
             //初始化Document out
@@ -113,6 +115,16 @@ public class FBDOMExtractor extends FunctionBlock {
                                 //如果抽取到结果，就结束抽取
                                 break;
                             }
+                            //抽取扩展数据
+                            Collection<Map<String, String>> extResult = extractor.extractExtData(in);
+                            if (null != extResult && !extResult.isEmpty()) {
+                                //添加抽取结果到doc中
+                                for (Map<String, String> res : extResult) {
+                                    doc.addExtField(extractor.getFieldName(), res);
+                                }
+                                //如果抽取到结果，就结束抽取
+                                break;
+                            }
                         }
                     }
                 }
@@ -138,6 +150,9 @@ public class FBDOMExtractor extends FunctionBlock {
 
     private Doc createDocument() {
         out = new Doc();
+        if (null != url) {
+            out.addField("URL", url);
+        }
         return out;
     }
 }

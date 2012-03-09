@@ -25,7 +25,7 @@ public class BrowserContext {
     IMozillaBrowserCanvas browser = null;
     private static final Configure configure = new Configure("configure-site.ini");
     Map<String, StyleSheet> styleSheets = new HashMap<String, StyleSheet>();
-    Map<String, String> urlAndMIME = new LinkedHashMap<String, String>();
+    Map<String, Map<String, String>> urlAndMIME = new LinkedHashMap<String, Map<String, String>>();
 //    AnalysisPanel analysisPanel;
     private static final ApplicationContext ctx = new ClassPathXmlApplicationContext("spring-beans.xml");
     private String reference = null;
@@ -79,7 +79,47 @@ public class BrowserContext {
         return reference;
     }
 
-    public Map<String,String> getURLAndMIME() {
+    public Map<String, Map<String, String>> getURLAndMIME() {
         return this.urlAndMIME;
+    }
+
+    public void addResponseHeader(String url, String responseHeader) {
+        Map<String, String> map = null;
+        if (urlAndMIME.containsKey(url)) {
+            map = urlAndMIME.get(url);
+        } else {
+            map = new HashMap<String, String>();
+            urlAndMIME.put(url, map);
+        }
+        map.put("response", responseHeader);
+    }
+
+    public String getResponseHeader(String url) {
+        Map<String, String> map = null;
+        if (urlAndMIME.containsKey(url)) {
+            map = urlAndMIME.get(url);
+            return map.get("response");
+        }
+        return null;
+    }
+
+    public String getRequestHeader(String url) {
+        Map<String, String> map = null;
+        if (urlAndMIME.containsKey(url)) {
+            map = urlAndMIME.get(url);
+            return map.get("request");
+        }
+        return null;
+    }
+
+    public void addRequestHeader(String url, String requestHeader) {
+        Map<String, String> map = null;
+        if (urlAndMIME.containsKey(url)) {
+            map = urlAndMIME.get(url);
+        } else {
+            map = new HashMap<String, String>();
+            urlAndMIME.put(url, map);
+        }
+        map.put("request", requestHeader);
     }
 }

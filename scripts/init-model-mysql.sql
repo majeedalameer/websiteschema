@@ -63,10 +63,18 @@ create table Channel
    id                   bigint not null auto_increment,
    channel              varchar(300),
    siteId               varchar(100),
+   status               int,
+   parentId             bigint,
+   url                  varchar(200),
+   leaf                 int,
    createTime           datetime,
+   createUser           varchar(30),
+   updateTime           datetime,
+   lastUpdateUser       varchar(30),
    primary key (id)
 );
 
+insert into Channel (channel, siteId, status, parentId, url, leaf, createTime, createUser) values('(600132)重庆啤酒','guba_eastmoney_com_58','0','0','http://guba.eastmoney.com/topic,600132.html',0,now(),'system');
 
 /*==============================================================*/
 /* Table: ConcernedWeibo                                        */
@@ -94,6 +102,24 @@ create table ConcernedWeibo
 
 insert into ConcernedWeibo(name,objectType,title,siteId,weiboURL,org,fans,follow,weibo,notes,certification,createTime,createUser,updateTime,lastUpdateUser) 
 values ('yingrui',0,'','www_weibo_com_7','http://weibo.com/yingruif','nyapc','0','0','0','','',now(),'system',now(),'system');
+
+/*==============================================================*/
+/* Table Cipher                                                 */
+/*==============================================================*/
+create table Cipher
+(
+   id                   bigint not null auto_increment,
+   siteId               varchar(100),
+   username             varchar(100),
+   password             varchar(100),
+   cookie               varchar(1000),
+   header               varchar(1000),
+   createTime           datetime,
+   createUser           varchar(30),
+   updateTime           datetime,
+   lastUpdateUser       varchar(30),
+   primary key (id)
+)
 
 /*==============================================================*/
 /* Table: Follow                                                */
@@ -217,6 +243,9 @@ values ('www_sohu_com_6','www.sohu.com','sohu','portal','0','http://www.sohu.com
 
 insert into Site(siteId,siteDomain,siteName,siteType,parentId,url,createTime,createUser,updateTime,lastUpdateUser) 
 values ('www_weibo_com_7','www.weibo.com','sina weibo','weibo','5','http://www.weibo.com/',now(),'system',now(),'system');
+
+insert into Site(siteId,siteDomain,siteName,siteType,parentId,url,createTime,createUser,updateTime,lastUpdateUser) 
+values ('guba_eastmoney_com_8','guba.eastmoney.com','guba','guba','0','http://guba.eastmoney.com/',now(),'system',now(),'system');
 
 /*==============================================================*/
 /* Table: StartURL                                              */

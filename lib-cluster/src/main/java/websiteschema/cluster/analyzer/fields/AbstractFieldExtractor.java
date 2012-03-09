@@ -4,6 +4,9 @@
  */
 package websiteschema.cluster.analyzer.fields;
 
+import java.util.Collection;
+import java.util.Map;
+import org.w3c.dom.Document;
 import websiteschema.cluster.analyzer.BasicAnalysisResult;
 import websiteschema.cluster.analyzer.IFieldExtractor;
 import websiteschema.element.XPathAttributes;
@@ -40,5 +43,9 @@ public abstract class AbstractFieldExtractor implements IFieldExtractor {
 
     public XPathAttributes getXPathAttr() {
         return this.xPathAttr;
+    }
+
+    public Collection<Map<String, String>> extractExtData(Document doc) {
+        return null;
     }
 }

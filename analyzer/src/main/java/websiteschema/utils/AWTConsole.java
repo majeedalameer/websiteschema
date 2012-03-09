@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package websiteschema.utils;
 
 import javax.swing.JTextArea;
@@ -21,8 +20,12 @@ public class AWTConsole implements Console {
 
     @Override
     public void log(String info) {
+        if (textArea.getLineCount() > 1000) {
+            textArea.setText("");
+        }
         textArea.append(info);
         textArea.append("\n");
+        textArea.setCaretPosition(textArea.getText().length() - 1);
     }
 
     public void print(String info) {
@@ -36,5 +39,4 @@ public class AWTConsole implements Console {
     public void println(String info) {
         log(info);
     }
-
 }

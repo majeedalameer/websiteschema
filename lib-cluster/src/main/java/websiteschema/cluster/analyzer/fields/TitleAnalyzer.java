@@ -21,6 +21,7 @@ import websiteschema.model.domain.cluster.FeatureInfo;
 import websiteschema.model.domain.cluster.FeatureStatInfo;
 import websiteschema.model.domain.cluster.Sample;
 import websiteschema.utils.EditDistance;
+import websiteschema.utils.StringUtil;
 
 /**
  *
@@ -132,7 +133,7 @@ public class TitleAnalyzer extends AbstractFieldExtractor implements IFieldAnaly
 
     public Collection<String> extract(Document doc) {
         if (!"".equals(titleXPath)) {
-            return getTitle(titleXPath, doc);
+            return getTitle(titleXPath, doc, titlePrefixString, titleSuffixString);
         } else if (!"".equals(titlePrefixString) && !"".equals(titleSuffixString)) {
             return getTitle(titlePrefixString, titleSuffixString, doc);
         }
@@ -140,13 +141,26 @@ public class TitleAnalyzer extends AbstractFieldExtractor implements IFieldAnaly
         return null;
     }
 
-    private Set<String> getTitle(String xpath, Document doc) {
+    private Set<String> getTitle(String xpath, Document doc, String prefix, String suffix) {
         Set<String> ret = new HashSet<String>();
         List<Node> nodes = DocumentUtil.getByXPath(doc, xpath);
         for (Node node : nodes) {
-            String t = ExtractUtil.getInstance().getNodeText(node);
-            if (null != t && !"".equals(t)) {
-                ret.add(t.trim());
+            String res = ExtractUtil.getInstance().getNodeText(node);
+            if (null != res) {
+                res = StringUtil.trim(res);
+
+                if (StringUtil.isNotEmpty(prefix) && res.contains(prefix)) {
+                    res = res.substring(res.indexOf(res) + prefix.length());
+                }
+
+                if (StringUtil.isNotEmpty(suffix) && res.contains(suffix)) {
+                    res = res.substring(0, res.indexOf(suffix));
+                }
+
+                if (StringUtil.isNotEmpty(res) && !ret.contains(res) && ret.size() < 2) {
+                    //仅允许正副两个标题。
+                    ret.add(res);
+                }
             }
         }
         return ret;
