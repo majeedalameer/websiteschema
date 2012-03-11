@@ -6,6 +6,7 @@ package websiteschema.schedule.job;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import org.apache.log4j.Logger;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -18,6 +19,8 @@ import websiteschema.model.domain.StartURL;
 import websiteschema.model.domain.Task;
 import websiteschema.persistence.rdbms.*;
 import websiteschema.schedule.TaskHandler;
+import websiteschema.utils.CollectionUtil;
+import websiteschema.utils.StringUtil;
 
 /**
  *
@@ -45,14 +48,20 @@ public class JobMultiStartURL implements Job {
         l.debug("getChannelsBySiteId " + siteId);
         List<Channel> channels = channelMapper.getChannelsBySiteId(siteId);
 
-        l.debug(job.getConfigure());
+        String jobConfig = job.getConfigure();
+        l.debug(jobConfig);
         if (null != channels) {
-            RabbitQueue<Message> queue = TaskHandler.getInstance().getQueue();
+            l.debug("there are " + channels.size() + " channels need to start.");
+            Map<String, String> conf = CollectionUtil.toMap(jobConfig);
+            String queueName = conf.get("QUEUE_NAME");
+            RabbitQueue<Message> queue = StringUtil.isNotEmpty(queueName)
+                    ? TaskHandler.getInstance().getQueue(queueName) : TaskHandler.getInstance().getQueue();
             com.rabbitmq.client.Channel channel = null;
             try {
                 channel = queue.getChannel();
                 if (null != channel) {
                     for (Channel chl : channels) {
+//                        l.debug(chl.getChannel());
                         if (chl.getStatus() == Channel.STATUS_VALID) {
                             //仅发送有效的栏目。
                             Task task = new Task(schedulerId);
@@ -69,21 +78,23 @@ public class JobMultiStartURL implements Job {
                                 task.setStatus(Task.UNSENT);
                                 task.setMessage(ex.getMessage());
                                 taskMapper.update(task);
-                                ex.printStackTrace();
+                                l.error(ex.getMessage(), ex);
                                 break;
                             }
                         }
                     }
+                } else {
+                    l.debug("can not get channel from queue: " + queue.getQueueName());
                 }
             } catch (IOException ex) {
-                ex.printStackTrace();
+                l.error(ex.getMessage(), ex);
             } finally {
                 // Close channel
                 if (null != channel) {
                     try {
                         channel.close();
                     } catch (Exception ex) {
-                        ex.printStackTrace();
+                        l.error(ex.getMessage(), ex);
                     }
                 }
             }

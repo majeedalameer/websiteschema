@@ -288,7 +288,9 @@ create table SysConf
 insert into SysConf(field, name, value, description, createTime, createUser)
 values ('URLQueue','ServerHost','localhost','Rabbitmq Server for URL Queue',now(),'system');
 insert into SysConf(field, name, value, description, createTime, createUser)
-values ('URLQueue','QueueName','url_queue','URL Queue Name',now(),'system');
+values ('URLQueue','PriorQueueName','url_queue','URL Queue Name',now(),'system');
+insert into SysConf(field, name, value, description, createTime, createUser)
+values ('URLQueue','QueueName','url_queue_1','URL Queue Name',now(),'system');
 insert into SysConf(field, name, value, description, createTime, createUser)
 values ('default','VirtualDevices','["localhost:12207"]','Crawlers',now(),'system');
 /*==============================================================*/

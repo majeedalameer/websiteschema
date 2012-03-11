@@ -26,18 +26,23 @@ import websiteschema.model.domain.Wrapper;
  */
 public class JobMessageReceiver implements Runnable {
 
+    private RabbitQueue<Message> priorQueue;
     private RabbitQueue<Message> queue;
     private boolean isStop = false;
     private Logger l = Logger.getLogger(JobMessageReceiver.class);
     private String host = null;
+    private String queueName = null;
+    private String priorQueueName = null;
 
     public JobMessageReceiver() {
         host = DeviceContext.getInstance().getConf().
                 getProperty("URLQueue", "ServerHost", "localhost");
-        String queueName = DeviceContext.getInstance().getConf().
-                getProperty("URLQueue", "QueueName", "url_queue");
+        priorQueueName = DeviceContext.getInstance().getConf().
+                getProperty("URLQueue", "PriorQueueName", "url_queue");
+        queueName = DeviceContext.getInstance().getConf().
+                getProperty("URLQueue", "QueueName", "url_queue_1");
+        priorQueue = new RabbitQueue<Message>(host, priorQueueName);
         queue = new RabbitQueue<Message>(host, queueName);
-
     }
 
     public void stop() {
@@ -46,21 +51,39 @@ public class JobMessageReceiver implements Runnable {
 
     @Override
     public void run() {
-        while (!isStop && null != queue) {
-            Message message = queue.poll(Message.class, 10000, new Function<Message>() {
 
-                /**
-                 * 保存消息，然后将消息添加到AppRuntime中运行。
-                 */
-                @Override
-                public void invoke(Message msg) {
-                    // 获取Wrapper
-                    long wrapperId = msg.getWrapperId();
-                    Wrapper wrapper = WrapperHandler.getInstance().getWrapper(wrapperId);
-                    // 创建任务并执行
-                    createApplication(msg, wrapper);
+        Function<Message> handler = new Function<Message>() {
+
+            /**
+             * 保存消息，然后将消息添加到AppRuntime中运行。
+             */
+            @Override
+            public void invoke(Message msg) {
+                // 获取Wrapper
+                long wrapperId = msg.getWrapperId();
+                Wrapper wrapper = WrapperHandler.getInstance().getWrapper(wrapperId);
+                // 创建任务并执行
+                createApplication(msg, wrapper);
+            }
+        };
+
+        while (!isStop) {
+            Message message = null;
+            // 首先等待优先队列中的消息
+            if (null != priorQueue) {
+                message = priorQueue.poll(Message.class, 10000, handler);
+                if (null != message) {
+                    continue;
                 }
-            });
+            }
+            // 如果优先队列中没有等到消息，继续等待普通队列中的消息。
+            if (null != queue) {
+                int count = 0;
+                message = queue.poll(Message.class, 10000, handler);
+                while (null != message && ++count < 100) {
+                    message = queue.poll(Message.class, 10000, handler);
+                }
+            }
         }
     }
 
@@ -106,20 +129,13 @@ public class JobMessageReceiver implements Runnable {
         try {
             Map<String, String> def = getDefaultConfig();
             Map<String, String> ret = null;
-            //首先添加配置文件中的默认配置
+            // 首先添加配置文件中的默认配置
             if (null == def) {
                 ret = new HashMap<String, String>();
             } else {
                 ret = new HashMap<String, String>(def);
             }
-            //添加由msg中接收到的参数
-            String properties = msg.getConfigure();
-            InputStream is = convertToInputStream(properties);
-            Properties prop = new Properties();
-            prop.load(is);
-            for (String key : prop.stringPropertyNames()) {
-                ret.put(key, prop.getProperty(key));
-            }
+            // 添加根据jobId和起始URL等参数配置
             String url = msg.getUrl();
             String siteId = msg.getSiteId();
             String jobname = msg.getJobname();
@@ -136,7 +152,18 @@ public class JobMessageReceiver implements Runnable {
             ret.put("JOBID", String.valueOf(msg.getJobId()));
             ret.put("SCHEID", String.valueOf(msg.getScheId()));
             ret.put("WRAPPERID", String.valueOf(msg.getWrapperId()));
+            // 添加默认的RabbitQueue服务器和队列名称
             ret.put("QUEUE_SERVER", host);
+            ret.put("QUEUE_NAME", priorQueueName);
+            // 添加由msg中接收到的参数
+            String properties = msg.getConfigure();
+            InputStream is = convertToInputStream(properties);
+            Properties prop = new Properties();
+            prop.load(is);
+            for (String key : prop.stringPropertyNames()) {
+                ret.put(key, prop.getProperty(key));
+            }
+
             return ret;
         } catch (Exception ex) {
             ex.printStackTrace();

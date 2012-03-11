@@ -5,6 +5,8 @@
 package websiteschema.schedule;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.log4j.Logger;
 import websiteschema.common.amqp.Message;
 import websiteschema.common.amqp.RabbitQueue;
@@ -21,7 +23,8 @@ public class TaskHandler {
     public static TaskHandler getInstance() {
         return ins;
     }
-    RabbitQueue<Message> queue;
+    private RabbitQueue<Message> queue;
+    private Map<String, RabbitQueue<Message>> queueRepos = new HashMap<String, RabbitQueue<Message>>();
     private Logger l = Logger.getLogger(TaskHandler.class);
 
     TaskHandler() {
@@ -29,10 +32,25 @@ public class TaskHandler {
                 getProperty("URLQueue", "ServerHost", "localhost");
         String queueName = MetadataServerContext.getInstance().getConf().
                 getProperty("URLQueue", "QueueName", "url_queue");
+        l.debug("create a new RabbitQueue instance with host: " + host + " and queue name: " + queueName);
         queue = new RabbitQueue<Message>(host, queueName);
+        queueRepos.put(queueName, queue);
     }
 
     public RabbitQueue<Message> getQueue() {
         return queue;
+    }
+
+    public RabbitQueue<Message> getQueue(String queueName) {
+        if (queueRepos.containsKey(queueName)) {
+            return queueRepos.get(queueName);
+        } else {
+            String host = MetadataServerContext.getInstance().getConf().
+                    getProperty("URLQueue", "ServerHost", "localhost");
+            l.debug("create a new RabbitQueue instance with host: " + host + " and queue name: " + queueName);
+            RabbitQueue<Message> q = new RabbitQueue<Message>(host, queueName);
+            queueRepos.put(queueName, q);
+            return q;
+        }
     }
 }
