@@ -4,6 +4,9 @@
  */
 package websiteschema.utils;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -12,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 /**
  *
@@ -47,6 +51,22 @@ public class CollectionUtil {
         } else {
             return sb.toString();
         }
+    }
+
+    public static Map<String, String> toMap(String properties) {
+        try {
+            InputStream is = new ByteArrayInputStream(properties.getBytes("UTF-8"));
+            Properties prop = new Properties();
+            prop.load(is);
+            Map<String, String> ret = new HashMap<String, String>();
+            for (String key : prop.stringPropertyNames()) {
+                ret.put(key, prop.getProperty(key));
+            }
+            return ret;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return null;
     }
 
     public static void main(String args[]) {

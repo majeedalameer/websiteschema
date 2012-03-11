@@ -39,6 +39,11 @@ public class RabbitQueue<T> {
         this.host = host;
         this.port = port;
         this.queueName = queueName;
+        try {
+            reset();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     /*
@@ -97,7 +102,7 @@ public class RabbitQueue<T> {
         return null;
     }
 
-    private void checkConnection() {
+    public void checkConnection() {
         lock.lock();
         try {
             if (!connStateOk) {

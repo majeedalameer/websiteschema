@@ -4,6 +4,7 @@
  */
 package websiteschema.schedule.job;
 
+import java.util.Map;
 import org.apache.log4j.Logger;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -15,6 +16,8 @@ import websiteschema.model.domain.StartURL;
 import websiteschema.model.domain.Task;
 import websiteschema.persistence.rdbms.*;
 import websiteschema.schedule.TaskHandler;
+import websiteschema.utils.CollectionUtil;
+import websiteschema.utils.StringUtil;
 
 /**
  *
@@ -36,13 +39,17 @@ public class JobAMQPQueueV1 implements Job {
         JobKey key = context.getJobDetail().getKey();
         l.debug("Instance " + key + " of schedulerId: " + schedulerId + ", and jobId is: " + jobId + ", and startURLId is: " + startURLId);
         websiteschema.model.domain.Job job = jobMapper.getById(jobId);
-        l.debug(job.getConfigure());
+        String jobConfig = job.getConfigure();
+        l.debug(jobConfig);
         try {
             Task task = new Task(schedulerId);
             taskMapper.insert(task);
             l.debug("created task " + task.getId());
             boolean suc = false;
-            RabbitQueue<Message> queue = TaskHandler.getInstance().getQueue();
+            Map<String, String> conf = CollectionUtil.toMap(jobConfig);
+            String queueName = conf.get("QUEUE_NAME");
+            RabbitQueue<Message> queue = StringUtil.isNotEmpty(queueName)
+                    ? TaskHandler.getInstance().getQueue(queueName) : TaskHandler.getInstance().getQueue();
             Message msg = create(job);
             msg.setTaskId(task.getId());
             suc = queue.offer(msg);
@@ -57,7 +64,7 @@ public class JobAMQPQueueV1 implements Job {
                 taskMapper.update(task);
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            l.error(ex.getMessage(), ex);
         }
     }
 

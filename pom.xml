@@ -24,17 +24,17 @@
         <hbase.zookeeper.quorum>hadoop-hbase1</hbase.zookeeper.quorum>
         <jdbc-url>jdbc:mysql://192.168.4.173:3306/websiteschema</jdbc-url>-->
 
-        <rabbitmq-server>192.168.4.38</rabbitmq-server>
+<!--        <rabbitmq-server>192.168.4.38</rabbitmq-server>
         <metadata-deploy-host>192.168.4.122</metadata-deploy-host>
         <hbase.master>hadoop2</hbase.master>
         <hbase.zookeeper.quorum>hadoop1,hadoop2,hadoop3,hadoop4,hadoop5</hbase.zookeeper.quorum>
-        <jdbc-url>jdbc:mysql://192.168.4.122:3306/websiteschema</jdbc-url>
+        <jdbc-url>jdbc:mysql://192.168.4.122:3306/websiteschema</jdbc-url>-->
 
-<!--        <rabbitmq-server>localhost</rabbitmq-server>
+        <rabbitmq-server>localhost</rabbitmq-server>
         <metadata-deploy-host>localhost</metadata-deploy-host>
         <hbase.master>localhost</hbase.master>
         <hbase.zookeeper.quorum>localhost</hbase.zookeeper.quorum>
-        <jdbc-url>jdbc:mysql://localhost:3306/websiteschema</jdbc-url>-->
+        <jdbc-url>jdbc:mysql://localhost:3306/websiteschema</jdbc-url>
         <jdbc-username>websiteschema</jdbc-username>
         <jdbc-passwd>websiteschema</jdbc-passwd>
         <webrenderer.classifier>linux64</webrenderer.classifier>
