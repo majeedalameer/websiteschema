@@ -46,7 +46,7 @@ Ext.onReady(function(){
         {
             header: '栏目名称',
             dataIndex: 'channel',
-            width: 100,
+            width: 140,
             editor: new fm.TextField({
                 allowBlank: false
             })
@@ -99,9 +99,29 @@ Ext.onReady(function(){
             }
         },
         {
+            header: '添加起始URL',
+            width: 90,
+            xtype: 'actioncolumn',
+            items: [
+            {
+                icon   : 'resources/icons/fam/add.gif',  // Use a URL in the icon config
+                tooltip: '添加起始URL',
+                handler: function(grid, rowIndex) {
+                    var record= grid.getStore().getAt(rowIndex);
+                    if(null != record) {
+                        var data = record.data;
+                        ChannelService.addStartURL(data, function(){
+//                            alert("success");
+                            MsgTip.msg("", "添加成功", true, 3);
+                        })
+                    }
+                }
+            }]
+        },
+        {
             header: '创建时间',
             dataIndex: 'createTime',
-            width: 200,
+            width: 130,
             hidden : true,
             editor: new fm.DateField({
                 allowBlank: false,
@@ -131,7 +151,7 @@ Ext.onReady(function(){
         {
             header: '修改人',
             dataIndex: 'lastUpdateUser',
-            width: 100,
+            width: 60,
             editor: new fm.TextField({
                 allowBlank: false
             })

@@ -9,6 +9,7 @@ import java.util.List;
 import websiteschema.cluster.analyzer.Link;
 import websiteschema.common.amqp.Message;
 import websiteschema.common.amqp.RabbitQueue;
+import websiteschema.common.amqp.QueueFactory;
 import websiteschema.fb.annotation.Description;
 import websiteschema.fb.annotation.Algorithm;
 import websiteschema.fb.annotation.DI;
@@ -56,7 +57,7 @@ public class FBURLQueue extends FunctionBlock {
 
     @Algorithm(name = "ADDONE", desc = "将添加链接保存至HBase存储")
     public void addOne() {
-        RabbitQueue<Message> queue = new RabbitQueue<Message>(host, port, queueName);
+        RabbitQueue<Message> queue = QueueFactory.getInstance().getQueue(host, port, queueName);
         try {
             Message msg = new Message(jobId, startURLId, scheId, wrapperId,
                     siteId, jobname,
@@ -66,16 +67,12 @@ public class FBURLQueue extends FunctionBlock {
             triggerEvent("EO");
         } catch (Exception ex) {
             triggerEvent("FATAL");
-        } finally {
-            if (null != queue) {
-                queue.close();
-            }
         }
     }
 
     @Algorithm(name = "ADD", desc = "将添加链接保存至HBase存储")
     public void add() {
-        RabbitQueue<Message> queue = new RabbitQueue<Message>(host, port, queueName);
+        RabbitQueue<Message> queue = QueueFactory.getInstance().getQueue(host, port, queueName);
         try {
             if (null != links && links.size() > 0) {
                 List<Message> addList = new ArrayList<Message>();
@@ -101,10 +98,6 @@ public class FBURLQueue extends FunctionBlock {
         } catch (Exception ex) {
             l.error(ex.getMessage(), ex);
             triggerEvent("FATAL");
-        } finally {
-            if (null != queue) {
-                queue.close();
-            }
         }
     }
 }

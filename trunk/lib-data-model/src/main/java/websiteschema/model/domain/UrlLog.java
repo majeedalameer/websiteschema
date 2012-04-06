@@ -19,7 +19,7 @@ import websiteschema.utils.UrlLinkUtil;
  */
 public class UrlLog implements HBaseBean {
 
-    private static Pattern pat = Pattern.compile("([A-z0-9_]+)\\+([0-9:\\- ]+)\\+(.+)");
+    private static Pattern pat = Pattern.compile("([A-z0-9_ .]+)\\+([0-9:\\- ]+)\\+(.+)");
     @RowKey(desc = "使用jobname+Date+URL作为RowKey，URL的host部分要倒置")
     private String rowKey;
     @ColumnFamily
@@ -78,7 +78,7 @@ public class UrlLog implements HBaseBean {
     }
 
     public static void main(String args[]) throws Exception {
-        UrlLog log = new UrlLog("www_163_com_1", "http://mil.news.sohu.com/s2005/junshiguonei.shtml");
+        UrlLog log = new UrlLog("www_163_com._1", "http://mil.news.sohu.com/s2005/junshiguonei.shtml");
         System.out.println(log.getRowKey());
         System.out.println(log.getJobname());
         System.out.println(log.getURLRowKey());

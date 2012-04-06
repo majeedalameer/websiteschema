@@ -13,7 +13,14 @@ Console.actionData = [
                                 {href:"views/metadata/cipher",text:"网站登录管理",id:"cipher",title:"网站登录管理",cls:"cls",iconCls:"icon-cls",leaf:true},
                                 {href:"views/metadata/category",text:"分类管理",id:"category",title:"分类管理",cls:"cls",iconCls:"icon-cls",leaf:true},
                                 {href:"views/metadata/channel",text:"网站栏目",id:"channel",title:"网站栏目",cls:"cls",iconCls:"icon-cls",leaf:true},
-                                {href:"views/metadata/keyword",text:"关键词管理",id:"keyword",title:"关键词管理",cls:"cls",iconCls:"icon-cls",leaf:true}
+                                {href:"views/metadata/keyword",text:"关键词管理",id:"keyword",title:"关键词管理",cls:"cls",iconCls:"icon-cls",leaf:true},
+                                {
+                                    text:"宏爵FMS",id:"fms-admin",title:"宏爵FMS",cls:"cls",singleClickExpand:true,
+                                    children:[
+                                        {href:"views/metadata/fms/regalSite",text:"站点浏览",id:"siteview",title:"站点浏览",cls:"cls",iconCls:"icon-cls",leaf:true},
+                                        {href:"views/metadata/fms/chnl",text:"栏目浏览",id:"chnlview",title:"栏目浏览",cls:"cls",iconCls:"icon-cls",leaf:true}
+                                    ]
+                                }
                             ]
                         },
                         {
@@ -237,7 +244,7 @@ Ext.onReady(function(){
     });
 
     mainPanel.on('tabchange', function(tp, tab){
-        leftPanel.autoSelectPath(tab.id); 
+        leftPanel.autoSelectPath(tab.id);
     });
 
     var viewport = new Ext.Viewport({

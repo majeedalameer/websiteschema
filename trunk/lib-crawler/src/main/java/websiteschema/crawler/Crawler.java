@@ -17,6 +17,8 @@ public interface Crawler {
 
     public Document[] crawl(String url);
 
+    public WebPage crawlWebPage(String url);
+
     public void stopLoad();
 
     public String getUrl();
@@ -44,5 +46,4 @@ public interface Crawler {
     public void addHeader(String key, String value);
 
     public void setCookie(String cookies);
-
 }

@@ -4,6 +4,7 @@
  */
 package websiteschema.service;
 
+import websiteschema.persistence.rdbms.StartURLMapper;
 import websiteschema.model.domain.Channel;
 import websiteschema.persistence.rdbms.ChannelMapper;
 import java.util.List;
@@ -15,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import websiteschema.model.domain.StartURL;
 import static websiteschema.persistence.rdbms.utils.ParameterUtil.*;
 
 /**
@@ -26,6 +28,8 @@ public class ChannelService {
 
     @Autowired
     private ChannelMapper channelMapper;
+    @Autowired
+    private StartURLMapper startURLMapper;
 
     public ListRange getResults(Map map) {
         ListRange listRange = new ListRange();
@@ -77,6 +81,7 @@ public class ChannelService {
 
     /**
      * 删除此站点的后代，但不包括此站点
+     *
      * @param site
      */
     private void deleteDescendant(long id) {
@@ -88,5 +93,19 @@ public class ChannelService {
             }
         }
 
+    }
+
+    @Transactional
+    public void addStartURL(Channel chl) {
+        StartURL startURL = new StartURL();
+        startURL.setCreateTime(chl.getCreateTime());
+        startURL.setCreateUser(chl.getCreateUser());
+        startURL.setLastUpdateUser(chl.getLastUpdateUser());
+        startURL.setSiteId(chl.getSiteId());
+        startURL.setName(chl.getChannel());
+        startURL.setJobname(chl.getSiteId()+ "_" + chl.getId());
+        startURL.setStatus(chl.getStatus());
+        startURL.setStartURL(chl.getUrl());
+        startURLMapper.insert(startURL);
     }
 }

@@ -6,10 +6,10 @@
 package com.apc.websiteschema.fb;
 
 import com.apc.indextask.idx.Idx;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import org.junit.Test;
 import websiteschema.cluster.analyzer.Doc;
 
@@ -30,16 +30,17 @@ public class DocToIdxTest {
         fb.doc = doc;
         fb.map = createMap();
         fb.def = createDef();
-        Set<String> encodeFields = new HashSet<String>();
-        encodeFields.add("DREREFERENCE");
+        List<String> encodeFields = new ArrayList<String>();
+        encodeFields.add("URL");
         fb.encodeFields = encodeFields;
         fb.convert();
         Idx idx = fb.idx;
+        System.out.println(idx.toString());
         assert("张三".equals(idx.getTagValue("AUTHOR")));
         assert("NEWS".equals(idx.getDbName()));
         assert("title here".equals(idx.getTitle()));
         assert("content here".equals(idx.getContent()));
-        System.out.println(idx.toString());
+        assert("http%3A%2F%2Fnews%2Edichan%2Esina%2Ecom%2Ecn%2F2012%2F03%2F05%2F451315%2Ehtml%3Fsource%3Drss".equals(idx.getReference()));
     }
 
     private Map<String, String> createMap() {

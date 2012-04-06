@@ -27,6 +27,10 @@
             <artifactId>lib-func-blk</artifactId>
         </dependency>
         <dependency>
+            <groupId>websiteschema</groupId>
+            <artifactId>lib-additional-plugins</artifactId>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
@@ -91,6 +95,9 @@
                         </fileset>
                         <fileset>
                             <directory>${basedir}/cache</directory>
+                        </fileset>
+                        <fileset>
+                            <directory>${basedir}/temp</directory>
                         </fileset>
                     </filesets>
                 </configuration>

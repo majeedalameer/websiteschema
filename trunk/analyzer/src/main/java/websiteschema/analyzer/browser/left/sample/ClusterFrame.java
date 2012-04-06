@@ -21,10 +21,8 @@ import websiteschema.cluster.Clusterer;
 import websiteschema.analyzer.context.BrowserContext;
 import websiteschema.model.domain.cluster.Cluster;
 import websiteschema.model.domain.cluster.ClusterModel;
-import websiteschema.model.domain.cluster.Dimension;
-import websiteschema.model.domain.cluster.DocVector;
 import websiteschema.model.domain.cluster.Sample;
-import websiteschema.persistence.hbase.ClusterModelMapper;
+import websiteschema.persistence.Mapper;
 import websiteschema.persistence.hbase.SampleMapper;
 
 /**
@@ -34,8 +32,8 @@ import websiteschema.persistence.hbase.SampleMapper;
 public class ClusterFrame extends javax.swing.JFrame {
 
     String siteId;
-    SampleMapper sampleMapper = null;
-    ClusterModelMapper cmMapper = null;
+    Mapper<Sample> sampleMapper = null;
+    Mapper<ClusterModel> cmMapper = null;
     ClusterModel cm = null;
     BrowserContext context;
 
@@ -54,8 +52,8 @@ public class ClusterFrame extends javax.swing.JFrame {
         sizeHeight = this.viewSimDialog.getHeight();
         this.viewSimDialog.setLocation((screenWidth - sizeWidth) / 2, (screenHeight - sizeHeight) / 2);
 
-        sampleMapper = BrowserContext.getSpringContext().getBean("sampleMapper", SampleMapper.class);
-        cmMapper = BrowserContext.getSpringContext().getBean("clusterModelMapper", ClusterModelMapper.class);
+        sampleMapper = BrowserContext.getSpringContext().getBean("sampleMapper", Mapper.class);
+        cmMapper = BrowserContext.getSpringContext().getBean("clusterModelMapper", Mapper.class);
 
         loadData();
     }

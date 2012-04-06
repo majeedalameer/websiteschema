@@ -23,30 +23,55 @@ EO.SUC={"抽取器":"EI"}
 EO.FAL={"退出":"EI2"}
 DO.DOC={"抽取器":"IN"}
 DO.URL={"抽取器":"URL"}
+DO.STATUS={"保存结果":"STATUS"}
+DI.USERAGENT=${USERAGENT}
 DI.CRAWLER=${CRAWLER}
 DI.URL=${URL}
 
 [抽取器]
 FBType=websiteschema.crawler.fb.FBDOMExtractor
-EO.EO={"保存结果":"SAVE"}
+EO.EO={"打标签COM_ORG":"EI"}
 DI.CLS = ${CLS}
-DO.OUT={"保存结果":"DOC"}
+DO.OUT={"打标签COM_ORG":"DOC"}
+
+[打标签COM_ORG]
+FBType=com.apc.websiteschema.fb.FBStockEntity
+EO.EO={"打标签_来源":"EI"}
+DI.TAG = COM_ORG
+DI.TARGET = ["TITLE","THREAD/CONTENT"]
+DO.DOC={"打标签_来源":"DOC"}
+
+[打标签_来源]
+FBType=websiteschema.crawler.fb.index.FBTagging
+EO.EO={"打标签COM_BBS":"EI"}
+DI.SITE = ${SITEID}
+DI.TAG_SITE = SOURCEINFO
+DO.DOC={"打标签COM_BBS":"DOC"}
+
+[打标签COM_BBS]
+FBType=com.apc.websiteschema.fb.FBStockEntity
+EO.EO={"保存结果":"SAVE"}
+DI.TAG = COM_BBS
+DI.TARGET = ["CHANNEL"]
+DO.DOC={"保存结果":"DOC"}
 
 [保存结果]
 FBType=websiteschema.crawler.fb.FBURLStorage
-EO.SAVE={"转换成Str":"TRAN"}
+DI.MAP={"DATE":"PUBLISHDATE", "TITLE":"DRETITLE", "URL":"DREREFERENCE", "CONTENT":"DRECONTENT"}
+DI.DEF={"DREDBNAME":"BBS","JOBNAME":"${JOBNAME}"}
+DI.ENCODE=["URL"]
 DI.URL=${URL}
-DO.DOC={"转换成Str":"DOC"}
+EO.SAVE={"发送":"ADD"}
+DO.KEY={"发送":"KEY"}
+
+[发送]
+FBType=websiteschema.crawler.fb.index.FBIndexQueue
+DI.HOST=${QUEUE_SERVER}
+DI.PORT=5672
+DI.QUEUE=index_queue_guba
+EO.EO={"退出":"EI3"}
 
 [退出]
 FBType=websiteschema.fb.common.merge.QuadMerge
 EO.EO={"启动":"STOP"}
 
-[转换成Str]
-FBType=websiteschema.crawler.fb.FBXMLToString
-EO.EO={"打印":"PRINT","启动":"STOP"}
-DO.OUT={"打印":"STR"}
-
-[打印]
-FBType=websiteschema.fb.STDOUT
-DI.STR=hello world

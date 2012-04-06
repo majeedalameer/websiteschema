@@ -81,7 +81,7 @@ public class JobScheduler {
             long startURLId = sche.getStartURLId();
             int status = sche.getStatus();
             if (status == Schedule.STATUS_VALID
-                    && jobId > 0 && startURLId > 0) {
+                    && jobId > 0 && startURLId >= 0) {
                 JobDetail job = createJob(sche, group);
                 Trigger trigger = createTrigger(sche, group);
                 if (null != job && null != trigger) {

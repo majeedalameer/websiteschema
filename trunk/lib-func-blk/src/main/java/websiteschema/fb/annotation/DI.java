@@ -22,4 +22,6 @@ public @interface DI {
     public String name();
 
     public String desc() default "";
+
+    public String[] relativeEvents() default {};
 }

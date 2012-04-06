@@ -7,7 +7,6 @@ package websiteschema.crawler;
 import java.util.HashMap;
 import java.util.Map;
 import org.w3c.dom.Document;
-import websiteschema.crawler.htmlunit.HtmlUnitWebCrawler;
 import websiteschema.model.domain.cralwer.CrawlerSettings;
 import websiteschema.utils.JsoupUtil;
 import org.apache.log4j.Logger;
@@ -28,13 +27,22 @@ public class SimpleHttpCrawler implements Crawler {
     String encoding = null;
     CrawlerSettings crawlerSettings;
     int sec = 1000;
-    int delay = 15 * sec;
+    int delay = 60 * sec;
     int httpStatus = 0;
     Map<String, String> header = new HashMap<String, String>(2);
-    Logger l = Logger.getLogger(HtmlUnitWebCrawler.class);
+    Logger l = Logger.getLogger(SimpleHttpCrawler.class);
 
     @Override
     public Document[] crawl(String url_str) {
+        WebPage page = crawlWebPage(url_str);
+        if (null != page) {
+            return page.getDocs();
+        }
+        return null;
+    }
+
+    @Override
+    public WebPage crawlWebPage(String url_str) {
         try {
             url = url_str;
             Connection conn = org.jsoup.Jsoup.connect(url_str);
@@ -47,18 +55,20 @@ public class SimpleHttpCrawler implements Crawler {
             }
 
             org.jsoup.nodes.Document doc = null;
+            String html = null;
             if (StringUtil.isNotEmpty(encoding)) {
                 byte datas[] = conn.execute().bodyAsBytes();
-                String html = new String(datas, encoding);
+                html = new String(datas, encoding);
                 doc = JsoupUtil.getInstance().parse(html);
             } else {
                 Response res = conn.execute();
                 String charset = null != res.charset() ? res.charset() : "";
                 if (charset.equalsIgnoreCase("ISO-8859-1")) {
                     byte datas[] = res.bodyAsBytes();
-                    String html = new String(datas, defaultEncoding);
+                    html = new String(datas, defaultEncoding);
                     doc = JsoupUtil.getInstance().parse(html);
                 } else {
+                    html = res.body();
                     doc = res.parse();
                 }
             }
@@ -68,7 +78,11 @@ public class SimpleHttpCrawler implements Crawler {
             httpStatus = conn.response().statusCode();
             url = conn.response().url().toString();
             //System.err.println(html.getTextContent());
-            return new Document[]{document};
+            WebPage ret = new WebPage();
+            ret.setDocs(new Document[]{document});
+            ret.setHtmlSource(new String[]{html});
+            ret.setUrl(url);
+            return ret;
         } catch (Exception ex) {
             l.error(ex.getMessage(), ex);
         }

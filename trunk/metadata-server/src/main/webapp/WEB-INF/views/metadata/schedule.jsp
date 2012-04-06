@@ -2,6 +2,8 @@
 <%
             String path = request.getContextPath();
             String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
+            String jobname = (String) request.getParameter("jobname");
+            jobname = jobname != null ? jobname : "";
 %>
 <html>
     <head>
@@ -53,7 +55,7 @@
                     params.type = Ext.getCmp('SCHEDULETYPE').getValue();
                     params.sort = 'createTime desc';
                 });
-                
+
                 var type_store = new Ext.data.SimpleStore(
                 {
                     fields :['name','value'],
@@ -84,7 +86,7 @@
                     {
                         header: 'ID',
                         dataIndex: 'id',
-                        width: 50
+                        width: 40
                     },
                     {
                         header: '起始URLId',
@@ -99,7 +101,16 @@
                     {
                         header: '起始URL',
                         dataIndex: 'startURL',
-                        width: 300,
+                        width: 260,
+                        editor: new fm.TextField({
+                            allowBlank: false,
+                            readOnly : true
+                        })
+                    },
+                    {
+                        header: 'JOBNAME',
+                        dataIndex: 'jobname',
+                        width: 120,
                         editor: new fm.TextField({
                             allowBlank: false,
                             readOnly : true
@@ -116,7 +127,7 @@
                     {
                         header: '调度信息',
                         dataIndex: 'schedule',
-                        width: 80,
+                        width: 60,
                         editor: new fm.TextField({
                             allowBlank: false
                         })
@@ -124,7 +135,7 @@
                     {
                         header: '类型',
                         dataIndex: 'scheduleType',
-                        width: 70,
+                        width: 60,
                         hidden : false,
                         editor: new fm.ComboBox({
                             store : type_store,
@@ -147,7 +158,7 @@
                     {
                         header: '状态',
                         dataIndex: 'status',
-                        width: 50,
+                        width: 40,
                         hidden : false,
                         editor: new fm.ComboBox({
                             store : status_type_store,
@@ -170,7 +181,7 @@
                     {
                         header: '任务ID',
                         dataIndex: 'jobId',
-                        width: 50,
+                        width: 40,
                         editor: new fm.TextField({
                             allowBlank: false,
                             readOnly : false
@@ -178,7 +189,7 @@
                     },
                     {
                         header: '编辑',
-                        width: 40,
+                        width: 60,
                         xtype: 'actioncolumn',
                         items: [
                             {
@@ -190,6 +201,11 @@
                                 icon   : 'resources/icons/fam/cog.png',  // Use a URL in the icon config
                                 tooltip: '执行',
                                 handler: createTempJob
+                            },
+                            {
+                                icon   : 'resources/icons/fam/application_view_list.png',  // Use a URL in the icon config
+                                tooltip: '查看执行情况',
+                                handler: handleViewTask
                             }
                         ]
                     },
@@ -222,7 +238,7 @@
                     enableHdMenu: true,
                     sm: sm,
                     cm: cm,
-                    
+
                     // inline toolbars
                     tbar: [ {
                             text: '新建',
@@ -352,6 +368,8 @@
 
                 // render it
                 grid.render();
+                var j = '<%=jobname%>';
+                Ext.getCmp('JOBNAME').setValue(j);
 
                 // trigger the data store load
                 store.load(
@@ -365,7 +383,7 @@
 
                 var p = '<p>CRONTAB的配置类似Linux系统的CRONTAB配置，但其实是<a target="_blank" href="http://www.quartz-scheduler.org/documentation/quartz-2.x/tutorials/crontrigger">Quartz</a>的配置:秒分时日月周。\n\
                 而且需要注意的是：第一位秒是不能自己配置的，websiteschema认为用户没有必要指定精确的秒钟；另外不能同时指定周和月中的特定天，所以默认参数的周是？，这里的周不是一年54周的意思。</p>'
-                
+
 
                 new Ext.Panel({
                     title: 'CRONTAB的帮助提示',
@@ -507,6 +525,22 @@
                             }
                         });
                     }
+                }
+
+                function handleViewTask(grid, rowIndex, colIndex){
+                    var record= grid.getStore().getAt(rowIndex);
+                    var scheId = record.data.id;
+                    var win = new Ext.Window({
+                        id:'win',
+                        width:500,
+                        height:408,
+                        closable:true,
+                        resizable:true,
+                        minimizable:true,
+                        maximizable:true,
+                        html: "<iframe src='views/metadata/task?scheId="+scheId+"' style='width:100%; height:100%;'></iframe>"
+                    });
+                    win.show();
                 }
             });
         </script>

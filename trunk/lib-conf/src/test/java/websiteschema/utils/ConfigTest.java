@@ -36,9 +36,17 @@ public class ConfigTest {
         //增加过滤
         Map<String, String> prop = new HashMap<String, String>();
         prop.put("abc", "xyz");
+        prop.put("SITEID", "site_id");
+        prop.put("JOBNAME", "job_name");
+        prop.put("DBNAME", "db_name");
         Configure conf = new Configure("configure-site.ini", prop);
         assertEquals(conf.getProperty("FiltedField"), "xyz");
         assertEquals(conf.getProperty("TestField"), "CLS = xyz");
+        System.out.println(conf.getMapProperty("TestField2"));
+        assertEquals(conf.getMapProperty("TestField2").get("SITEID"), "site_id");
+
+        System.out.println(conf.getMapProperty("TestField3"));
+        assertEquals(conf.getMapProperty("TestField3").get("SITEID"), "site_id");
     }
 
     @Test

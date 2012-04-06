@@ -13,6 +13,7 @@ import websiteschema.fb.annotation.EI;
 import websiteschema.fb.annotation.EO;
 import websiteschema.fb.core.FunctionBlock;
 import websiteschema.model.domain.Websiteschema;
+import websiteschema.utils.StringUtil;
 
 /**
  *
@@ -27,10 +28,14 @@ public class FBWebCrawler extends FunctionBlock {
     public String url;
     @DI(name = "CRAWLER")
     public String crawlerType;
+    @DI(name = "USERAGENT")
+    public String userAgent;
     @DI(name = "SCHEMA")
     public Websiteschema schema;
     @DO(name = "DOC", relativeEvents = {"SUC"})
     public Document out;
+    @DO(name = "STATUS", relativeEvents = {"SUC"})
+    public int status;
     @DO(name = "DOCS", relativeEvents = {"SUC"})
     public Document[] docAndFrames;
     @DO(name = "URL", relativeEvents = {"SUC"})
@@ -41,8 +46,10 @@ public class FBWebCrawler extends FunctionBlock {
         try {
             docAndFrames = null;
             Crawler c = createCrawler();
+            setConfig(c);
             docAndFrames = c.crawl(url);
             do_url = c.getUrl();
+            status = c.getHttpStatus();
             if (null != docAndFrames && docAndFrames.length > 0) {
                 out = docAndFrames[0];
                 this.triggerEvent("SUC");
@@ -50,9 +57,14 @@ public class FBWebCrawler extends FunctionBlock {
                 this.triggerEvent("FAL");
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
-            l.error(ex);
+            l.error(ex.getMessage(), ex);
             this.triggerEvent("FAL");
+        }
+    }
+
+    private void setConfig(Crawler crawler) {
+        if (StringUtil.isNotEmpty(userAgent) && null != crawler) {
+            crawler.addHeader("User-Agent", userAgent);
         }
     }
 
@@ -66,7 +78,7 @@ public class FBWebCrawler extends FunctionBlock {
                 crawler = (Crawler) clazz.newInstance();
                 crawler.setCrawlerSettings(schema.getCrawlerSettings());
             } catch (Exception ex) {
-                ex.printStackTrace();
+                l.error(ex.getMessage(), ex);
             }
         }
         return crawler;

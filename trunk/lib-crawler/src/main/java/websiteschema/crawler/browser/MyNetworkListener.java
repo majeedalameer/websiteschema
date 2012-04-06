@@ -36,7 +36,7 @@ public class MyNetworkListener implements NetworkListener {
 
     private void process() {
         synchronized (crawler.lock) {
-            System.out.println("notify");
+            l.debug("notify");
             crawler.lock.notify();
         }
     }
@@ -50,12 +50,12 @@ public class MyNetworkListener implements NetworkListener {
 
     @Override
     public void onNetworkStatus(NetworkEvent ne) {
-//        l.debug("onNetworkStatus " + ne.getStatus());
+        l.debug("onNetworkStatus " + ne.getStatus());
     }
 
     @Override
     public void onNetworkError(NetworkEvent ne) {
-//        l.debug("onNetworkError " + ne.getFailure());
+        l.debug("onNetworkError " + ne.getFailure());
     }
 
     @Override
@@ -69,7 +69,7 @@ public class MyNetworkListener implements NetworkListener {
 
     @Override
     public void onHTTPInterceptHeaders(NetworkEvent ne) {
-//        l.debug("onHTTPInterceptHeaders " + ne.getURL());
+        l.debug("onHTTPInterceptHeaders " + ne.getURL());
 //        l.trace("Send Request Header:\n" + ne.getMutableRequestHeaders());
         if (!crawler.header.isEmpty()) {
             for (String iter : crawler.header.keySet()) {

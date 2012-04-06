@@ -17,6 +17,37 @@ import static websiteschema.utils.PojoMapper.*;
  */
 public class BeanWrapper {
 
+    public static <T> T getBean(Map<String, String> obj, Class<T> clazz, boolean caseSensitive) {
+        Map<String, String> map = obj;
+        if (!caseSensitive && null != obj) {
+            map = new HashMap<String, String>();
+            for (String key : obj.keySet()) {
+                map.put(key.toLowerCase(), obj.get(key));
+            }
+        }
+        try {
+            T ret = null;
+            if (!map.isEmpty()) {
+                ret = clazz.newInstance();
+                Field[] fields = clazz.getDeclaredFields();
+                for (Field field : fields) {
+                    String name = field.getName();
+                    if (!caseSensitive) {
+                        name = name.toLowerCase();
+                    }
+                    if (map.containsKey(name)) {
+                        String value = map.get(name);
+                        set(clazz, ret, field, value);
+                    }
+                }
+            }
+            return ret;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
     public static <T> T getBean(Map<String, String> obj, Class<T> clazz) {
         try {
             T ret = null;
@@ -39,7 +70,7 @@ public class BeanWrapper {
     }
 
     private static void set(Class clazz, Object obj, Field field, String value) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException {
-        String fieldName = field.getName().toLowerCase();
+        String fieldName = field.getName();
         Class arg = field.getType();
         String setterName = "set" + String.valueOf(fieldName.charAt(0)).toUpperCase() + fieldName.substring(1);
         if (String.class.equals(arg)) {

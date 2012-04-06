@@ -27,7 +27,7 @@ public class RuntimeContext {
     private Map<String, Map<String, List<EventLink>>> evtLinks = new HashMap<String, Map<String, List<EventLink>>>();
 
     public ApplicationContext getSpringBeanFactory() {
-        String bean = config.getProperty("Bean", "SpringBeans");
+        String bean = config.getProperty("Bean", "SpringBeans", "spring-beans.xml");
         if (null != bean) {
             return getBeanFactory(bean);
         }
@@ -73,6 +73,10 @@ public class RuntimeContext {
 
     public Configure getConfig() {
         return config;
+    }
+
+    public void setConfig(Configure config) {
+        this.config = config;
     }
 
     private void loadFunctionBlock(String fbName) {

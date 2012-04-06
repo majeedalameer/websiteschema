@@ -16,7 +16,7 @@ import org.w3c.dom.NodeList;
 import websiteschema.fb.core.RuntimeContext;
 import websiteschema.fb.core.app.Application;
 import websiteschema.model.domain.Websiteschema;
-import websiteschema.persistence.hbase.WebsiteschemaMapper;
+import websiteschema.persistence.Mapper;
 import websiteschema.utils.FileUtil;
 
 /**
@@ -33,7 +33,7 @@ public class DOMExtractorTest {
         Application app = new Application();
         RuntimeContext context = app.getContext();
         context.loadConfigure("fb/crawler.app");
-        WebsiteschemaMapper mapper = context.getSpringBeanFactory().getBean("websiteschemaMapper", WebsiteschemaMapper.class);
+        Mapper<Websiteschema> mapper = context.getSpringBeanFactory().getBean("websiteschemaMapper", Mapper.class);
         Websiteschema websiteschema = mapper.get(siteId_str);
         FBDOMExtractor extractor = new FBDOMExtractor();
         extractor.in = source;

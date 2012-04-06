@@ -13,7 +13,7 @@ import websiteschema.fb.annotation.EI;
 import websiteschema.fb.annotation.EO;
 import websiteschema.fb.core.FunctionBlock;
 import websiteschema.model.domain.cluster.ClusterModel;
-import websiteschema.persistence.hbase.ClusterModelMapper;
+import websiteschema.persistence.Mapper;
 import websiteschema.utils.FileUtil;
 import websiteschema.utils.PojoMapper;
 
@@ -36,12 +36,12 @@ public class FBClusterModel extends FunctionBlock {
     @DO(name = "CM", relativeEvents = {"EO"})
     public ClusterModel cm = null;
     //
-    private ClusterModelMapper mapper = null;
+    private Mapper<ClusterModel> mapper = null;
     private final static ReentrantLock lock = new ReentrantLock();
 
     @Algorithm(name = "M")
     public void modeling() {
-        mapper = getContext().getSpringBean("clusterModelMapper", ClusterModelMapper.class);
+        mapper = getContext().getSpringBean("clusterModelMapper", Mapper.class);
         if (is_cached) {
             lock.lock();
             try {

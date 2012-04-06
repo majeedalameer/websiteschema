@@ -11,7 +11,6 @@
 package websiteschema.analyzer.browser.bottom;
 
 import com.webrenderer.swing.dom.IDocument;
-import java.util.Map;
 import java.util.Set;
 import javax.swing.ButtonGroup;
 import javax.swing.JOptionPane;
@@ -28,6 +27,7 @@ public class PageInfoPanel extends javax.swing.JPanel {
 
     BrowserContext context;
     ButtonGroup group;
+    String cookie;
 
     /** Creates new form PageInfoPanel */
     public PageInfoPanel() {
@@ -238,6 +238,8 @@ public class PageInfoPanel extends javax.swing.JPanel {
             } else {
                 this.MIMEArea.setText(context.getRequestHeader(url));
             }
+            updateCookie(url);
+            this.cookieArea.setCaretPosition(0);
             this.MIMEArea.setCaretPosition(0);
         }
     }
@@ -259,12 +261,10 @@ public class PageInfoPanel extends javax.swing.JPanel {
 
     private void saveCookieButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveCookieButtonActionPerformed
         // TODO add your handling code here:
-        IDocument doc = context.getBrowser().getDocument();
-        String cookie = doc.getCookie();
         if (StringUtil.isNotEmpty(cookie)) {
             String siteId = context.getSimpleBrowser().getAnalysisPanel().getSiteId();
             if (StringUtil.isNotEmpty(siteId)) {
-                CipherMapper cipherMapper = context.getSpringContext().getBean("cipherMapper", CipherMapper.class);
+                CipherMapper cipherMapper = BrowserContext.getSpringContext().getBean("cipherMapper", CipherMapper.class);
                 Cipher cipher = cipherMapper.getBySiteId(siteId);
                 if (null != cipher) {
                     cipher.setCookie(cookie);
@@ -299,18 +299,6 @@ public class PageInfoPanel extends javax.swing.JPanel {
         IDocument doc = context.getBrowser().getDocument();
         String charset = doc.getCharSet();
         this.charsetField.setText(charset);
-        String cookie = doc.getCookie();
-        if (null != cookie) {
-            String cookies[] = cookie.split(";");
-            for (String c : cookies) {
-                String temp = c.toLowerCase();
-                if (temp.contains("session")) {
-                    this.sessionField.setText(c);
-                }
-                this.cookieArea.append(c.trim());
-                this.cookieArea.append(";\n");
-            }
-        }
 
         Set<String> urls = context.getURLAndMIME().keySet();
 
@@ -333,9 +321,33 @@ public class PageInfoPanel extends javax.swing.JPanel {
         } else {
             this.MIMEArea.setText(context.getRequestHeader(url));
         }
+        updateCookie(url);
         this.cookieArea.setCaretPosition(0);
         this.urlArea.setCaretPosition(0);
         this.MIMEArea.setCaretPosition(0);
+    }
+
+    private void updateCookie(String url) {
+        cookie = null;
+        cookieArea.setText("");
+        String headers = context.getRequestHeader(url);
+        String lines[] = headers.split("\n");
+        for (String line : lines) {
+            if (line.startsWith("Cookie:")) {
+                cookie = line.replaceAll("^Cookie:", "");
+                if (null != cookie) {
+                    String cookies[] = cookie.split(";");
+                    for (String c : cookies) {
+                        String temp = c.toLowerCase();
+                        if (temp.contains("session")) {
+                            this.sessionField.setText(c);
+                        }
+                        this.cookieArea.append(c.trim());
+                        this.cookieArea.append(";\n");
+                    }
+                }
+            }
+        }
     }
 
     private String getLine(javax.swing.JTextArea area, int line) {

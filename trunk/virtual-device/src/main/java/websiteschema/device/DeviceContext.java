@@ -10,10 +10,8 @@ import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import websiteschema.conf.Configure;
-import websiteschema.device.runtime.ApplicationServiceImpl;
 import websiteschema.fb.core.app.ApplicationService;
 import websiteschema.persistence.rdbms.SysConfMapper;
-import websiteschema.persistence.rdbms.TaskMapper;
 
 /**
  *
@@ -80,10 +78,6 @@ public class DeviceContext {
                 l.error("Can not load configuration file: configure-site.ini");
                 System.exit(0);
             }
-            int poolSize = conf.getIntProperty("Device", "PoolSize", 16);
-            ApplicationServiceImpl as = new ApplicationServiceImpl(poolSize);
-            as.setTaskMapper(ctx.getBean("taskMapper", TaskMapper.class));
-            appRuntime = as;
         } catch (Exception ex) {
             ex.printStackTrace();
         }

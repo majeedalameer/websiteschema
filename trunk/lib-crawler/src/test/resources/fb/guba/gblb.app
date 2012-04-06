@@ -23,6 +23,7 @@ EO.SUC={"抽取器":"EI"}
 EO.FAL={"退出":"EI2"}
 DO.DOC={"抽取器":"IN"}
 DO.URL={"抽取器":"URL"}
+DI.USERAGENT=${USERAGENT}
 DI.CRAWLER=${CRAWLER}
 DI.URL=${URL}
 

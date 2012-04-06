@@ -44,8 +44,8 @@ import websiteschema.model.domain.Site;
 import websiteschema.model.domain.Websiteschema;
 import websiteschema.model.domain.cluster.Sample;
 import websiteschema.model.domain.cralwer.CrawlerSettings;
+import websiteschema.persistence.Mapper;
 import websiteschema.persistence.hbase.SampleMapper;
-import websiteschema.persistence.hbase.WebsiteschemaMapper;
 import websiteschema.persistence.rdbms.SiteMapper;
 import websiteschema.utils.UrlLinkUtil;
 
@@ -103,6 +103,8 @@ public class AnalysisPanel extends javax.swing.JPanel implements IConfigureHandl
         minDateField = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
         maxDateField = new javax.swing.JTextField();
+        jLabel11 = new javax.swing.JLabel();
+        crawlerTypeCombo = new javax.swing.JComboBox();
         jPanel2 = new javax.swing.JPanel();
         viewCategoryButton = new javax.swing.JButton();
         collectSampleButton = new javax.swing.JButton();
@@ -204,6 +206,10 @@ public class AnalysisPanel extends javax.swing.JPanel implements IConfigureHandl
 
         maxDateField.setText("3");
 
+        jLabel11.setText("采集器类型 : ");
+
+        crawlerTypeCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Simple", "HtmlUnit", "Firefox" }));
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -211,31 +217,35 @@ public class AnalysisPanel extends javax.swing.JPanel implements IConfigureHandl
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(mustHaveField, javax.swing.GroupLayout.DEFAULT_SIZE, 153, Short.MAX_VALUE))
+                .addComponent(mustHaveField, javax.swing.GroupLayout.DEFAULT_SIZE, 165, Short.MAX_VALUE))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(dontHaveField, javax.swing.GroupLayout.DEFAULT_SIZE, 153, Short.MAX_VALUE))
+                .addComponent(dontHaveField, javax.swing.GroupLayout.DEFAULT_SIZE, 165, Short.MAX_VALUE))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(pageTypeField, javax.swing.GroupLayout.DEFAULT_SIZE, 153, Short.MAX_VALUE))
+                .addComponent(pageTypeField, javax.swing.GroupLayout.DEFAULT_SIZE, 165, Short.MAX_VALUE))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jLabel5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(encodingField, javax.swing.GroupLayout.DEFAULT_SIZE, 153, Short.MAX_VALUE))
+                .addComponent(encodingField, javax.swing.GroupLayout.DEFAULT_SIZE, 165, Short.MAX_VALUE))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jLabel6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(depthField, javax.swing.GroupLayout.DEFAULT_SIZE, 153, Short.MAX_VALUE))
+                .addComponent(depthField, javax.swing.GroupLayout.DEFAULT_SIZE, 165, Short.MAX_VALUE))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jLabel7)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(minDateField, javax.swing.GroupLayout.DEFAULT_SIZE, 101, Short.MAX_VALUE))
+                .addComponent(minDateField, javax.swing.GroupLayout.DEFAULT_SIZE, 113, Short.MAX_VALUE))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jLabel8)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(maxDateField, javax.swing.GroupLayout.DEFAULT_SIZE, 101, Short.MAX_VALUE))
+                .addComponent(maxDateField, javax.swing.GroupLayout.DEFAULT_SIZE, 113, Short.MAX_VALUE))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(jLabel11)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(crawlerTypeCombo, 0, 148, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -267,6 +277,10 @@ public class AnalysisPanel extends javax.swing.JPanel implements IConfigureHandl
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel8)
                     .addComponent(maxDateField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(crawlerTypeCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel11))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -347,7 +361,7 @@ public class AnalysisPanel extends javax.swing.JPanel implements IConfigureHandl
                         .addGap(18, 18, 18)
                         .addComponent(analyzeParamButton))
                     .addComponent(testButton))
-                .addContainerGap(18, Short.MAX_VALUE))
+                .addContainerGap(30, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -424,15 +438,15 @@ public class AnalysisPanel extends javax.swing.JPanel implements IConfigureHandl
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 224, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE)
                     .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 224, Short.MAX_VALUE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addGap(2, 2, 2)
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(siteIdField, javax.swing.GroupLayout.DEFAULT_SIZE, 159, Short.MAX_VALUE))
+                        .addComponent(siteIdField, javax.swing.GroupLayout.DEFAULT_SIZE, 171, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addComponent(addPropButton, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -456,7 +470,7 @@ public class AnalysisPanel extends javax.swing.JPanel implements IConfigureHandl
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 143, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 113, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(addPropButton)
@@ -565,7 +579,7 @@ public class AnalysisPanel extends javax.swing.JPanel implements IConfigureHandl
     }//GEN-LAST:event_saveSettingsButtonActionPerformed
 
     private Websiteschema getWebsiteschema() {
-        WebsiteschemaMapper mapper = BrowserContext.getSpringContext().getBean("websiteschemaMapper", WebsiteschemaMapper.class);
+        Mapper<Websiteschema> mapper = BrowserContext.getSpringContext().getBean("websiteschemaMapper", Mapper.class);
         Websiteschema websiteschema = mapper.get(getSiteId());
         CrawlerSettings settings = getCrawlerSettings();
         Map<String, String> prop = getProperties();
@@ -581,7 +595,7 @@ public class AnalysisPanel extends javax.swing.JPanel implements IConfigureHandl
 
     @Override
     public void save() {
-        WebsiteschemaMapper mapper = BrowserContext.getSpringContext().getBean("websiteschemaMapper", WebsiteschemaMapper.class);
+        Mapper<Websiteschema> mapper = BrowserContext.getSpringContext().getBean("websiteschemaMapper", Mapper.class);
         Websiteschema websiteschema = mapper.get(getSiteId());
         CrawlerSettings settings = getCrawlerSettings();
         Map<String, String> prop = getProperties();
@@ -701,24 +715,6 @@ public class AnalysisPanel extends javax.swing.JPanel implements IConfigureHandl
         return null;
     }
 
-    private void addSampleUrl(URI uri) {
-        String url = uri.toString();
-        CrawlerSettings settings = getCrawlerSettings();
-        String[] mustHave = settings.getMustHave();
-        String[] dontHave = settings.getDontHave();
-        boolean legalUrl = UrlLinkUtil.getInstance().match(url, mustHave, dontHave);
-        if (legalUrl) {
-            SampleMapper mapper = BrowserContext.getSpringContext().getBean("sampleMapper", SampleMapper.class);
-            Sample sample = new Sample();
-            String rowKey = UrlLinkUtil.getInstance().convertUriToRowKey(uri, getSiteId());
-            sample.setRowKey(rowKey);
-            sample.setUrl(url);
-            sample.setSiteId(getSiteId());
-            sample.setCreateTime(new Date());
-            mapper.put(sample);
-        }
-    }
-
     private boolean legalUrl(URI uri) {
         String url = uri.toString();
         CrawlerSettings settings = getCrawlerSettings();
@@ -730,7 +726,7 @@ public class AnalysisPanel extends javax.swing.JPanel implements IConfigureHandl
 
     public boolean addSampleUrl_(URI uri) {
         try {
-            SampleMapper mapper = BrowserContext.getSpringContext().getBean("sampleMapper", SampleMapper.class);
+            Mapper<Sample> mapper = BrowserContext.getSpringContext().getBean("sampleMapper", Mapper.class);
             Sample sample = new Sample();
             String rowKey = UrlLinkUtil.getInstance().convertUriToRowKey(uri, getSiteId());
             sample.setRowKey(rowKey);
@@ -749,7 +745,7 @@ public class AnalysisPanel extends javax.swing.JPanel implements IConfigureHandl
 
     public void setSiteId(String siteId) {
         this.siteIdField.setText(siteId);
-        WebsiteschemaMapper mapper = BrowserContext.getSpringContext().getBean("websiteschemaMapper", WebsiteschemaMapper.class);
+        Mapper<Websiteschema> mapper = BrowserContext.getSpringContext().getBean("websiteschemaMapper", Mapper.class);
         Websiteschema websiteschema = mapper.get(siteId);
         if (null != websiteschema) {
             CrawlerSettings settings = websiteschema.getCrawlerSettings();
@@ -775,6 +771,18 @@ public class AnalysisPanel extends javax.swing.JPanel implements IConfigureHandl
         settings.setMaxDepth(Integer.valueOf(this.depthField.getText().trim()));
         settings.setMinDate(Integer.valueOf(this.minDateField.getText().trim()));
         settings.setMaxDate(Integer.valueOf(this.maxDateField.getText().trim()));
+
+        String crawlerType = (String) this.crawlerTypeCombo.getSelectedItem();
+        if (crawlerType.contains("Simple")) {
+            crawlerType = "websiteschema.crawler.SimpleHttpCrawler";
+        } else if (crawlerType.contains("HtmlUnit")) {
+            crawlerType = "websiteschema.crawler.htmlunit.HtmlUnitWebCrawler";
+        } else if (crawlerType.contains("Firefox")) {
+            crawlerType = "websiteschema.crawler.browser.BrowserWebCrawler";
+        } else {
+            crawlerType = "websiteschema.crawler.SimpleHttpCrawler";
+        }
+        settings.setCrawlerType(crawlerType);
 
         return settings;
     }
@@ -826,6 +834,19 @@ public class AnalysisPanel extends javax.swing.JPanel implements IConfigureHandl
             this.depthField.setText(String.valueOf(settings.getMaxDepth()));
             this.minDateField.setText(String.valueOf(settings.getMinDate()));
             this.maxDateField.setText(String.valueOf(settings.getMaxDate()));
+
+            String crawlerType = settings.getCrawlerType();
+            if (null != crawlerType) {
+                if (crawlerType.contains("Simple")) {
+                    crawlerTypeCombo.setSelectedItem("Simple");
+                } else if (crawlerType.contains("HtmlUnit")) {
+                    crawlerTypeCombo.setSelectedItem("HtmlUnit");
+                } else if (crawlerType.contains("BrowserWebCrawler")) {
+                    crawlerTypeCombo.setSelectedItem("Firefox");
+                }
+            } else {
+                crawlerTypeCombo.setSelectedItem("Simple");
+            }
         }
     }
 
@@ -851,6 +872,7 @@ public class AnalysisPanel extends javax.swing.JPanel implements IConfigureHandl
     private javax.swing.JButton analyzeParamButton;
     private javax.swing.JButton collectSampleButton;
     private javax.swing.JButton confirmAddButton;
+    private javax.swing.JComboBox crawlerTypeCombo;
     private javax.swing.JButton delPropButton;
     private javax.swing.JTextField depthField;
     private javax.swing.JTextField dontHaveField;
@@ -858,6 +880,7 @@ public class AnalysisPanel extends javax.swing.JPanel implements IConfigureHandl
     private javax.swing.JTextField encodingField;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;

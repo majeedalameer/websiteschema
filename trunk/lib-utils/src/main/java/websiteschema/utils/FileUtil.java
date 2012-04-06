@@ -19,12 +19,14 @@ import java.io.OutputStreamWriter;
  */
 public class FileUtil {
 
+    private static String defaultEnc = "UTF-8";
+
     public static String read(File file) {
         if (file.exists()) {
             FileInputStream fis = null;
             try {
                 fis = new FileInputStream(file);
-                return readInputStream(fis, "utf-8");
+                return readInputStream(fis, defaultEnc);
             } catch (Exception ex) {
                 ex.printStackTrace();
             } finally {
@@ -49,7 +51,7 @@ public class FileUtil {
         InputStream is = FileUtil.class.getClassLoader().getResourceAsStream(resource);
         if (null != is) {
             try {
-                return readInputStream(is, "utf-8");
+                return readInputStream(is, defaultEnc);
             } catch (Exception ex) {
                 ex.printStackTrace();
             } finally {
@@ -82,7 +84,7 @@ public class FileUtil {
     public static void save(File file, String content) {
         try {
             FileOutputStream fos = new FileOutputStream(file);
-            OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8");
+            OutputStreamWriter osw = new OutputStreamWriter(fos, defaultEnc);
             osw.write(content);
             osw.close();
             fos.close();

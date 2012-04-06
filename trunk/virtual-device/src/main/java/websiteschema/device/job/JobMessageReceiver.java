@@ -5,13 +5,13 @@
 package websiteschema.device.job;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import org.apache.log4j.Logger;
 import websiteschema.common.amqp.Message;
+import websiteschema.common.amqp.QueueFactory;
 import websiteschema.common.amqp.RabbitQueue;
 import websiteschema.common.base.Function;
 import websiteschema.device.DeviceContext;
@@ -19,11 +19,13 @@ import websiteschema.device.handler.WrapperHandler;
 import websiteschema.fb.core.app.Application;
 import websiteschema.fb.core.RuntimeContext;
 import websiteschema.model.domain.Wrapper;
+import websiteschema.utils.ThreadUtil;
 
 /**
  *
  * @author ray
  */
+@Deprecated
 public class JobMessageReceiver implements Runnable {
 
     private RabbitQueue<Message> priorQueue;
@@ -31,18 +33,22 @@ public class JobMessageReceiver implements Runnable {
     private boolean isStop = false;
     private Logger l = Logger.getLogger(JobMessageReceiver.class);
     private String host = null;
+    private int port = -1;
     private String queueName = null;
     private String priorQueueName = null;
+    private boolean threadPoolNotFull = false;
 
     public JobMessageReceiver() {
         host = DeviceContext.getInstance().getConf().
                 getProperty("URLQueue", "ServerHost", "localhost");
+        port = DeviceContext.getInstance().getConf().
+                getIntProperty("URLQueue", "ServerPort", -1);
         priorQueueName = DeviceContext.getInstance().getConf().
                 getProperty("URLQueue", "PriorQueueName", "url_queue");
         queueName = DeviceContext.getInstance().getConf().
                 getProperty("URLQueue", "QueueName", "url_queue_1");
-        priorQueue = new RabbitQueue<Message>(host, priorQueueName);
-        queue = new RabbitQueue<Message>(host, queueName);
+        priorQueue = QueueFactory.getInstance().getQueue(host, port, priorQueueName);
+        queue = QueueFactory.getInstance().getQueue(host, port, queueName);
     }
 
     public void stop() {
@@ -71,7 +77,7 @@ public class JobMessageReceiver implements Runnable {
             Message message = null;
             // 首先等待优先队列中的消息
             if (null != priorQueue) {
-                message = priorQueue.poll(Message.class, 10000, handler);
+                message = priorQueue.poll(Message.class, 1000, handler);
                 if (null != message) {
                     continue;
                 }
@@ -79,8 +85,9 @@ public class JobMessageReceiver implements Runnable {
             // 如果优先队列中没有等到消息，继续等待普通队列中的消息。
             if (null != queue) {
                 int count = 0;
+                int restSize = 100;
                 message = queue.poll(Message.class, 10000, handler);
-                while (null != message && ++count < 100) {
+                while (null != message && ++count < restSize && threadPoolNotFull) {
                     message = queue.poll(Message.class, 10000, handler);
                 }
             }
@@ -101,11 +108,10 @@ public class JobMessageReceiver implements Runnable {
                 //加载Wrapper，将Job的配置转为Map，并设置为Filter。
                 runtimeContext.loadConfigure(is, convertToMap(msg));
                 boolean inserted = DeviceContext.getInstance().getAppRuntime().startup(app);
+                threadPoolNotFull = inserted;
                 while (!inserted) {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (Exception ex) {
-                    }
+                    l.debug("thread pool is full.");
+                    ThreadUtil.sleep(1000);
                     inserted = DeviceContext.getInstance().getAppRuntime().startup(app);
                 }
             }
@@ -116,6 +122,7 @@ public class JobMessageReceiver implements Runnable {
         try {
             return new ByteArrayInputStream(content.getBytes("UTF-8"));
         } catch (Exception ex) {
+            l.error(ex.getMessage(), ex);
             return null;
         }
     }
@@ -166,7 +173,7 @@ public class JobMessageReceiver implements Runnable {
 
             return ret;
         } catch (Exception ex) {
-            ex.printStackTrace();
+            l.error(ex.getMessage(), ex);
         }
         return null;
     }

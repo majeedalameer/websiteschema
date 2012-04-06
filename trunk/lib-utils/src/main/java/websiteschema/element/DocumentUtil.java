@@ -4,12 +4,19 @@
  */
 package websiteschema.element;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringReader;
+import javax.xml.parsers.ParserConfigurationException;
 import org.jaxen.SimpleNamespaceContext;
 import java.util.List;
 import org.jaxen.dom.DOMXPath;
 import org.w3c.dom.NamedNodeMap;
 import java.io.StringWriter;
 import java.util.Collections;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import javax.xml.transform.OutputKeys;
@@ -17,7 +24,10 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import websiteschema.element.xpath.XPathParser;
+import websiteschema.utils.FileUtil;
 
 /**
  *
@@ -106,6 +116,48 @@ public class DocumentUtil {
             }
         }
 
+    }
+
+    public static Document createEmptyDocument() {
+        try {
+            DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
+            domFactory.setNamespaceAware(true); // never forget this!
+            DocumentBuilder builder = domFactory.newDocumentBuilder();
+            Document doc = builder.newDocument();
+            return doc;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
+    public static Document getDocument(String file) {
+        try {
+            String content = null;
+            File f = new File(file);
+            if (f.exists()) {
+                content = FileUtil.read(f);
+            } else {
+                content = FileUtil.readResource(file);
+            }
+            DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
+            domFactory.setNamespaceAware(true); // never forget this!
+            DocumentBuilder builder = domFactory.newDocumentBuilder();
+            Document doc = builder.parse(new ByteArrayInputStream(content.getBytes()));
+            return doc;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
+    public static Document convertTo(String xml) throws ParserConfigurationException, IOException, SAXException {
+        StringReader sr = new StringReader(xml);
+        InputSource is = new InputSource(sr);
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document doc = builder.parse(is);
+        return doc;
     }
 
     /**

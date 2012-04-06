@@ -20,6 +20,7 @@ public class Schedule implements java.io.Serializable {
     long startURLId;
     String channelName;
     String startURL;
+    String jobname;
     long jobId;
     long priority = 0;
     String schedule;
@@ -105,5 +106,13 @@ public class Schedule implements java.io.Serializable {
 
     public void setStatus(int status) {
         this.status = status;
+    }
+
+    public String getJobname() {
+        return jobname;
+    }
+
+    public void setJobname(String jobname) {
+        this.jobname = jobname;
     }
 }

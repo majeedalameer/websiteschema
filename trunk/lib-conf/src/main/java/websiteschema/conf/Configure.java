@@ -239,7 +239,7 @@ public class Configure {
             return false;
         }
     }
-    private final static Pattern pat = Pattern.compile("(.*?)\\$\\{(.*?)\\}(.*)");
+    private final static Pattern pat = Pattern.compile("(.*?)\\$\\{(.*?)\\}(.*)", Pattern.MULTILINE);
 
     private void parseLine(String line, int currentRowNumber, Map<String, String> prop) {
         if (!isComments(line)) {
@@ -268,20 +268,51 @@ public class Configure {
                     // 如果value = ${abc}
                     // 则value会被替换成xyz
                     if (null != prop) {
-                        Matcher m = pat.matcher(value.trim());
-                        if (m.matches()) {
-                            String k = m.group(2).toLowerCase();
-                            if (prop.containsKey(k)) {
-                                String prefix = m.group(1);
-                                String suffix = m.group(3);
-                                value = prefix + prop.get(k) + suffix;
-                            }
+                        String newValue = matchAndReplace(value, prop);
+                        if (null != newValue) {
+                            value = newValue;
                         }
                     }
                     putProperties(currentField, key.trim(), value);
                 }
             }
         }
+    }
+
+    public String matchAndReplace(String value, Map<String, String> prop) {
+        if (value.contains("\n")) {
+            String lines[] = value.split("\n");
+            StringBuilder ret = new StringBuilder();
+            for (String line : lines) {
+                String replaced = matchAndReplaceSingleLine(line, prop);
+                if (null != replaced) {
+                    ret.append(replaced).append("\n");
+                } else {
+                    ret.append(line).append("\n");
+                }
+            }
+            return ret.toString();
+        } else {
+            return matchAndReplaceSingleLine(value, prop);
+        }
+    }
+
+    public String matchAndReplaceSingleLine(String value, Map<String, String> prop) {
+        Matcher m = pat.matcher(value.trim());
+        if (m.matches()) {
+            String k = m.group(2).toLowerCase();
+            if (prop.containsKey(k)) {
+                String prefix = m.group(1);
+                String suffix = m.group(3);
+                String ret = prefix + prop.get(k) + suffix;
+                String newRet = matchAndReplaceSingleLine(ret, prop);
+                if (null != newRet) {
+                    return newRet;
+                }
+                return ret;
+            }
+        }
+        return null;
     }
 
     public void putProperties(String key, String value) {

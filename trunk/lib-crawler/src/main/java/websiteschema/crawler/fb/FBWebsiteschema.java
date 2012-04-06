@@ -7,7 +7,7 @@ package websiteschema.crawler.fb;
 import websiteschema.fb.annotation.*;
 import websiteschema.fb.core.FunctionBlock;
 import websiteschema.model.domain.Websiteschema;
-import websiteschema.persistence.hbase.WebsiteschemaMapper;
+import websiteschema.persistence.Mapper;
 
 /**
  *
@@ -24,8 +24,7 @@ public class FBWebsiteschema extends FunctionBlock {
 
     @Algorithm(name = "INIT")
     public void create() {
-        WebsiteschemaMapper mapper = getContext().getSpringBeanFactory().getBean("websiteschemaMapper", WebsiteschemaMapper.class);
-//        WebsiteschemaMapper mapper = new WebsiteschemaMapper();
+        Mapper<Websiteschema> mapper = getContext().getSpringBeanFactory().getBean("websiteschemaMapper", Mapper.class);
         out = mapper.get(siteId);
         if (null != out) {
             triggerEvent("EO");

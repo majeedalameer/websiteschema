@@ -15,7 +15,6 @@ import com.gargoylesoftware.htmlunit.UnexpectedPage;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.WebResponse;
-import com.gargoylesoftware.htmlunit.WebWindow;
 import com.gargoylesoftware.htmlunit.html.FrameWindow;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.XHtmlPage;
@@ -33,6 +32,7 @@ import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import websiteschema.crawler.Crawler;
+import websiteschema.crawler.WebPage;
 import websiteschema.model.domain.cralwer.CrawlerSettings;
 import websiteschema.utils.StringUtil;
 
@@ -67,10 +67,10 @@ public class HtmlUnitWebCrawler implements Crawler {
         webClient.setThrowExceptionOnScriptError(false);
         webClient.setThrowExceptionOnFailingStatusCode(false);
         if (!header.isEmpty()) {
-                for (String iter : header.keySet()) {
-                    webClient.addRequestHeader(iter, header.get(iter));
-                }
+            for (String iter : header.keySet()) {
+                webClient.addRequestHeader(iter, header.get(iter));
             }
+        }
 
         new WebConnectionWrapper(webClient) {
 
@@ -102,36 +102,56 @@ public class HtmlUnitWebCrawler implements Crawler {
         return webClient;
     }
 
-    private Document[] getDocuments(final Page page) throws ParserConfigurationException {
+    private WebPage getWebPage(final Page page) throws ParserConfigurationException {
+        WebPage ret = new WebPage();
+        ret.setUrl(url);
         if (page instanceof HtmlPage) {
             HtmlPage htmlPage = (HtmlPage) page;
             final List<FrameWindow> window = htmlPage.getFrames();
             if (null != window && window.size() > 0) {
-                Document[] ret = new Document[window.size() + 1];
-                ret[0] = (HtmlPage) page;
+                Document[] docs = new Document[window.size() + 1];
+                String[] sources = new String[window.size() + 1];
+                docs[0] = (HtmlPage) page;
+                sources[0] = page.getWebResponse().getContentAsString();
                 for (int i = 0; i < window.size(); i++) {
-                    ret[i + 1] = (HtmlPage) window.get(i).getEnclosedPage();
+                    docs[i + 1] = (HtmlPage) window.get(i).getEnclosedPage();
+                    sources[i + 1] = window.get(i).getEnclosedPage().getWebResponse().getContentAsString();
                 }
+                ret.setDocs(docs);
+                ret.setHtmlSource(sources);
                 return ret;
             } else {
-                return new Document[]{(HtmlPage) page};
+                ret.setDocs(new Document[]{(HtmlPage) page});
+                ret.setHtmlSource(new String[]{page.getWebResponse().getContentAsString()});
+                return ret;
             }
         } else if (page instanceof SgmlPage) {
-            return new Document[]{(SgmlPage) page};
+            ret.setDocs(new Document[]{(SgmlPage) page});
+            ret.setHtmlSource(new String[]{page.getWebResponse().getContentAsString()});
+            return ret;
         } else if (page instanceof XmlPage) {
-            return new Document[]{(XmlPage) page};
+            ret.setDocs(new Document[]{(XmlPage) page});
+            ret.setHtmlSource(new String[]{page.getWebResponse().getContentAsString()});
+            return ret;
         } else if (page instanceof XHtmlPage) {
             XHtmlPage htmlPage = (XHtmlPage) page;
             final List<FrameWindow> window = htmlPage.getFrames();
             if (null != window && window.size() > 0) {
-                Document[] ret = new Document[window.size() + 1];
-                ret[0] = (XHtmlPage) page;
+                Document[] docs = new Document[window.size() + 1];
+                String[] sources = new String[window.size() + 1];
+                docs[0] = (XHtmlPage) page;
+                sources[0] = page.getWebResponse().getContentAsString();
                 for (int i = 0; i < window.size(); i++) {
-                    ret[i + 1] = (HtmlPage) window.get(i).getEnclosedPage();
+                    docs[i + 1] = (HtmlPage) window.get(i).getEnclosedPage();
+                    sources[i + 1] = window.get(i).getEnclosedPage().getWebResponse().getContentAsString();
                 }
+                ret.setDocs(docs);
+                ret.setHtmlSource(sources);
                 return ret;
             } else {
-                return new Document[]{(HtmlPage) page};
+                ret.setDocs(new Document[]{(HtmlPage) page});
+                ret.setHtmlSource(new String[]{page.getWebResponse().getContentAsString()});
+                return ret;
             }
         } else if (page instanceof TextPage) {
             TextPage text = (TextPage) page;
@@ -144,7 +164,9 @@ public class HtmlUnitWebCrawler implements Crawler {
             body.setTextContent(text.getContent());
             html.appendChild(body);
             doc.appendChild(html);
-            return new Document[]{doc};
+            ret.setDocs(new Document[]{doc});
+            ret.setHtmlSource(new String[]{page.getWebResponse().getContentAsString()});
+            return ret;
         } else if (page instanceof JavaScriptPage) {
             return null;
         } else if (page instanceof UnexpectedPage) {
@@ -156,50 +178,11 @@ public class HtmlUnitWebCrawler implements Crawler {
         }
     }
 
-    private Document[] crawl_old(String url) {
-        final WebClient webClient = getWebClient();
-        try {
-            URL dest = new URL(url);
-            WebRequest req = new WebRequest(dest);
-            WebResponse res = webClient.loadWebResponse(req);
-            httpStatus = res.getStatusCode();
-
-            WebWindow window = webClient.getCurrentWindow();
-            final Page page = webClient.loadWebResponseInto(res, window);
-
-            this.url = page.getUrl().toString();
-            return getDocuments(page);
-        } catch (IOException ex) {
-            l.error(ex);
-        } catch (FailingHttpStatusCodeException ex) {
-            l.error(ex);
-            httpStatus = ex.getStatusCode();
-        } catch (ParserConfigurationException ex) {
-            l.error(ex);
-        } finally {
-            webClient.closeAllWindows();
-        }
-        return null;
-    }
-
     @Override
     public Document[] crawl(String url) {
-        final WebClient webClient = getWebClient();
-        try {
-            URL dest = new URL(url);
-            final Page page = webClient.getPage(dest);
-            httpStatus = page.getWebResponse().getStatusCode();
-            this.url = page.getUrl().toString();
-            return getDocuments(page);
-        } catch (IOException ex) {
-            l.error(ex);
-        } catch (FailingHttpStatusCodeException ex) {
-            l.error(ex);
-            httpStatus = ex.getStatusCode();
-        } catch (ParserConfigurationException ex) {
-            l.error(ex);
-        } finally {
-            webClient.closeAllWindows();
+        WebPage page = crawlWebPage(url);
+        if (null != page) {
+            return page.getDocs();
         }
         return null;
     }
@@ -284,5 +267,27 @@ public class HtmlUnitWebCrawler implements Crawler {
     @Override
     public void setCookie(String cookies) {
         header.put("Cookie", cookies);
+    }
+
+    @Override
+    public WebPage crawlWebPage(String url) {
+        final WebClient webClient = getWebClient();
+        try {
+            URL dest = new URL(url);
+            final Page page = webClient.getPage(dest);
+            httpStatus = page.getWebResponse().getStatusCode();
+            this.url = page.getUrl().toString();
+            return getWebPage(page);
+        } catch (IOException ex) {
+            l.error(ex);
+        } catch (FailingHttpStatusCodeException ex) {
+            l.error(ex);
+            httpStatus = ex.getStatusCode();
+        } catch (ParserConfigurationException ex) {
+            l.error(ex);
+        } finally {
+            webClient.closeAllWindows();
+        }
+        return null;
     }
 }

@@ -8,6 +8,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import org.w3c.dom.Document;
 import websiteschema.cluster.analyzer.Doc;
 import websiteschema.cluster.analyzer.Link;
@@ -21,8 +22,7 @@ import websiteschema.fb.annotation.EO;
 import websiteschema.fb.core.FunctionBlock;
 import websiteschema.model.domain.UrlLink;
 import websiteschema.model.domain.UrlLog;
-import websiteschema.persistence.hbase.UrlLinkMapper;
-import websiteschema.persistence.hbase.UrlLogMapper;
+import websiteschema.persistence.Mapper;
 import websiteschema.utils.UrlLinkUtil;
 
 /**
@@ -40,8 +40,17 @@ public class FBURLStorage extends FunctionBlock {
     public String url;
     @DI(name = "STATUS", desc = "采集时的HTTP Status")
     public int status;
+    @DI(name = "MAP", desc = "标签名称的映射")
+    public Map<String, String> map = null;
+    @DI(name = "DEF", desc = "默认插入的数据")
+    public Map<String, String> def = null;
+    @DI(name = "ENCODE", desc = "需要Escape的标签")
+    public List<String> encodeFields = null;
     @DO(name = "DOC", relativeEvents = "SAVE")
     public Document out;
+    @DO(name = "KEY", relativeEvents = "SAVE", desc = "URL对应的HBASE的rowKey")
+    public String outKey;
+    //
     @DI(name = "PARENT", desc = "翻页时的父URL")
     public String parent;
     @DI(name = "LINKS", desc = "需要保存的链接列表")
@@ -57,8 +66,8 @@ public class FBURLStorage extends FunctionBlock {
     public void add() {
         try {
             added.clear();
-            UrlLinkMapper mapper = getContext().getSpringBean("urlLinkMapper", UrlLinkMapper.class);
-            UrlLogMapper urlLogMapper = getContext().getSpringBean("urlLogMapper", UrlLogMapper.class);
+            Mapper<UrlLink> mapper = getContext().getSpringBean("urlLinkMapper", Mapper.class);
+            Mapper<UrlLog> urlLogMapper = getContext().getSpringBean("urlLogMapper", Mapper.class);
             List<UrlLog> logs = new ArrayList<UrlLog>();
             List<UrlLink> lnks = new ArrayList<UrlLink>();
             for (Link u : links) {
@@ -98,7 +107,7 @@ public class FBURLStorage extends FunctionBlock {
             l.info("saved " + added.size() + " links.");
             triggerEvent("ADD");
         } catch (Exception ex) {
-            ex.printStackTrace();
+            l.error(ex.getMessage(), ex);
             throw new RuntimeException(ex.getMessage());
         }
     }
@@ -107,20 +116,23 @@ public class FBURLStorage extends FunctionBlock {
     public void save() {
         try {
             if (null != in && null != url) {
-                UrlLinkMapper mapper = getContext().getSpringBean("urlLinkMapper", UrlLinkMapper.class);
+                Mapper<UrlLink> mapper = getContext().getSpringBean("urlLinkMapper", Mapper.class);
                 URL link = new URL(url);
                 String rowKey = UrlLinkUtil.getInstance().convertUrlToRowKey(link);
+                outKey = rowKey;
+                FBCustomDoc diy = new FBCustomDoc();
+                String content = DocumentUtil.getXMLString(diy.convert(in, map, def, encodeFields));
                 if (mapper.exists(rowKey)) {
                     UrlLink old = mapper.get(rowKey);
                     old.setHttpStatus(status);
-                    old.setContent(DocumentUtil.getXMLString(in.toW3CDocument()));
+                    old.setContent(content);
                     mapper.put(old);
                 } else {
                     UrlLink newUrlLink = new UrlLink();
                     newUrlLink.setRowKey(rowKey);
                     newUrlLink.setUrl(url);
                     newUrlLink.setHttpStatus(status);
-                    newUrlLink.setContent(DocumentUtil.getXMLString(in.toW3CDocument()));
+                    newUrlLink.setContent(content);
                     newUrlLink.setCreateTime(new Date());
                     newUrlLink.setDepth(depth != 0 ? depth : 1000);//如果depth为0，则将depth设为1000，表示很深
                     mapper.put(newUrlLink);
@@ -129,7 +141,7 @@ public class FBURLStorage extends FunctionBlock {
             out = in.toW3CDocument();
             triggerEvent("SAVE");
         } catch (Exception ex) {
-            ex.printStackTrace();
+            l.error(ex.getMessage(), ex);
             throw new RuntimeException(ex.getMessage());
         }
     }

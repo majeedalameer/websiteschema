@@ -9,8 +9,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.w3c.dom.Document;
 import websiteschema.crawler.Crawler;
-import websiteschema.persistence.hbase.ClusterModelMapper;
-import websiteschema.persistence.hbase.WebsiteschemaMapper;
+import websiteschema.model.domain.Websiteschema;
+import websiteschema.model.domain.cluster.ClusterModel;
+import websiteschema.persistence.Mapper;
 
 /**
  *
@@ -19,8 +20,8 @@ import websiteschema.persistence.hbase.WebsiteschemaMapper;
 public class ClusterTest {
 
     ApplicationContext ctx = new ClassPathXmlApplicationContext("spring-beans.xml");
-    ClusterModelMapper clusterModelMapper = ctx.getBean("clusterModelMapper", ClusterModelMapper.class);
-    WebsiteschemaMapper websiteschemaMapper = ctx.getBean("websiteschemaMapper", WebsiteschemaMapper.class);
+    Mapper<ClusterModel> clusterModelMapper = ctx.getBean("clusterModelMapper", Mapper.class);
+    Mapper<Websiteschema> websiteschemaMapper = ctx.getBean("websiteschemaMapper", Mapper.class);
 
     @Test
     public void clustering() {

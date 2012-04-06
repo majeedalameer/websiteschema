@@ -18,6 +18,7 @@ public class UrlLinkTest {
 
     @Test
     public void test() {
+        //测试URL解析中，中文字符的问题
         String url = "http://www.chenmingpaper.com/xxlr.asp?tab=&menuid=241&menujb=3";
         String href = "FLMEN.ASP?MENULB=049新闻资讯&MENUJB=2";
         Map<String, String> charsetMap = new HashMap<String, String>();
@@ -28,6 +29,7 @@ public class UrlLinkTest {
 
     @Test
     public void test2() {
+        //测试URL解析
         String url = "http://mp3.sogou.com/tag.so?query=%u4F24%u611F&w=02200000";
         try {
             URL uri = UrlLinkUtil.getInstance().getURL("http://mp3.sogou.com/", url);
@@ -39,6 +41,7 @@ public class UrlLinkTest {
 
     @Test
     public void test3() {
+        //测试URL和URI解析URL
         String str = "http://www.chenmingpaper.com/xxlr.asp?tab=&menuid=241&menujb=3";
         try {
             URI uri = UrlLinkUtil.getInstance().getURI("http://www.chenmingpaper.com/", str);
@@ -50,17 +53,30 @@ public class UrlLinkTest {
             assert (rk1.equals(rk2));
         } catch (Exception ex) {
             ex.printStackTrace();
+            assert (false);
         }
     }
 
     @Test
     public void testResolveURL() {
+        //测试URL解析
         String url = "http://house.chinadaily.com.cn/2012-02/27/content_14701935.htm";
         try {
             URL resolved = UrlLinkUtil.getInstance().getURL(url, "content_14701935_2.htm");
             System.out.println(resolved.toString());
         } catch (Exception ex) {
             ex.printStackTrace();
+            assert (false);
         }
+    }
+
+    @Test
+    public void testMustAndDontHave() {
+        String url = "http://house.chinadaily.com.cn/2012-02/27/content_14701935.htm";
+        String[] mustHave = {"house.chinadaily.com.cn", ".*\\.htm$", "content_"};
+        String[] dontHave = {"special"};
+        assert (UrlLinkUtil.getInstance().match(url, mustHave, dontHave));
+        String[] mustHave2 = {"http://\\w+.chinadaily.com.cn/\\d{4}-\\d{2}/\\d{2}/content.*htm", "content_"};
+        assert (UrlLinkUtil.getInstance().matchOnePattern(url, mustHave2, null));
     }
 }

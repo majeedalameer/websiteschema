@@ -15,6 +15,7 @@ public class CrawlerSettings {
     String[] mustHave;
     String[] acceptedType;
     String encoding;
+    String crawlerType;
     int maxDepth = 0;
     int minDate = -1;
     int maxDate = 3;
@@ -73,5 +74,13 @@ public class CrawlerSettings {
 
     public void setMustHave(String[] mustHave) {
         this.mustHave = mustHave;
+    }
+
+    public String getCrawlerType() {
+        return crawlerType;
+    }
+
+    public void setCrawlerType(String crawlerType) {
+        this.crawlerType = crawlerType;
     }
 }

@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import websiteschema.utils.DateUtil;
+import websiteschema.utils.StringUtil;
 
 /**
  *
@@ -99,6 +100,8 @@ public class DateDetectUtil {
     }
 
     public String parseDate(String date, String pat, String format) {
+        date = StringUtil.replaceSpace(date);
+        pat = StringUtil.replaceSpace(pat);
         String pattern = buildPat(pat);
         if (date.matches(pattern)) {
             Pattern p = Pattern.compile(pattern);

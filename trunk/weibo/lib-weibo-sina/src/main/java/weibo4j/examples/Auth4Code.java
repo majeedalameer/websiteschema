@@ -18,7 +18,7 @@ public class Auth4Code {
 		String result= null;
 		HttpClient client = new HttpClient();
 		PostMethod postMethod = new PostMethod(
-		"https://api.t.sina.com.cn/oauth2/authorize");
+		"https://api.weibo.com/oauth2/authorize");
 		postMethod.addParameter("client_id", "2283962672"); //appkey
 		postMethod.addParameter(
 				"redirect_uri",

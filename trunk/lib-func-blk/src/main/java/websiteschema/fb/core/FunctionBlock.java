@@ -137,13 +137,16 @@ public class FunctionBlock {
      * @param context
      */
     private void sendRelativeData(String evt, RuntimeContext context) {
-        List<String> dataOutputs = context.getFunctionBlockInfo(getClass()).eventRelativeData(evt);
+        FBInfo info = context.getFunctionBlockInfo(getClass());
+        if (null != info) {
+            List<String> dataOutputs = context.getFunctionBlockInfo(getClass()).eventRelativeData(evt);
 
-        for (String dataOutput : dataOutputs) {
-            List<DataLink> dataLinks = context.getDataLinks(getName(), dataOutput);
-            if (null != dataLinks) {
-                for (DataLink dLink : dataLinks) {
-                    sendData(dLink, context);
+            for (String dataOutput : dataOutputs) {
+                List<DataLink> dataLinks = context.getDataLinks(getName(), dataOutput);
+                if (null != dataLinks) {
+                    for (DataLink dLink : dataLinks) {
+                        sendData(dLink, context);
+                    }
                 }
             }
         }

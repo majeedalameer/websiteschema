@@ -16,6 +16,7 @@ import websiteschema.analyzer.context.BrowserContext;
 import websiteschema.model.domain.cluster.DocUnits;
 import websiteschema.model.domain.cluster.Sample;
 import websiteschema.model.domain.cluster.Unit;
+import websiteschema.persistence.Mapper;
 import websiteschema.persistence.hbase.SampleMapper;
 
 /**
@@ -44,7 +45,7 @@ public class ContentFrame extends javax.swing.JFrame {
     }
 
     private void update() {
-        SampleMapper mapper = BrowserContext.getSpringContext().getBean("sampleMapper", SampleMapper.class);
+        Mapper<Sample> mapper = BrowserContext.getSpringContext().getBean("sampleMapper", Mapper.class);
         this.contentTextArea.setText("");
         Sample s = mapper.get(sample);
         DocUnits docUnits = s.getContent();

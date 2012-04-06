@@ -16,9 +16,8 @@ import websiteschema.cluster.CosineClusterer;
 import websiteschema.cluster.analyzer.ClusterAnalyzer;
 import websiteschema.model.domain.Websiteschema;
 import websiteschema.model.domain.cluster.*;
-import websiteschema.persistence.hbase.ClusterModelMapper;
+import websiteschema.persistence.Mapper;
 import websiteschema.persistence.hbase.SampleMapper;
-import websiteschema.persistence.hbase.WebsiteschemaMapper;
 import websiteschema.utils.DateUtil;
 
 /**
@@ -28,9 +27,9 @@ import websiteschema.utils.DateUtil;
 public class WebsiteschemaClusterer implements Runnable {
 
     String siteId;
-    SampleMapper sampleMapper;
-    ClusterModelMapper cmMapper;
-    WebsiteschemaMapper websiteschemaMapper;
+    Mapper<Sample> sampleMapper;
+    Mapper<ClusterModel> cmMapper;
+    Mapper<Websiteschema> websiteschemaMapper;
     ClusterModel model;
     ClusterAnalyzer analyzer;
     Component parentComponent;
@@ -84,11 +83,11 @@ public class WebsiteschemaClusterer implements Runnable {
         this.siteId = siteId;
     }
 
-    public void setSampleMapper(SampleMapper mapper) {
+    public void setSampleMapper(Mapper<Sample> mapper) {
         this.sampleMapper = mapper;
     }
 
-    public void setCmMapper(ClusterModelMapper cmMapper) {
+    public void setCmMapper(Mapper<ClusterModel> cmMapper) {
         this.cmMapper = cmMapper;
     }
 
@@ -100,7 +99,7 @@ public class WebsiteschemaClusterer implements Runnable {
         this.retrain = retrain;
     }
 
-    public void setWebsiteschemaMapper(WebsiteschemaMapper websiteschemaMapper) {
+    public void setWebsiteschemaMapper(Mapper<Websiteschema> websiteschemaMapper) {
         this.websiteschemaMapper = websiteschemaMapper;
     }
 

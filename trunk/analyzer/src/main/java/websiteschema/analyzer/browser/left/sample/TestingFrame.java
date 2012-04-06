@@ -26,7 +26,7 @@ import websiteschema.crawler.fb.FBFieldFilter;
 import websiteschema.crawler.htmlunit.HtmlUnitWebCrawler;
 import websiteschema.element.DocumentUtil;
 import websiteschema.model.domain.Websiteschema;
-import websiteschema.persistence.hbase.WebsiteschemaMapper;
+import websiteschema.persistence.Mapper;
 
 /**
  *
@@ -261,7 +261,7 @@ public class TestingFrame extends javax.swing.JFrame {
     private void start() {
         this.startButton.setEnabled(false);
         try {
-            WebsiteschemaMapper mapper = BrowserContext.getSpringContext().getBean("websiteschemaMapper", WebsiteschemaMapper.class);
+            Mapper<Websiteschema> mapper = BrowserContext.getSpringContext().getBean("websiteschemaMapper", Mapper.class);
             Websiteschema websiteschema = mapper.get(getSiteId());
             //采集指定URL
             Document source = crawl(context.getBrowser().getURL());
@@ -286,33 +286,37 @@ public class TestingFrame extends javax.swing.JFrame {
         }
     }
 
+    private Doc createArticle(Article rawArticle) {
+        Mapper<Websiteschema> mapper = BrowserContext.getSpringContext().getBean("websiteschemaMapper", Mapper.class);
+        Websiteschema websiteschema = mapper.get(getSiteId());
+        Document[] docs = rawArticle.getDocuments();
+        final String clusterName = getDocumentBelongToCluster(docs[0]);
+        Doc ret = new Doc();
+        for (Document dom : docs) {
+            Doc oneDoc = extractDocument(websiteschema, clusterName, dom);
+            //对某些参数进行过滤
+            oneDoc = filteringDocument(oneDoc);
+            ret.addField("CONTENT", oneDoc.getValue("CONTENT"));
+        }
+
+        return ret;
+    }
+
     private void startAll() {
         this.startButton.setEnabled(false);
         try {
-            WebsiteschemaMapper mapper = BrowserContext.getSpringContext().getBean("websiteschemaMapper", WebsiteschemaMapper.class);
-            Websiteschema websiteschema = mapper.get(getSiteId());
 
             String oneUrl_str = context.getBrowser().getURL();
             Document onePage = crawl(oneUrl_str);
-            String clusterName = getDocumentBelongToCluster(onePage);
-            Doc oneDoc = extractDocument(websiteschema, clusterName, onePage);
-            //对某些参数进行过滤
-            oneDoc = filteringDocument(oneDoc);
             Article article = new Article(oneUrl_str, onePage);
-            article.put(oneUrl_str, oneDoc);
-
             while (article.hasNext()) {
                 oneUrl_str = article.getNextUrl();
                 if (null == article.getPage(oneUrl_str)) {
                     onePage = crawl(oneUrl_str);
-                    Doc doc = extractDocument(websiteschema, clusterName, onePage);
-                    //对某些参数进行过滤
-                    doc = filteringDocument(doc);
-                    article.put(oneUrl_str, doc);
+                    article.put(oneUrl_str, onePage);
                 }
             }
-
-            Doc result = article.getArticle();
+            Doc result = this.createArticle(article);
             //对结果进行输出
             if (null != result) {
                 this.resultArea.setText(DocumentUtil.getXMLString(result.toW3CDocument()));

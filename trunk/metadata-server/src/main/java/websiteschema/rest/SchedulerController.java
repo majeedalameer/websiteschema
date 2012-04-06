@@ -45,26 +45,6 @@ public class SchedulerController {
     @Autowired
     ChannelMapper channelMapper;
 
-//    public void setScheduleMapper(ScheduleMapper scheduleMapper) {
-//        this.scheduleMapper = scheduleMapper;
-//    }
-//
-//    public void setJobMapper(JobMapper jobMapper) {
-//        this.jobMapper = jobMapper;
-//    }
-//
-//    public void setStartURLMapper(StartURLMapper startURLMapper) {
-//        this.startURLMapper = startURLMapper;
-//    }
-//
-//    public void setWrapperMapper(WrapperMapper wrapperMapper) {
-//        this.wrapperMapper = wrapperMapper;
-//    }
-//
-//    public void setChannelMapper(ChannelMapper channelMapper) {
-//        this.channelMapper = channelMapper;
-//    }
-
     @RequestMapping(value = "/start", method = RequestMethod.GET)
     public void start(HttpServletResponse response) throws IOException {
         boolean ok = start();
@@ -101,7 +81,7 @@ public class SchedulerController {
             }
             return true;
         } catch (SchedulerException e) {
-            e.printStackTrace();
+            l.error(e.getMessage(), e);
             return false;
         }
     }
@@ -122,7 +102,7 @@ public class SchedulerController {
             scheduler.shutdown();
             return true;
         } catch (SchedulerException e) {
-            e.printStackTrace();
+            l.error(e.getMessage(), e);
             return false;
         }
     }
@@ -134,6 +114,7 @@ public class SchedulerController {
             int status = scheduler.status();
             response.getWriter().print("{success:true,status:" + status + "}");
         } catch (SchedulerException e) {
+            l.error(e.getMessage(), e);
             response.getWriter().print("{success:false}");
         }
     }
@@ -141,24 +122,4 @@ public class SchedulerController {
     public static JobScheduler getScheduler() {
         return scheduler;
     }
-
-//    public int status() throws SchedulerException {
-//        return scheduler.status();
-//    }
-//
-//    public boolean createTempJob(Schedule sche) {
-//        return scheduler.createTempJob(sche);
-//    }
-//
-//    public void reload(Schedule sche) throws SchedulerException {
-//        scheduler.reload(sche);
-//    }
-//
-//    public void remove(Schedule sche) throws SchedulerException {
-//        scheduler.remove(sche);
-//    }
-//
-//    public void add(Schedule sche) throws SchedulerException {
-//        scheduler.add(sche);
-//    }
 }
