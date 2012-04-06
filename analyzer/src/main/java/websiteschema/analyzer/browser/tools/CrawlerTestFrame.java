@@ -12,7 +12,9 @@ package websiteschema.analyzer.browser.tools;
 
 import org.w3c.dom.Document;
 import websiteschema.crawler.Crawler;
+import websiteschema.crawler.WebPage;
 import websiteschema.element.DocumentUtil;
+import websiteschema.utils.StringUtil;
 
 /**
  *
@@ -51,8 +53,6 @@ public class CrawlerTestFrame extends javax.swing.JFrame {
         crawlerCombo = new javax.swing.JComboBox();
         jLabel2 = new javax.swing.JLabel();
         charsetCombo = new javax.swing.JComboBox();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        docSourceArea = new javax.swing.JTextArea();
         jToolBar3 = new javax.swing.JToolBar();
         jLabel4 = new javax.swing.JLabel();
         httpStatusLabel = new javax.swing.JLabel();
@@ -62,6 +62,11 @@ public class CrawlerTestFrame extends javax.swing.JFrame {
         jToolBar5 = new javax.swing.JToolBar();
         jLabel6 = new javax.swing.JLabel();
         cookieField = new javax.swing.JTextField();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        docSourceArea = new javax.swing.JTextArea();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        domArea = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -96,10 +101,6 @@ public class CrawlerTestFrame extends javax.swing.JFrame {
         charsetCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Detect", "UTF-8", "GBK" }));
         jToolBar2.add(charsetCombo);
 
-        docSourceArea.setColumns(20);
-        docSourceArea.setRows(5);
-        jScrollPane1.setViewportView(docSourceArea);
-
         jToolBar3.setRollover(true);
 
         jLabel4.setText("HttpStatus: ");
@@ -118,6 +119,18 @@ public class CrawlerTestFrame extends javax.swing.JFrame {
         jToolBar5.add(jLabel6);
         jToolBar5.add(cookieField);
 
+        docSourceArea.setColumns(20);
+        docSourceArea.setRows(5);
+        jScrollPane1.setViewportView(docSourceArea);
+
+        jTabbedPane1.addTab("源代码", jScrollPane1);
+
+        domArea.setColumns(20);
+        domArea.setRows(5);
+        jScrollPane2.setViewportView(domArea);
+
+        jTabbedPane1.addTab("DOM", jScrollPane2);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -126,11 +139,12 @@ public class CrawlerTestFrame extends javax.swing.JFrame {
             .addComponent(jToolBar2, javax.swing.GroupLayout.DEFAULT_SIZE, 655, Short.MAX_VALUE)
             .addComponent(jToolBar3, javax.swing.GroupLayout.DEFAULT_SIZE, 655, Short.MAX_VALUE)
             .addComponent(jToolBar4, javax.swing.GroupLayout.DEFAULT_SIZE, 655, Short.MAX_VALUE)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jToolBar5, javax.swing.GroupLayout.DEFAULT_SIZE, 631, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addComponent(jToolBar5, javax.swing.GroupLayout.DEFAULT_SIZE, 643, Short.MAX_VALUE)
                 .addContainerGap())
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 655, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 643, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -143,7 +157,7 @@ public class CrawlerTestFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jToolBar5, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 279, Short.MAX_VALUE)
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 279, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jToolBar3, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -153,28 +167,55 @@ public class CrawlerTestFrame extends javax.swing.JFrame {
 
     private void goButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_goButtonActionPerformed
         // TODO add your handling code here:
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                go();
+            }
+        }).start();
+    }//GEN-LAST:event_goButtonActionPerformed
+
+    private void go() {
         this.goButton.setEnabled(false);
         try {
             this.docSourceArea.setText("");
+            this.domArea.setText("");
             Crawler crawler = createCrawler();
             if (null != crawler) {
                 crawler.setEncoding(getCharset());
-                
-                Document docs[] = crawler.crawl(getURL());
-                if (null != docs) {
-                    if (docs.length > 0) {
-                        for (Document doc : docs) {
-                            this.docSourceArea.append(DocumentUtil.getXMLString(doc));
-                        }
+                String cookie = getCookie();
+                if (StringUtil.isNotEmpty(cookie)) {
+                    crawler.setCookie(cookie);
+                }
+                String userAgent = getUserAgent();
+                if (StringUtil.isNotEmpty(userAgent)) {
+                    crawler.addHeader("User-Agent", userAgent);
+                }
+
+                WebPage page = crawler.crawlWebPage(getURL());
+                Document docs[] = page.getDocs();
+                if (null != docs && docs.length > 0) {
+                    for (Document doc : docs) {
+                        this.domArea.append(DocumentUtil.getXMLString(doc));
                     }
                 }
+                String sources[] = page.getHtmlSource();
+                if (null != sources && sources.length > 0) {
+                    for (String source : sources) {
+                        this.docSourceArea.append(source + "\n---------------------------\n");
+                    }
+                }
+
                 int httpStatus = crawler.getHttpStatus();
                 this.httpStatusLabel.setText(String.valueOf(httpStatus));
             }
+        } catch (Exception ex) {
+            this.docSourceArea.append("\n(T_T)\n" + ex.getMessage());
         } finally {
             this.goButton.setEnabled(true);
         }
-    }//GEN-LAST:event_goButtonActionPerformed
+    }
 
     private Crawler createCrawler() {
         String sel = (String) this.crawlerCombo.getSelectedItem();
@@ -216,11 +257,20 @@ public class CrawlerTestFrame extends javax.swing.JFrame {
 
         return ret;
     }
+
+    private String getCookie() {
+        return cookieField.getText();
+    }
+
+    private String getUserAgent() {
+        return userAgentField.getText();
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox charsetCombo;
     private javax.swing.JTextField cookieField;
     private javax.swing.JComboBox crawlerCombo;
     private javax.swing.JTextArea docSourceArea;
+    private javax.swing.JTextArea domArea;
     private javax.swing.JButton goButton;
     private javax.swing.JLabel httpStatusLabel;
     private javax.swing.JLabel jLabel1;
@@ -230,6 +280,8 @@ public class CrawlerTestFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JToolBar jToolBar2;
     private javax.swing.JToolBar jToolBar3;

@@ -5,7 +5,7 @@
 
 package websiteschema.weibo;
 
-import websiteschema.utils.Configure;
+import websiteschema.conf.Configure;
 
 /**
  *

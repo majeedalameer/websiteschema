@@ -4,7 +4,6 @@
  */
 package websiteschema.schedule.job;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import org.apache.log4j.Logger;
@@ -58,7 +57,12 @@ public class JobMultiStartURL implements Job {
                     ? TaskHandler.getInstance().getQueue(queueName) : TaskHandler.getInstance().getQueue();
             com.rabbitmq.client.Channel channel = null;
             try {
-                channel = queue.getChannel();
+                try {
+                    channel = queue.getChannel();
+                } catch (Exception ex) {
+                    l.error(ex.getMessage(), ex);
+                    queue.processException(ex);
+                }
                 if (null != channel) {
                     for (Channel chl : channels) {
 //                        l.debug(chl.getChannel());
@@ -86,7 +90,7 @@ public class JobMultiStartURL implements Job {
                 } else {
                     l.debug("can not get channel from queue: " + queue.getQueueName());
                 }
-            } catch (IOException ex) {
+            } catch (Exception ex) {
                 l.error(ex.getMessage(), ex);
             } finally {
                 // Close channel

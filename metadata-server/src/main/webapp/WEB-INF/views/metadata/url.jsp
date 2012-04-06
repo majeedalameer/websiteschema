@@ -59,8 +59,8 @@
                 {
                     fields :['name','value'],
                     data:[
-                        ['有效','1'],
-                        ['无效','0']
+                        ['已配置','1'],
+                        ['未配置','0']
                     ]
                 });
 
@@ -135,8 +135,8 @@
                         }
                     },
                     {
-                        header: '添加调度',
-                        width: 60,
+                        header: '配置',
+                        width: 80,
                         xtype: 'actioncolumn',
                         items: [
                             {
@@ -158,6 +158,11 @@
                                 icon   : 'resources/icons/fam/application_view_list.png',  // Use a URL in the icon config
                                 tooltip: '查看采集到的数据',
                                 handler: handleViewLog
+                            },
+                            {
+                                icon   : 'resources/icons/fam/application_go.png',  // Use a URL in the icon config
+                                tooltip: '查看调度',
+                                handler: handleViewSchedule
                             }
                         ]
                     },
@@ -203,7 +208,7 @@
 
                 // by default columns are sortable
                 cm.defaultSortable = false;
-                
+
                 var grid = new Ext.grid.EditorGridPanel({
                     //el:'topic-grid',
                     renderTo: 'gridpanel',
@@ -218,7 +223,7 @@
                     enableHdMenu: true,
                     sm: sm,
                     cm: cm,
-                    
+
                     // inline toolbars
                     tbar: [ {
                             text: '新建',
@@ -312,7 +317,7 @@
                         {
                             xtype: 'combo',
                             id: 'STATUS',
-                            width: 50,
+                            width: 60,
                             valueField: 'value',
                             displayField: 'name',
                             mode: 'local',
@@ -397,7 +402,7 @@
                 }
 
                 function handleAddScheduler(grid, rowIndex, colIndex){
-                    
+
                     var record= grid.getStore().getAt(rowIndex);
                     if(null != record) {
                         var editPanel = new AddSchedulePanel();
@@ -441,6 +446,8 @@
                                                     {
                                                         callback:function(scheId){
                                                             MsgTip.msg("", "任务和调度添加成功", true, 3);
+                                                            record.set("status","1");
+                                                            StartURLService.update(record.data);
                                                         },
                                                         errorHandler:function(errorString, exception) {
                                                             MsgTip.msg("", "任务和调度添加失败: " + errorString, true, 5);
@@ -451,8 +458,11 @@
                                                     MsgTip.msg("", "任务和调度添加失败: " + errorString, true, 5);
                                                 }
                                             });
+                                            AddWin.close();
+                                            store.reload();
+                                        } else {
+                                            alert("调度未配置");
                                         }
-                                        AddWin.close();
                                     }
                                 }, {
                                     text: '取消',
@@ -481,8 +491,30 @@
                     win.show();
                 }
 
+                function handleViewSchedule(grid, rowIndex, colIndex){
+                    var record= grid.getStore().getAt(rowIndex);
+                    var jobname = record.data.jobname;
+                    var win = new Ext.Window({
+                        id:'win',
+                        width:600,
+                        height:480,
+                        closable:true,
+                        resizable:true,
+                        minimizable:true,
+                        maximizable:true,
+                        html: "<iframe src='views/metadata/url/schedule?jobname="+jobname+"' style='width:100%; height:100%;'></iframe>"
+                    });
+                    win.show();
+                }
+
                 function handleQuery(){
-                    store.reload();
+                    store.load(
+                    {
+                        params : {
+                            start : start,
+                            limit : pageSize
+                        }
+                    });
                 }
             });
         </script>

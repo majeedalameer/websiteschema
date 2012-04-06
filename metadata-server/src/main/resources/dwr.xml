@@ -10,6 +10,8 @@
         <!-- All JavaBeans should be scan and be converted to JavaScript Object -->
         <convert converter="bean" match="websiteschema.model.domain.*"/>
 
+        <convert converter="bean" match="com.apc.websiteschema.fms.*"/>
+
         <convert converter="bean" match="websiteschema.dwr.response.*"/>
 
         <create creator="spring" javascript="UserService" >
@@ -74,6 +76,18 @@
 
         <create creator="spring" javascript="CipherService" >
             <param name="beanName" value="cipherService"></param>
+        </create>
+
+        <create creator="spring" javascript="ScheduleTaskService" >
+            <param name="beanName" value="scheduleTaskService"></param>
+        </create>
+
+        <create creator="spring" javascript="FMSJobService" >
+            <param name="beanName" value="FMSJobService"></param>
+        </create>
+
+        <create creator="spring" javascript="FMSSiteService" >
+            <param name="beanName" value="FMSSiteService"></param>
         </create>
     </allow>
 </dwr>

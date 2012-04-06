@@ -179,6 +179,53 @@ public class UrlLinkUtil {
         return ret;
     }
 
+    /**
+     * 只要有一个正则表达式match上了，就返回true。
+     * 如果没有指定mustHave，则返回true。
+     * 如果包含或匹配任一dontHave，则返回false。
+     * @param url
+     * @param mustHave
+     * @return
+     */
+    public boolean matchOnePattern(String url, String[] mustHave, String[] dontHave) {
+        boolean ret = false;
+        if (null != mustHave && mustHave.length > 0) {
+            for (String pat : mustHave) {
+                if (!"".equals(pat)) {
+                    if (url.matches(pat)) {
+                        ret = true;
+                        break;
+                    }
+                }
+            }
+        } else {
+            ret = true;
+        }
+
+        if (ret) {
+            if (null != dontHave && dontHave.length > 0) {
+                for (String pat : dontHave) {
+                    if (!"".equals(pat)) {
+                        if (url.contains(pat) || url.matches(pat)) {
+                            ret = false;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * 必须包含或匹配全部mustHave中指定的字符串或正则表达式。
+     * 一定不能包含或匹配任一dontHave中指定的字符串或正则表达式。
+     * @param url
+     * @param mustHave
+     * @param dontHave
+     * @return
+     */
     public boolean match(String url, String[] mustHave, String[] dontHave) {
         if (null != url) {
             // 必须同时包含设置中的参数。
@@ -207,7 +254,13 @@ public class UrlLinkUtil {
         }
     }
 
-    //简单匹配（正则match，会因元字符等问题抛出PatternSyntaxException）
+    /**
+     * 简单匹配（正则match，会因元字符等问题抛出PatternSyntaxException）
+     * @param url
+     * @param mustHave
+     * @param dontHave
+     * @return
+     */
     public boolean match_simple(String url, String[] mustHave, String[] dontHave) {
         if (null != url) {
             // 必须同时包含设置中的参数。
@@ -236,7 +289,13 @@ public class UrlLinkUtil {
         }
     }
 
-    //正则匹配
+    /**
+     * 正则匹配（正则match，会因元字符等问题抛出PatternSyntaxException）
+     * @param url
+     * @param mustHave
+     * @param dontHave
+     * @return
+     */
     public boolean match_reg(String url, String[] mustHave, String[] dontHave) {
         if (null != url) {
             // 必须同时包含设置中的参数。
@@ -264,7 +323,6 @@ public class UrlLinkUtil {
             return false;
         }
     }
-
 //    public static void main(String args[]) throws URISyntaxException {
 //        System.out.println(UrlLinkUtil.getInstance().getURL("http://utility.baidu.com/traf/click.php?id=215&url=http://www.baidu.com", "test"));
 //        System.out.println(UrlLinkUtil.getInstance().getURL("http://utility.baidu.com/traf/click.php?id=215&url=http://www.baidu.com", ""));

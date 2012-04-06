@@ -6,7 +6,6 @@ package websiteschema.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -35,9 +34,21 @@ public class CollectionUtil {
                 return (e2.getValue()).compareTo(e1.getValue());
             }
         });
-//        for (Entry<String, T> entry : arrayList) {
-//            System.out.println(entry.getKey() + "  " + entry.getValue());
-//        }
+        return arrayList;
+    }
+
+    public static <T extends Comparable> List<Entry<String, T>> sortMapAsc(
+            Map<String, T> keywordMap) {
+        List<Entry<String, T>> arrayList = new ArrayList<Entry<String, T>>(
+                keywordMap.entrySet());
+        Collections.sort(arrayList, new Comparator<Entry<String, T>>() {
+
+            @Override
+            public int compare(Entry<String, T> e1,
+                    Entry<String, T> e2) {
+                return (e1.getValue()).compareTo(e2.getValue());
+            }
+        });
         return arrayList;
     }
 

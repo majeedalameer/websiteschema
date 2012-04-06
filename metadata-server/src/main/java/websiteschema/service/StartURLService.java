@@ -4,6 +4,11 @@
  */
 package websiteschema.service;
 
+import websiteschema.rest.SchedulerController;
+import websiteschema.model.domain.Schedule;
+import java.util.List;
+import websiteschema.persistence.rdbms.ScheduleMapper;
+import websiteschema.utils.StringUtil;
 import java.util.Map;
 import java.util.Date;
 import websiteschema.dwr.response.ListRange;
@@ -25,6 +30,8 @@ public class StartURLService {
 
     @Autowired
     private StartURLMapper startURLMapper;
+    @Autowired
+    private ScheduleMapper scheduleMapper;
 
     public ListRange getResults(Map map) {
         ListRange listRange = new ListRange();
@@ -40,6 +47,7 @@ public class StartURLService {
 
     @Transactional
     public void insert(StartURL url) {
+        validateRecord(url);
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         url.setCreateUser(userDetails.getUsername());
         url.setLastUpdateUser(url.getCreateUser());
@@ -48,6 +56,7 @@ public class StartURLService {
 
     @Transactional
     public void update(StartURL url) {
+        validateRecord(url);
         url.setUpdateTime(new Date());
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         url.setLastUpdateUser(userDetails.getUsername());
@@ -56,6 +65,32 @@ public class StartURLService {
 
     @Transactional
     public void deleteRecord(StartURL url) {
-        startURLMapper.delete(url);
+        if (null != url && url.getId() > 0) {
+            List<Schedule> sches = scheduleMapper.getSchedulesByStartURL(url.getId());
+            if (null != sches && !sches.isEmpty()) {
+                for (Schedule sche : sches) {
+                    scheduleMapper.delete(sche);
+                    try {
+                        SchedulerController.getScheduler().remove(sche);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+            startURLMapper.delete(url);
+        }
+    }
+
+    private void validateRecord(StartURL url) {
+        if (null != url) {
+            String jobname = url.getJobname();
+            String siteId = url.getSiteId();
+            if (StringUtil.isNotEmpty(jobname)) {
+                url.setJobname(StringUtil.trim(jobname));
+            }
+            if (StringUtil.isNotEmpty(siteId)) {
+                url.setSiteId(StringUtil.trim(siteId));
+            }
+        }
     }
 }

@@ -1,65 +1,130 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
 package websiteschema.device;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.log4j.Logger;
 import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Request;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.AbstractHandler;
-import websiteschema.device.job.JobMessageReceiver;
-import websiteschema.device.runtime.ApplicationServiceImpl;
+import websiteschema.device.job.JobWorker;
+import websiteschema.device.schedule.DeviceScheduler;
+import websiteschema.device.schedule.LocalSchedulerLoader;
+import websiteschema.device.schedule.SchedulerLoader;
+import websiteschema.device.update.DailyUpdateSchedulerLoader;
+import websiteschema.fb.core.app.AppStatus;
+import websiteschema.fb.core.app.Application;
 
 public class VirtualDevice {
 
-    Server server = null;
-    JobMessageReceiver receiver = new JobMessageReceiver();
-    boolean stop = false;
+    private Server server = null;
+    private DeviceScheduler sched = new DeviceScheduler();
+    private boolean stop = false;
+    private int poolSize = DeviceContext.getInstance().getConf().getIntProperty("Device", "PoolSize", 16);
+    private Logger l = Logger.getLogger(getClass());
+    private JobWorker[] jobWorkers = null;
+    private Thread[] threads = null;
+    private java.util.Timer timer;
+    private java.util.TimerTask timerTask;
 
     public static void main(String[] args) throws Exception {
         VirtualDevice device = new VirtualDevice();
         device.startJetty();
-        while (!device.isStop()) {
-            Thread t = new Thread(device.getReceiver());
-            t.setDaemon(true);
-            t.start();
+        device.startWorker();
+        device.startScheduler();
+    }
 
-            t.join();
-            //如果receiver结束了，则等待120秒，重新尝试连接rabbitmq
-            sleep(120000);
+    /**
+     * 启动本地的任务调度器
+     */
+    public void startScheduler() {
+        try {
+            sched.init();
+            SchedulerLoader loader1 = new LocalSchedulerLoader();
+            loader1.load(sched.getSched());
+            SchedulerLoader loader2 = new DailyUpdateSchedulerLoader();
+            loader2.load(sched.getSched());
+            sched.startup();
+        } catch (Exception ex) {
+            l.error(ex.getMessage(), ex);
         }
-        device.stopJetty();
     }
 
-    private static void sleep(long millis) throws InterruptedException {
-        Thread.sleep(millis);
+    /**
+     * 多线程接收和处理任务
+     */
+    public void startWorker() {
+        jobWorkers = new JobWorker[poolSize];
+        threads = new Thread[poolSize];
+        for (int i = 0; i < poolSize; i++) {
+            JobWorker worker = new JobWorker();
+            jobWorkers[i] = worker;
+            Thread t = new Thread(worker);
+            t.setDaemon(true);
+            t.setName("JobWorker-" + i);
+            t.start();
+            threads[i] = t;
+        }
+        initTimer();
     }
 
-    public JobMessageReceiver getReceiver() {
-        return receiver;
+    /**
+     * 初始化一个线程，每隔30秒检查一次当前有多少任务在等待，并处理超时等待的线程。
+     */
+    private void initTimer() {
+        timer = new java.util.Timer(getClass().getName(), true);
+        timerTask = new java.util.TimerTask() {
+
+            @Override
+            public void run() {
+                if (null != jobWorkers) {
+                    long current = System.currentTimeMillis();
+                    for (int i = 0; i < poolSize; i++) {
+                        Thread thread = threads[i];
+                        if (null != thread && thread.getState() == Thread.State.WAITING) {
+                            //处理
+                            JobWorker worker = jobWorkers[i];
+                            Application app = worker.getApp();
+                            if (null != app) {
+                                AppStatus status = app.getStatus();
+                                if (null != status) {
+                                    long startTime = app.getStartTime();
+                                    if (current - startTime > 600000) {
+                                        // 如果线程已经开始10分钟了，并且还处于“等待”的状态
+                                        // 将线程中断一下。
+                                        l.info("Interrupt thread " + thread.getName());
+                                        thread.interrupt();
+                                    }
+                                }
+                            }
+                        } else if (null == thread || !thread.isAlive()) {
+                            if (null != thread) {
+                                l.info(thread.getName() + " already dead.");
+                            }
+                            Thread t = new Thread(jobWorkers[i]);
+                            t.setName("JobWorker-" + i);
+                            t.start();
+                            threads[i] = t;
+                        }
+                    }
+                }
+            }
+        };
+        timer.scheduleAtFixedRate(timerTask, 0, 30000);
     }
 
     public boolean isStop() {
         return stop;
+    }
+
+    public void stopDevice() {
+        try {
+            stopJetty();
+        } catch (Exception ex) {
+        }
+        System.exit(0);
     }
 
     public void startJetty() throws Exception {
@@ -81,6 +146,8 @@ public class VirtualDevice {
                     response.getWriter().println(getStatus());
                     response.setStatus(HttpServletResponse.SC_OK);
                     ((Request) request).setHandled(true);
+                } else if ("/action=stop".equalsIgnoreCase(path)) {
+                    stopDevice();
                 } else {
                     response.setContentType("text/xml");
                     response.getWriter().println(getUnknownAction(path));
@@ -108,11 +175,24 @@ public class VirtualDevice {
                 append(DeviceContext.getInstance().getConf().getProperty("Device", "port", "12207")).
                 append("</serviceport>").
                 append("<tasks>").
-                append(((ApplicationServiceImpl) DeviceContext.getInstance().getAppRuntime()).getRunningThreadNumber()).
+                append(getStartedTaskNumber()).
                 append("</tasks>").
                 append("</responsedata>").
                 append("</response>");
         return sb.toString();
+    }
+
+    public int getStartedTaskNumber() {
+        int c = 0;
+        if (null != threads) {
+            for (int i = 0; i < threads.length; i++) {
+                Thread t = threads[i];
+                if (t.isAlive()) {
+                    c++;
+                }
+            }
+        }
+        return c;
     }
 
     public String getUnknownAction(String action) {

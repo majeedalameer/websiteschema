@@ -5,6 +5,7 @@
 package websiteschema.cluster.analyzer;
 
 import java.util.*;
+import java.util.Map.Entry;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
@@ -12,6 +13,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import websiteschema.element.W3CDOMUtil;
+import websiteschema.utils.CollectionUtil;
 
 /**
  *
@@ -39,12 +41,52 @@ public class Doc {
             for (int i = 0; i < children.getLength(); i++) {
                 Node child = children.item(i);
                 if (Node.ELEMENT_NODE == child.getNodeType()) {
-                    String name = child.getNodeName();
-                    String text = W3CDOMUtil.getInstance().getNodeText(child);
-                    addField(name.toUpperCase(), text);
+                    if (isVirtualTextNode(child)) {
+                        String name = child.getNodeName();
+                        String text = W3CDOMUtil.getInstance().getNodeText(child);
+                        addField(name.toUpperCase(), text);
+                    } else {
+                        // 解析扩展数据
+                        parseExtData(child);
+                    }
                 }
             }
         }
+    }
+
+    private void parseExtData(Node node) {
+        String name = node.getNodeName();
+        NodeList children = node.getChildNodes();
+        Map<String, String> obj = new LinkedHashMap<String, String>();
+        for (int i = 0; i < children.getLength(); i++) {
+            Node child = children.item(i);
+            if (Node.ELEMENT_NODE == child.getNodeType()) {
+                String key = child.getNodeName();
+                String value = W3CDOMUtil.getInstance().getNodeText(child);
+                obj.put(key, value);
+            }
+        }
+        addExtField(name, obj);
+    }
+
+    /**
+     * 如果一个节点为TextNode，或仅包含TextNode作为子节点，则此节点为虚拟文本节点。
+     * @return
+     */
+    private boolean isVirtualTextNode(Node node) {
+        boolean ret = true;
+
+        NodeList children = node.getChildNodes();
+        if (null != children) {
+            for (int i = 0; i < children.getLength(); i++) {
+                Node child = children.item(i);
+                if (child.getNodeType() != Node.TEXT_NODE) {
+                    return false;
+                }
+            }
+        }
+
+        return ret;
     }
 
     public Set<String> keySet() {
@@ -73,10 +115,24 @@ public class Doc {
         return null;
     }
 
-    public String getExtValue(String field) {
-        Collection<String> values = getValues(field);
+    public List<String> getExtValue(String field) {
+        if (null != field) {
+            String array[] = field.split("/");
+            if (null != array && array.length == 2) {
+                return getExtValue(array[0], array[1]);
+            }
+        }
+        return null;
+    }
+
+    public List<String> getExtValue(String field, String key) {
+        Collection<Map<String, String>> values = getExtValues(field);
         if (null != values) {
-            return values.iterator().next();
+            List<String> lst = new ArrayList<String>();
+            for (Map<String, String> value : values) {
+                lst.add(value.get(key));
+            }
+            return lst;
         }
         return null;
     }
@@ -175,17 +231,46 @@ public class Doc {
         }
     }
 
+    /**
+     * 将Doc对象转换成DOM
+     * @return
+     */
     public Document toW3CDocument() {
+        return toW3CDocument(null);
+    }
+
+    /**
+     * 将Doc对象转换成DOM，并且按照tagMap中的映射关系，同时将标签名称替换。
+     * @param tagMap
+     * @return
+     */
+    public Document toW3CDocument(Map<String, String> tagMap) {
         Document ret = create();
         Element root = ret.createElement("DOCUMENT");
         ret.appendChild(root);
+        toW3CDocument(ret, root, tagMap);
+        return ret;
+    }
 
+    /**
+     * 在指定的DOM对象中，将Doc对象转换成root节点的子节点和其他后代，并且按照tagMap中的映射关系，同时将标签名称替换。
+     * @param ret
+     * @param root
+     * @param tagMap
+     */
+    public void toW3CDocument(Document ret, Element root, Map<String, String> tagMap) {
+
+        List<String> keys = sort(data.keySet(), tagMap);
         //添加抽取结果到doc中
-        for (String field : data.keySet()) {
+        for (String field : keys) {
             Collection<String> list = data.get(field);
-            if (null != list) {
+            if (null != list && !list.isEmpty()) {
                 for (String value : list) {
-                    Element ele = ret.createElement(field);
+                    String f = field;
+                    if (null != tagMap && tagMap.containsKey(field)) {
+                        f = tagMap.get(field);
+                    }
+                    Element ele = ret.createElement(f);
                     ele.setTextContent(value);
                     root.appendChild(ele);
                 }
@@ -196,11 +281,19 @@ public class Doc {
             Collection<Map<String, String>> list = extData.get(field);
             if (null != list && !list.isEmpty()) {
                 for (Map<String, String> obj : list) {
-                    Element ele = ret.createElement(field);
+                    String f = field;
+                    if (null != tagMap && tagMap.containsKey(field)) {
+                        f = tagMap.get(field);
+                    }
+                    Element ele = ret.createElement(f);
 
                     for (String key : obj.keySet()) {
                         String value = obj.get(key);
-                        Element child = ret.createElement(key);
+                        String k = key;
+                        if (null != tagMap && tagMap.containsKey(key)) {
+                            k = tagMap.get(key);
+                        }
+                        Element child = ret.createElement(k);
                         child.setTextContent(value);
                         ele.appendChild(child);
                     }
@@ -209,8 +302,30 @@ public class Doc {
                 }
             }
         }
+    }
 
-        return ret;
+    private List<String> sort(Collection<String> ori, Map<String, String> map) {
+        if (!ori.isEmpty() && null != map && !map.isEmpty()) {
+            Map<String, String> tags = new HashMap<String, String>();
+            for (String str : ori) {
+                if (map.containsKey(str)) {
+                    tags.put(str, map.get(str));
+                } else {
+                    tags.put(str, str);
+                }
+            }
+            List<Entry<String, String>> entrys = CollectionUtil.sortMapAsc(tags);
+            List<String> ret = new ArrayList<String>();
+            for (Entry<String, String> entry : entrys) {
+                ret.add(entry.getKey());
+            }
+
+            return ret;
+        } else {
+            List<String> ret = new ArrayList<String>(ori);
+            Collections.sort(ret);
+            return ret;
+        }
     }
 
     private Document create() {

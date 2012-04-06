@@ -7,7 +7,6 @@ package websiteschema.crawler.browser;
 import com.webrenderer.swing.BrowserFactory;
 import com.webrenderer.swing.IMozillaBrowserCanvas;
 import com.webrenderer.swing.ProxySetting;
-import com.webrenderer.swing.RenderingOptimization;
 import com.webrenderer.swing.dom.IDocument;
 import com.webrenderer.swing.dom.IElement;
 import com.webrenderer.swing.dom.IElementCollection;
@@ -16,12 +15,13 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.*;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import websiteschema.crawler.Crawler;
+import websiteschema.crawler.WebPage;
 import websiteschema.model.domain.cralwer.CrawlerSettings;
-import websiteschema.conf.Configure;
 import websiteschema.utils.UrlLinkUtil;
 
 /**
@@ -30,18 +30,7 @@ import websiteschema.utils.UrlLinkUtil;
  */
 public class BrowserWebCrawler implements Crawler {
 
-    private static final String user = Configure.getDefaultConfigure().getProperty("Browser", "LicenseUser");
-    private static final String serial = Configure.getDefaultConfigure().getProperty("Browser", "LicenseSerial");
-//    static {
-//        System.out.println("Add Shutdown Hook");
-//        Runtime.getRuntime().addShutdownHook(new Thread() {
-//
-//            @Override
-//            public void run() {
-//                System.out.println("Shutdown Mozilla : " + BrowserFactory.shutdownMozilla());
-//            }
-//        });
-//    }
+    Logger l = Logger.getLogger(BrowserWebCrawler.class);
     IMozillaBrowserCanvas browser = null;
     JFrame frame;
     boolean loadImage = false;
@@ -54,19 +43,9 @@ public class BrowserWebCrawler implements Crawler {
     CrawlerSettings crawlerSettings;
     final Boolean lock = false;
     int sec = 1000;
-    long delay = 30 * sec;
+    long delay = 5 * sec;
     int httpStatus = 0;
     Map<String, String> header = new HashMap<String, String>(2);
-
-    @Override
-    public void finalize() {
-        if (null != browser) {
-            BrowserFactory.destroyBrowser(browser);
-        }
-        if (null != frame) {
-            frame.dispose();
-        }
-    }
 
     public BrowserWebCrawler() {
         frame = new JFrame();
@@ -78,71 +57,22 @@ public class BrowserWebCrawler implements Crawler {
 
     private JPanel content() {
         JPanel panel = new JPanel(new BorderLayout());
-        BrowserFactory.setLicenseData(user, serial);
         //Core function to create browser
-        browser = BrowserFactory.spawnMozilla();
-        browser.enableCache();
-        // Improves scrolling performance on pages with windowless flash.
-        RenderingOptimization renOps = new RenderingOptimization();
-        renOps.setWindowlessFlashSmoothScrolling(true);
-        browser.setRenderingOptimizations(renOps);
-        panel.add(BorderLayout.CENTER, browser.getComponent());
-
+        browser = MyBrowserFactory.getInstance().getBrowser();
         browser.addNetworkListener(listener);
         browser.addPromptListener(new MyPromptListener());
+//        browser.addBrowserListener(new MyBrowserListener(isLoadImage()));
+        panel.add(BorderLayout.CENTER, browser.getComponent());
         return panel;
     }
 
     @Override
     public Document[] crawl(String url) {
-        System.out.println("start crawler.");
-        setUrl(url);
-        browser.loadURL(getUrl());
-        try {
-            synchronized (lock) {
-                System.out.println("wait");
-                lock.wait(delay);
-            }
-        } catch (InterruptedException ex) {
-            ex.printStackTrace();
-        }
-        System.out.println("after wait");
-        document = browser.getDocument();
-        updateDocumentEncoding(encoding, document);
-        IDocument frames[] = document.getChildFrames();
-        Document[] ret = null;
-        if (null != document) {
-            int len = null != frames ? frames.length + 1 : 1;
-            ret = new Document[len];
-            ret[0] = (Document) browser.getW3CDocument();
-            for (int i = 1; i < len; i++) {
-                updateDocumentEncoding(encoding, frames[i - 1]);
-                IElement body = frames[i - 1].getBody();
-                try {
-                    if (null != body) {
-                        ret[i] = body.convertToW3CNode().getOwnerDocument();
-                    }
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-            }
-        }
-        if (null != frame) {
-            BrowserFactory.destroyBrowser(browser);
-            frame.dispose();
-        }
-        return ret;
-    }
-
-    private void updateDocumentEncoding(String encoding, IDocument doc) {
-        if (null != encoding && !"".equals(encoding)) {
-            IElementCollection all = null != doc ? doc.getAll() : null;
-            if (null != all) {
-                for (int i = 0; i < all.length(); i++) {
-                    IElement ele = all.item(i);
-                    ele.putLang(encoding);
-                }
-            }
+        WebPage page = crawlWebPage(url);
+        if (null != page) {
+            return page.getDocs();
+        } else {
+            return null;
         }
     }
 
@@ -210,20 +140,6 @@ public class BrowserWebCrawler implements Crawler {
         return ret;
     }
 
-    public static void print(Node node) {
-        if (node.getNodeType() == Node.TEXT_NODE) {
-            System.out.println(node.getNodeValue());
-        } else {
-            if (node.hasChildNodes()) {
-                NodeList children = node.getChildNodes();
-                for (int i = 0; i < children.getLength(); i++) {
-                    Node child = children.item(i);
-                    print(child);
-                }
-            }
-        }
-    }
-
     @Override
     public void setAllowPopupWindow(boolean yes) {
     }
@@ -258,5 +174,60 @@ public class BrowserWebCrawler implements Crawler {
     @Override
     public void setCookie(String cookies) {
         header.put("Cookie", cookies);
+    }
+
+    @Override
+    public WebPage crawlWebPage(String url) {
+        l.debug("start crawler.");
+        setUrl(url);
+        long startTime = System.currentTimeMillis();
+        browser.loadURL(getUrl());
+        try {
+            synchronized (lock) {
+                l.debug("wait");
+                lock.wait(delay);
+            }
+        } catch (InterruptedException ex) {
+            l.error(ex.getMessage(), ex);
+        }
+        try {
+            long endTime = System.currentTimeMillis();
+            l.debug("after wait, elaspe: " + (endTime - startTime) + " ms");
+            document = browser.getDocument();
+            IDocument frames[] = document.getChildFrames();
+            Document[] docs = null;
+            String[] sources = null;
+            if (null != document) {
+                int len = null != frames ? frames.length + 1 : 1;
+                docs = new Document[len];
+                sources = new String[len];
+                docs[0] = (Document) browser.getW3CDocument();
+                sources[0] = document.getDocumentSource();
+                for (int i = 1; i < len; i++) {
+                    IElement body = frames[i - 1].getBody();
+                    sources[i] = frames[i - 1].getDocumentSource();
+                    try {
+                        if (null != body) {
+                            docs[i] = body.convertToW3CNode().getOwnerDocument();
+                        }
+                    } catch (Exception ex) {
+                        l.error(ex.getMessage(), ex);
+                    }
+                }
+            }
+            WebPage ret = new WebPage();
+            ret.setDocs(docs);
+            ret.setHtmlSource(sources);
+            ret.setUrl(url);
+            l.debug("return, elaspe: " + (System.currentTimeMillis() - startTime) + " ms");
+            return ret;
+        } finally {
+            if (null != browser) {
+                BrowserFactory.destroyBrowser(browser);
+            }
+            if (null != frame) {
+                frame.dispose();
+            }
+        }
     }
 }

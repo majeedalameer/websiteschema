@@ -25,7 +25,7 @@ import websiteschema.cluster.analyzer.fields.StandardExtractor;
 import websiteschema.cluster.analyzer.fields.TitleAnalyzer;
 import websiteschema.cluster.analyzer.fields.XPathExtractor;
 import websiteschema.model.domain.Websiteschema;
-import websiteschema.persistence.hbase.WebsiteschemaMapper;
+import websiteschema.persistence.Mapper;
 import websiteschema.utils.CollectionUtil;
 import websiteschema.utils.StringUtil;
 
@@ -911,9 +911,8 @@ public class GubaParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
     public void setSiteId(String siteId) {
         this.siteId = siteId;
         this.siteIdField.setText(siteId);
-        this.schema = BrowserContext.getSpringContext().
-                getBean("websiteschemaMapper", WebsiteschemaMapper.class).
-                get(siteId);
+        Mapper<Websiteschema> mapper = BrowserContext.getSpringContext().getBean("websiteschemaMapper", Mapper.class);
+        this.schema = mapper.get(siteId);
     }
 
     @Override

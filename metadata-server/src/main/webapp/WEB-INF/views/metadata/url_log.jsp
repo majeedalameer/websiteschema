@@ -110,7 +110,12 @@
                     cm: cm,
                     
                     // inline toolbars
-                    tbar: [ '->',
+                    tbar: [{
+                            text: '删除',
+                            tooltip: '删除记录',
+                            iconCls: 'icon-delete',
+                            handler: handleDelete
+                        }, '->',
                         ' ', '开始时间', ' ',
                         {
                             xtype: 'textfield',
@@ -205,6 +210,20 @@
                                 MsgTip.msg("", "任务和调度添加失败: " + errorString, true, 5);
                             }
                         });
+                    }
+                }
+
+                //删除数据
+                function handleDelete(){
+                    var selections = grid.selModel.getSelections();
+                    for (var i = 0,len = selections.length; i < len; i++) {
+                        if(i == len - 1) {
+                            UrlLogService.deleteRecord(selections[i].data, function(){
+                                store.reload();
+                            });
+                        } else {
+                            UrlLogService.deleteRecord(selections[i].data);
+                        }
                     }
                 }
 

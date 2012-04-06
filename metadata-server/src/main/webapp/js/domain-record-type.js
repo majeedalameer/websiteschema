@@ -1,7 +1,34 @@
-/* 
+/*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
+
+var scheduleTaskRecordType = [
+{
+    name : 'id',
+    type : 'long'
+},
+{
+    name : 'scheduleId',
+    type : 'long'
+},
+{
+    name : 'message',
+    type : 'string'
+},
+{
+    name : 'status',
+    type : 'int'
+},
+{
+    name : 'createTime',
+    type : 'date'
+},
+{
+    name : 'updateTime',
+    type : 'date'
+}
+]
 
 var cipherRecordType = [
 {
@@ -212,6 +239,10 @@ var scheduleRecordType = [
 },
 {
     name : 'startURL',
+    type : 'string'
+},
+{
+    name : 'jobname',
     type : 'string'
 },
 {

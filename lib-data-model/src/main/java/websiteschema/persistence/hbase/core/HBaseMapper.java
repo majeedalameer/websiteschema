@@ -11,12 +11,13 @@ import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import websiteschema.common.base.Function;
 import websiteschema.model.domain.HBaseBean;
+import websiteschema.persistence.Mapper;
 
 /**
  *
  * @author ray
  */
-public class HBaseMapper<T extends HBaseBean> extends Mapper {
+public class HBaseMapper<T extends HBaseBean> extends HbaseBasicMapper implements Mapper<T> {
 
     private Class<T> clazz;
     private JavaBeanWrapper wrapper = JavaBeanWrapper.getInstance();
@@ -27,6 +28,7 @@ public class HBaseMapper<T extends HBaseBean> extends Mapper {
 //        HBaseMapperFactory.getInstance().createTableIfNotExists(getTableName(), clazz);
     }
 
+    @Override
     public T get(String rowKey) {
         Result result = select(rowKey);
         return wrapper.getBean(result, clazz);
@@ -47,7 +49,7 @@ public class HBaseMapper<T extends HBaseBean> extends Mapper {
     }
 
     public void scan(String start, Function<T> func) {
-        if (null != start && "".equals(start)) {
+        if (null != start && !"".equals(start)) {
             ResultScanner rs = scan(start);
             if (null != rs) {
                 try {
@@ -62,6 +64,50 @@ public class HBaseMapper<T extends HBaseBean> extends Mapper {
         }
     }
 
+    @Override
+    public void scan(String start, String end, Function<T> func) {
+        if (null != start && !"".equals(start)) {
+            ResultScanner rs = scan(start, end);
+            if (null != rs) {
+                try {
+                    for (Result r : rs) {
+                        T obj = wrapper.getBean(r, clazz);
+                        func.invoke(obj);
+                    }
+                } finally {
+                    rs.close();
+                }
+            }
+        }
+    }
+
+    @Override
+    public void batchScan(String start, String end, int batchSize, Function<List<T>> func) {
+        if (null != start && !"".equals(start)) {
+            ResultScanner rs = scan(start, end);
+            if (null != rs) {
+                try {
+                    List<T> list = new ArrayList<T>(batchSize);
+                    for (Result r : rs) {
+                        T obj = wrapper.getBean(r, clazz);
+                        list.add(obj);
+                        if (list.size() >= batchSize) {
+                            func.invoke(list);
+                            list.clear();
+                        }
+                    }
+                    if (!list.isEmpty()) {
+                        func.invoke(list);
+                        list.clear();
+                    }
+                } finally {
+                    rs.close();
+                }
+            }
+        }
+    }
+
+    @Override
     public List<T> getList(String start, String end) {
         if (null != start && !"".equals(start)) {
             ResultScanner rs = scan(start, end);
@@ -82,6 +128,7 @@ public class HBaseMapper<T extends HBaseBean> extends Mapper {
 
     }
 
+    @Override
     public List<T> getList(String start, String end, String family) {
         if (null != start && !"".equals(start)) {
             ResultScanner rs = scan(start, end, family);
@@ -102,6 +149,7 @@ public class HBaseMapper<T extends HBaseBean> extends Mapper {
 
     }
 
+    @Override
     public List<T> getList(String start, String end, String family, int maxResults) {
         if (null != start && !"".equals(start)) {
             ResultScanner rs = null;
@@ -132,11 +180,13 @@ public class HBaseMapper<T extends HBaseBean> extends Mapper {
 
     }
 
+    @Override
     public void put(T obj) {
         Map<String, String> record = wrapper.getMap(obj, clazz);
         write(obj.getRowKey(), record);
     }
 
+    @Override
     public void put(List<T> lst) {
         List<Map<String, String>> records = new ArrayList<Map<String, String>>();
         for (T obj : lst) {

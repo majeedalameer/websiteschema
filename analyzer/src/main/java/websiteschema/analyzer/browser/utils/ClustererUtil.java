@@ -14,8 +14,7 @@ import websiteschema.model.domain.Websiteschema;
 import websiteschema.model.domain.cluster.Cluster;
 import websiteschema.model.domain.cluster.ClusterModel;
 import websiteschema.model.domain.cluster.Sample;
-import websiteschema.persistence.hbase.ClusterModelMapper;
-import websiteschema.persistence.hbase.WebsiteschemaMapper;
+import websiteschema.persistence.Mapper;
 
 /**
  *
@@ -30,9 +29,9 @@ public class ClustererUtil {
     }
 
     public String classify(String siteId, Document doc) {
-        ClusterModelMapper cmMapper = BrowserContext.getSpringContext().getBean("clusterModelMapper", ClusterModelMapper.class);
+        Mapper<ClusterModel> cmMapper = BrowserContext.getSpringContext().getBean("clusterModelMapper", Mapper.class);
         ClusterModel cm = cmMapper.get(siteId);
-        WebsiteschemaMapper mapper = BrowserContext.getSpringContext().getBean("websiteschemaMapper", WebsiteschemaMapper.class);
+        Mapper<Websiteschema> mapper = BrowserContext.getSpringContext().getBean("websiteschemaMapper", Mapper.class);
         Websiteschema websiteschema = mapper.get(siteId);
         if (null != cm) {
             String clustererType = cm.getClustererType();

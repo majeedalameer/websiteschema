@@ -63,6 +63,10 @@ public class Application implements IApplication {
         return this.status;
     }
 
+    public long getStartTime() {
+        return startTime;
+    }
+
     public int getTimeout() {
         return timeout;
     }

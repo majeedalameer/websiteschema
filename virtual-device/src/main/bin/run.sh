@@ -1,5 +1,5 @@
 #!/bin/bash
 ulimit -c unlimited
-java -Xmx512m -jar ../lib/virtual-device.jar
+java -Xmx2048m -jar ../lib/virtual-device.jar
 
 

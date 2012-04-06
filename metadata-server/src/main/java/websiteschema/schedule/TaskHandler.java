@@ -31,7 +31,7 @@ public class TaskHandler {
         String host = MetadataServerContext.getInstance().getConf().
                 getProperty("URLQueue", "ServerHost", "localhost");
         String queueName = MetadataServerContext.getInstance().getConf().
-                getProperty("URLQueue", "QueueName", "url_queue");
+                getProperty("URLQueue", "PriorQueueName", "url_queue");
         l.debug("create a new RabbitQueue instance with host: " + host + " and queue name: " + queueName);
         queue = new RabbitQueue<Message>(host, queueName);
         queueRepos.put(queueName, queue);

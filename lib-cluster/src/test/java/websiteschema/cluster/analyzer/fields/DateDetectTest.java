@@ -87,6 +87,11 @@ public class DateDetectTest {
         assert("2011-12-31".equals(res));
 
         res = DateDetectUtil.getInstance().parseDate("2011-11-30 09:25 来源: 中国证券报", "yyyy-MM-dd HH:mm:SS", "yyyy-MM-dd HH:mm:SS");
+        
+        date = "2012年3月22日 9点40分    ";
+        pat = "yyyy年MM月dd日 HH点mm分";
+        res = DateDetectUtil.getInstance().parseDate(date, pat, "yyyy-MM-dd HH:mm");
+        assert("2012-03-22 09:40".equals(res));
     }
 
     @Test

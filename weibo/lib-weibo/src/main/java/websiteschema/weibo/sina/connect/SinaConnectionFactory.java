@@ -53,7 +53,7 @@ public class SinaConnectionFactory extends ConnectionFactory<Sina> {
         postMethod.addParameter("action", "submit");
         try {
             client.executeMethod(postMethod);
-//            System.out.println(postMethod.getResponseBodyAsString());
+            System.out.println(postMethod.getResponseBodyAsString());
         } catch (HttpException e) {
             e.printStackTrace();
         } catch (IOException e) {

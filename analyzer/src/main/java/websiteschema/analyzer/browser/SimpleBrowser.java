@@ -21,6 +21,7 @@ import com.webrenderer.swing.RenderingOptimization;
 import com.webrenderer.swing.dom.IDocument;
 import com.webrenderer.swing.dom.IElement;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
@@ -47,7 +48,7 @@ import websiteschema.element.XPathAttributes;
 import websiteschema.model.domain.Site;
 import websiteschema.model.domain.Websiteschema;
 import websiteschema.model.domain.factory.WebsiteschemaFactory;
-import websiteschema.persistence.hbase.WebsiteschemaMapper;
+import websiteschema.persistence.Mapper;
 import websiteschema.persistence.rdbms.SiteMapper;
 import websiteschema.vips.VIPSImpl;
 import websiteschema.vips.VisionBlock;
@@ -115,7 +116,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
         SiteMapper siteMapper = BrowserContext.getSpringContext().getBean("siteMapper", SiteMapper.class);
         Site site = siteMapper.getBySiteId(siteId);
 
-        WebsiteschemaMapper mapper = BrowserContext.getSpringContext().getBean("websiteschemaMapper", WebsiteschemaMapper.class);
+        Mapper<Websiteschema> mapper = BrowserContext.getSpringContext().getBean("websiteschemaMapper", Mapper.class);
         Websiteschema websiteschema = mapper.get(siteId);
         if (null == websiteschema) {
             websiteschema = WebsiteschemaFactory.apply(site);
@@ -251,18 +252,19 @@ public class SimpleBrowser extends javax.swing.JFrame {
 
         //Core function to create browser
         browser = BrowserFactory.spawnMozilla();
-        browser.setHTTPHeadersEnabled(true);
+        browser.enableCache();
 
         RenderingOptimization renOps = new RenderingOptimization();
         renOps.setWindowlessFlashSmoothScrolling(true);
         browser.setRenderingOptimizations(renOps);
+        browser.setHTTPHeadersEnabled(true);
 
         browser.loadURL(homePage);
 
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(BorderLayout.CENTER, browser.getComponent());
         this.analyzerFrame.setContentPane(panel);
-
+        
         //初始化BrowerContext
         context.setBrowser(browser);
         vips = new VIPSImpl(context);
@@ -1008,8 +1010,8 @@ public class SimpleBrowser extends javax.swing.JFrame {
 
     private void linkTestMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_linkTestMenuActionPerformed
         // TODO add your handling code here:
-        LinkTestFrame frame = new LinkTestFrame();
-        frame.setContext(context);
+        LinkTestFrame frame = new LinkTestFrame(context);
+//        frame.setContext(context);
         frame.setVisible(true);
     }//GEN-LAST:event_linkTestMenuActionPerformed
 
@@ -1174,6 +1176,19 @@ public class SimpleBrowser extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
+
+//        com.incors.plaf.alloy.AlloyLookAndFeel.setProperty("alloy.licenseCode", "4#Jeff_Chen#pabp38#5z9r8g");
+//        com.incors.plaf.alloy.AlloyLookAndFeel.setProperty("alloy.isLookAndFeelFrameDecoration", "false");
+//        try {
+//            com.incors.plaf.alloy.AlloyTheme theme = new com.incors.plaf.alloy.themes.bedouin.BedouinTheme();
+//
+//            com.incors.plaf.alloy.AlloyLookAndFeel alloyLnF = new com.incors.plaf.alloy.AlloyLookAndFeel(theme);
+//
+//            javax.swing.UIManager.setLookAndFeel(alloyLnF);
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//        }
+
         java.awt.EventQueue.invokeLater(new Runnable() {
 
             @Override

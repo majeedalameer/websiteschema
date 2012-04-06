@@ -30,13 +30,14 @@ import websiteschema.cluster.analyzer.fields.DateAnalyzer;
 import websiteschema.cluster.analyzer.fields.StandardExtractor;
 import websiteschema.cluster.analyzer.fields.TitleAnalyzer;
 import websiteschema.cluster.analyzer.fields.XPathExtractor;
+import websiteschema.crawler.Crawler;
 import websiteschema.model.domain.Websiteschema;
 import websiteschema.model.domain.cluster.Cluster;
 import websiteschema.model.domain.cluster.ClusterModel;
 import websiteschema.model.domain.cluster.DocVector;
 import websiteschema.model.domain.cluster.Sample;
-import websiteschema.persistence.hbase.ClusterModelMapper;
-import websiteschema.persistence.hbase.WebsiteschemaMapper;
+import websiteschema.model.domain.cralwer.CrawlerSettings;
+import websiteschema.persistence.Mapper;
 import websiteschema.utils.CollectionUtil;
 
 /**
@@ -78,17 +79,22 @@ public class NewsParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
     @Override
     public void setSiteId(String siteId) {
         this.siteIdLabel.setText(siteId);
-        this.schema = BrowserContext.getSpringContext().
-                getBean("websiteschemaMapper", WebsiteschemaMapper.class).
+        this.schema = (Websiteschema) BrowserContext.getSpringContext().
+                getBean("websiteschemaMapper", Mapper.class).
                 get(siteId);
     }
 
     private void analysis() {
+        this.testButton.setEnabled(false);
+        this.saveButton.setEnabled(false);
         try {
             classify();
             initProp();
         } catch (Exception ex) {
             ex.printStackTrace();
+        } finally {
+            this.testButton.setEnabled(true);
+            this.saveButton.setEnabled(true);
         }
     }
 
@@ -367,8 +373,11 @@ public class NewsParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
     }
 
     private void classify() {
-        ClusterModelMapper cmMapper = BrowserContext.getSpringContext().getBean("clusterModelMapper", ClusterModelMapper.class);
+        long start = System.currentTimeMillis();
+        Mapper<ClusterModel> cmMapper = BrowserContext.getSpringContext().getBean("clusterModelMapper", Mapper.class);
         ClusterModel cm = cmMapper.get(getSiteId());
+        long end = System.currentTimeMillis();
+        context.getConsole().log("Get ClusterModel elapse: " + (end - start));
         if (null != cm) {
             String clustererType = cm.getClustererType();
             if (null != clustererType) {
@@ -380,11 +389,17 @@ public class NewsParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
                     Clusterer clusterer = (Clusterer) clazz.getConstructor(cx).newInstance(new Object[]{getSiteId()});
                     clusterer.init(cm);
                     this.statusLabel.setText("转换文档");
+                    start = System.currentTimeMillis();
                     Sample sample = getCurrentDocument();
+                    end = System.currentTimeMillis();
+                    context.getConsole().log("Convert Document to Sample elapse: " + (end - start));
                     if (null != sample) {
                         DocVector vect = new DocVectorConvertor().convert(sample, cm.getStatInfo());
                         this.statusLabel.setText("开始分类");
+                        start = System.currentTimeMillis();
                         Cluster cluster = clusterer.classify(sample);
+                        end = System.currentTimeMillis();
+                        context.getConsole().log("Classify elapse: " + (end - start));
                         if (null != cluster) {
                             double sim = clusterer.membershipDegree(vect, cluster.getCentralPoint());
                             setCluster(cluster, sim);
@@ -406,7 +421,7 @@ public class NewsParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
     private Sample getCurrentDocument() {
         Sample sample = null;
 
-        Node doc = context.getBrowser().getW3CDocument();
+        Node doc = getDocument(context.getBrowser().getURL());
         if (null != doc && doc.getNodeType() == Node.DOCUMENT_NODE) {
             DocumentConvertor dc = new DocumentConvertor();
             dc.setXpathAttr(schema.getXpathAttr());
@@ -417,6 +432,29 @@ public class NewsParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
         }
 
         return sample;
+    }
+
+    private Document getDocument(String url) {
+        Mapper<Websiteschema> mapper = BrowserContext.getSpringContext().getBean("websiteschemaMapper", Mapper.class);
+        Websiteschema ws = mapper.get(getSiteId());
+        if (null != ws) {
+            CrawlerSettings settings = ws.getCrawlerSettings();
+            if (null != settings) {
+                String crawlerType = settings.getCrawlerType();
+                if (null == crawlerType) {
+                    crawlerType = "websiteschema.crawler.SimpleHttpCrawler";
+                }
+                try {
+                    Class clazz = Class.forName(crawlerType);
+                    Crawler crawler = (Crawler) clazz.newInstance();
+                    Document[] docs = crawler.crawl(url);
+                    return docs[0];
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+        return getDocument();
     }
 
     private Document getDocument() {
@@ -989,25 +1027,40 @@ public class NewsParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
 
     private void testButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_testButtonActionPerformed
         // TODO add your handling code here:
-        this.statusLabel.setText("正在分析页面");
-        extractAndDisplayTitle(getTitleConfig());
-        extractAndDisplayDate(getDateConfig());
-        extractAndDisplayStandardExtractor(
-                sourceExtractor,
-                getStandardExtractorConfig(sourceXPathField, sourcePrefixField, sourceSuffixField),
-                sourceResultField, sourceXPathField, sourcePrefixField, sourceSuffixField);
-        extractAndDisplayStandardExtractor(
-                authorExtractor,
-                getStandardExtractorConfig(authorXPathField, authorPrefixField, authorSuffixField),
-                authorResultField, authorXPathField, authorPrefixField, authorSuffixField);
-        extractAndDisplayXPathExtractor(commentsExtractor, getXPathExtractorConfig(commentXPathField), commentResultField, commentXPathField);
-        extractAndDisplayXPathExtractor(clicksExtractor, getXPathExtractorConfig(clickXPathField), clickResultField, clickXPathField);
-        extractAndDisplayXPathExtractor(transmitExtractor, getXPathExtractorConfig(transmitXPathField), transmitResultField, transmitXPathField);
-        extractAndDisplayXPathExtractor(summaryExtractor, getXPathExtractorConfig(summaryXPathField), summaryResultField, summaryXPathField);
-        extractAndDisplayXPathExtractor(chnlExtractor, getXPathExtractorConfig(channelXPathField), channelResultField, channelXPathField);
-        extractAndDisplayContent(getContentConfig());
-        this.statusLabel.setText("分析完毕");
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                test();
+            }
+        }).start();
     }//GEN-LAST:event_testButtonActionPerformed
+
+    private void test() {
+        this.statusLabel.setText("正在分析页面");
+        testButton.setEnabled(false);
+        try {
+            extractAndDisplayTitle(getTitleConfig());
+            extractAndDisplayDate(getDateConfig());
+            extractAndDisplayStandardExtractor(
+                    sourceExtractor,
+                    getStandardExtractorConfig(sourceXPathField, sourcePrefixField, sourceSuffixField),
+                    sourceResultField, sourceXPathField, sourcePrefixField, sourceSuffixField);
+            extractAndDisplayStandardExtractor(
+                    authorExtractor,
+                    getStandardExtractorConfig(authorXPathField, authorPrefixField, authorSuffixField),
+                    authorResultField, authorXPathField, authorPrefixField, authorSuffixField);
+            extractAndDisplayXPathExtractor(commentsExtractor, getXPathExtractorConfig(commentXPathField), commentResultField, commentXPathField);
+            extractAndDisplayXPathExtractor(clicksExtractor, getXPathExtractorConfig(clickXPathField), clickResultField, clickXPathField);
+            extractAndDisplayXPathExtractor(transmitExtractor, getXPathExtractorConfig(transmitXPathField), transmitResultField, transmitXPathField);
+            extractAndDisplayXPathExtractor(summaryExtractor, getXPathExtractorConfig(summaryXPathField), summaryResultField, summaryXPathField);
+            extractAndDisplayXPathExtractor(chnlExtractor, getXPathExtractorConfig(channelXPathField), channelResultField, channelXPathField);
+            extractAndDisplayContent(getContentConfig());
+        } finally {
+            this.statusLabel.setText("分析完毕");
+            testButton.setEnabled(true);
+        }
+    }
 
     private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
         // TODO add your handling code here:

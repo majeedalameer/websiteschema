@@ -18,9 +18,8 @@ import websiteschema.cluster.analyzer.ClusterAnalyzer;
 import websiteschema.cluster.analyzer.ClusterAnalyzerImpl;
 import websiteschema.cluster.analyzer.IFieldAnalyzer;
 import websiteschema.model.domain.Site;
-import websiteschema.persistence.hbase.ClusterModelMapper;
+import websiteschema.persistence.Mapper;
 import websiteschema.persistence.hbase.SampleMapper;
-import websiteschema.persistence.hbase.WebsiteschemaMapper;
 import websiteschema.persistence.rdbms.SiteMapper;
 
 /**
@@ -112,9 +111,9 @@ public class ClustererFrame extends javax.swing.JFrame {
         clusterer.setSiteId(getSiteId());
         clusterer.setRetrain(this.retrainCheckBox.isSelected());
         clusterer.setParentComponent(this);
-        clusterer.setSampleMapper(BrowserContext.getSpringContext().getBean("sampleMapper", SampleMapper.class));
-        clusterer.setCmMapper(BrowserContext.getSpringContext().getBean("clusterModelMapper", ClusterModelMapper.class));
-        clusterer.setWebsiteschemaMapper(BrowserContext.getSpringContext().getBean("websiteschemaMapper", WebsiteschemaMapper.class));
+        clusterer.setSampleMapper(BrowserContext.getSpringContext().getBean("sampleMapper", Mapper.class));
+        clusterer.setCmMapper(BrowserContext.getSpringContext().getBean("clusterModelMapper", Mapper.class));
+        clusterer.setWebsiteschemaMapper(BrowserContext.getSpringContext().getBean("websiteschemaMapper", Mapper.class));
         clusterer.setAnalyzer(createClusterAnalyzer());
         clusterer.setPanel(analysisPanel);
         clusterer.setTextArea(this.infoArea);

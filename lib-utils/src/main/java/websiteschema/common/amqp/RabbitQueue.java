@@ -1,6 +1,5 @@
 package websiteschema.common.amqp;
 
-import java.util.concurrent.locks.ReentrantLock;
 import com.rabbitmq.client.ShutdownSignalException;
 import com.rabbitmq.client.AlreadyClosedException;
 import org.codehaus.jackson.JsonGenerationException;
@@ -29,7 +28,6 @@ public class RabbitQueue<T> {
     private boolean connStateOk = false;
     private String charset = "UTF-8";
     private Logger l = Logger.getLogger(RabbitQueue.class);
-    private final static ReentrantLock lock = new ReentrantLock();
 
     public RabbitQueue(String host, String queueName) {
         this(host, -1, queueName);
@@ -42,7 +40,7 @@ public class RabbitQueue<T> {
         try {
             reset();
         } catch (Exception ex) {
-            ex.printStackTrace();
+            l.error(ex.getMessage(), ex);
         }
     }
 
@@ -81,13 +79,24 @@ public class RabbitQueue<T> {
         }
     }
 
-    public Channel getChannel() throws IOException {
+    public Channel getChannel() throws Exception {
         if (null != connection) {
             // 创建一个通道
             Channel chnl = connection.createChannel();
             // 声明一个可持久化的队列
             chnl.queueDeclare(queueName, true, false, false, null);
             return chnl;
+        } else {
+            l.debug("connection is null");
+            checkConnection();
+            if (null != connection) {
+                l.debug("retry create channel.");
+                // 创建一个通道
+                Channel chnl = connection.createChannel();
+                // 声明一个可持久化的队列
+                chnl.queueDeclare(queueName, true, false, false, null);
+                return chnl;
+            }
         }
         return null;
     }
@@ -102,28 +111,19 @@ public class RabbitQueue<T> {
         return null;
     }
 
-    public void checkConnection() {
-        lock.lock();
-        try {
-            if (!connStateOk) {
-                close();
-                try {
-                    reset();
-                } catch (Exception ex) {
-                    l.error(ex.getMessage(), ex);
-                }
+    public synchronized void checkConnection() {
+        if (!connStateOk) {
+            close();
+            try {
+                reset();
+            } catch (Exception ex) {
+                l.error(ex.getMessage(), ex);
             }
-        } finally {
-            lock.unlock();
         }
     }
 
     public boolean offer(T msg) {
         boolean ret = false;
-        if (null == connection) {
-            l.debug("connection is null");
-            checkConnection(); //检查并修复链接
-        }
         Channel channel = null;
         try {
             channel = getChannel();
@@ -138,21 +138,7 @@ public class RabbitQueue<T> {
                 l.debug("channel can not be initialized.");
             }
         } catch (Exception ex) {
-            if (ex instanceof JsonGenerationException) {
-                l.error("json error", ex);
-            } else if (ex instanceof JsonMappingException) {
-                l.error("json error", ex);
-            } else if (ex instanceof IOException) {
-                l.error("io error, trying reconnect...", ex);
-                connStateOk = false; // 设置链接状态为错误
-                checkConnection(); //检查并修复链接
-            } else if (ex instanceof AlreadyClosedException) {
-                l.error("server already shutdown, trying reconnect sec...", ex);
-                connStateOk = false; // 设置链接状态为错误
-                checkConnection(); //检查并修复链接
-            } else {
-                l.error(ex.getMessage(), ex);
-            }
+            processException(ex);
         } finally {
             try {
                 if (null != channel) {
@@ -167,12 +153,26 @@ public class RabbitQueue<T> {
         return ret;
     }
 
+    public void processException(Exception ex) {
+        if (ex instanceof JsonGenerationException) {
+            l.error("json error", ex);
+        } else if (ex instanceof JsonMappingException) {
+            l.error("json error", ex);
+        } else if (ex instanceof IOException) {
+            l.error("io error, trying reconnect...", ex);
+            connStateOk = false; // 设置链接状态为错误
+            checkConnection(); //检查并修复链接
+        } else if (ex instanceof AlreadyClosedException) {
+            l.error("server already shutdown, trying reconnect sec...", ex);
+            connStateOk = false; // 设置链接状态为错误
+            checkConnection(); //检查并修复链接
+        } else {
+            l.error(ex.getMessage(), ex);
+        }
+    }
+
     public boolean offer(Channel channel, T msg) {
         boolean ret = false;
-        if (null == connection) {
-            l.debug("connection is null");
-            checkConnection(); //检查并修复链接
-        }
         try {
             if (null != channel) {
                 String json = toJson(msg);
@@ -185,31 +185,13 @@ public class RabbitQueue<T> {
                 l.debug("channel can not be initialized.");
             }
         } catch (Exception ex) {
-            if (ex instanceof JsonGenerationException) {
-                l.error("json error", ex);
-            } else if (ex instanceof JsonMappingException) {
-                l.error("json error", ex);
-            } else if (ex instanceof IOException) {
-                l.error("io error, trying reconnect...", ex);
-                connStateOk = false; // 设置链接状态为错误
-                checkConnection(); //检查并修复链接
-            } else if (ex instanceof AlreadyClosedException) {
-                l.error("server already shutdown, trying reconnect sec...", ex);
-                connStateOk = false; // 设置链接状态为错误
-                checkConnection(); //检查并修复链接
-            } else {
-                l.error(ex.getMessage(), ex);
-            }
+            processException(ex);
         }
         return ret;
     }
 
     public boolean offer(T[] msgs) {
         boolean ret = false;
-        if (null == connection) {
-            l.debug("connection is null");
-            checkConnection(); //检查并修复链接
-        }
         Channel channel = null;
         try {
             channel = getChannel();
@@ -227,21 +209,7 @@ public class RabbitQueue<T> {
                 l.debug("channel can not be initialized.");
             }
         } catch (Exception ex) {
-            if (ex instanceof JsonGenerationException) {
-                l.error("json error", ex);
-            } else if (ex instanceof JsonMappingException) {
-                l.error("json error", ex);
-            } else if (ex instanceof IOException) {
-                l.error("io error, trying reconnect...", ex);
-                connStateOk = false; // 设置链接状态为错误
-                checkConnection(); //检查并修复链接
-            } else if (ex instanceof AlreadyClosedException) {
-                l.error("server already shutdown, trying reconnect sec...", ex);
-                connStateOk = false; // 设置链接状态为错误
-                checkConnection(); //检查并修复链接
-            } else {
-                l.error(ex.getMessage(), ex);
-            }
+            processException(ex);
         } finally {
             try {
                 if (null != channel) {
@@ -269,10 +237,6 @@ public class RabbitQueue<T> {
     }
 
     public T poll(Class<T> clazz, int timeout, Function<T> worker) {
-        if (null == connection) {
-            l.debug("connection is null");
-            checkConnection(); //检查并修复链接
-        }
         Channel channel = null;
         QueueingConsumer.Delivery delivery = null;
         T msg = null;
@@ -289,7 +253,7 @@ public class RabbitQueue<T> {
                 if (null != delivery) {
                     String message = new String(delivery.getBody(), charset);
 
-                    l.debug(" [x] Received '" + message + "'");
+                    l.debug(" [x] Received from " + queueName + ": '" + message + "'");
                     msg = fromJson(message, clazz);
                     // 对消息进行简单处理
                     if (null != worker) {

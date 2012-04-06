@@ -7,12 +7,13 @@ package websiteschema.service;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import websiteschema.dwr.response.ListRange;
 import websiteschema.model.domain.UrlLink;
 import websiteschema.model.domain.UrlLog;
-import websiteschema.persistence.hbase.UrlLinkMapper;
-import websiteschema.persistence.hbase.UrlLogMapper;
+import websiteschema.persistence.Mapper;
 import websiteschema.utils.DateUtil;
 
 /**
@@ -22,8 +23,11 @@ import websiteschema.utils.DateUtil;
 @Service
 public class UrlLogService {
 
-    private UrlLogMapper urlLogMapper = new UrlLogMapper();
-    private UrlLinkMapper urlLinkMapper = new UrlLinkMapper();
+    @Autowired
+    private Mapper<UrlLog> urlLogMapper;
+    @Autowired
+    private Mapper<UrlLink> urlLinkMapper;
+    private Logger l = Logger.getLogger(getClass());
 
     public ListRange getResults(Map map) {
         ListRange listRange = new ListRange();
@@ -39,5 +43,10 @@ public class UrlLogService {
 
     public UrlLink getUrlLink(UrlLog log) {
         return urlLinkMapper.get(log.getURLRowKey());
+    }
+
+    public void deleteRecord(UrlLog log) {
+        urlLinkMapper.delete(log.getURLRowKey());
+        urlLogMapper.delete(log.getRowKey());
     }
 }

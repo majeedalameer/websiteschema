@@ -25,11 +25,11 @@ import websiteschema.persistence.rdbms.TaskMapper;
  *
  * @author ray
  */
+@Deprecated
 public class ApplicationServiceImpl implements ApplicationService {
 
-    public static final long MaxTaskNumber = 200;
+    public static final int MaxTaskNumber = 200;
     List<Future<AppStatus>> fList = new ArrayList<Future<AppStatus>>();
-    private int poolSize = 16;
     private ExecutorService pool = null;
     private ClassLoader classLoader = ApplicationServiceImpl.class.getClassLoader();
     private TaskMapper taskMapper = null;
@@ -43,7 +43,6 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     public ApplicationServiceImpl(int poolSize) {
-        this.poolSize = poolSize;
         init(poolSize);
     }
 
@@ -79,7 +78,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     private boolean addTask(Application task) {
         int Running = getRunningThreadNumber();
-        if (Running > MaxTaskNumber) {
+        if (Running >= MaxTaskNumber) {
             //当前任务数已经超过了设定的上限，拒绝添加新任务。
             return false;
         } else {
@@ -176,10 +175,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     public boolean isShutdown() {
         return pool.isShutdown();
-    }
-
-    public void setPoolSize(int poolSize) {
-        this.poolSize = poolSize;
     }
 
     public void setTaskMapper(TaskMapper taskMapper) {

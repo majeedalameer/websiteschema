@@ -15,8 +15,8 @@
         <org.slf4j.version>1.5.10</org.slf4j.version>
         <webrenderer.version>6.0b3</webrenderer.version>
         <hive-version>0.7.1-cdh3u1</hive-version>
-        <hbase-version>0.90.3-cdh3u1</hbase-version>
-        <hadoop-version>0.20.2-cdh3u1</hadoop-version>
+        <hbase-version>0.90.4-cdh3u2</hbase-version>
+        <hadoop-version>0.20.2-cdh3u2</hadoop-version>
         <avro-version>1.5.4</avro-version>
 <!--        <rabbitmq-server>192.168.4.173</rabbitmq-server>
         <metadata-deploy-host>192.168.4.173</metadata-deploy-host>
@@ -24,17 +24,17 @@
         <hbase.zookeeper.quorum>hadoop-hbase1</hbase.zookeeper.quorum>
         <jdbc-url>jdbc:mysql://192.168.4.173:3306/websiteschema</jdbc-url>-->
 
-<!--        <rabbitmq-server>192.168.4.38</rabbitmq-server>
+        <rabbitmq-server>192.168.4.38</rabbitmq-server>
         <metadata-deploy-host>192.168.4.122</metadata-deploy-host>
         <hbase.master>hadoop2</hbase.master>
         <hbase.zookeeper.quorum>hadoop1,hadoop2,hadoop3,hadoop4,hadoop5</hbase.zookeeper.quorum>
-        <jdbc-url>jdbc:mysql://192.168.4.122:3306/websiteschema</jdbc-url>-->
+        <jdbc-url>jdbc:mysql://192.168.4.122:3306/websiteschema</jdbc-url>
 
-        <rabbitmq-server>localhost</rabbitmq-server>
+<!--        <rabbitmq-server>localhost</rabbitmq-server>
         <metadata-deploy-host>localhost</metadata-deploy-host>
         <hbase.master>localhost</hbase.master>
         <hbase.zookeeper.quorum>localhost</hbase.zookeeper.quorum>
-        <jdbc-url>jdbc:mysql://localhost:3306/websiteschema</jdbc-url>
+        <jdbc-url>jdbc:mysql://localhost:3306/websiteschema</jdbc-url>-->
         <jdbc-username>websiteschema</jdbc-username>
         <jdbc-passwd>websiteschema</jdbc-passwd>
         <webrenderer.classifier>linux64</webrenderer.classifier>
@@ -165,6 +165,18 @@
                 <groupId>mysql</groupId>
                 <artifactId>mysql-connector-java</artifactId>
                 <version>5.1.14</version>
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>c3p0</groupId>
+                <artifactId>c3p0</artifactId>
+                <version>0.9.1.2</version>
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>commons-dbcp</groupId>
+                <artifactId>commons-dbcp</artifactId>
+                <version>1.4</version>
                 <scope>runtime</scope>
             </dependency>
             <dependency>
@@ -347,11 +359,6 @@
                 <groupId>com.oracle</groupId>
                 <artifactId>ons</artifactId>
                 <version>11.2.0</version>
-            </dependency>
-            <dependency>
-                <groupId>commons-httpclient</groupId>
-                <artifactId>commons-httpclient</artifactId>
-                <version>3.1</version>
             </dependency>
             <dependency>
                 <groupId>commons-logging</groupId>

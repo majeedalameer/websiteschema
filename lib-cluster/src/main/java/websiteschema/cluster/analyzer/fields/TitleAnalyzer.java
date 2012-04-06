@@ -145,7 +145,9 @@ public class TitleAnalyzer extends AbstractFieldExtractor implements IFieldAnaly
         Set<String> ret = new HashSet<String>();
         List<Node> nodes = DocumentUtil.getByXPath(doc, xpath);
         for (Node node : nodes) {
-            String res = ExtractUtil.getInstance().getNodeText(node);
+            StringBuilder sb = new StringBuilder();
+            ExtractUtil.getInstance().extractNodeText(node, sb);
+            String res = sb.toString();
             if (null != res) {
                 res = StringUtil.trim(res);
 

@@ -38,6 +38,10 @@ import websiteschema.utils.UrlLinkUtil;
 @Description(desc = "抽取DOM树中指定位置内的链接。")
 public class FBLinksExtractor extends FunctionBlock {
 
+    @DI(name = "MUSTHAVE")
+    public List<String> mustHave;
+    @DI(name = "DONTHAVE")
+    public List<String> dontHave;
     @DI(name = "IN")
     public Document in;
     @DI(name = "DOCS")
@@ -68,21 +72,51 @@ public class FBLinksExtractor extends FunctionBlock {
         if (null != docs && null != xpath && null != url) {
             links = new ArrayList<Link>();
             for (Document doc : docs) {
-                List<Link> urls = extractLinks(doc);
+                List<Link> urls = extractLinks(doc, xpath);
                 if (null != urls) {
-                    links.addAll(urls);
+                    for (Link lnk : urls) {
+                        if (match(lnk, mustHave, dontHave)) {
+                            links.add(lnk);
+                        }
+                    }
                 }
             }
         } else if (null != in && null != xpath && null != url) {
             links = new ArrayList<Link>();
-            List<Link> urls = extractLinks(in);
+            List<Link> urls = extractLinks(in, xpath);
             if (null != urls) {
-                links.addAll(urls);
+                for (Link lnk : urls) {
+                    if (match(lnk, mustHave, dontHave)) {
+                        links.add(lnk);
+                    }
+                }
+            }
+        } else if (null != docs && null != url) {
+            links = new ArrayList<Link>();
+            List<Link> urls = extractLinks(in, "//a");
+            if (null != urls) {
+                for (Link lnk : urls) {
+                    if (match(lnk, mustHave, dontHave)) {
+                        links.add(lnk);
+                    }
+                }
             }
         }
     }
 
-    private List<Link> extractLinks(Document doc) {
+    private boolean match(Link lnk, List<String> mustHave, List<String> dontHave) {
+        boolean ret = true;
+
+        if (null != mustHave) {
+            String[] m = null != mustHave ? mustHave.toArray(new String[0]) : null;
+            String[] d = null != dontHave ? dontHave.toArray(new String[0]) : null;
+            ret = UrlLinkUtil.getInstance().matchOnePattern(lnk.getHref(), m, d);
+        }
+
+        return ret;
+    }
+
+    private List<Link> extractLinks(Document doc, String xpath) {
         if (null != doc && null != xpath && null != url) {
             List<Node> nodes = DocumentUtil.getByXPath(doc, xpath.trim());
             if (null != nodes) {

@@ -20,9 +20,11 @@ import websiteschema.fb.core.FunctionBlock;
  * @author ray
  */
 @EO(name = {"EO"})
-@EI(name = {"EI:SEND"})
+@EI(name = {"EI:SEND", "IDX:SEND_IDX"})
 public class DreAddDataFB extends FunctionBlock {
 
+    @DI(name = "IN")
+    public String content = null;
     @DI(name = "IDX")
     public Idx idx = null;
     @DI(name = "SERVER")
@@ -30,8 +32,8 @@ public class DreAddDataFB extends FunctionBlock {
     @DO(name = "INDEX", relativeEvents = {"EO"})
     public long indexNumber = 0;
 
-    @Algorithm(name = "SEND")
-    public void send() {
+    @Algorithm(name = "SEND_IDX")
+    public void sendIdx() {
         if (null != idx) {
             try {
                 StringBuilder sb = new StringBuilder();
@@ -44,7 +46,23 @@ public class DreAddDataFB extends FunctionBlock {
                 throw new RuntimeException(ex.getMessage());
             }
         } else {
-            throw new RuntimeException("DreAddDataFB: IDX is null");
+            throw new RuntimeException("DreAddDataFB: input IDX is null");
+        }
+        triggerEvent("EO");
+    }
+
+    @Algorithm(name = "SEND")
+    public void send() {
+        if (null != content) {
+            try {
+                if (!sendIdxFile(content)) {
+                    throw new RuntimeException("DreAddDataFB: can not sent content.");
+                }
+            } catch (Exception ex) {
+                throw new RuntimeException(ex.getMessage());
+            }
+        } else {
+            throw new RuntimeException("DreAddDataFB: input content is null");
         }
         triggerEvent("EO");
     }
@@ -56,7 +74,7 @@ public class DreAddDataFB extends FunctionBlock {
             String host_port[] = server.split(":");
             if (host_port.length == 2) {
                 String host = host_port[0];
-                int port = Integer.valueOf(host_port[i]);
+                int port = Integer.valueOf(host_port[1]);
 
                 indexServices[i] = new IndexingService(host, port);
                 indexServices[i].setIndexEncoding("UTF-8");
@@ -68,6 +86,7 @@ public class DreAddDataFB extends FunctionBlock {
     private boolean sendIdxFile(String content) {
         boolean success = false;
         IndexingService[] indexServices = createIndexingServices();
+        l.debug("created indexing service.");
         for (IndexingService service : indexServices) {
             try {
                 indexNumber = service.dreAdd(content, new ArrayList());

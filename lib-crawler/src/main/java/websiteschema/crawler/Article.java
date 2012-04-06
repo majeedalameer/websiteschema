@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import org.w3c.dom.Document;
-import websiteschema.cluster.analyzer.Doc;
 import websiteschema.cluster.analyzer.Link;
 import websiteschema.crawler.fb.FBLinksExtractor;
 
@@ -22,12 +21,12 @@ import websiteschema.crawler.fb.FBLinksExtractor;
 public class Article {
 
     private String urlFirstPage = null;
-    private Map<String, Doc> docsMap = null;
+    private Map<String, Document> docsMap = null;
     private Iterator<String> it = null;
 
     public Article(String onePageUrl, Document doc) {
 
-        this.docsMap = new TreeMap<String, Doc>(new UrlCompator());
+        this.docsMap = new TreeMap<String, Document>(new UrlCompator());
         this.docsMap.put(onePageUrl, null);
 
         FBLinksExtractor ext = new FBLinksExtractor();
@@ -51,7 +50,12 @@ public class Article {
         this.it = this.docsMap.keySet().iterator();
     }
 
-    public boolean hasNext() {
+    public String getFirstUrl() {
+
+        return this.urlFirstPage;
+    }
+
+     public boolean hasNext() {
         if (null != this.it) {
             return this.it.hasNext();
         } else {
@@ -64,80 +68,20 @@ public class Article {
         return it.next();
     }
 
-    public Doc put(String key, Doc value) {
-
-        if (null == value) {
-            throw new RuntimeException("A null Doc is being put into the Article. It comes from link: " + key);
-        }
-        return this.docsMap.put(key, value);
-    }
-
-    public Doc getArticle() {
-        if (null != this.docsMap) {
-            Iterator<String> it_tmp = docsMap.keySet().iterator();
-            Doc ret = docsMap.get(it_tmp.next());// the first document
-            while (it_tmp.hasNext()) {
-                ret.addField("CONTENT", docsMap.get(it_tmp.next()).getValue("CONTENT"));
-            }
-            return ret;
-        }
-
-        return null;
-    }
-
-    public String getFirstUrl() {
-
-        return this.urlFirstPage;
-    }
-
-    public Doc getPage(String key) {
+    public Document getPage(String key) {
 
         return this.docsMap.get(key);
     }
 
-    @Deprecated
-    // 仅适用于两个正常URL进行对比的情况，不适用于任意两个字符串
-    private static String diffURL(String str1, String str2) {
-        if (null == str1) {
-            return str2;
-        } else if (null == str2) {
-            return str1;
-        } else if ("".equals(str1)) {
-            return str2;
-        } else if ("".equals(str2)) {
-            return str1;
-        }
-        int start;
-        int end;
-        int len1 = str1.length();
-        int len2 = str2.length();
-        String longerStr;
-        if (len1 < len2) {
-            start = str1.length();
-            end = str2.length();
-            longerStr = str2;
-        } else {
-            start = str2.length();
-            end = str1.length();
-            longerStr = str1;
-        }
-        for (int i = 0; i < start; ++i) {
-            if (str1.charAt(i) != str2.charAt(i)) {
-                start = i;
-                break;
-            }
-        }
-        while (len1 > 0 && len2 > 0) {
-            if (str1.charAt(--len1) != str2.charAt(--len2)) {
-                break;
-            }
-            --end;
-        }
-        if (end <= 0 || start <= 0 || start > end) {
-            return null;
-        } else {
-            return longerStr.substring(start, end);
-        }
+    public Document put(String key, Document value) {
+
+        return this.docsMap.put(key, value);
+    }
+
+    public Document[] getDocuments() {
+        int len = docsMap.size();
+        Document[] docs = new Document[len];
+        return docsMap.values().toArray(docs);
     }
 
     private boolean isNeededUrl(String pageUrl, String anyUrl) {
@@ -208,5 +152,50 @@ public class Article {
         String str2 = "http://www.cien.com.cn/html/Home/node/60344-1.htm";
         String str = Article.diffURL(str1, str2);
         System.out.println(str);
+    }
+
+    @Deprecated
+    // 仅适用于两个正常URL进行对比的情况，不适用于任意两个字符串
+    private static String diffURL(String str1, String str2) {
+        if (null == str1) {
+            return str2;
+        } else if (null == str2) {
+            return str1;
+        } else if ("".equals(str1)) {
+            return str2;
+        } else if ("".equals(str2)) {
+            return str1;
+        }
+        int start;
+        int end;
+        int len1 = str1.length();
+        int len2 = str2.length();
+        String longerStr;
+        if (len1 < len2) {
+            start = str1.length();
+            end = str2.length();
+            longerStr = str2;
+        } else {
+            start = str2.length();
+            end = str1.length();
+            longerStr = str1;
+        }
+        for (int i = 0; i < start; ++i) {
+            if (str1.charAt(i) != str2.charAt(i)) {
+                start = i;
+                break;
+            }
+        }
+        while (len1 > 0 && len2 > 0) {
+            if (str1.charAt(--len1) != str2.charAt(--len2)) {
+                break;
+            }
+            --end;
+        }
+        if (end <= 0 || start <= 0 || start > end) {
+            return null;
+        } else {
+            return longerStr.substring(start, end);
+        }
     }
 }

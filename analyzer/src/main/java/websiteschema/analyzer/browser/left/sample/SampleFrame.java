@@ -19,8 +19,8 @@ import javax.swing.table.DefaultTableModel;
 import websiteschema.analyzer.context.BrowserContext;
 import websiteschema.model.domain.Websiteschema;
 import websiteschema.model.domain.cluster.Sample;
+import websiteschema.persistence.Mapper;
 import websiteschema.persistence.hbase.SampleMapper;
-import websiteschema.persistence.hbase.WebsiteschemaMapper;
 import websiteschema.utils.DateUtil;
 import websiteschema.utils.UrlLinkUtil;
 
@@ -242,7 +242,7 @@ public class SampleFrame extends javax.swing.JFrame {
                 // 用tableModel.getValueAt(row, column)取单元格数据
                 String rowKey = (String) tableModel.getValueAt(selRowIndexs[i], 1);
                 System.out.println(rowKey);
-                SampleMapper mapper = BrowserContext.getSpringContext().getBean("sampleMapper", SampleMapper.class);
+                Mapper<Sample> mapper = BrowserContext.getSpringContext().getBean("sampleMapper", Mapper.class);
                 mapper.delete(rowKey);
             }
             for (int i = 0; i < selRowIndexs.length; i++) {
@@ -263,7 +263,7 @@ public class SampleFrame extends javax.swing.JFrame {
                 sample.setUrl(url);
                 sample.setCreateTime(new Date());
                 sample.setLastUpdateTime(sample.getCreateTime());
-                SampleMapper mapper = BrowserContext.getSpringContext().getBean("sampleMapper", SampleMapper.class);
+                Mapper<Sample> mapper = BrowserContext.getSpringContext().getBean("sampleMapper", Mapper.class);
                 mapper.put(sample);
             } catch (URISyntaxException ex) {
                 ex.printStackTrace();
@@ -292,8 +292,8 @@ public class SampleFrame extends javax.swing.JFrame {
 
     private void fetchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fetchButtonActionPerformed
         // TODO add your handling code here:
-        final SampleMapper mapper = BrowserContext.getSpringContext().getBean("sampleMapper", SampleMapper.class);
-        final WebsiteschemaMapper wMapper = BrowserContext.getSpringContext().getBean("websiteschemaMapper", WebsiteschemaMapper.class);
+        final Mapper<Sample> mapper = BrowserContext.getSpringContext().getBean("sampleMapper", Mapper.class);
+        final Mapper<Websiteschema> wMapper = BrowserContext.getSpringContext().getBean("websiteschemaMapper", Mapper.class);
         Websiteschema w = wMapper.get(getSiteId());
         final SampleCrawler sc = new SampleCrawler();
         sc.setXPathAttributes(w.getXpathAttr());
@@ -341,7 +341,7 @@ public class SampleFrame extends javax.swing.JFrame {
 
     private synchronized void load() {
         this.statusLabel.setText("Status: Loading...");
-        final SampleMapper mapper = BrowserContext.getSpringContext().getBean("sampleMapper", SampleMapper.class);
+        final Mapper<Sample> mapper = BrowserContext.getSpringContext().getBean("sampleMapper", Mapper.class);
         String now = DateUtil.format(new Date(), "yyyy-MM-dd HH:mm");
         String end = getSiteId() + "+" + now;
         List<Sample> samples = mapper.getList(getSiteId(), end, "cf");
