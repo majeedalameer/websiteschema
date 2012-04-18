@@ -24,7 +24,7 @@
     </bean>
 
     <!--enale component scanning (beware that this does not enable mapper scanning!)-->
-<!--    <context:component-scan base-package="websiteschema.persistence.hbase" />-->
+    <context:component-scan base-package="websiteschema.persistence.mapper" />
 
     <!-- enable autowire -->
     <context:annotation-config />

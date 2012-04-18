@@ -53,7 +53,7 @@
     </bean>
 
     <!--enale component scanning (beware that this does not enable mapper scanning!)-->
-    <context:component-scan base-package="websiteschema.persistence.hbase" />
+    <context:component-scan base-package="${mapper.scan.package}" />
     <context:component-scan base-package="websiteschema.service" />
     <context:component-scan base-package="com.apc.websiteschema.fms.service" />
     <context:component-scan base-package="websiteschema.rest" />

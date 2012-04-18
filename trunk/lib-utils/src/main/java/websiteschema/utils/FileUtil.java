@@ -12,6 +12,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import websiteschema.common.base.Function;
 
 /**
  *
@@ -90,6 +91,17 @@ public class FileUtil {
             fos.close();
         } catch (Exception ex) {
             ex.printStackTrace();
+        }
+    }
+
+    public static void scan(File dir, Function<File> handler) {
+        if (dir.isDirectory()) {
+            File[] files = dir.listFiles();
+            if (null != files) {
+                for (File f : files) {
+                    handler.invoke(f);
+                }
+            }
         }
     }
 }

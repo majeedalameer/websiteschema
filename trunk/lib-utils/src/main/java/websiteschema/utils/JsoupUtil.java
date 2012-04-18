@@ -56,25 +56,32 @@ public class JsoupUtil {
                         this.doctype = ((DocumentType) child).toString();
 //                        doc.getDoctype().setNodeValue(doctype);
                     } else if (child instanceof Element) {
-                        org.w3c.dom.Element ele = doc.createElement(child.nodeName());
-                        //添加属性
-                        Attributes attrs = child.attributes();
-                        if (null != attrs) {
-                            List<Attribute> list = attrs.asList();
-                            for (Attribute attr : list) {
-                                String key = attr.getKey();
-                                String value = attr.getValue();
-                                try {
-                                    org.w3c.dom.Attr a = doc.createAttribute(key);
-                                    a.setValue(value);
-                                    ele.setAttributeNode(a);
-                                } catch (Exception ex) {
-                                    l.error("bad key-value!!! ----> the key[" + key + "]   &   the value[" + value + "]");
+                        try {
+                            String tagName = child.nodeName();
+                            tagName = tagName.replaceAll("\"", "");//html标签中不能包含引号。
+                            org.w3c.dom.Element ele = doc.createElement(tagName);
+                            //添加属性
+                            Attributes attrs = child.attributes();
+                            if (null != attrs) {
+                                List<Attribute> list = attrs.asList();
+                                for (Attribute attr : list) {
+                                    String key = attr.getKey();
+                                    String value = attr.getValue();
+                                    try {
+                                        org.w3c.dom.Attr a = doc.createAttribute(key);
+                                        a.setValue(value);
+                                        ele.setAttributeNode(a);
+                                    } catch (Exception ex) {
+                                        l.error("bad key-value!!! ----> the key[" + key + "]   &   the value[" + value + "]");
+                                    }
                                 }
                             }
+                            n.appendChild(ele);
+                            convert(child, ele);
+                        } catch (org.w3c.dom.DOMException ex) {
+                            l.error(child.nodeName());
+                            l.error(ex.getMessage(), ex);
                         }
-                        n.appendChild(ele);
-                        convert(child, ele);
                     } else if (child instanceof TextNode) {
                         TextNode t = (TextNode) child;
                         org.w3c.dom.Text text = doc.createTextNode(t.text());

@@ -36,8 +36,12 @@ public class UrlLogService {
         String startRow = jobname + "+" + startTime;
         String endRow = jobname + "+" + DateUtil.format(new Date(), "yyyy-MM-dd HH:mm");
         List<UrlLog> res = urlLogMapper.getList(startRow, endRow, null, 20);
-        listRange.setData(res.toArray());
-        listRange.setTotalSize(Long.valueOf(res.size()));
+        if (null != res) {
+            listRange.setData(res.toArray());
+            listRange.setTotalSize(Long.valueOf(res.size()));
+        }else {
+            listRange.setTotalSize(0L);
+        }
         return listRange;
     }
 

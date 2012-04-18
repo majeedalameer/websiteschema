@@ -7,6 +7,8 @@ drop table if exists Category;
 
 drop table if exists Channel;
 
+drop table if exists ClusterModel;
+
 drop table if exists ConcernedWeibo;
 
 drop table if exists Follow;
@@ -17,6 +19,8 @@ drop table if exists Keyword;
 
 drop table if exists RelatedCategory;
 
+drop table if exists Sample;
+
 drop table if exists Schedule;
 
 drop table if exists Site;
@@ -25,7 +29,13 @@ drop table if exists StartURL;
 
 drop table if exists SysConf;
 
+drop table if exists UrlLink;
+
+drop table if exists UrlLog;
+
 drop table if exists User;
+
+drop table if exists Websiteschema;
 
 drop table if exists Weibo;
 
@@ -77,6 +87,21 @@ create table Channel
 insert into Channel (channel, siteId, status, parentId, url, leaf, createTime, createUser) values('(600132)重庆啤酒','guba_eastmoney_com_58','0','0','http://guba.eastmoney.com/topic,600132.html',0,now(),'system');
 
 /*==============================================================*/
+/* Table: ClusterModel                                          */
+/*==============================================================*/
+create table ClusterModel
+(
+   id                   bigint not null auto_increment,
+   rowKey               varchar(100),
+   clusters             mediumtext,
+   totalSamples         int,
+   statInfo             mediumtext,
+   clustererType        varchar(100),
+   primary key (id),
+   unique (rowKey)
+);
+
+/*==============================================================*/
 /* Table: ConcernedWeibo                                        */
 /*==============================================================*/
 create table ConcernedWeibo
@@ -112,8 +137,8 @@ create table Cipher
    siteId               varchar(100),
    username             varchar(100),
    password             varchar(100),
-   cookie               varchar(1000),
-   header               varchar(1000),
+   cookie               varchar(5000),
+   header               varchar(5000),
    createTime           datetime,
    createUser           varchar(30),
    updateTime           datetime,
@@ -174,8 +199,8 @@ create table Keyword
    primary key (id)
 );
 /*=============================================================*/
-/* Table: RelatedCategory                                             */
-/*==============================================================*/
+/* Table: RelatedCategory                                      */
+/*=============================================================*/
 create table RelatedCategory
 (
    id                   bigint not null auto_increment,
@@ -186,9 +211,27 @@ create table RelatedCategory
    createUser           varchar(30),
    primary key (id)
 );
+
+/*=============================================================*/
+/* Table: Sample                                               */
+/*=============================================================*/
+create table Sample
+(
+   id                   bigint not null auto_increment,
+   rowKey               varchar(333),
+   url                  varchar(333),
+   siteId               varchar(100),
+   content              mediumtext,
+   httpStatus           int,
+   lastUpdateTime       datetime,
+   createTime           datetime,
+   primary key (id),
+   unique (rowKey)
+);
+
 /*=============================================================*/
 /* Table: Schedule                                             */
-/*==============================================================*/
+/*=============================================================*/
 create table Schedule
 (
    id                   bigint not null auto_increment,
@@ -293,6 +336,40 @@ insert into SysConf(field, name, value, description, createTime, createUser)
 values ('URLQueue','QueueName','url_queue_1','URL Queue Name',now(),'system');
 insert into SysConf(field, name, value, description, createTime, createUser)
 values ('default','VirtualDevices','["localhost:12207"]','Crawlers',now(),'system');
+
+/*==============================================================*/
+/* Table: UrlLink                                               */
+/*==============================================================*/
+create table UrlLink
+(
+   id                   bigint not null auto_increment,
+   rowKey               varchar(333),
+   content              mediumtext,
+   status               int,
+   url                  varchar(333),
+   lastUpdateTime       datetime,
+   createTime           datetime,
+   parent               varchar(333),
+   depth                int,
+   httpStatus           int,
+   jobname              varchar(100),
+   primary key (id),
+   unique (rowKey)
+);
+
+/*==============================================================*/
+/* Table: UrlLog                                                */
+/*==============================================================*/
+create table UrlLog
+(
+   id                   bigint not null auto_increment,
+   rowKey               varchar(333),
+   createTime           bigint,
+   jobname              varchar(100),
+   primary key (id),
+   unique (rowKey)
+);
+
 /*==============================================================*/
 /* Table: User                                                  */
 /*==============================================================*/
@@ -311,6 +388,25 @@ create table User
 insert into User(user_id,name,passwd,email,role) values ('admin','admin','21232f297a57a5a743894a0e4a801fc3','yingrui.f@gmail.com','ROLE_ADMIN, ROLE_USER, ROLE_CRAWLER');
 insert into User(user_id,name,passwd,email,role) values ('system','system','21232f297a57a5a743894a0e4a801fc3','yingrui.f@gmail.com','ROLE_ADMIN, ROLE_USER, ROLE_CRAWLER');
 insert into User(user_id,name,passwd,email,role) values ('yingrui','yingrui','21232f297a57a5a743894a0e4a801fc3','yingrui.f@gmail.com','ROLE_ADMIN, ROLE_USER, ROLE_CRAWLER');
+
+/*==============================================================*/
+/* Table: Websiteschema                                         */
+/*==============================================================*/
+create table Websiteschema
+(
+   id                   bigint not null auto_increment,
+   rowKey               varchar(100),
+   valid                varchar(5),
+   dimension            mediumtext,
+   xpathAttr            text,
+   crawlerSettings      text,
+   properties           mediumtext,
+   status               int,
+   createTime           datetime,
+   lastUpdateTime       datetime,
+   primary key (id),
+   unique (rowKey)
+);
 
 /*==============================================================*/
 /* Table: Weibo                                                 */
