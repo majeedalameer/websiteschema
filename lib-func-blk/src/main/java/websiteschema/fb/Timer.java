@@ -42,11 +42,6 @@ public class Timer extends FunctionBlock {
 
             @Override
             public void run() {
-                try {
-                    Thread.sleep(interval);
-                } catch (InterruptedException ex) {
-                    l.error(ex);
-                }
                 ++times;
                 triggerEvent("EO");
             }

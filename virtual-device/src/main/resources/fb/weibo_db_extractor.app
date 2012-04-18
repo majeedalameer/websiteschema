@@ -12,10 +12,10 @@ EO.COLD={"抽取":"EI"}
 
 [抽取]
 FBType=websiteschema.crawler.fb.FBDatabaseExtractor
-DI.JDBC_URL=jdbc:mysql://192.168.4.38:3306/weibo
+DI.JDBC_URL=jdbc:mysql://10.8.0.50:3306/weibo
 DI.JDBC_DRIVER=com.mysql.jdbc.Driver
-DI.USR=cpp1
-DI.PW=cpp1
+DI.USR=cpp
+DI.PW=cpp
 DI.PK=id
 DI.SQL=select id, AuthorName AUTHOR, AuthorUrl AUTHOR_URL, WeiboText DRECONTENT, DATE_FORMAT(FROM_UNIXTIME(PublishTime/1000), '%Y-%m-%d %H:%i:%S') PUBLISHDATE, ForwardCount FORWARD_COUNT, CommentCount COMMENT_COUNT, Website SOURCEINFO, KeyMd5 DREREFERENCE from Results_sina where Flag=1 limit 0, 1000
 DI.UPDATE_SQL=update Results_sina set Flag=0
@@ -39,7 +39,7 @@ DO.CONTENT={"发送":"IN"}
 
 [发送]
 FBType=com.apc.websiteschema.fb.DreAddDataFB
-DI.SERVER=["10.8.0.159:9001"]
+DI.SERVER=["10.8.0.55:3401"]
 EO.EO={"退出":"EI2"}
 
 [退出]

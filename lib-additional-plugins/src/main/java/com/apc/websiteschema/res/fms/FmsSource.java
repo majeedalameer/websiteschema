@@ -5,7 +5,7 @@
 package com.apc.websiteschema.res.fms;
 
 import java.util.Map;
-import websiteschema.utils.BeanWrapper;
+import websiteschema.common.wrapper.BeanWrapper;
 
 /**
  *

@@ -245,37 +245,39 @@ public class SampleCollectionFrame extends javax.swing.JFrame {
             String end = getSiteId() + "+" + now;
             List<Sample> samples = mapper.getList(getSiteId(), end);
             int count = 0;
-            for (Sample sample : samples) {
-                if (isRunning()) {
-                    count();
-                    String url = sample.getUrl();
-                    getInstance().statusLabel.setText(url);
+            if (null != samples) {
+                for (Sample sample : samples) {
+                    if (isRunning()) {
+                        count();
+                        String url = sample.getUrl();
+                        getInstance().statusLabel.setText(url);
 //                    Date lastUpdateTime = sample.getLastUpdateTime();
 //                    long interval = null != lastUpdateTime ? System.currentTimeMillis() - lastUpdateTime.getTime() : 0;
-                    if (onlyCrawlNewSample()) {
-                        if (sample.getHttpStatus() == 0) {
-                            sc.fetch(sample);
-                            //释放一下内存
-                            count++;
-                            count = count % 5;
-                            if (count == 5) {
-                                System.gc();
+                        if (onlyCrawlNewSample()) {
+                            if (sample.getHttpStatus() == 0) {
+                                sc.fetch(sample);
+                                //释放一下内存
+                                count++;
+                                count = count % 5;
+                                if (count == 5) {
+                                    System.gc();
+                                }
+                            }
+                        } else {
+//                        if (sample.getHttpStatus() != 200 || interval > 86400000)
+                            {
+                                sc.fetch(sample);
+                                //释放一下内存
+                                count++;
+                                count = count % 5;
+                                if (count == 5) {
+                                    System.gc();
+                                }
                             }
                         }
                     } else {
-//                        if (sample.getHttpStatus() != 200 || interval > 86400000)
-                        {
-                            sc.fetch(sample);
-                            //释放一下内存
-                            count++;
-                            count = count % 5;
-                            if (count == 5) {
-                                System.gc();
-                            }
-                        }
+                        break;
                     }
-                } else {
-                    break;
                 }
             }
             exit();

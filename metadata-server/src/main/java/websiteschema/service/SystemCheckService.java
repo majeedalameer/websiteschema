@@ -4,6 +4,7 @@
  */
 package websiteschema.service;
 
+import com.rabbitmq.client.Channel;
 import java.net.URL;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,6 +94,7 @@ public class SystemCheckService {
             b = HBaseMapperFactory.getInstance().checkTableWhetherExists("sample", Sample.class);
         } catch (Exception ex) {
             ex.printStackTrace();
+        } catch (NoClassDefFoundError ex) {
         }
         if (b) {
             sb.append("<h3>Hbase数据库状态正常</h3>");
@@ -108,6 +110,8 @@ public class SystemCheckService {
                 getConf().getProperty("URLQueue", "ServerHost", "localhost");
         try {
             RabbitQueue<Message> queue = new RabbitQueue<Message>(host, "testing");
+            Channel chnl = queue.getChannel();
+            chnl.close();
             sb.append("<h3>RabbitMQ: ").append(host).append(" 状态正常</h3>");
         } catch (Exception ex) {
             ex.printStackTrace();

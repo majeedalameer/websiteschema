@@ -20,6 +20,7 @@ import websiteschema.fb.annotation.EO;
 import websiteschema.fb.core.FunctionBlock;
 import websiteschema.utils.CollectionUtil;
 import websiteschema.utils.DbUtil;
+import websiteschema.utils.StringUtil;
 
 /**
  *
@@ -43,6 +44,8 @@ public class FBDatabaseExtractor extends FunctionBlock {
     public String username;
     @DI(name = "PW", desc = "Password")
     public String password;
+    @DI(name = "TAG_DATE", desc = "Fetch Date")
+    public String tagDreDate = "DREDATE";
     @DO(name = "DOCS", relativeEvents = {"EO"})
     public List<Doc> docs;
 
@@ -105,6 +108,10 @@ public class FBDatabaseExtractor extends FunctionBlock {
         for (String key : map.keySet()) {
             String value = map.get(key);
             ret.addField(key, value);
+        }
+        String date = ret.getValue(tagDreDate);
+        if (!StringUtil.isNotEmpty(date)) {
+            ret.addField(tagDreDate, String.valueOf(System.currentTimeMillis() / 1000));
         }
         return ret;
     }

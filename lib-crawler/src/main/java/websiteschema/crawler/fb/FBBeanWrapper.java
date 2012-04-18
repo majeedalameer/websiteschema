@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import websiteschema.fb.annotation.*;
 import websiteschema.fb.core.FunctionBlock;
-import websiteschema.utils.BeanWrapper;
+import websiteschema.common.wrapper.BeanWrapper;
 
 /**
  *

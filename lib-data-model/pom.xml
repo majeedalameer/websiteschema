@@ -39,6 +39,7 @@
                     <groupId>org.apache.thrift</groupId>
                 </exclusion>
             </exclusions>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.apache.hbase</groupId>
@@ -71,6 +72,7 @@
                     <groupId>ant</groupId>
                 </exclusion>
             </exclusions>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.apache.hadoop</groupId>
