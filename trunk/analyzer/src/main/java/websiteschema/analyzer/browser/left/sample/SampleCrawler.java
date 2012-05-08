@@ -63,16 +63,18 @@ public class SampleCrawler {
                 crawler.setCookie(cookie);
             }
             WebPage page = crawler.crawlWebPage(url);
-            Document docs[] = page.getDocs();
-            Document doc = null != docs ? docs[0] : null;
-            if (null != doc) {
-                System.out.println("start convert");
-                DocUnits units = docConvertor.convertDocument(doc);
-                System.out.println("end convert");
-                sample.setContent(units);
-                sample.setHttpStatus(crawler.getHttpStatus());
-                sample.setLastUpdateTime(new Date());
-                mapper.put(sample);
+            if (null != page) {
+                Document docs[] = page.getDocs();
+                Document doc = null != docs ? docs[0] : null;
+                if (null != doc) {
+                    System.out.println("start convert");
+                    DocUnits units = docConvertor.convertDocument(doc);
+                    System.out.println("end convert");
+                    sample.setContent(units);
+                    sample.setHttpStatus(crawler.getHttpStatus());
+                    sample.setLastUpdateTime(new Date());
+                    mapper.put(sample);
+                }
             }
         }
     }

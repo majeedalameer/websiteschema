@@ -21,8 +21,8 @@
     </select>
 
     <select id="getFMSSites" parameterType="java.util.Map" resultType="com.apc.websiteschema.fms.FMSSite">
-        select tmp.*, t2.source_type_name smallKind from
-        (
+        select tmp2.*, t2.source_type_name smallKind from (
+        select tmp.*, rownum rownum_ from (
         select
         <include refid="column" />
         from source_info s
@@ -33,11 +33,10 @@
                 and s.source_name like CONCAT(CONCAT('%','${source}'),'%' )
             </if>
         </trim>
-        and rownum &gt; #{start} and rownum &lt; (#{start}+#{limit})
         <if test="sort != null">
             order by ${sort}
         </if>
-        ) tmp, source_type_info t2 where tmp.type_id2 = t2.source_type_id
+        ) tmp where rownum &lt;=(#{start}+#{limit}) ) tmp2 , source_type_info t2 where rownum_ &gt; #{start} and tmp2.type_id2 = t2.source_type_id
     </select>
 
     <!-- 查询记录，根据Id -->

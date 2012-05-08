@@ -50,9 +50,16 @@ DO.DOC={"打标签COM_BBS":"DOC"}
 
 [打标签COM_BBS]
 FBType=com.apc.websiteschema.fb.FBStockEntity
-EO.EO={"保存结果":"SAVE"}
+EO.EO={"增加日期字段":"EI"}
 DI.TAG = COM_BBS
 DI.TARGET = ["CHANNEL"]
+DO.DOC={"增加日期字段":"DOC"}
+
+[增加日期字段]
+FBType=websiteschema.crawler.fb.field.FBTimeToDate
+EO.EO={"保存结果":"SAVE"}
+DI.DATE_TAG = STATDATE
+DI.TIME_TAG = THREADS/DATE
 DO.DOC={"保存结果":"DOC"}
 
 [保存结果]

@@ -10,10 +10,15 @@
  */
 package websiteschema.analyzer.browser.tools;
 
+import java.util.Map;
 import org.w3c.dom.Document;
+import websiteschema.cluster.DocumentConvertor;
 import websiteschema.crawler.Crawler;
 import websiteschema.crawler.WebPage;
 import websiteschema.element.DocumentUtil;
+import websiteschema.element.XPathAttributes;
+import websiteschema.model.domain.cluster.DocUnits;
+import websiteschema.model.domain.cluster.Unit;
 import websiteschema.utils.StringUtil;
 
 /**
@@ -21,6 +26,8 @@ import websiteschema.utils.StringUtil;
  * @author ray
  */
 public class CrawlerTestFrame extends javax.swing.JFrame {
+
+    XPathAttributes xpathAttr;
 
     /** Creates new form NewJFrame */
     public CrawlerTestFrame() {
@@ -33,6 +40,16 @@ public class CrawlerTestFrame extends javax.swing.JFrame {
         this.setLocation((screenWidth - sizeWidth) / 2, (screenHeight - sizeHeight) / 2);
 
         this.setTitle("工具 - 抽取器测试");
+    }
+
+    public void setUrl(String url) {
+        if (null != url && !url.isEmpty()) {
+            this.urlField.setText(url);
+        }
+    }
+
+    public void setXPathAttr(XPathAttributes xpathAttr) {
+        this.xpathAttr = xpathAttr;
     }
 
     /** This method is called from within the constructor to
@@ -67,6 +84,8 @@ public class CrawlerTestFrame extends javax.swing.JFrame {
         docSourceArea = new javax.swing.JTextArea();
         jScrollPane2 = new javax.swing.JScrollPane();
         domArea = new javax.swing.JTextArea();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        unitArea = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -130,6 +149,12 @@ public class CrawlerTestFrame extends javax.swing.JFrame {
         jScrollPane2.setViewportView(domArea);
 
         jTabbedPane1.addTab("DOM", jScrollPane2);
+
+        unitArea.setColumns(20);
+        unitArea.setRows(5);
+        jScrollPane3.setViewportView(unitArea);
+
+        jTabbedPane1.addTab("Unit序列", jScrollPane3);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -197,13 +222,14 @@ public class CrawlerTestFrame extends javax.swing.JFrame {
                 Document docs[] = page.getDocs();
                 if (null != docs && docs.length > 0) {
                     for (Document doc : docs) {
-                        this.domArea.append(DocumentUtil.getXMLString(doc));
+                        this.domArea.append(DocumentUtil.getXMLString(doc));//显示DOM
                     }
+                    setUnits(docs[0]);//显示Unit序列
                 }
                 String sources[] = page.getHtmlSource();
                 if (null != sources && sources.length > 0) {
                     for (String source : sources) {
-                        this.docSourceArea.append(source + "\n---------------------------\n");
+                        this.docSourceArea.append(source + "\n---------------------------\n");//显示源代码
                     }
                 }
 
@@ -214,6 +240,29 @@ public class CrawlerTestFrame extends javax.swing.JFrame {
             this.docSourceArea.append("\n(T_T)\n" + ex.getMessage());
         } finally {
             this.goButton.setEnabled(true);
+        }
+    }
+
+    private void setUnits(Document doc) {
+        if (null != xpathAttr) {
+            DocumentConvertor docConvertor = new DocumentConvertor();
+            docConvertor.setXpathAttr(xpathAttr);
+            DocUnits docUnits = docConvertor.convertDocument(doc);
+            Unit[] units = docUnits.getUnits();
+            if (null != units) {
+                for (Unit unit : units) {
+                    Map<String, String> attr = unit.getAttributes();
+                    this.unitArea.append(unit.getXpath() + " -> " + unit.getText().trim());
+                    if (null != attr) {
+                        this.unitArea.append(" | " + attr + "\n");
+                    } else {
+                        this.unitArea.append("\n");
+                    }
+                }
+                this.unitArea.setCaretPosition(0);
+            }
+        } else {
+            this.unitArea.append("无效的XPath Attributes");
         }
     }
 
@@ -281,12 +330,14 @@ public class CrawlerTestFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JToolBar jToolBar2;
     private javax.swing.JToolBar jToolBar3;
     private javax.swing.JToolBar jToolBar4;
     private javax.swing.JToolBar jToolBar5;
+    private javax.swing.JTextArea unitArea;
     private javax.swing.JTextField urlField;
     private javax.swing.JTextField userAgentField;
     // End of variables declaration//GEN-END:variables

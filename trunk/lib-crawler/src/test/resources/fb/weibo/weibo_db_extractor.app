@@ -25,11 +25,17 @@ DO.DOCS={"打标签COM_ORG":"DOCS"}
 
 [打标签COM_ORG]
 FBType=com.apc.websiteschema.fb.FBStockEntity
-EO.BAT_OUT={"转换数据":"BAT"}
+EO.BAT_OUT={"增加日期字段":"BAT"}
 DI.TAG = COM_ORG
 DI.TARGET = ["DRECONTENT"]
-DO.DOCS={"转换数据":"DOCS"}
+DO.DOCS={"增加日期字段":"DOCS"}
 
+[增加日期字段]
+FBType=websiteschema.crawler.fb.field.FBTimeToDate
+EO.BAT_OUT={"转换数据":"BAT"}
+DI.DATE_TAG = STATDATE
+DI.TIME_TAG = PUBLISHDATE
+DO.DOCS={"转换数据":"DOCS"}
 
 [转换数据]
 FBType=com.apc.websiteschema.fb.DocToIdxFB

@@ -70,10 +70,12 @@ public class JobMultiStartURL implements Job {
                             //仅发送有效的栏目。
                             Task task = new Task(schedulerId);
                             try {
+                                task.setTaskType(Task.TYPE_LINK);
                                 taskMapper.insert(task);
                                 // 把栏目的URL添加到消息中，并发送出去。
                                 Message msg = create(job, chl.getUrl());
                                 msg.setTaskId(task.getId());
+                                msg.setChnlId(chl.getId());
                                 queue.offer(channel, msg);
                                 l.debug("Message about Job " + jobId + " has been emitted to queue: " + queue.getQueueName());
                                 task.setStatus(Task.SENT);
@@ -103,6 +105,18 @@ public class JobMultiStartURL implements Job {
                 }
             }
         }
+    }
+
+    /**
+     * 检查一个栏目是否可以被当作任务发送到消息队列中。
+     * @param chnl
+     * @param conf
+     * @return
+     */
+    private boolean validChannel(Channel chnl, Map<String, String> conf) {
+        String include = conf.get("INCLUDE_CHNL");
+        String exclude = conf.get("EXCLUDE_CHNL");
+        return true;
     }
 
     private Message create(websiteschema.model.domain.Job job, String url) {

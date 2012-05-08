@@ -453,7 +453,8 @@ create table ScheduleTask
 (
    id                   bigint not null auto_increment,
    scheId               bigint,
-   status               int,
+   status               tinyint,
+   taskType             tinyint,
    message              varchar(1000),
    createTime           datetime,
    updateTime           datetime,
@@ -467,7 +468,8 @@ create table ScheduleTaskArchive
 (
    id                   bigint not null,
    scheId               bigint,
-   status               int,
+   status               tinyint,
+   taskType             tinyint,
    message              varchar(1000),
    createTime           datetime,
    updateTime           datetime,

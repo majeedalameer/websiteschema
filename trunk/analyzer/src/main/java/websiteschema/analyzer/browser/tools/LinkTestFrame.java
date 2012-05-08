@@ -17,6 +17,7 @@ import websiteschema.analyzer.context.BrowserContext;
 import websiteschema.cluster.analyzer.Link;
 import websiteschema.crawler.Article;
 import websiteschema.crawler.Crawler;
+import websiteschema.crawler.WebPage;
 import websiteschema.crawler.browser.BrowserWebCrawler;
 import websiteschema.crawler.fb.FBLinksExtractor;
 import websiteschema.crawler.fb.bbs.FBForumList;
@@ -254,7 +255,7 @@ public class LinkTestFrame extends javax.swing.JFrame {
         }
     };
 
-    private Document[] crawl(String url) {
+    private WebPage crawl(String url) {
         if (null != url) {
             this.setTitle("测试抽取: " + url);
             context.getConsole().log("开始采集：" + url);
@@ -273,11 +274,11 @@ public class LinkTestFrame extends javax.swing.JFrame {
                 crawler = new websiteschema.crawler.SimpleHttpCrawler();
             }
             long t1 = System.currentTimeMillis();
-            Document docs[] = crawler.crawl(url);
+            WebPage page = crawler.crawlWebPage(url);
             long t2 = System.currentTimeMillis();
             context.getConsole().log("采集结束，耗时：" + (t2 - t1));
             this.resultArea.append("采集结束，耗时：" + (t2 - t1) + "\n");
-            return docs;
+            return page;
         } else {
             return null;
         }
@@ -289,7 +290,8 @@ public class LinkTestFrame extends javax.swing.JFrame {
         try {
             //获取要采集的URL
             String url = fidURl.getText().trim();
-            Document docs[] = crawl(url);
+            WebPage page = crawl(url);
+            Document docs[] = page.getDocs();
             if (null != docs) {
                 //打印采集的文档
 //                for (Document doc : docs) {
@@ -300,7 +302,7 @@ public class LinkTestFrame extends javax.swing.JFrame {
                 FBLinksExtractor ext = new FBLinksExtractor();
                 ext.docs = docs;
                 ext.xpath = getXPath();
-                ext.url = url;
+                ext.url = page.getUrl();
 
                 ext.extract();
 
@@ -330,12 +332,14 @@ public class LinkTestFrame extends javax.swing.JFrame {
         try {
             //获取要采集的URL
             String oneUrl = fidURl.getText().trim();
-            Document onePage = crawl(oneUrl)[0];
+            WebPage page = crawl(oneUrl);
+            Document onePage = page.getDocs()[0];
             Article article = new Article(oneUrl, onePage);
             while (article.hasNext()) {
                 oneUrl = article.getNextUrl();
                 if (null == article.getPage(oneUrl)) {
-                    onePage = crawl(oneUrl)[0];
+                    page = crawl(oneUrl);
+                    onePage = page.getDocs()[0];
                     article.put(oneUrl, onePage);
                 }
             }

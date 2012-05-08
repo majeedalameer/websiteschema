@@ -64,6 +64,16 @@
                     ]
                 });
 
+                var task_type_store = new Ext.data.SimpleStore(
+                {
+                    fields :['name','value'],
+                    data:[
+                        ['子链接','0'],
+                        ['起始链接','1'],
+                        ['内容链接','2']
+                    ]
+                });
+
                 // the column model has information about grid columns
                 // dataIndex maps the column to the specific data field in
                 // the data store
@@ -115,6 +125,29 @@
                             var index = status_type_store.find('value',value);
                             if(index!=-1){
                                 return status_type_store.getAt(index).data.name;
+                            }
+                            return value;
+                        }
+                    },
+                    {
+                        header: '链接类型',
+                        dataIndex: 'taskType',
+                        width: 60,
+                        hidden : false,
+                        editor: new fm.ComboBox({
+                            store : task_type_store,
+                            triggerAction: 'all',
+                            allowBlank: false,
+                            forceSelection: true,
+                            mode: 'local',
+                            displayField:'name',
+                            valueField:'value'
+
+                        }),
+                        renderer: function(value,metadata,record){
+                            var index = task_type_store.find('value',value);
+                            if(index!=-1){
+                                return task_type_store.getAt(index).data.name;
                             }
                             return value;
                         }

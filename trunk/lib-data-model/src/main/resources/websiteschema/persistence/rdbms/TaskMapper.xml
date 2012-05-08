@@ -3,7 +3,7 @@
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="websiteschema.persistence.rdbms.TaskMapper">
 
-    <sql id='taskColumns'>id, scheId scheduleId, message, status, createTime, updateTime</sql>
+    <sql id='taskColumns'>id, scheId scheduleId, message, status, taskType, createTime, updateTime</sql>
     
     <select id="getTotalResults" resultType="long" parameterType="java.util.Map">
         select count(*) from ScheduleTask
@@ -48,8 +48,8 @@
     <!-- 插入记录 -->
     <insert id="insert" parameterType="websiteschema.model.domain.Task"
         useGeneratedKeys="true" keyProperty="id">
-        insert into ScheduleTask (id, scheId, status, message, createTime, updateTime)
-        values (#{id},#{scheduleId},#{status},#{message},now(),#{updateTime})
+        insert into ScheduleTask (id, scheId, status, taskType, message, createTime, updateTime)
+        values (#{id},#{scheduleId},#{status},#{taskType},#{message},now(),#{updateTime})
     </insert>
 
     <!-- 更新任务状态记录 -->
@@ -57,6 +57,7 @@
         update ScheduleTask
         <trim prefix="SET" suffixOverrides=",">
             <if test="status != null">status=#{status},</if>
+            <if test="taskType != null">taskType=#{taskType},</if>
             <if test="message != null">message=#{message},</if>
             updateTime=now()
         </trim>

@@ -50,6 +50,8 @@ public class FBURLQueue extends FunctionBlock {
     public long wrapperId;
     @DI(name = "JID", desc = "jobId")
     public long jobId;
+    @DI(name = "CID", desc = "channelId")
+    public long chnlId;
     @DI(name = "CFG", desc = "configure")
     public String configure;
     @DI(name = "DEPTH", desc = "URL深度")
@@ -82,6 +84,7 @@ public class FBURLQueue extends FunctionBlock {
                             u.getHref(), //URL
                             configure, depth);
 
+                    msg.setChnlId(chnlId);
                     TaskMapper taskMapper = this.getContext().getSpringBean("taskMapper", TaskMapper.class);
                     if (null != taskMapper) {
                         Task task = new Task();
