@@ -413,11 +413,8 @@ public class ClusterFrame extends javax.swing.JFrame {
                 String cp = getCentralPoint(selRowIndexs[i]);
                 System.out.println(cp);
                 cm.delete(cp);
-                cmMapper.put(cm);
             }
-            for (int i = 0; i < selRowIndexs.length; i++) {
-                tableModel.removeRow(selRowIndexs[i]);
-            }
+            cmMapper.put(cm);
         }
         loadData();
     }//GEN-LAST:event_deleteClusterButtonActionPerformed

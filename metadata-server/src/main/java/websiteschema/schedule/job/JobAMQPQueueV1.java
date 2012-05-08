@@ -43,6 +43,7 @@ public class JobAMQPQueueV1 implements Job {
         l.debug(jobConfig);
         try {
             Task task = new Task(schedulerId);
+            task.setTaskType(Task.TYPE_LINK);
             taskMapper.insert(task);
             l.debug("created task " + task.getId());
             boolean suc = false;

@@ -19,12 +19,16 @@ public class Task implements java.io.Serializable {
     public final static int TIMEOUT = 4;
     public final static int FINISHED = 5;
     public final static int EXCEPTION = 6;
-    long id = 0;
-    long scheduleId = 0;
-    int status = CREATED;
-    String message = null;
-    Date createTime;
-    Date updateTime;
+    public final static int TYPE_UNKNOWN = 0;
+    public final static int TYPE_LINK = 1;
+    public final static int TYPE_CONTENT = 2;
+    private long id = 0;
+    private long scheduleId = 0;
+    private int status = CREATED;
+    private int taskType = TYPE_UNKNOWN;
+    private String message = null;
+    private Date createTime;
+    private Date updateTime;
 
     public Task() {
     }
@@ -82,5 +86,13 @@ public class Task implements java.io.Serializable {
             message = message.substring(0, 1000);
         }
         this.message = message;
+    }
+
+    public int getTaskType() {
+        return taskType;
+    }
+
+    public void setTaskType(int taskType) {
+        this.taskType = taskType;
     }
 }

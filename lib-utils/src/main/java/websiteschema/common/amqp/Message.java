@@ -14,6 +14,7 @@ public class Message implements java.io.Serializable {
     private long scheId;
     private long wrapperId;
     private long taskId;
+    private long chnlId;
     private long createTime;
     private String url;
     private String configure;
@@ -67,6 +68,14 @@ public class Message implements java.io.Serializable {
 
     public long getWrapperId() {
         return wrapperId;
+    }
+
+    public long getChnlId() {
+        return chnlId;
+    }
+
+    public void setChnlId(long chnlId) {
+        this.chnlId = chnlId;
     }
 
     public void setConfigure(String configure) {

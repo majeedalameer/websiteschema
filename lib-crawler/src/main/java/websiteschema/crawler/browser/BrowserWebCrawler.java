@@ -17,8 +17,6 @@ import java.util.Map;
 import javax.swing.*;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import websiteschema.crawler.Crawler;
 import websiteschema.crawler.WebPage;
 import websiteschema.model.domain.cralwer.CrawlerSettings;
@@ -194,6 +192,7 @@ public class BrowserWebCrawler implements Crawler {
             long endTime = System.currentTimeMillis();
             l.debug("after wait, elaspe: " + (endTime - startTime) + " ms");
             document = browser.getDocument();
+            this.url = browser.getURL();
             IDocument frames[] = document.getChildFrames();
             Document[] docs = null;
             String[] sources = null;
@@ -218,7 +217,7 @@ public class BrowserWebCrawler implements Crawler {
             WebPage ret = new WebPage();
             ret.setDocs(docs);
             ret.setHtmlSource(sources);
-            ret.setUrl(url);
+            ret.setUrl(getUrl());
             l.debug("return, elaspe: " + (System.currentTimeMillis() - startTime) + " ms");
             return ret;
         } finally {

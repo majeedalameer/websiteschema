@@ -194,17 +194,20 @@ public class FmsData {
                 List<FmsRegion> regions = loadRegion(stmt);
                 if (null != chnls && null != sources
                         && null != columns && null != regions) {
-                    l.debug("All data loaded.");
-                    ChannelInfo ci = new ChannelInfo(chnls);
-                    SourceInfo si = new SourceInfo(sources);
-                    ApcColumnInfo aci = new ApcColumnInfo(columns);
-                    RegionInfo ri = new RegionInfo(regions);
-                    Info i = new Info();
-                    i.apcColumnInfo = aci;
-                    i.channelInfo = ci;
-                    i.sourceInfo = si;
-                    i.regionInfo = ri;
-                    info = i;
+                    if (!chnls.isEmpty() && !sources.isEmpty()
+                            && !columns.isEmpty() && !regions.isEmpty()) {
+                        l.debug("All data loaded.");
+                        ChannelInfo ci = new ChannelInfo(chnls);
+                        SourceInfo si = new SourceInfo(sources);
+                        ApcColumnInfo aci = new ApcColumnInfo(columns);
+                        RegionInfo ri = new RegionInfo(regions);
+                        Info i = new Info();
+                        i.apcColumnInfo = aci;
+                        i.channelInfo = ci;
+                        i.sourceInfo = si;
+                        i.regionInfo = ri;
+                        info = i;
+                    }
                 }
             } catch (Exception ex) {
                 l.error(ex.getMessage(), ex);

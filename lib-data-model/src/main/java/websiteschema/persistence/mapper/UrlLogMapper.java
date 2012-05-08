@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import websiteschema.common.base.Function;
@@ -27,6 +28,7 @@ import websiteschema.utils.DateUtil;
 @Service
 public class UrlLogMapper implements Mapper<UrlLog> {
 
+    Logger l = Logger.getLogger(UrlLogMapper.class);
     private static Pattern pat = Pattern.compile("([A-z0-9_ .]+)\\+([0-9:\\- ]+).*");
     @Autowired
     UrlLogDBMapper urlLogDBMapper;
@@ -80,7 +82,7 @@ public class UrlLogMapper implements Mapper<UrlLog> {
         long endDate = getDate(end);
 
         Map req = new HashMap();
-        req.put("siteId", siteId);
+        req.put("jobname", siteId);
         if (startDate > 0) {
             req.put("s_date", startDate);
         }
@@ -91,6 +93,7 @@ public class UrlLogMapper implements Mapper<UrlLog> {
         maxResults = maxResults > 0 ? maxResults : 1000;
         req.put("start", begin);
         req.put("limit", maxResults);
+        l.debug(req);
         res = urlLogDBMapper.getResults(req);
 
 

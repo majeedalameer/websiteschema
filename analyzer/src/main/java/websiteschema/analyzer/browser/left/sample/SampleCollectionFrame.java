@@ -233,54 +233,57 @@ public class SampleCollectionFrame extends javax.swing.JFrame {
 
         @Override
         public void run() {
-            final Mapper<Sample> mapper = BrowserContext.getSpringContext().getBean("sampleMapper", Mapper.class);
-            final Mapper<Websiteschema> wMapper = BrowserContext.getSpringContext().getBean("websiteschemaMapper", Mapper.class);
-            final Websiteschema w = wMapper.get(getSiteId());
-            final SampleCrawler sc = new SampleCrawler();
-            sc.setCrawlerClazzName(crawlerClazzName);
-            sc.setXPathAttributes(w.getXpathAttr());
-            sc.setCookie(getCookie());
-            start = true;
-            String now = DateUtil.format(new Date(), "yyyy-MM-dd HH:mm");
-            String end = getSiteId() + "+" + now;
-            List<Sample> samples = mapper.getList(getSiteId(), end);
-            int count = 0;
-            if (null != samples) {
-                for (Sample sample : samples) {
-                    if (isRunning()) {
-                        count();
-                        String url = sample.getUrl();
-                        getInstance().statusLabel.setText(url);
+            try {
+                final Mapper<Sample> mapper = BrowserContext.getSpringContext().getBean("sampleMapper", Mapper.class);
+                final Mapper<Websiteschema> wMapper = BrowserContext.getSpringContext().getBean("websiteschemaMapper", Mapper.class);
+                final Websiteschema w = wMapper.get(getSiteId());
+                final SampleCrawler sc = new SampleCrawler();
+                sc.setCrawlerClazzName(crawlerClazzName);
+                sc.setXPathAttributes(w.getXpathAttr());
+                sc.setCookie(getCookie());
+                start = true;
+                String now = DateUtil.format(new Date(), "yyyy-MM-dd HH:mm");
+                String end = getSiteId() + "+" + now;
+                List<Sample> samples = mapper.getList(getSiteId(), end, "cf");
+                int count = 0;
+                if (null != samples) {
+                    for (Sample sample : samples) {
+                        if (isRunning()) {
+                            count();
+                            String url = sample.getUrl();
+                            getInstance().statusLabel.setText(url);
 //                    Date lastUpdateTime = sample.getLastUpdateTime();
 //                    long interval = null != lastUpdateTime ? System.currentTimeMillis() - lastUpdateTime.getTime() : 0;
-                        if (onlyCrawlNewSample()) {
-                            if (sample.getHttpStatus() == 0) {
-                                sc.fetch(sample);
-                                //释放一下内存
-                                count++;
-                                count = count % 5;
-                                if (count == 5) {
-                                    System.gc();
+                            if (onlyCrawlNewSample()) {
+                                if (sample.getHttpStatus() == 0) {
+                                    sc.fetch(sample);
+                                    //释放一下内存
+                                    count++;
+                                    count = count % 5;
+                                    if (count == 5) {
+                                        System.gc();
+                                    }
+                                }
+                            } else {
+//                        if (sample.getHttpStatus() != 200 || interval > 86400000)
+                                {
+                                    sc.fetch(sample);
+                                    //释放一下内存
+                                    count++;
+                                    count = count % 5;
+                                    if (count == 5) {
+                                        System.gc();
+                                    }
                                 }
                             }
                         } else {
-//                        if (sample.getHttpStatus() != 200 || interval > 86400000)
-                            {
-                                sc.fetch(sample);
-                                //释放一下内存
-                                count++;
-                                count = count % 5;
-                                if (count == 5) {
-                                    System.gc();
-                                }
-                            }
+                            break;
                         }
-                    } else {
-                        break;
                     }
                 }
+            } finally {
+                exit();
             }
-            exit();
         }
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables

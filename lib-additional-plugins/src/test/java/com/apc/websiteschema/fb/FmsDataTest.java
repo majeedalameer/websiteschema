@@ -93,4 +93,27 @@ public class FmsDataTest {
         Idx idx = fb2.idx;
         System.out.println(idx.toString());
     }
+
+    @Test
+    public void testFBFmsChannel2() {
+        Doc doc = new Doc();
+        doc.addField("DRETITLE", "title here");
+        doc.addField("DRECONTENT", "content here");
+        doc.addField("AUTHOR", "张三");
+        doc.addField("PUBLISHDATE", "2012-04-06 07:59");
+        doc.addField("JOBNAME", "travel_people_com_cn_33051");
+        doc.addField("DREREFERENCE", "http://news.dichan.sina.com.cn/2012/03/05/451315.html?source=rss");
+        FBFmsChannel fb = new FBFmsChannel();
+        fb.doc = doc;
+        fb.addTag();
+
+        assert ("交通运输".equals(doc.getValue("REGALCHANNEL_TWO")));
+        assert ("人民网".equals(doc.getValue("SOURCEINFO")));
+        System.out.print(DocumentUtil.getXMLString(doc.toW3CDocument()));
+        DocToIdxFB fb2 = new DocToIdxFB();
+        fb2.doc = doc;
+        fb2.convert();
+        Idx idx = fb2.idx;
+        System.out.println(idx.toString());
+    }
 }

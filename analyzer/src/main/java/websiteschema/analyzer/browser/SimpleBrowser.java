@@ -264,7 +264,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(BorderLayout.CENTER, browser.getComponent());
         this.analyzerFrame.setContentPane(panel);
-        
+
         //初始化BrowerContext
         context.setBrowser(browser);
         vips = new VIPSImpl(context);
@@ -316,6 +316,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
     private void initComponents() {
 
         jToolBar1 = new javax.swing.JToolBar();
+        viewAllButton = new javax.swing.JToggleButton();
         backButton = new javax.swing.JButton();
         forwardButton = new javax.swing.JButton();
         refreshButton = new javax.swing.JButton();
@@ -365,6 +366,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
         jMenu3 = new javax.swing.JMenu();
         hideAnalysisMenu = new javax.swing.JCheckBoxMenuItem();
         hideConsoleMenu = new javax.swing.JCheckBoxMenuItem();
+        viewAllMenu = new javax.swing.JCheckBoxMenuItem();
         domTreeMenu = new javax.swing.JMenuItem();
         jMenu5 = new javax.swing.JMenu();
         utf8Menu = new javax.swing.JMenuItem();
@@ -382,6 +384,18 @@ public class SimpleBrowser extends javax.swing.JFrame {
         setTitle("Websiteschema Analyzer 1.0-Alpha");
 
         jToolBar1.setRollover(true);
+
+        viewAllButton.setText("B");
+        viewAllButton.setToolTipText("浏览模式");
+        viewAllButton.setFocusable(false);
+        viewAllButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        viewAllButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        viewAllButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                viewAllButtonActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(viewAllButton);
 
         backButton.setText("<");
         backButton.setToolTipText("Back");
@@ -535,7 +549,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 157, Short.MAX_VALUE))
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 159, Short.MAX_VALUE))
         );
 
         consolePane.addTab("日志", jPanel3);
@@ -706,7 +720,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
         );
         configFrameLayout.setVerticalGroup(
             configFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 330, Short.MAX_VALUE)
+            .addGap(0, 333, Short.MAX_VALUE)
         );
 
         browserTab.addTab("Configure", configFrame);
@@ -719,7 +733,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
         );
         analyzerFrameLayout.setVerticalGroup(
             analyzerFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 330, Short.MAX_VALUE)
+            .addGap(0, 333, Short.MAX_VALUE)
         );
 
         browserTab.addTab("Analyzer", analyzerFrame);
@@ -752,7 +766,6 @@ public class SimpleBrowser extends javax.swing.JFrame {
         });
         jMenu3.add(hideAnalysisMenu);
 
-        hideConsoleMenu.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_I, java.awt.event.InputEvent.ALT_MASK | java.awt.event.InputEvent.CTRL_MASK));
         hideConsoleMenu.setSelected(true);
         hideConsoleMenu.setText("信息栏");
         hideConsoleMenu.addActionListener(new java.awt.event.ActionListener() {
@@ -761,6 +774,14 @@ public class SimpleBrowser extends javax.swing.JFrame {
             }
         });
         jMenu3.add(hideConsoleMenu);
+
+        viewAllMenu.setText("浏览器模式");
+        viewAllMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                viewAllMenuActionPerformed(evt);
+            }
+        });
+        jMenu3.add(viewAllMenu);
 
         domTreeMenu.setText("DOM树");
         domTreeMenu.addActionListener(new java.awt.event.ActionListener() {
@@ -852,7 +873,7 @@ public class SimpleBrowser extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 1087, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addComponent(analysisPane, javax.swing.GroupLayout.PREFERRED_SIZE, 223, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1098,7 +1119,8 @@ public class SimpleBrowser extends javax.swing.JFrame {
     private void crawlerTestMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_crawlerTestMenuActionPerformed
         // TODO add your handling code here:
         CrawlerTestFrame frame = new CrawlerTestFrame();
-//        frame.setContext(context);
+        frame.setUrl(context.getBrowser().getURL());
+        frame.setXPathAttr(getXPathAttr());
         frame.setVisible(true);
     }//GEN-LAST:event_crawlerTestMenuActionPerformed
 
@@ -1114,6 +1136,40 @@ public class SimpleBrowser extends javax.swing.JFrame {
         tf.setContext(context);
         tf.setVisible(true);
     }//GEN-LAST:event_crawlerTestMenu1ActionPerformed
+
+    private void viewAllButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewAllButtonActionPerformed
+        // TODO add your handling code here:
+        if (viewAllButton.isSelected()) {
+            this.analysisPane.setVisible(false);
+            this.consolePane.setVisible(false);
+            this.hideAnalysisMenu.setSelected(false);
+            this.hideConsoleMenu.setSelected(false);
+            this.viewAllMenu.setSelected(true);
+        } else {
+            this.analysisPane.setVisible(true);
+            this.consolePane.setVisible(true);
+            this.hideAnalysisMenu.setSelected(true);
+            this.hideConsoleMenu.setSelected(true);
+            this.viewAllMenu.setSelected(false);
+        }
+    }//GEN-LAST:event_viewAllButtonActionPerformed
+
+    private void viewAllMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewAllMenuActionPerformed
+        // TODO add your handling code here:
+        if (viewAllMenu.isSelected()) {
+            this.analysisPane.setVisible(false);
+            this.consolePane.setVisible(false);
+            this.hideAnalysisMenu.setSelected(false);
+            this.hideConsoleMenu.setSelected(false);
+            this.viewAllButton.setSelected(true);
+        } else {
+            this.analysisPane.setVisible(true);
+            this.consolePane.setVisible(true);
+            this.hideAnalysisMenu.setSelected(true);
+            this.hideConsoleMenu.setSelected(true);
+            this.viewAllButton.setSelected(false);
+        }
+    }//GEN-LAST:event_viewAllMenuActionPerformed
 
     public void openUrl(String url) {
         if (url.startsWith("ftp://")) {
@@ -1258,6 +1314,8 @@ public class SimpleBrowser extends javax.swing.JFrame {
     private javax.swing.JCheckBox useIdCheckBox;
     private javax.swing.JCheckBox usePosCheckBox;
     private javax.swing.JMenuItem utf8Menu;
+    private javax.swing.JToggleButton viewAllButton;
+    private javax.swing.JCheckBoxMenuItem viewAllMenu;
     private javax.swing.JButton vipsButton;
     private javax.swing.JTextField xpathField;
     // End of variables declaration//GEN-END:variables

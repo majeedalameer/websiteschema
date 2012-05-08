@@ -21,6 +21,10 @@ var scheduleTaskRecordType = [
     type : 'int'
 },
 {
+    name : 'taskType',
+    type : 'int'
+},
+{
     name : 'createTime',
     type : 'date'
 },

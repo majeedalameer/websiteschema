@@ -5,7 +5,6 @@
 package websiteschema.model.domain.cluster;
 
 import java.util.ArrayList;
-import websiteschema.model.domain.cluster.DocUnits;
 import java.util.Date;
 import java.util.List;
 import websiteschema.model.domain.HBaseBean;
@@ -41,10 +40,12 @@ public class Sample implements HBaseBean {
         this.siteId = siteId;
     }
 
+    @Override
     public String getRowKey() {
         return rowKey;
     }
 
+    @Override
     public void setRowKey(String rowKey) {
         this.rowKey = rowKey;
     }

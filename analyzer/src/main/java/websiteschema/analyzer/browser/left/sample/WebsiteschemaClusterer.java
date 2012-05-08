@@ -17,7 +17,6 @@ import websiteschema.cluster.analyzer.ClusterAnalyzer;
 import websiteschema.model.domain.Websiteschema;
 import websiteschema.model.domain.cluster.*;
 import websiteschema.persistence.Mapper;
-import websiteschema.persistence.hbase.SampleMapper;
 import websiteschema.utils.DateUtil;
 
 /**
