@@ -4,6 +4,9 @@
  */
 package websiteschema.service;
 
+import java.text.DecimalFormat;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.io.IOException;
 import org.quartz.SchedulerException;
 import websiteschema.rest.SchedulerController;
@@ -94,5 +97,36 @@ public class ScheduleService {
 
     public boolean createTempJob(Schedule sche) {
         return SchedulerController.getScheduler().createTempJob(sche);
+    }
+    private static final Pattern pat = Pattern.compile("(.*)\\((0+)\\)(.*)");
+
+    public String createBatchTempJob(long scheId, String url, int start, int end) {
+        System.out.println("sche id: " + scheId + " url: " + url + " start: " + start + " end: " + end);
+        Schedule sche = scheduleMapper.getById(scheId);
+        if (null != sche) {
+            Matcher m = pat.matcher(url);
+            if (m.matches()) {
+                String prefix = m.group(1);
+                String suffix = m.group(3);
+                String p = m.group(2);
+                DecimalFormat df = new DecimalFormat();
+                df.applyPattern(p);
+                int count = 0;
+                while (start <= end) {
+                    String middle = df.format(start);
+                    String u = prefix + middle + suffix;
+                    System.out.println(u);
+                    if (!SchedulerController.getScheduler().createTempJob(sche, u)) {
+                        return "无法正确的加入调度: " + u;
+                    }
+                    start++;
+                    count ++;
+                }
+                return "成功将" + count +"个任务加入调度";
+            } else {
+                return "输入的URL模板不正确";
+            }
+        }
+        return "批量添加任务失败";
     }
 }

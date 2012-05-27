@@ -21,6 +21,7 @@
         <script type="text/javascript" src="dwr/interface/JobService.js"></script>
         <script type="text/javascript" src="dwr/interface/WrapperService.js"></script>
         <script type="text/javascript" src="js/wrapper/JobEditorPanel.js"></script>
+        <script type="text/javascript" src="js/wrapper/AddTaskPanel.js"></script>
     </head>
 
     <body>
@@ -496,7 +497,7 @@
                                         handler: function(){
                                             data.configure = editPanel.getComponent('fp_job').getValue();
                                             data.jobType = editPanel.getComponent('fp_jobType').getValue();
-                                            data.jobType = editPanel.getComponent('fp_jobType').getValue();
+                                            data.wrapperId = editPanel.getComponent('fp_wrapperType').getValue();
                                             JobService.update(data, function(){
                                                 store.reload();
                                             });
@@ -517,13 +518,44 @@
                 function createTempJob(grid, rowIndex, colIndex) {
                     var sche= grid.getStore().getAt(rowIndex);
                     if(null != sche) {
-                        ScheduleService.createTempJob(sche.data, function(success){
-                            if(success) {
-                                alert("添加任务成功！");
-                            } else {
-                                alert("添加任务失败！可能是没有启动调度器，或者你刚刚提交了一个相同的任务还没有执行结束");
-                            }
+                        var editPanel = new AddTaskPanel();
+                        Ext.getCmp('fp_scheId').setValue(sche.data.id);
+                        Ext.getCmp('fp_startURL').setValue(sche.data.startURL);
+                        var AddWin = new Ext.Window({
+                            title: '添加临时任务',
+                            width: 480,
+                            height: 140,
+                            plain: true,
+                            items: editPanel,
+                            buttons: [{
+                                    text: '添加任务',
+                                    handler: function(){
+                                        var url = editPanel.getComponent('fp_startURL').getValue();
+                                        var start = editPanel.getComponent('fp_start').getValue();
+                                        var end = editPanel.getComponent('fp_end').getValue();
+                                        if(start != null && end != null && start.length > 0 && end.length > 0) {
+                                            ScheduleService.createBatchTempJob(sche.data.id, url, start, end, function(msg){
+                                                alert(msg);
+                                            });
+                                        } else {
+                                            ScheduleService.createTempJob(sche.data, function(success){
+                                                if(success) {
+                                                    alert("添加任务成功！");
+                                                } else {
+                                                    alert("添加任务失败！可能是没有启动调度器，或者你刚刚提交了一个相同的任务还没有执行结束");
+                                                }
+                                            });
+                                        }
+                                        AddWin.close();
+                                    }
+                                }, {
+                                    text: '取消',
+                                    handler: function(){
+                                        AddWin.close();
+                                    }
+                                }]
                         });
+                        AddWin.show(this);
                     }
                 }
 

@@ -91,6 +91,10 @@ public class DocToIdxFB extends FunctionBlock {
     }
 
     private void addField(Idx idx, String key, String value) {
+        if ("DRECONTENT".equalsIgnoreCase(key)) {
+            String drecontent = idx.getContent();
+            value = null != drecontent ? drecontent + "\r\n" + value : value;
+        }
         idx.addField(key, value);
     }
 

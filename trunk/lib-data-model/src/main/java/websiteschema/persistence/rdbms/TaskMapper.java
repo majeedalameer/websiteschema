@@ -20,6 +20,8 @@ public interface TaskMapper {
 
     public List<Task> getTasks(Map params);
 
+    public List getScheduleStatus();
+
     public Task getById(long id);
 
     public void update(Task task);

@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package websiteschema.persistence.rdbms;
 
 import java.util.List;
@@ -19,6 +18,8 @@ public interface StartURLMapper {
 
     public List<StartURL> getStartURLs(Map params);
 
+    public List getSitesAndJobnames();
+
     public StartURL getById(long id);
 
     public StartURL getByJobname(String jobname);
@@ -32,5 +33,4 @@ public interface StartURLMapper {
     public void delete(StartURL startURL);
 
     public void deleteById(long id);
-
 }

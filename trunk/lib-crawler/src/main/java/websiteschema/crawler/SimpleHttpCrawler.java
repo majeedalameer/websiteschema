@@ -78,7 +78,7 @@ public class SimpleHttpCrawler implements Crawler {
             httpStatus = conn.response().statusCode();
             url = conn.response().url().toString();
             //System.err.println(html.getTextContent());
-            WebPage ret = new WebPage();
+            WebPage ret = new WebPage(this);
             ret.setDocs(new Document[]{document});
             ret.setHtmlSource(new String[]{html});
             ret.setUrl(url);

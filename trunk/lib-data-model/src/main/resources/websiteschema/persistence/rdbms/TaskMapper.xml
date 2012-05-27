@@ -14,6 +14,9 @@
             <if test="status != null">
                 and status = #{status}
             </if>
+            <if test="updateTime != null">
+                and updateTime &lt; #{updateTime}
+            </if>
         </trim>
     </select>
 
@@ -28,6 +31,9 @@
             <if test="status != null">
                 and status = #{status}
             </if>
+            <if test="updateTime != null">
+                and updateTime &lt; #{updateTime}
+            </if>
         </trim>
         <if test="sort != null">
             order by ${sort}
@@ -35,6 +41,10 @@
         <if test="start != null">
             limit #{start}, #{limit}
         </if>
+    </select>
+
+    <select id="getScheduleStatus" resultType="java.util.Map">
+        select scheId, taskType, status, count(*) count from ScheduleTask group by scheId, taskType, status
     </select>
 
     <!-- 查询记录，根据Id -->
@@ -90,8 +100,8 @@
     </delete>
 
     <insert id="archive" parameterType="java.util.Date">
-        insert into ScheduleTaskArchive (id, scheId, status, message, createTime, updateTime)
-        select * from ScheduleTask s
+        insert into ScheduleTaskArchive (id, scheId, status, taskType, message, createTime, updateTime)
+        select id, scheId, status, taskType, message, createTime, updateTime from ScheduleTask s
         where s.createTime &lt;= #{before}
     </insert>
 

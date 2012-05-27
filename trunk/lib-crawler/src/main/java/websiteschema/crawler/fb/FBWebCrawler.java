@@ -6,6 +6,7 @@ package websiteschema.crawler.fb;
 
 import org.w3c.dom.Document;
 import websiteschema.crawler.Crawler;
+import websiteschema.crawler.WebPage;
 import websiteschema.fb.annotation.Algorithm;
 import websiteschema.fb.annotation.DI;
 import websiteschema.fb.annotation.DO;
@@ -38,6 +39,8 @@ public class FBWebCrawler extends FunctionBlock {
     public int status;
     @DO(name = "DOCS", relativeEvents = {"SUC"})
     public Document[] docAndFrames;
+    @DO(name = "PAGE", relativeEvents = {"SUC"})
+    public WebPage page;
     @DO(name = "URL", relativeEvents = {"SUC"})
     public String do_url;
 
@@ -47,19 +50,21 @@ public class FBWebCrawler extends FunctionBlock {
             docAndFrames = null;
             Crawler c = createCrawler();
             setConfig(c);
-            docAndFrames = c.crawl(url);
-            do_url = c.getUrl();
-            status = c.getHttpStatus();
-            if (null != docAndFrames && docAndFrames.length > 0) {
-                out = docAndFrames[0];
-                this.triggerEvent("SUC");
-            } else {
-                this.triggerEvent("FAL");
+            page = c.crawlWebPage(url);
+            if (null != page) {
+                docAndFrames = page.getDocs();
+                do_url = c.getUrl();
+                status = c.getHttpStatus();
+                if (null != docAndFrames && docAndFrames.length > 0) {
+                    out = docAndFrames[0];
+                    this.triggerEvent("SUC");
+                    return;
+                }
             }
         } catch (Exception ex) {
             l.error(ex.getMessage(), ex);
-            this.triggerEvent("FAL");
         }
+        this.triggerEvent("FAL");
     }
 
     private void setConfig(Crawler crawler) {

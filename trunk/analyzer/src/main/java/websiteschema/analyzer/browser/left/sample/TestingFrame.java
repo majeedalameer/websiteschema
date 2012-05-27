@@ -18,8 +18,8 @@ import websiteschema.analyzer.browser.utils.ClustererUtil;
 import websiteschema.analyzer.context.BrowserContext;
 import websiteschema.cluster.analyzer.AnalysisResult;
 import websiteschema.cluster.analyzer.Doc;
-import websiteschema.crawler.Article;
 import websiteschema.crawler.Crawler;
+import websiteschema.crawler.WebPage;
 import websiteschema.crawler.browser.BrowserWebCrawler;
 import websiteschema.crawler.fb.FBDOMExtractor;
 import websiteschema.crawler.fb.FBFieldFilter;
@@ -179,17 +179,12 @@ public class TestingFrame extends javax.swing.JFrame {
 
         @Override
         public void run() {
-            if (pagingCheckBox.isSelected()) {
-                startAll();
-            } else {
-                start();
-            }
+            start();
         }
     };
 
-    private Document crawl(String url) {
+    private WebPage crawl(String url) {
         if (null != url) {
-            Document source = null;//(Document) context.getBrowser().getW3CDocument();
             this.setTitle("测试抽取: " + url);
             context.getConsole().log("开始采集：" + url);
             this.resultArea.setText("开始采集：" + url + "\n");
@@ -206,12 +201,11 @@ public class TestingFrame extends javax.swing.JFrame {
                 crawler = new websiteschema.crawler.SimpleHttpCrawler();
             }
             long t1 = System.currentTimeMillis();
-            Document docs[] = crawler.crawl(url);
+            WebPage page = crawler.crawlWebPage(url);
             long t2 = System.currentTimeMillis();
             context.getConsole().log("采集结束，耗时：" + (t2 - t1));
             this.resultArea.append("采集结束，耗时：" + (t2 - t1) + "\n");
-            source = null != docs ? docs[0] : (Document) context.getBrowser().getW3CDocument();
-            return source;
+            return page;
         } else {
             return null;
         }
@@ -235,11 +229,12 @@ public class TestingFrame extends javax.swing.JFrame {
         return clusterName;
     }
 
-    private Doc extractDocument(Websiteschema websiteschema, String clusterName, Document source) {
+    private Doc extractDocument(Websiteschema websiteschema, String clusterName, WebPage page, boolean paging) {
         FBDOMExtractor extractor = new FBDOMExtractor();
-        extractor.in = source;
+        extractor.page = page;
         extractor.schema = websiteschema;
         extractor.clusterName = clusterName;
+        extractor.paging = paging;
         context.getConsole().log("开始尝试抽取页面：");
         this.resultArea.append("开始尝试抽取页面：\n");
         extractor.extract();
@@ -264,12 +259,14 @@ public class TestingFrame extends javax.swing.JFrame {
             Mapper<Websiteschema> mapper = BrowserContext.getSpringContext().getBean("websiteschemaMapper", Mapper.class);
             Websiteschema websiteschema = mapper.get(getSiteId());
             //采集指定URL
-            Document source = crawl(context.getBrowser().getURL());
-            if (null != source) {
+            WebPage page = crawl(context.getBrowser().getURL());
+
+            if (null != page) {
                 //为采集到的文档进行分类
+                Document source = null != page ? page.getDocs()[0] : (Document) (context.getBrowser().getW3CDocument());
                 String clusterName = getDocumentBelongToCluster(source);
                 //抽取文档
-                Doc result = extractDocument(websiteschema, clusterName, source);
+                Doc result = extractDocument(websiteschema, clusterName, page, pagingCheckBox.isSelected());
                 //对某些参数进行过滤
                 result = filteringDocument(result);
                 //对结果进行输出
@@ -281,49 +278,6 @@ public class TestingFrame extends javax.swing.JFrame {
             } else {
                 JOptionPane.showMessageDialog(this, "抽取页面异常");
             }
-        } finally {
-            this.startButton.setEnabled(true);
-        }
-    }
-
-    private Doc createArticle(Article rawArticle) {
-        Mapper<Websiteschema> mapper = BrowserContext.getSpringContext().getBean("websiteschemaMapper", Mapper.class);
-        Websiteschema websiteschema = mapper.get(getSiteId());
-        Document[] docs = rawArticle.getDocuments();
-        final String clusterName = getDocumentBelongToCluster(docs[0]);
-        Doc ret = new Doc();
-        for (Document dom : docs) {
-            Doc oneDoc = extractDocument(websiteschema, clusterName, dom);
-            //对某些参数进行过滤
-            oneDoc = filteringDocument(oneDoc);
-            ret.addField("CONTENT", oneDoc.getValue("CONTENT"));
-        }
-
-        return ret;
-    }
-
-    private void startAll() {
-        this.startButton.setEnabled(false);
-        try {
-
-            String oneUrl_str = context.getBrowser().getURL();
-            Document onePage = crawl(oneUrl_str);
-            Article article = new Article(oneUrl_str, onePage);
-            while (article.hasNext()) {
-                oneUrl_str = article.getNextUrl();
-                if (null == article.getPage(oneUrl_str)) {
-                    onePage = crawl(oneUrl_str);
-                    article.put(oneUrl_str, onePage);
-                }
-            }
-            Doc result = this.createArticle(article);
-            //对结果进行输出
-            if (null != result) {
-                this.resultArea.setText(DocumentUtil.getXMLString(result.toW3CDocument()));
-            } else {
-                JOptionPane.showMessageDialog(this, "无法抽取出数据！");
-            }
-
         } finally {
             this.startButton.setEnabled(true);
         }

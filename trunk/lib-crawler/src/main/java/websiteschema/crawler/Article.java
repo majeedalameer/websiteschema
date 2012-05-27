@@ -18,6 +18,7 @@ import websiteschema.crawler.fb.FBLinksExtractor;
  *
  * @author mgd
  */
+@Deprecated
 public class Article {
 
     private String urlFirstPage = null;

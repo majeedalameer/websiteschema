@@ -150,6 +150,12 @@ Ext.onReady(function(){
             tooltip: '更新metadata-server和slaves的配置',
             iconCls: 'icon-edit',
             handler: updateConfig
+        }, '-',
+        {
+            text: '导出采集报告',
+            tooltip: '最近两天采集情况报告',
+            iconCls: 'icon-edit',
+            handler: exportReport
         }, '->',
         ' ', '用户名', ' ',
         {
@@ -271,5 +277,13 @@ Ext.onReady(function(){
         SysConfService.updateConfig(function(ret){
             MsgTip.msg("更新配置", ret, true, 5);
         });
+    }
+
+    function exportReport() {
+        if(Ext.isIE) {
+            window.open('/rest/report/','_blank');
+        } else {
+            window.open('/rest/report/','_newtab');
+        }
     }
 });

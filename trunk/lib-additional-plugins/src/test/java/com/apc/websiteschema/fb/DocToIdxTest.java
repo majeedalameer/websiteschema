@@ -24,6 +24,7 @@ public class DocToIdxTest {
         Doc doc = new Doc();
         doc.addField("TITLE", "title here");
         doc.addField("CONTENT", "content here");
+        doc.addField("CONTENT", "content2");
         doc.addField("AUTHOR", "张三");
         doc.addField("URL", "http://news.dichan.sina.com.cn/2012/03/05/451315.html?source=rss");
         DocToIdxFB fb = new DocToIdxFB();
@@ -39,7 +40,7 @@ public class DocToIdxTest {
         assert("张三".equals(idx.getTagValue("AUTHOR")));
         assert("NEWS".equals(idx.getDbName()));
         assert("title here".equals(idx.getTitle()));
-        assert("content here".equals(idx.getContent()));
+        assert("content here\r\ncontent2".equals(idx.getContent()));
         assert("http%3A%2F%2Fnews%2Edichan%2Esina%2Ecom%2Ecn%2F2012%2F03%2F05%2F451315%2Ehtml%3Fsource%3Drss".equals(idx.getReference()));
     }
 
