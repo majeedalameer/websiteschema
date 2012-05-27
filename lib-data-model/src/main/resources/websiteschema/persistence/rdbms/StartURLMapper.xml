@@ -57,6 +57,10 @@
         limit #{start}, #{limit}
     </select>
 
+    <select id="getSitesAndJobnames" resultType="java.util.Map">
+        select u.siteId, u.jobname, u.name, s.id, s.status from StartURL u left join Schedule s on s.startURLId = u.id
+    </select>
+
     <!-- 查询记录，根据Id -->
     <select id="getById" parameterType="long" resultType="websiteschema.model.domain.StartURL">
         select * from StartURL

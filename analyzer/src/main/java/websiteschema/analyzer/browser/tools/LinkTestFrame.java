@@ -10,12 +10,11 @@
  */
 package websiteschema.analyzer.browser.tools;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
-import org.w3c.dom.Document;
 import websiteschema.analyzer.context.BrowserContext;
 import websiteschema.cluster.analyzer.Link;
-import websiteschema.crawler.Article;
 import websiteschema.crawler.Crawler;
 import websiteschema.crawler.WebPage;
 import websiteschema.crawler.browser.BrowserWebCrawler;
@@ -95,6 +94,8 @@ public class LinkTestFrame extends javax.swing.JFrame {
         wrapLineCheckBox = new javax.swing.JCheckBox();
         jLabel5 = new javax.swing.JLabel();
         pagingCheckBox = new javax.swing.JCheckBox();
+        pagingNumberField = new javax.swing.JTextField();
+        jLabel6 = new javax.swing.JLabel();
         startButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -154,7 +155,22 @@ public class LinkTestFrame extends javax.swing.JFrame {
         pagingCheckBox.setFocusable(false);
         pagingCheckBox.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         pagingCheckBox.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        pagingCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                pagingCheckBoxActionPerformed(evt);
+            }
+        });
         jToolBar3.add(pagingCheckBox);
+
+        pagingNumberField.setText("10");
+        pagingNumberField.setToolTipText("最多翻多少页");
+        pagingNumberField.setEnabled(false);
+        pagingNumberField.setMaximumSize(new java.awt.Dimension(80, 2147483647));
+        pagingNumberField.setMinimumSize(new java.awt.Dimension(50, 19));
+        jToolBar3.add(pagingNumberField);
+
+        jLabel6.setText("页");
+        jToolBar3.add(jLabel6);
 
         startButton.setText("开始");
         startButton.setFocusable(false);
@@ -170,9 +186,9 @@ public class LinkTestFrame extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jToolBar2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jScrollPane1)
-            .addComponent(jToolBar3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jToolBar2, javax.swing.GroupLayout.DEFAULT_SIZE, 544, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 544, Short.MAX_VALUE)
+            .addComponent(jToolBar3, javax.swing.GroupLayout.DEFAULT_SIZE, 544, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 436, Short.MAX_VALUE)
                 .addGap(48, 48, 48)
@@ -217,6 +233,11 @@ public class LinkTestFrame extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "没有输入 Site ID");
         }
     }//GEN-LAST:event_btnSaveToChannelActionPerformed
+
+    private void pagingCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pagingCheckBoxActionPerformed
+        // TODO add your handling code here:
+        pagingNumberField.setEditable(pagingCheckBox.isSelected());
+    }//GEN-LAST:event_pagingCheckBoxActionPerformed
 
     private String getCrawler() {
         return this.crawlerCombo.getSelectedItem().toString();
@@ -291,22 +312,8 @@ public class LinkTestFrame extends javax.swing.JFrame {
             //获取要采集的URL
             String url = fidURl.getText().trim();
             WebPage page = crawl(url);
-            Document docs[] = page.getDocs();
-            if (null != docs) {
-                //打印采集的文档
-//                for (Document doc : docs) {
-//                    String html = DocumentUtil.getXMLString(doc);
-//                    System.out.println(html);
-//                }
-                //为采集到的文档进行分类
-                FBLinksExtractor ext = new FBLinksExtractor();
-                ext.docs = docs;
-                ext.xpath = getXPath();
-                ext.url = page.getUrl();
-
-                ext.extract();
-
-                retLinks = ext.links;
+            if (null != page) {
+                retLinks = getLinks(page);
                 //对结果进行输出
                 if (null != retLinks && !retLinks.isEmpty()) {
                     resultArea.setText("");
@@ -326,6 +333,20 @@ public class LinkTestFrame extends javax.swing.JFrame {
         }
     }
 
+    private List<Link> getLinks(WebPage page) {
+        FBLinksExtractor ext = new FBLinksExtractor();
+        ext.docs = page.getDocs();
+        ext.xpath = getXPath();
+        ext.url = page.getUrl();
+        ext.extract();
+        return ext.links;
+    }
+
+    private int getMaxPagingNumber() {
+        String str = pagingNumberField.getText();
+        return Integer.parseInt(str);
+    }
+
     private void startAll() {
         this.startButton.setEnabled(false);
         this.btnSaveToChannel.setEnabled(false);
@@ -333,26 +354,16 @@ public class LinkTestFrame extends javax.swing.JFrame {
             //获取要采集的URL
             String oneUrl = fidURl.getText().trim();
             WebPage page = crawl(oneUrl);
-            Document onePage = page.getDocs()[0];
-            Article article = new Article(oneUrl, onePage);
-            while (article.hasNext()) {
-                oneUrl = article.getNextUrl();
-                if (null == article.getPage(oneUrl)) {
-                    page = crawl(oneUrl);
-                    onePage = page.getDocs()[0];
-                    article.put(oneUrl, onePage);
+            retLinks = new ArrayList<Link>();
+            if (null != page) {
+                retLinks.addAll(getLinks(page));
+                int num = getMaxPagingNumber();
+                while (page.hasNext() && --num > 0) {
+                    WebPage next = page.getNext();
+                    if (null != next) {
+                        retLinks.addAll(getLinks(next));
+                    }
                 }
-            }
-            Document[] docs = article.getDocuments();
-            if (null != docs) {
-                FBLinksExtractor ext = new FBLinksExtractor();
-                ext.docs = docs;
-                ext.xpath = getXPath();
-                ext.url = oneUrl;
-
-                ext.extract();
-
-                retLinks = ext.links;
                 //对结果进行输出
                 if (null != retLinks && !retLinks.isEmpty()) {
                     resultArea.setText("");
@@ -380,11 +391,13 @@ public class LinkTestFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JToolBar jToolBar2;
     private javax.swing.JToolBar jToolBar3;
     private javax.swing.JCheckBox pagingCheckBox;
+    private javax.swing.JTextField pagingNumberField;
     private javax.swing.JTextArea resultArea;
     private javax.swing.JButton startButton;
     private javax.swing.JCheckBox wrapLineCheckBox;

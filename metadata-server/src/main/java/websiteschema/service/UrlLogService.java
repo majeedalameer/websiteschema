@@ -39,7 +39,8 @@ public class UrlLogService {
         if (null != res) {
             listRange.setData(res.toArray());
             listRange.setTotalSize(Long.valueOf(res.size()));
-        }else {
+        } else {
+            listRange.setData(new UrlLog[0]);
             listRange.setTotalSize(0L);
         }
         return listRange;

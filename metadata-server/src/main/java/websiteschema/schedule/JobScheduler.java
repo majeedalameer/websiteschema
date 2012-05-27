@@ -49,6 +49,7 @@ public class JobScheduler {
     private final java.util.Random random = new java.util.Random();
     private final Logger l = Logger.getLogger(JobScheduler.class);
     private final String group = "group1";
+    private final String tempGroup = "group2";
     // 创建调度者工厂
     private SchedulerFactory schedulerFactory = new StdSchedulerFactory();
 
@@ -82,7 +83,7 @@ public class JobScheduler {
             int status = sche.getStatus();
             if (status == Schedule.STATUS_VALID
                     && jobId > 0 && startURLId >= 0) {
-                JobDetail job = createJob(sche, group);
+                JobDetail job = createJob(sche, group, null);
                 Trigger trigger = createTrigger(sche, group);
                 if (null != job && null != trigger) {
                     sched.scheduleJob(job, trigger);
@@ -118,7 +119,7 @@ public class JobScheduler {
             int status = sche.getStatus();
             if (status == Schedule.STATUS_VALID
                     && jobId > 0 && startURLId > 0) {
-                JobDetail job = createJob(sche, group);
+                JobDetail job = createJob(sche, group, null);
                 Trigger trigger = createTrigger(sche, group);
                 if (null != job && null != trigger) {
                     sched.deleteJob(job.getKey());
@@ -175,9 +176,8 @@ public class JobScheduler {
     public boolean createTempJob(Schedule sche) {
         try {
             if (Started == status()) {
-                String g = "group2";
-                JobDetail job = createJob(sche, g);
-                Trigger trigger = createRunOnceTrigger(job.getKey(), g);
+                JobDetail job = createJob(sche, tempGroup, null);
+                Trigger trigger = createRunOnceTrigger(job.getKey(), tempGroup);
                 sched.scheduleJob(job, trigger);
                 return true;
             }
@@ -187,7 +187,21 @@ public class JobScheduler {
         return false;
     }
 
-    private JobDetail createJob(Schedule sche, String group) {
+    public boolean createTempJob(Schedule sche, String url) {
+        try {
+            if (Started == status()) {
+                JobDetail job = createJob(sche, tempGroup, url);
+                Trigger trigger = createRunOnceTrigger(job.getKey(), tempGroup);
+                sched.scheduleJob(job, trigger);
+                return true;
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return false;
+    }
+
+    private JobDetail createJob(Schedule sche, String group, String url) {
         JobDataMap jobDataMap = new JobDataMap();
         String jobType = jobMapper.getById(sche.getJobId()).getJobType();
         l.debug("jobId: " + sche.getJobId() + " jobType: " + jobType);
@@ -199,13 +213,14 @@ public class JobScheduler {
         jobDataMap.put("schedulerId", sche.getId());
         jobDataMap.put("jobId", sche.getJobId());
         jobDataMap.put("startURLId", sche.getStartURLId());
+        jobDataMap.put("url", url);
         try {
             Class<? extends Job> jobClazz = (Class<? extends Job>) Class.forName(jobType);
 
             // 创建JobDetail
             JobDetail job =
                     newJob(jobClazz).
-                    withIdentity(String.valueOf(sche.getId()), group).
+                    withIdentity(String.valueOf(null != url ? url : sche.getId()), group).
                     usingJobData(jobDataMap).
                     build();
             return job;

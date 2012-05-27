@@ -28,6 +28,7 @@ public class JobAMQPQueueV1 implements Job {
     private long jobId;
     private long schedulerId;
     private long startURLId;
+    private String url;
     private JobMapper jobMapper;
     private WrapperMapper wrapperMapper;
     private StartURLMapper startURLMapper;
@@ -72,6 +73,9 @@ public class JobAMQPQueueV1 implements Job {
     private Message create(websiteschema.model.domain.Job job) {
         StartURL startURL = startURLMapper.getById(startURLId);
         if (null != startURL) {
+            if(null != getUrl()) {
+                return new Message(jobId, startURLId, schedulerId, job.getWrapperId(), startURL.getSiteId(), startURL.getJobname(), getUrl(), job.getConfigure());
+            }
             return new Message(jobId, startURLId, schedulerId, job.getWrapperId(), startURL.getSiteId(), startURL.getJobname(), startURL.getStartURL(), job.getConfigure());
         }
         return new Message(jobId, startURLId, schedulerId, job.getWrapperId(), null, null, null, job.getConfigure());
@@ -131,5 +135,13 @@ public class JobAMQPQueueV1 implements Job {
 
     public void setTaskMapper(TaskMapper taskMapper) {
         this.taskMapper = taskMapper;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

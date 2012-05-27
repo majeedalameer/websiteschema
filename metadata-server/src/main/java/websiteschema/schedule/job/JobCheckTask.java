@@ -60,8 +60,10 @@ public class JobCheckTask implements Job {
     }
 
     private void checkTimeoutTask(int status, long now) {
-        Map param = new HashMap<String, String>();
-        param.put("status", String.valueOf(status));
+        Map param = new HashMap();
+        param.put("status", status);
+        Date d = new Date(System.currentTimeMillis() - hour);
+        param.put("updateTime", d);
         List<Task> tasks = getTaskMapper().getTasks(param);
         List<Long> timeoutTasks = new ArrayList<Long>();
         for (Task task : tasks) {

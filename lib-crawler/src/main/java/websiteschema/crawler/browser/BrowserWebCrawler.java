@@ -39,6 +39,9 @@ public class BrowserWebCrawler implements Crawler {
     MyNetworkListener listener = new MyNetworkListener(this);
     IDocument document = null;
     CrawlerSettings crawlerSettings;
+    String proxyServer;
+    int proxyPort = 80;
+    String javascriptBody;
     final Boolean lock = false;
     int sec = 1000;
     long delay = 5 * sec;
@@ -46,11 +49,24 @@ public class BrowserWebCrawler implements Crawler {
     Map<String, String> header = new HashMap<String, String>(2);
 
     public BrowserWebCrawler() {
+    }
+
+    private void init() {
         frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setContentPane(content());
         frame.setSize(1024, 600);
         frame.setVisible(true);
+        frame.setTitle(url);
+    }
+
+    private void destroy() {
+        if (null != browser) {
+            BrowserFactory.destroyBrowser(browser);
+        }
+        if (null != frame) {
+            frame.dispose();
+        }
     }
 
     private JPanel content() {
@@ -60,6 +76,10 @@ public class BrowserWebCrawler implements Crawler {
         browser.addNetworkListener(listener);
         browser.addPromptListener(new MyPromptListener());
 //        browser.addBrowserListener(new MyBrowserListener(isLoadImage()));
+        if (null != proxyServer) {
+            browser.setProxyProtocol(new ProxySetting(ProxySetting.PROTOCOL_ALL, proxyServer, proxyPort));
+            browser.enableProxy();
+        }
         panel.add(BorderLayout.CENTER, browser.getComponent());
         return panel;
     }
@@ -81,7 +101,6 @@ public class BrowserWebCrawler implements Crawler {
 
     public void setUrl(String url) {
         this.url = url;
-        frame.setTitle(url);
     }
 
     @Override
@@ -91,8 +110,8 @@ public class BrowserWebCrawler implements Crawler {
 
     @Override
     public void setProxy(String server, int port) {
-        browser.setProxyProtocol(new ProxySetting(ProxySetting.PROTOCOL_ALL, server, port));
-        browser.enableProxy();
+        this.proxyPort = port;
+        this.proxyServer = server;
     }
 
     @Override
@@ -177,6 +196,7 @@ public class BrowserWebCrawler implements Crawler {
     @Override
     public WebPage crawlWebPage(String url) {
         l.debug("start crawler.");
+        init();
         setUrl(url);
         long startTime = System.currentTimeMillis();
         browser.loadURL(getUrl());
@@ -214,19 +234,14 @@ public class BrowserWebCrawler implements Crawler {
                     }
                 }
             }
-            WebPage ret = new WebPage();
+            WebPage ret = new WebPage(this);
             ret.setDocs(docs);
             ret.setHtmlSource(sources);
             ret.setUrl(getUrl());
             l.debug("return, elaspe: " + (System.currentTimeMillis() - startTime) + " ms");
             return ret;
         } finally {
-            if (null != browser) {
-                BrowserFactory.destroyBrowser(browser);
-            }
-            if (null != frame) {
-                frame.dispose();
-            }
+            destroy();
         }
     }
 }

@@ -6,6 +6,7 @@ package websiteschema.cluster.analyzer.fields;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -15,6 +16,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import websiteschema.element.DocumentUtil;
 import websiteschema.element.factory.XPathAttrFactory;
+import websiteschema.utils.StringUtil;
 
 /**
  *
@@ -23,6 +25,7 @@ import websiteschema.element.factory.XPathAttrFactory;
 public class ContentExtractor extends AbstractFieldExtractor {
 
     Logger l = Logger.getLogger(ContentExtractor.class);
+    private String xpath = null;
     private String startXPath = null;
     private String endXPath = null;
     private String prefix = null;
@@ -31,6 +34,7 @@ public class ContentExtractor extends AbstractFieldExtractor {
     private boolean includeValidNodeOnly = true;
     private boolean keepHTMLTag = false;
     private boolean reached = false;
+    public final static String xpathKey = "XPath";
     public final static String startXPathKey = "StartXPath";
     public final static String endXPathKey = "EndXPath";
     public final static String prefixKey = "Prefix";
@@ -59,7 +63,19 @@ public class ContentExtractor extends AbstractFieldExtractor {
             } else {
                 Set<String> validNodes = this.toUppercase(getBasicAnalysisResult().getValidNodes());
                 Set<String> invalidNodes = this.toUppercase(getBasicAnalysisResult().getInvalidNodes());
-                traversal(validNodes, invalidNodes, doc.getDocumentElement(), content, null);
+                if (StringUtil.isNotEmpty(xpath)) {
+                    List<Node> nodes = DocumentUtil.getByXPath(doc, xpath.trim());
+                    if (null != nodes && !nodes.isEmpty()) {
+                        for (Node n : nodes) {
+                            String parentXPath = XPathAttrFactory.getInstance().create(n.getParentNode(), getXPathAttr());
+                            traversal(validNodes, invalidNodes, n, content, parentXPath);
+                        }
+                    } else {
+                        traversal(validNodes, invalidNodes, doc.getDocumentElement(), content, null);
+                    }
+                } else {
+                    traversal(validNodes, invalidNodes, doc.getDocumentElement(), content, null);
+                }
             }
             long t2 = System.currentTimeMillis();
             l.debug("----- elaspe times : " + (t2 - t1) + " millseconds.");
@@ -127,10 +143,10 @@ public class ContentExtractor extends AbstractFieldExtractor {
         if (!reached) {
             String nodeName = node.getNodeName();
             if (!isTextNode(node) && !ignore(nodeName)) {
-                String xpath = XPathAttrFactory.getInstance().create(node, getXPathAttr(), parentXPath);
-                if (null != xpath && !"".equals(xpath)) {
+                String xp = XPathAttrFactory.getInstance().create(node, getXPathAttr(), parentXPath);
+                if (null != xp && !"".equals(xp)) {
                     //如果路径是结束路径，则返回true，表示到达结束节点。
-                    if (xpath.equalsIgnoreCase(this.endXPath)) {
+                    if (xp.equalsIgnoreCase(this.endXPath)) {
                         reached = true;
                         return;
                     }
@@ -140,9 +156,9 @@ public class ContentExtractor extends AbstractFieldExtractor {
                             Node child = children.item(i);
                             if (isTextNode(child)) {
                                 //处理文本节点
-                                processText(child.getNodeValue(), xpath, ret, validNodes, invalidNodes);
+                                processText(child.getNodeValue(), xp, ret, validNodes, invalidNodes);
                             } else if (Node.ELEMENT_NODE == child.getNodeType()) {
-                                traversal(validNodes, invalidNodes, child, ret, xpath);
+                                traversal(validNodes, invalidNodes, child, ret, xp);
                             }
                         }
                         if (breakLine(nodeName)) {
@@ -193,6 +209,7 @@ public class ContentExtractor extends AbstractFieldExtractor {
     }
 
     public void init(Map<String, String> params) {
+        xpath = params.containsKey(xpathKey) ? params.get(xpathKey) : "";
         startXPath = params.containsKey(startXPathKey) ? params.get(startXPathKey) : "";
         endXPath = params.containsKey(endXPathKey) ? params.get(endXPathKey) : "";
         prefix = params.containsKey(prefixKey) ? params.get(prefixKey) : "";

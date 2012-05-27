@@ -29,9 +29,9 @@ public class FBClusterModel extends FunctionBlock {
     public String siteId_str;
     @DI(name = "CACHE", desc = "是否使用本地缓存")
     public boolean is_cached = false;
-    @DI(name = "TIMEOUT", desc = "默认5分钟")
-    public int timeout = 5 * 60 * 1000;
-    @DI(name = "LOCAL", desc = "缓存地址，默认：当前目录/cache")
+    @DI(name = "TIMEOUT", desc = "默认240分钟")
+    public int timeout = 240 * 60 * 1000;
+    @DI(name = "LOCAL", desc = "缓存地址，默认：./cache")
     public String dir_str;
     @DO(name = "CM", relativeEvents = {"EO"})
     public ClusterModel cm = null;

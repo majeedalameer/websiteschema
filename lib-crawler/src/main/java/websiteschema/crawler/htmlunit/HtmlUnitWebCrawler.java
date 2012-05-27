@@ -103,7 +103,7 @@ public class HtmlUnitWebCrawler implements Crawler {
     }
 
     private WebPage getWebPage(final Page page) throws ParserConfigurationException {
-        WebPage ret = new WebPage();
+        WebPage ret = new WebPage(this);
         ret.setUrl(url);
         if (page instanceof HtmlPage) {
             HtmlPage htmlPage = (HtmlPage) page;

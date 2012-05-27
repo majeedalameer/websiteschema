@@ -15,6 +15,7 @@ import websiteschema.fb.annotation.DO;
 import java.util.Map;
 import org.w3c.dom.Document;
 import websiteschema.cluster.analyzer.Doc;
+import websiteschema.crawler.WebPage;
 import websiteschema.fb.annotation.Algorithm;
 import websiteschema.fb.annotation.DI;
 import websiteschema.fb.annotation.EI;
@@ -36,12 +37,16 @@ public class FBDOMExtractor extends FunctionBlock {
     public Document in;
     @DI(name = "DOCS")
     public Document[] docs;
+    @DI(name = "PAGE")
+    public WebPage page;
     @DI(name = "SCHEMA")
     public Websiteschema schema;
     @DI(name = "CLS")
     public String clusterName = AnalysisResult.DefaultClusterName;
     @DI(name = "URL")
     public String url = null;
+    @DI(name = "PAGING")
+    public boolean paging = true;
     @DO(name = "OUT", relativeEvents = {"EO"})
     public Doc out;
 
@@ -51,17 +56,18 @@ public class FBDOMExtractor extends FunctionBlock {
             prop = schema.getProperties();
             xpathAttr = schema.getXpathAttr();
             analysisResult.init(prop);
-            //如果in为空，而docs又不为空，则in=docs[0]
-            if (null == in && null != docs) {
-                in = docs[0];
+            if (null != page) {
+                out = getArticle(page);
+            } else {
+                //如果in为空，而docs又不为空，则in=docs[0]
+                if (null == in && null != docs) {
+                    in = docs[0];
+                }
+                //抽取标签
+                out = extractFields(in, url, analysisResult.getFieldAnalyzers(), analysisResult.getFieldExtractors());
             }
-            //初始化Document out
-            createDocument();
-            //抽取标签
-            extractFields(in, out, analysisResult.getFieldAnalyzers(), analysisResult.getFieldExtractors());
             this.triggerEvent("EO");
         } catch (Exception ex) {
-            ex.printStackTrace();
             l.error(ex);
             this.triggerEvent("FATAL");
         }
@@ -72,7 +78,9 @@ public class FBDOMExtractor extends FunctionBlock {
      * @param in
      * @param fieldAnalyzerNames
      */
-    private void extractFields(Document in, Doc out, Map<String, String> fieldAnalyzerNames, Map<String, String> fieldExtractorNames) {
+    private Doc extractFields(Document in, String url, Map<String, String> fieldAnalyzerNames, Map<String, String> fieldExtractorNames) {
+        //初始化Document out
+        Doc doc = createDocument(url);
         List<IFieldExtractor> list = new ArrayList<IFieldExtractor>();
         for (String fieldName : fieldAnalyzerNames.keySet()) {
             String clazzName = fieldAnalyzerNames.get(fieldName);
@@ -88,7 +96,8 @@ public class FBDOMExtractor extends FunctionBlock {
                 list.add(extractor);
             }
         }
-        extractFields(in, out, list);
+        extractFields(in, doc, list);
+        return doc;
     }
 
     private void extractFields(Document in, Doc doc, List<IFieldExtractor> fields) {
@@ -134,6 +143,21 @@ public class FBDOMExtractor extends FunctionBlock {
         }
     }
 
+    private Doc getArticle(WebPage page) {
+        Doc ret = extractFields(page.getDocs()[0], page.getUrl(), analysisResult.getFieldAnalyzers(), analysisResult.getFieldExtractors());
+        while (paging && page.hasNext()) {
+            WebPage next = page.getNext();
+            if (null != next) {
+                Doc oneDoc = extractFields(next.getDocs()[0], next.getUrl(), analysisResult.getFieldAnalyzers(), analysisResult.getFieldExtractors());
+                //对某些参数进行过滤
+                ret.addField(Doc.CONTENT_FIELD, oneDoc.getValue(Doc.CONTENT_FIELD));
+            } else {
+                break;
+            }
+        }
+        return ret;
+    }
+
     private IFieldExtractor createFieldExtractor(String fieldName, String clazzName) {
         try {
             Class clazz = Class.forName(clazzName);
@@ -148,11 +172,11 @@ public class FBDOMExtractor extends FunctionBlock {
         return null;
     }
 
-    private Doc createDocument() {
-        out = new Doc();
+    private Doc createDocument(String url) {
+        Doc doc = new Doc();
         if (null != url) {
-            out.addField("URL", url);
+            doc.addField("URL", url);
         }
-        return out;
+        return doc;
     }
 }

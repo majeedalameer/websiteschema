@@ -21,6 +21,7 @@ import websiteschema.utils.CollectionUtil;
  */
 public class Doc {
 
+    public final static String CONTENT_FIELD = "CONTENT";
     private Map<String, Collection<String>> data;
     private Map<String, Collection<Map<String, String>>> extData;
 
