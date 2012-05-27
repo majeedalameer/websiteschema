@@ -4,13 +4,13 @@
     <parent>
         <groupId>websiteschema</groupId>
         <artifactId>websiteschema</artifactId>
-        <version>1.0-ALPHA</version>
+        <version>1.0-BETA</version>
         <relativePath>..</relativePath>
     </parent>
     <groupId>websiteschema</groupId>
     <artifactId>lib-system-detection</artifactId>
     <packaging>jar</packaging>
     <name>lib-system-detection</name>
-    <version>1.0-ALPHA</version>
+    <version>1.0-BETA</version>
 
 </project>

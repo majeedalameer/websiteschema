@@ -5,12 +5,12 @@
     <parent>
         <groupId>websiteschema</groupId>
         <artifactId>websiteschema</artifactId>
-        <version>1.0-ALPHA</version>
+        <version>1.0-BETA</version>
         <relativePath>..</relativePath>
     </parent>
     <artifactId>metadata-server</artifactId>
     <packaging>war</packaging>
-    <version>1.0-ALPHA</version>
+    <version>1.0-BETA</version>
     <name>metadata-server</name>
 
     <dependencies>

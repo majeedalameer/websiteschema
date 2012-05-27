@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>websiteschema</groupId>
     <artifactId>websiteschema</artifactId>
-    <version>1.0-ALPHA</version>
+    <version>1.0-BETA</version>
     <packaging>pom</packaging>
     <name>websiteschema</name>
 
