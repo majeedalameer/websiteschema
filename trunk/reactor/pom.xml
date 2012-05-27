@@ -6,7 +6,7 @@
     <artifactId>reactor</artifactId>
     <packaging>pom</packaging>
     <name>reactor</name>
-    <version>1.0-ALPHA</version>
+    <version>1.0-BETA</version>
     <profiles>
         <profile>
             <id>all</id>
