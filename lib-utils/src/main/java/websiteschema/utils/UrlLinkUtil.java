@@ -178,6 +178,50 @@ public class UrlLinkUtil {
 
         return ret;
     }
+    
+    public String convertCommodityToRowKey(URL url, String siteId) {
+        String ret = null;
+
+        if (null != url) {
+            String schema = url.getProtocol();
+            String host = url.getHost();
+            String query = url.getQuery();
+            String path = url.getPath();
+//            String date = DateUtil.format(new Date(), "yyyy-MM-dd");
+
+//            host = (new StringBuilder(host)).reverse().toString();
+
+            if (null != query) {
+                ret = siteId  + "+" + schema + "://" + host + path + "?" + query;
+            } else {
+                ret = siteId  + "+" + schema + "://" + host + path;
+            }
+        }
+
+        return ret;
+    }
+    
+    public String convertCommodityToRowKey(URL url, String siteId, String category) {
+        String ret = null;
+
+        if (null != url) {
+            String schema = url.getProtocol();
+            String host = url.getHost();
+            String query = url.getQuery();
+            String path = url.getPath();
+//            String date = DateUtil.format(new Date(), "yyyy-MM-dd");
+
+//            host = (new StringBuilder(host)).reverse().toString();
+
+            if (null != query) {
+                ret = siteId + "+" + category + "+" + schema + "://" + host + path + "?" + query;
+            } else {
+                ret = siteId + "+" + category + "+" + schema + "://" + host + path;
+            }
+        }
+
+        return ret;
+    }
 
     /**
      * 只要有一个正则表达式match上了，就返回true。
