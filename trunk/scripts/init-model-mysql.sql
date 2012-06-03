@@ -2,10 +2,13 @@
 /* DBMS name:      MySQL 5.0                                    */
 /* Created on:     2011-11-26 23:34:57                          */
 /*==============================================================*/
+drop table if exists Commodity;
 
 drop table if exists Category;
 
 drop table if exists Channel;
+
+drop table if exists Cipher;
 
 drop table if exists ClusterModel;
 
@@ -44,6 +47,37 @@ drop table if exists Wrapper;
 drop table if exists ScheduleTask;
 
 drop table if exists ScheduleTaskArchive;
+
+/*==============================================================*/
+/* Table: Commodity                                             */
+/*==============================================================*/
+create table Commodity
+(
+   id                   bigint not null auto_increment,
+   rowKey               varchar(200),
+   url                  varchar(333),
+   siteId               varchar(100),
+   jobId                bigint,
+   channel              varchar(333),
+   columns              varchar(333),
+   category             varchar(333),
+   title                varchar(333),
+   brand                varchar(333),
+   model                varchar(333),
+   price                varchar(333),
+   picurl               varchar(333),
+   picdata              text,
+   picurlmap            text,
+   property             varchar(4000),
+   description          varchar(4000),
+   picDesc              text,
+   createTime           datetime,
+   createUser           varchar(30),
+   updateTime           datetime,
+   lastUpdateUser       varchar(30),
+   primary key (id),
+   unique (rowKey)
+);
 
 /*==============================================================*/
 /* Table: Category                                              */
@@ -92,7 +126,7 @@ insert into Channel (channel, siteId, status, parentId, url, leaf, createTime, c
 create table ClusterModel
 (
    id                   bigint not null auto_increment,
-   rowKey               varchar(100),
+   rowKey               varchar(200),
    clusters             mediumtext,
    totalSamples         int,
    statInfo             mediumtext,
@@ -144,7 +178,7 @@ create table Cipher
    updateTime           datetime,
    lastUpdateUser       varchar(30),
    primary key (id)
-)
+);
 
 /*==============================================================*/
 /* Table: Follow                                                */
@@ -218,8 +252,8 @@ create table RelatedCategory
 create table Sample
 (
    id                   bigint not null auto_increment,
-   rowKey               varchar(333),
-   url                  varchar(333),
+   rowKey               varchar(200),
+   url                  varchar(300),
    siteId               varchar(100),
    content              mediumtext,
    httpStatus           int,
@@ -343,7 +377,7 @@ values ('default','VirtualDevices','["localhost:12207"]','Crawlers',now(),'syste
 create table UrlLink
 (
    id                   bigint not null auto_increment,
-   rowKey               varchar(333),
+   rowKey               varchar(200),
    content              mediumtext,
    status               int,
    url                  varchar(333),
@@ -363,7 +397,7 @@ create table UrlLink
 create table UrlLog
 (
    id                   bigint not null auto_increment,
-   rowKey               varchar(333),
+   rowKey               varchar(200),
    createTime           bigint,
    jobname              varchar(100),
    primary key (id),
@@ -395,7 +429,7 @@ insert into User(user_id,name,passwd,email,role) values ('yingrui','yingrui','21
 create table Websiteschema
 (
    id                   bigint not null auto_increment,
-   rowKey               varchar(100),
+   rowKey               varchar(200),
    valid                varchar(5),
    dimension            mediumtext,
    xpathAttr            text,

@@ -16,10 +16,10 @@
             <groupId>websiteschema</groupId>
             <artifactId>lib-func-blk</artifactId>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>websiteschema</groupId>
             <artifactId>lib-additional-plugins</artifactId>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>websiteschema</groupId>
             <artifactId>lib-conf</artifactId>
