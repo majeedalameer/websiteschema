@@ -189,6 +189,45 @@ var sysConfRecordType = [
 }
 ];
 
+var brandRecordType = [
+{
+    name : 'id',
+    type : 'long'
+},
+{
+    name : 'c_id',
+    type : 'string'
+},
+{
+    name : 'name',
+    type : 'string'
+},
+{
+    name : 'keywords',
+    type : 'string'
+},
+{
+    name : 'model',
+    type : 'string'
+},
+{
+    name : 'createTime',
+    type : 'date'
+},
+{
+    name : 'createUser',
+    type : 'string'
+},
+{
+    name : 'updateTime',
+    type : 'date'
+},
+{
+    name : 'lastUpdateUser',
+    type : 'string'
+}
+];
+
 var categoryRecordType = [
 {
     name : 'id',

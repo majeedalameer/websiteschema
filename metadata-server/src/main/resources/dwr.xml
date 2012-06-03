@@ -89,5 +89,9 @@
         <create creator="spring" javascript="FMSSiteService" >
             <param name="beanName" value="FMSSiteService"></param>
         </create>
+        
+        <create creator="spring" javascript="BrandService" >
+            <param name="beanName" value="brandService"></param>
+        </create>
     </allow>
 </dwr>
