@@ -2,6 +2,8 @@
 /* DBMS name:      MySQL 5.0                                    */
 /* Created on:     2011-11-26 23:34:57                          */
 /*==============================================================*/
+drop table if exists Brand;
+
 drop table if exists Commodity;
 
 drop table if exists Category;
@@ -47,6 +49,23 @@ drop table if exists Wrapper;
 drop table if exists ScheduleTask;
 
 drop table if exists ScheduleTaskArchive;
+
+/*==============================================================*/
+/* Table: Brand                                             */
+/*==============================================================*/
+create table Brand
+(
+   id                   bigint not null auto_increment,
+   c_id                 bigint,
+   name                 varchar(1000),
+   keywords             varchar(1000),
+   model                varchar(1000),
+   createTime           datetime,
+   createUser           varchar(30),
+   updateTime           datetime,
+   lastUpdateUser       varchar(30),
+   primary key (id)
+);
 
 /*==============================================================*/
 /* Table: Commodity                                             */
