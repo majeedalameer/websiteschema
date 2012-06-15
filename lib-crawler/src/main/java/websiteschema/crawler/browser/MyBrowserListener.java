@@ -25,37 +25,37 @@ public class MyBrowserListener implements BrowserListener {
 
     @Override
     public void onLinkChange(BrowserEvent be) {
-        l.debug("onLinkChange");
+//        l.debug("onLinkChange");
     }
 
     @Override
     public void onFavicon(BrowserEvent be) {
-        l.debug("onFavicon");
+//        l.debug("onFavicon");
     }
 
     @Override
     public void onURLChange(BrowserEvent be) {
-        l.debug("onURLChange");
+//        l.debug("onURLChange");
     }
 
     @Override
     public void onTitleChange(BrowserEvent be) {
-        l.debug("onTitleChange");
+//        l.debug("onTitleChange");
     }
 
     @Override
     public void onBeforeNavigate(BrowserEvent be) {
-        l.debug("onBeforeNavigate");
+//        l.debug("onBeforeNavigate");
     }
 
     @Override
     public void onNavigationCancelled(BrowserEvent be) {
-        l.debug("onNavigationCancelled");
+//        l.debug("onNavigationCancelled");
     }
 
     @Override
     public void onLoadIntercept(BrowserEvent be) {
-        l.debug("onLoadIntercept");
+//        l.debug("onLoadIntercept");
         String headers = be.getHeaders();
         l.debug(headers);
 //        be.blockLoad();

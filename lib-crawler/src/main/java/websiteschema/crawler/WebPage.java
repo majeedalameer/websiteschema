@@ -28,6 +28,10 @@ public class WebPage {
         this.crawler = crawler;
     }
 
+    public Crawler getCrawler() {
+        return crawler;
+    }
+
     public Document[] getDocs() {
         return docs;
     }

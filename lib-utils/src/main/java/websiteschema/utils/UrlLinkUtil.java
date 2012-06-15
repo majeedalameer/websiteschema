@@ -148,9 +148,9 @@ public class UrlLinkUtil {
             host = (new StringBuilder(host)).reverse().toString();
 
             if (null != query) {
-                ret = siteId + "+" + date + "+" + schema + "://" + host + path + "?" + query;
+                ret = siteId + "+" + schema + "://" + host + path + "?" + query;
             } else {
-                ret = siteId + "+" + date + "+" + schema + "://" + host + path;
+                ret = siteId + "+" + schema + "://" + host + path;
             }
         }
 
@@ -170,9 +170,9 @@ public class UrlLinkUtil {
             host = (new StringBuilder(host)).reverse().toString();
 
             if (null != query) {
-                ret = siteId + "+" + date + "+" + schema + "://" + host + path + "?" + query;
+                ret = siteId + "+" + schema + "://" + host + path + "?" + query;
             } else {
-                ret = siteId + "+" + date + "+" + schema + "://" + host + path;
+                ret = siteId + "+" + schema + "://" + host + path;
             }
         }
 

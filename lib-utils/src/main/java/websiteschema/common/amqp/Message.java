@@ -17,6 +17,7 @@ public class Message implements java.io.Serializable {
     private long chnlId;
     private long createTime;
     private String url;
+    private String text;
     private String configure;
     private String siteId;
     private String jobname;
@@ -24,11 +25,11 @@ public class Message implements java.io.Serializable {
     public Message() {
     }
 
-    public Message(long jobId, long startURLId, long scheId, long wrapperId, String siteId, String jobname, String url, String configure) {
-        this(jobId, startURLId, scheId, wrapperId, siteId, jobname, url, configure, 0);
+    public Message(long jobId, long startURLId, long scheId, long wrapperId, String siteId, String jobname, String url, String configure, String text) {
+        this(jobId, startURLId, scheId, wrapperId, siteId, jobname, url, configure, text,0);
     }
 
-    public Message(long jobId, long startURLId, long scheId, long wrapperId, String siteId, String jobname, String url, String configure, int depth) {
+    public Message(long jobId, long startURLId, long scheId, long wrapperId, String siteId, String jobname, String url, String configure, String text, int depth) {
         this.jobId = jobId;
         this.startURLId = startURLId;
         this.scheId = scheId;
@@ -38,8 +39,17 @@ public class Message implements java.io.Serializable {
         this.depth = depth;
         this.siteId = siteId;
         this.jobname = jobname;
+        this.text = text;
         hash = (url + jobId).hashCode();
         createTime = System.currentTimeMillis();
+    }
+    
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
     }
 
     public String getConfigure() {

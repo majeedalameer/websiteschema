@@ -15,8 +15,8 @@
         <org.slf4j.version>1.5.10</org.slf4j.version>
         <webrenderer.version>6.0b3</webrenderer.version>
         <hive-version>0.7.1-cdh3u1</hive-version>
-        <hbase-version>0.90.4-cdh3u2</hbase-version>
-        <hadoop-version>0.20.2-cdh3u2</hadoop-version>
+        <hbase-version>0.92.0</hbase-version>
+        <hadoop-version>1.0.0</hadoop-version>
         <avro-version>1.5.4</avro-version>
 
         <!-- 团队开发环境 -->
@@ -144,25 +144,25 @@
                 <artifactId>hbase</artifactId>
                 <version>${hbase-version}</version>
             </dependency>
-            <dependency>
+<!--            <dependency>
                 <groupId>org.apache.hbase</groupId>
                 <artifactId>hbase</artifactId>
                 <version>${hbase-version}</version>
                 <classifier>sources</classifier>
                 <optional>true</optional>
-            </dependency>
+            </dependency>-->
             <dependency>
                 <groupId>org.apache.hadoop</groupId>
                 <artifactId>hadoop-core</artifactId>
                 <version>${hadoop-version}</version>
             </dependency>
-            <dependency>
+<!--            <dependency>
                 <groupId>org.apache.hadoop</groupId>
                 <artifactId>hadoop-core</artifactId>
                 <version>${hadoop-version}</version>
                 <classifier>sources</classifier>
                 <optional>true</optional>
-            </dependency>
+            </dependency>-->
             <dependency>
                 <groupId>org.apache.avro</groupId>
                 <artifactId>avro</artifactId>

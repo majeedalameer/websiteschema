@@ -6,9 +6,7 @@ package websiteschema.device.job;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import org.apache.log4j.Logger;
 import websiteschema.common.amqp.Message;
 import websiteschema.common.amqp.QueueFactory;
@@ -19,6 +17,8 @@ import websiteschema.device.handler.WrapperHandler;
 import websiteschema.fb.core.app.Application;
 import websiteschema.fb.core.RuntimeContext;
 import websiteschema.model.domain.Wrapper;
+import websiteschema.persistence.rdbms.JobMapper;
+import websiteschema.utils.PojoMapper;
 import websiteschema.utils.ThreadUtil;
 
 /**
@@ -37,6 +37,7 @@ public class JobMessageReceiver implements Runnable {
     private String queueName = null;
     private String priorQueueName = null;
     private boolean threadPoolNotFull = false;
+    private JobMapper jobMapper;
 
     public JobMessageReceiver() {
         host = DeviceContext.getInstance().getConf().
@@ -49,6 +50,7 @@ public class JobMessageReceiver implements Runnable {
                 getProperty("URLQueue", "QueueName", "url_queue_1");
         priorQueue = QueueFactory.getInstance().getQueue(host, port, priorQueueName);
         queue = QueueFactory.getInstance().getQueue(host, port, queueName);
+        jobMapper = DeviceContext.getSpringContext().getBean("jobMapper", JobMapper.class);
     }
 
     public void stop() {
@@ -169,6 +171,77 @@ public class JobMessageReceiver implements Runnable {
             prop.load(is);
             for (String key : prop.stringPropertyNames()) {
                 ret.put(key, prop.getProperty(key));
+            }
+            //添加通过链接得到的栏目名称
+            int depth = msg.getDepth();
+            String text = msg.getText();
+            String confStr = msg.getConfigure();
+            String channel = null;
+            String column = null;
+            String category = null;
+            if (confStr != null && confStr.length() > 0) {
+                l.debug("msg.configure:" + confStr);
+                String[] confStrs = confStr.split("\n");
+                if (confStrs.length > 1) {
+                    for (int i = 0; i < confStrs.length; i++) {
+                        String[] tmp = confStrs[i].split("=", 2);
+                        ret.put(tmp[0], tmp[1]);
+                    }
+                    if (ret.get("CFG") != null && ret.get("CFG").length() > 0) {
+                        List<Map<String, String>> cof = PojoMapper.fromJson(ret.get("CFG"), List.class);
+                        for (Map<String, String> map : cof) {
+                            if (map.containsKey("channel")) {
+                                channel = map.get("channel");
+                            }
+                            if (map.containsKey("column")) {
+                                column = map.get("column");
+                            }
+                            if (map.containsKey("category")) {
+                                category = map.get("category");
+                            }
+                        }
+                    }
+                } else {
+                    List<Map<String, String>> cof = PojoMapper.fromJson(confStr, List.class);
+                    for (Map<String, String> map : cof) {
+                        if (map.containsKey("channel")) {
+                            channel = map.get("channel");
+                        }
+                        if (map.containsKey("column")) {
+                            column = map.get("column");
+                        }
+                        if (map.containsKey("category")) {
+                            category = map.get("category");
+                        }
+                    }
+                }
+            }
+            HashMap<String, String> cfgMap = new HashMap<String, String>();
+            if (depth == 3) {
+                cfgMap.put("channel", text);
+            } else if (depth == 2) {
+                cfgMap.put("channel", channel);
+                cfgMap.put("column", text);
+            } else if (depth == 1) {
+                cfgMap.put("channel", channel);
+                cfgMap.put("category", text);
+                cfgMap.put("column", column);
+            } else if (depth == 0) {
+                cfgMap.put("channel", channel);
+                cfgMap.put("category", category);
+                cfgMap.put("column", column);
+            }
+            List list = new ArrayList();
+            list.add(cfgMap);
+            ret.put("CFG", PojoMapper.toJson(list));
+            //添加由任务配置中接收到的参数
+            websiteschema.model.domain.Job job = jobMapper.getById(msg.getJobId());
+            String jobConfig = job.getConfigure();
+            l.debug("virtual get mysql jobconfig :" + jobConfig);
+            String[] job_properties = jobConfig.split("\n");
+            for (int i = 0; i < job_properties.length; i++) {
+                String[] tmp = job_properties[i].split("=", 2);
+                ret.put(tmp[0], tmp[1]);
             }
 
             return ret;

@@ -73,7 +73,7 @@ create table Brand
 create table Commodity
 (
    id                   bigint not null auto_increment,
-   rowKey               varchar(200),
+   rowKey               varchar(2000),
    url                  varchar(333),
    siteId               varchar(100),
    jobId                bigint,
@@ -94,8 +94,7 @@ create table Commodity
    createUser           varchar(30),
    updateTime           datetime,
    lastUpdateUser       varchar(30),
-   primary key (id),
-   unique (rowKey)
+   primary key (id)
 );
 
 /*==============================================================*/
@@ -145,13 +144,12 @@ insert into Channel (channel, siteId, status, parentId, url, leaf, createTime, c
 create table ClusterModel
 (
    id                   bigint not null auto_increment,
-   rowKey               varchar(200),
+   rowKey               varchar(2000),
    clusters             mediumtext,
    totalSamples         int,
    statInfo             mediumtext,
    clustererType        varchar(100),
-   primary key (id),
-   unique (rowKey)
+   primary key (id)
 );
 
 /*==============================================================*/
@@ -271,15 +269,14 @@ create table RelatedCategory
 create table Sample
 (
    id                   bigint not null auto_increment,
-   rowKey               varchar(200),
+   rowKey               varchar(2000),
    url                  varchar(300),
    siteId               varchar(100),
    content              mediumtext,
    httpStatus           int,
    lastUpdateTime       datetime,
    createTime           datetime,
-   primary key (id),
-   unique (rowKey)
+   primary key (id)
 );
 
 /*=============================================================*/
@@ -318,6 +315,8 @@ create table Site
    lastUpdateUser       varchar(30),
    primary key (id)
 );
+insert into Site(siteId,siteDomain,siteName,siteType,parentId,url,createTime,createUser,updateTime,lastUpdateUser) 
+values ('www_amazon_cn','www.amazon.cn','netease','portal','0','http://www.amazon.cn/',now(),'system',now(),'system');
 
 insert into Site(siteId,siteDomain,siteName,siteType,parentId,url,createTime,createUser,updateTime,lastUpdateUser) 
 values ('www_163_com_1','www.163.com','netease','portal','0','http://www.163.com/',now(),'system',now(),'system');
@@ -396,7 +395,7 @@ values ('default','VirtualDevices','["localhost:12207"]','Crawlers',now(),'syste
 create table UrlLink
 (
    id                   bigint not null auto_increment,
-   rowKey               varchar(200),
+   rowKey               varchar(2000),
    content              mediumtext,
    status               int,
    url                  varchar(333),
@@ -406,8 +405,7 @@ create table UrlLink
    depth                int,
    httpStatus           int,
    jobname              varchar(100),
-   primary key (id),
-   unique (rowKey)
+   primary key (id)
 );
 
 /*==============================================================*/
@@ -416,11 +414,10 @@ create table UrlLink
 create table UrlLog
 (
    id                   bigint not null auto_increment,
-   rowKey               varchar(200),
+   rowKey               varchar(2000),
    createTime           bigint,
    jobname              varchar(100),
-   primary key (id),
-   unique (rowKey)
+   primary key (id)
 );
 
 /*==============================================================*/
@@ -448,7 +445,7 @@ insert into User(user_id,name,passwd,email,role) values ('yingrui','yingrui','21
 create table Websiteschema
 (
    id                   bigint not null auto_increment,
-   rowKey               varchar(200),
+   rowKey               varchar(2000),
    valid                varchar(5),
    dimension            mediumtext,
    xpathAttr            text,
@@ -457,8 +454,7 @@ create table Websiteschema
    status               int,
    createTime           datetime,
    lastUpdateTime       datetime,
-   primary key (id),
-   unique (rowKey)
+   primary key (id)
 );
 
 /*==============================================================*/
