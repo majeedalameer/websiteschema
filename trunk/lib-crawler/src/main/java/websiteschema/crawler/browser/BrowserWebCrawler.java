@@ -43,7 +43,7 @@ public class BrowserWebCrawler implements Crawler {
     int proxyPort = 80;
     String javascriptBody;
     final Boolean lock = false;
-    int sec = 1000;
+    int sec = 100;
     long delay = 5 * sec;
     int httpStatus = 0;
     Map<String, String> header = new HashMap<String, String>(2);
