@@ -8,6 +8,7 @@ import java.util.*;
 import java.util.regex.*;
 import websiteschema.cluster.analyzer.Doc;
 import websiteschema.cluster.analyzer.IFieldFilter;
+import websiteschema.utils.StringUtil;
 
 /**
  *
@@ -33,14 +34,14 @@ public class SourceNameFilter implements IFieldFilter {
                 doc.remove(getFieldName());
                 doc.addField(getFieldName(), sourcename);
             } else {
-                if(res.size() > 1) {
+                if (res.size() > 1) {
                     res.removeAll(res);
                 }
             }
         }
     }
 
-    private String filtering(String sourcename) {
+    public String filtering(String sourcename) {
         if (null != sourcename) {
             if (sourcename.matches("([一-龥]+)(-[一-龥]+)?")) {
                 //来源全部是汉字，并且长度小于15。
@@ -60,8 +61,9 @@ public class SourceNameFilter implements IFieldFilter {
                 } else {
                     String[] array = sourcename.split("[ 　]+");
                     for (String candidate : array) {
+                        candidate = StringUtil.trim(candidate);
                         if (candidate.matches("([一-龥]+)(-[一-龥]+)?")) {
-                            if (candidate.matches("(.*(网|报|社))|((网易|搜狐|新浪|腾讯).*)")) {
+                            if (candidate.matches("(.*(网|网站|报|社|在线|频道|中心|博客))|((网易|搜狐|新浪|腾讯|中国).*)")) {
                                 return candidate;
                             } else {
                                 if (candidate.length() <= 4) {

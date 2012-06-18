@@ -37,6 +37,14 @@ public class UrlLinkMapper implements Mapper<UrlLink> {
     }
 
     @Override
+    public UrlLink get(String rowKey, String family) {
+        if ("cf".equals(family)) {
+            return SQLBeanWrapper.getBean(urlLinkDBMapper.getSimpleResult(rowKey), UrlLink.class, false);
+        }
+        return get(rowKey);
+    }
+
+    @Override
     public List<UrlLink> getList(String start, String end) {
         return getList(start, end, null);
     }

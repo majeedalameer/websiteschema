@@ -39,8 +39,10 @@ public class ConfigTest {
         prop.put("SITEID", "site_id");
         prop.put("JOBNAME", "job_name");
         prop.put("DBNAME", "db_name");
+        prop.put("XPATH", "${XPATH}");
         Configure conf = new Configure("configure-site.ini", prop);
         assertEquals(conf.getProperty("FiltedField"), "xyz");
+        assertEquals(conf.getProperty("XPATH"), "${XPATH}");
         assertEquals(conf.getProperty("TestField"), "CLS = xyz");
         System.out.println(conf.getMapProperty("TestField2"));
         assertEquals(conf.getMapProperty("TestField2").get("SITEID"), "site_id");

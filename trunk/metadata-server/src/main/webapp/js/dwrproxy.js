@@ -11,12 +11,12 @@ Ext.extend(Ext.data.DWRProxy, Ext.data.DataProxy, {
             if(!params.match) params.match = '';
             var delegate = this.loadResponse.createDelegate(this, [reader, callback, scope, arg], 1);
             var callParams = new Array();
-            if(this.pagingAndSort) {
-                for(var name in params) {
+//            if(this.pagingAndSort) {
+//                for(var name in params) {
 //                    callParams.push(params[name]);
 //                    alert(name + " " +params[name]);
-                }
-            }
+//                }
+//            }
 //            if(arg.arg) {
 //                callParams = callParams.concat(arg.arg);
 //            }

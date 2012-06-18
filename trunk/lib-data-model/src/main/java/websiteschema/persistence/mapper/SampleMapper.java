@@ -44,6 +44,14 @@ public class SampleMapper implements Mapper<Sample> {
     }
 
     @Override
+    public Sample get(String rowKey, String family) {
+        if ("cf".equals(family)) {
+            return SQLBeanWrapper.getBean(sampleDBMapper.getSimpleResult(rowKey), Sample.class, false);
+        }
+        return get(rowKey);
+    }
+
+    @Override
     public List<Sample> getList(String start, String end) {
         return getList(start, end, null);
     }

@@ -45,7 +45,7 @@ public abstract class AbstractFieldExtractor implements IFieldExtractor {
         return this.xPathAttr;
     }
 
-    public Collection<Map<String, String>> extractExtData(Document doc) {
+    public Collection<Map<String, String>> extractExtData(Document doc, String pageSource) {
         return null;
     }
 }

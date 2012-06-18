@@ -47,7 +47,9 @@ public class NextPageAnalyzer {
                 Link lnk = getLink(node);
                 if (null != lnk) {
                     if (isNextUrl(url, lnk)) {
-                        possibleNextPages.add(lnk.getHref());
+                        if (!possibleNextPages.contains(lnk.getHref())) {
+                            possibleNextPages.add(lnk.getHref());
+                        }
                     }
                 }
             }
@@ -102,7 +104,7 @@ public class NextPageAnalyzer {
             return false;
         }
         String prefix = findPrefix(pageUrl, anyUrl);
-        String suffix = findSuffix(pageUrl, anyUrl);
+        String suffix = findSuffix(pageUrl, anyUrl, prefix.length());
         try {
             String differ = anyUrl.substring(prefix.length(), anyUrl.length() - suffix.length());
             if (differ.matches("([\\p{Punct}])?(\\d{1,2})")) {
@@ -110,6 +112,8 @@ public class NextPageAnalyzer {
                 if (null != text) {
                     text = StringUtil.trim(text);
                     if (text.matches("\\d+")) {
+                        return true;
+                    } else if (text.length() <= 5 && text.matches("(.*下一页.*)|(Next)|(.*[>》]+.*)")) {
                         return true;
                     }
                 }
@@ -131,20 +135,27 @@ public class NextPageAnalyzer {
         return ret;
     }
 
-    private String findSuffix(String str, String suffix) {
-        String ret = suffix;
-        while (!str.endsWith(ret)) {
-            ret = ret.substring(1, ret.length());
-            if (ret.length() <= 0) {
-                break;
+    private String findSuffix(String str, String suffix, int prefixLength) {
+        String ret = "";
+        if (suffix.length() > str.length()) {
+            ret = suffix;
+            int maxLength = str.length();
+            while (!str.endsWith(ret)) {
+                ret = ret.substring(1);
+                if (ret.length() <= 0) {
+                    break;
+                }
+            }
+            while (prefixLength + ret.length() > maxLength && !ret.isEmpty()) {
+                ret = ret.substring(1);
             }
         }
         return ret;
     }
 
     public static void main(String[] arg) {
-        String str1 = "http://www.cien.com.cn/html/Home/report/60344.htm";
-        String str2 = "http://www.cien.com.cn/html/Home/report/60344-2.htm";
+        String str1 = "http://news.xinhuanet.com/sports/2012-06/01/c_112087172.htm";
+        String str2 = "http://news.xinhuanet.com/sports/2012-06/01/c_112087172_2.htm";
         Link l = new Link();
         l.setHref(str2);
         l.setText("2");

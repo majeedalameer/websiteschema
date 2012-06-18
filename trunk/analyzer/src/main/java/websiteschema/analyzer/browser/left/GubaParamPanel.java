@@ -27,7 +27,6 @@ import websiteschema.cluster.analyzer.fields.XPathExtractor;
 import websiteschema.model.domain.Websiteschema;
 import websiteschema.persistence.Mapper;
 import websiteschema.utils.CollectionUtil;
-import websiteschema.utils.StringUtil;
 
 /**
  *
@@ -970,6 +969,10 @@ public class GubaParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
         return doc;
     }
 
+    private String getDocumentSource() {
+        return context.getBrowser().getDocument().getDocumentSource();
+    }
+
     /**
      * 根据配置刷新页面上的内容
      *
@@ -1018,7 +1021,7 @@ public class GubaParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
         setThreadConfig(map);
         final BBSThreadExtractor ext = threadsExtractor;
         ext.init(map);
-        Collection<Map<String, String>> res = ext.extractExtData(getDocument());
+        Collection<Map<String, String>> res = ext.extractExtData(getDocument(), getDocumentSource());
         if (null != res) {
             this.contentTextArea.setText("");
             StringBuilder sb = new StringBuilder();
@@ -1074,7 +1077,7 @@ public class GubaParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
 
     private Collection<String> extractAndDisplayTitle(Map<String, String> map) {
         titleAnalyzer.init(map);
-        Collection<String> set = titleAnalyzer.extract(getDocument());
+        Collection<String> set = titleAnalyzer.extract(getDocument(), getDocumentSource());
         if (null != set && !set.isEmpty()) {
             this.titleResultField.setText(set.iterator().next());
             this.titleXPathField.setText(map.get(TitleAnalyzer.xpathKey));
@@ -1099,7 +1102,7 @@ public class GubaParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
     private Collection<String> extractAndDisplayStandardExtractor(StandardExtractor extractor, Map<String, String> map,
             JTextField valueField, JTextField xpathField, JTextField prefixField, JTextField suffixField, JTextField regexField) {
         extractor.init(map);
-        Collection<String> set = extractor.extract(getDocument());
+        Collection<String> set = extractor.extract(getDocument(), getDocumentSource());
         if (null != set && !set.isEmpty()) {
             valueField.setText(CollectionUtil.toString(set));
             xpathField.setText(map.get(StandardExtractor.xpathKey));
@@ -1125,7 +1128,7 @@ public class GubaParamPanel extends javax.swing.JPanel implements ISiteAnalyzer 
     private Collection<String> extractAndDisplayXPathExtractor(XPathExtractor extractor, Map<String, String> map,
             JTextField valueField, JTextField xpathField) {
         extractor.init(map);
-        Collection<String> set = extractor.extract(getDocument());
+        Collection<String> set = extractor.extract(getDocument(), getDocumentSource());
         if (null != set && !set.isEmpty()) {
             valueField.setText(CollectionUtil.toString(set));
             xpathField.setText(map.get(XPathExtractor.xpathKey));

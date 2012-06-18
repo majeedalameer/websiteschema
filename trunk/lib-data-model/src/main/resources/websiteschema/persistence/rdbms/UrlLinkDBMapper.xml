@@ -9,6 +9,8 @@
 
     <sql id='col'>id,rowKey,content,status,url,lastUpdateTime,createTime,parent,depth,httpStatus,jobname</sql>
 
+    <sql id='colSimple'>id,rowKey,status,url,lastUpdateTime,createTime,parent,depth,httpStatus,jobname</sql>
+
     <select id="getTotalResults" resultType="long">
         select count(0) from UrlLink
         <trim prefix="WHERE" prefixOverrides="AND |OR ">
@@ -64,6 +66,13 @@
         where rowKey = #{rowKey}
     </select>
 
+    <select id="getSimpleResult" parameterType="string" resultType="java.util.Map">
+        select
+        <include refid="colSimple"/>
+        from UrlLink
+        where rowKey = #{rowKey}
+    </select>
+
     <select id="getId" parameterType="string" resultType="long">
         select id from UrlLink
         where rowKey = #{rowKey}
@@ -73,12 +82,12 @@
         select count(0) from UrlLink
         where rowKey = #{rowKey}
     </select>
-
+    
     <!-- 插入记录 -->
     <insert id="insert" parameterType="java.util.Map"
         useGeneratedKeys="true" keyProperty="id">
         insert into UrlLink (rowKey, content, status, url, lastUpdateTime, createTime, parent, depth, httpStatus, jobname)
-        values (#{rowKey}, #{content}, #{status}, #{url}, #{lastUpdateTime}, #{createTime}, #{parent}, #{depth}, #{httpStatus}, #{jobname})
+        values (#{rowKey}, #{content}, #{status}, #{url}, now(), now(), #{parent}, #{depth}, #{httpStatus}, #{jobname})
     </insert>
 
     <!-- 更新任务状态记录 -->
@@ -88,12 +97,11 @@
             <if test="content != null">content = #{content},</if>
             <if test="status != null">status = #{status},</if>
             <if test="url != null">url = #{url},</if>
-            <if test="lastUpdateTime != null">lastUpdateTime = #{lastUpdateTime},</if>
-            <if test="createTime != null">createTime = #{createTime},</if>
             <if test="parent != null">parent = #{parent},</if>
             <if test="depth != null">depth = #{depth},</if>
             <if test="httpStatus != null">httpStatus = #{httpStatus},</if>
-            <if test="jobname != null">jobname = #{jobname}</if>
+            <if test="jobname != null">jobname = #{jobname},</if>
+            lastUpdateTime = now()
         </trim>
         where rowKey = #{rowKey}
     </update>

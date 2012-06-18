@@ -131,7 +131,7 @@ public class TitleAnalyzer extends AbstractFieldExtractor implements IFieldAnaly
         return ret;
     }
 
-    public Collection<String> extract(Document doc) {
+    public Collection<String> extract(Document doc, String pageSource) {
         if (!"".equals(titleXPath)) {
             return getTitle(titleXPath, doc, titlePrefixString, titleSuffixString);
         } else if (!"".equals(titlePrefixString) && !"".equals(titleSuffixString)) {

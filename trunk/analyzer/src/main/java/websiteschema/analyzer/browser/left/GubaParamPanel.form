@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.1" encoding="UTF-8" ?>
 
 <Form version="1.3" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
   <AuxValues>
@@ -19,16 +19,16 @@
           <Group type="102" alignment="1" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="1" attributes="0">
-                  <Component id="jScrollPane1" alignment="0" pref="725" max="32767" attributes="0"/>
-                  <Component id="jSeparator3" alignment="0" pref="725" max="32767" attributes="0"/>
+                  <Component id="jScrollPane1" alignment="0" pref="763" max="32767" attributes="0"/>
+                  <Component id="jSeparator3" alignment="0" pref="763" max="32767" attributes="0"/>
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
-                      <Component id="titlePrefixField" pref="260" max="32767" attributes="0"/>
+                      <Component id="titlePrefixField" pref="279" max="32767" attributes="0"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
-                      <Component id="titleSuffixField" pref="261" max="32767" attributes="0"/>
+                      <Component id="titleSuffixField" pref="280" max="32767" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
@@ -43,10 +43,10 @@
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               <Component id="jLabel21" min="-2" pref="40" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="statusLabel" pref="401" max="32767" attributes="0"/>
+                              <Component id="statusLabel" pref="439" max="32767" attributes="0"/>
                           </Group>
-                          <Component id="titleXPathField" alignment="0" pref="649" max="32767" attributes="0"/>
-                          <Component id="titleResultField" alignment="0" pref="649" max="32767" attributes="0"/>
+                          <Component id="titleXPathField" alignment="0" pref="687" max="32767" attributes="0"/>
+                          <Component id="titleResultField" alignment="0" pref="687" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
@@ -54,15 +54,15 @@
                       <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel27" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
-                      <Component id="clickPrefixField" pref="156" max="32767" attributes="0"/>
+                      <Component id="clickPrefixField" pref="168" max="32767" attributes="0"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel28" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
-                      <Component id="clickSuffixField" pref="156" max="32767" attributes="0"/>
+                      <Component id="clickSuffixField" pref="168" max="32767" attributes="0"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel32" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
-                      <Component id="clickRegexField" pref="156" max="32767" attributes="0"/>
+                      <Component id="clickRegexField" pref="170" max="32767" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <Group type="103" groupAlignment="1" max="-2" attributes="0">
@@ -82,12 +82,12 @@
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="jLabel16" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="clickXPathField" pref="487" max="32767" attributes="0"/>
+                              <Component id="clickXPathField" pref="525" max="32767" attributes="0"/>
                           </Group>
                           <Group type="102" attributes="0">
                               <Component id="jLabel18" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="commentXPathField" pref="487" max="32767" attributes="0"/>
+                              <Component id="commentXPathField" pref="525" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>
@@ -96,15 +96,15 @@
                       <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel30" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
-                      <Component id="commentPrefixField" pref="156" max="32767" attributes="0"/>
+                      <Component id="commentPrefixField" pref="168" max="32767" attributes="0"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel31" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
-                      <Component id="commentSuffixField" pref="156" max="32767" attributes="0"/>
+                      <Component id="commentSuffixField" pref="168" max="32767" attributes="0"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel33" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
-                      <Component id="commentRegexField" pref="156" max="32767" attributes="0"/>
+                      <Component id="commentRegexField" pref="170" max="32767" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="jLabel22" min="-2" max="-2" attributes="0"/>
@@ -113,12 +113,12 @@
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="jLabel35" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="channelXPathField" pref="485" max="32767" attributes="0"/>
+                      <Component id="channelXPathField" pref="523" max="32767" attributes="0"/>
                   </Group>
                   <Component id="jTabbedPane1" alignment="0" max="32767" attributes="0"/>
                   <Group type="102" alignment="1" attributes="0">
                       <Component id="jLabel19" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="570" max="32767" attributes="0"/>
+                      <EmptySpace pref="608" max="32767" attributes="0"/>
                       <Component id="testButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="saveButton" min="-2" max="-2" attributes="0"/>
@@ -399,16 +399,16 @@
                   <Group type="102" attributes="0">
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jSeparator2" alignment="0" pref="696" max="32767" attributes="1"/>
+                          <Component id="jSeparator2" alignment="0" pref="734" max="32767" attributes="1"/>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="jLabel9" min="-2" max="-2" attributes="1"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="threadDateXPathField" pref="620" max="32767" attributes="0"/>
+                              <Component id="threadDateXPathField" pref="658" max="32767" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="jLabel11" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="threadAuthorXPathField" pref="620" max="32767" attributes="0"/>
+                              <Component id="threadAuthorXPathField" pref="658" max="32767" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="jLabel12" min="-2" max="-2" attributes="0"/>
@@ -419,24 +419,24 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="jLabel14" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="-2" max="-2" attributes="0"/>
-                              <Component id="threadAuthorSuffixField" pref="300" max="32767" attributes="0"/>
+                              <Component id="threadAuthorSuffixField" pref="338" max="32767" attributes="0"/>
                           </Group>
-                          <Component id="jSeparator4" alignment="0" pref="696" max="32767" attributes="0"/>
+                          <Component id="jSeparator4" alignment="0" pref="734" max="32767" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="jLabel20" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="threadContentXPathField" pref="620" max="32767" attributes="0"/>
+                              <Component id="threadContentXPathField" pref="658" max="32767" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="jLabel23" min="-2" max="-2" attributes="0"/>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
                               <Component id="jLabel24" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
-                              <Component id="threadContentPrefixField" pref="250" max="32767" attributes="0"/>
+                              <Component id="threadContentPrefixField" pref="269" max="32767" attributes="0"/>
                               <EmptySpace min="-2" max="-2" attributes="0"/>
                               <Component id="jLabel25" min="-2" max="-2" attributes="0"/>
                               <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
-                              <Component id="threadContentSuffixField" pref="250" max="32767" attributes="0"/>
+                              <Component id="threadContentSuffixField" pref="269" max="32767" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <Group type="103" groupAlignment="0" attributes="0">
@@ -455,7 +455,7 @@
                                       <Component id="threadDateFormatField" pref="315" max="32767" attributes="0"/>
                                   </Group>
                                   <Group type="102" attributes="0">
-                                      <Component id="threadXPathField" pref="431" max="32767" attributes="0"/>
+                                      <Component id="threadXPathField" pref="469" max="32767" attributes="0"/>
                                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                       <Component id="GetAreaXPathCheckBox" min="-2" max="-2" attributes="0"/>
                                   </Group>
@@ -469,7 +469,7 @@
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace pref="10" max="32767" attributes="0"/>
+                      <EmptySpace pref="12" max="32767" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="jLabel34" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="threadXPathField" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -639,12 +639,12 @@
                   <Group type="102" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jSeparator5" alignment="0" pref="696" max="32767" attributes="0"/>
-                          <Component id="jSeparator1" alignment="0" pref="696" max="32767" attributes="0"/>
+                          <Component id="jSeparator5" alignment="0" pref="734" max="32767" attributes="0"/>
+                          <Component id="jSeparator1" alignment="0" pref="734" max="32767" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="jLabel36" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="subjectXPathField" pref="620" max="32767" attributes="0"/>
+                              <Component id="subjectXPathField" pref="658" max="32767" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <Group type="103" groupAlignment="0" attributes="0">
@@ -662,29 +662,29 @@
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="subjectDateFormatField" pref="300" max="32767" attributes="0"/>
                                   </Group>
-                                  <Component id="subjectDateXPathField" pref="620" max="32767" attributes="0"/>
+                                  <Component id="subjectDateXPathField" pref="658" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="jLabel42" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="subjectAuthorXPathField" pref="620" max="32767" attributes="0"/>
+                              <Component id="subjectAuthorXPathField" pref="658" max="32767" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="jLabel43" min="-2" max="-2" attributes="0"/>
                               <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
                               <Component id="jLabel44" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="-2" max="-2" attributes="0"/>
-                              <Component id="subjectAuthorPrefixField" pref="235" max="32767" attributes="0"/>
+                              <Component id="subjectAuthorPrefixField" pref="254" max="32767" attributes="0"/>
                               <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
                               <Component id="jLabel45" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="-2" max="-2" attributes="0"/>
-                              <Component id="subjectAuthorSuffixField" pref="265" max="32767" attributes="0"/>
+                              <Component id="subjectAuthorSuffixField" pref="284" max="32767" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="jLabel46" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="subjectContentXPathField" pref="620" max="32767" attributes="0"/>
+                              <Component id="subjectContentXPathField" pref="658" max="32767" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="jLabel47" min="-2" max="-2" attributes="0"/>
@@ -695,7 +695,7 @@
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               <Component id="jLabel49" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="subjectContentSuffixField" pref="311" max="32767" attributes="0"/>
+                              <Component id="subjectContentSuffixField" pref="349" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
@@ -753,7 +753,7 @@
                           <Component id="jLabel49" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="subjectContentSuffixField" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace pref="20" max="32767" attributes="0"/>
+                      <EmptySpace pref="26" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>

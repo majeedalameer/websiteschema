@@ -19,7 +19,7 @@ import javax.xml.xpath.XPathFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import websiteschema.crawler.WebPage;
 
 import websiteschema.element.DocumentUtil;
 import websiteschema.fb.annotation.Algorithm;
@@ -43,6 +43,8 @@ public class FBUnitExtractor extends FunctionBlock {
 
     @DI(name = "DOC", desc = "要抽取的文档")
     public Document doc;
+    @DI(name = "PAGE")
+    public WebPage page;
     @DI(name = "UPATH", desc = "Unit XPath")
     public String unitXPath;
     @DI(name = "PTS", desc = "要抽取的信息点")
@@ -51,6 +53,10 @@ public class FBUnitExtractor extends FunctionBlock {
     public String url;
     @DI(name = "MUST", desc = "每个单元中必须包含的信息点")
     public List<String> mustHave;
+    @DI(name = "PAGING")
+    public boolean paging = true;
+    @DI(name = "MAX_PAGING_NUM")
+    public int maxPagingNumber = 1;
     @DO(name = "OUT", relativeEvents = {"EO"})
     public List<Map<String, String>> table;
     private UnitConf unitConf;
@@ -61,10 +67,14 @@ public class FBUnitExtractor extends FunctionBlock {
     public void extractUnits() {
         try {
             init();
-            table = assembleUnits(unitConf);
+            if (null != page) {
+                extract(page);
+            } else {
+                table = assembleUnits(doc, unitConf);
+            }
             triggerEvent("EO");
         } catch (Exception ex) {
-            ex.printStackTrace();
+            l.error(ex);
             throw new RuntimeException(ex.getMessage());
         }
     }
@@ -76,24 +86,31 @@ public class FBUnitExtractor extends FunctionBlock {
         unitConf.setUnitPath(unitXPath);
     }
 
-    private NodeList getUnits_(Document doc, String unitXPath) throws XPathExpressionException {
-        XPathExpression xPathExp = X_PATH.compile(unitXPath);
-        NodeList units = (NodeList) xPathExp.evaluate(doc, XPathConstants.NODESET);
-        return units;
-    }
-
     private List<Node> getUnits(Document doc, String unitXPath) {
         return DocumentUtil.getByXPath(doc, unitXPath);
     }
 
+    private List<Map<String, String>> extract(WebPage page) throws XPathExpressionException {
+        List<Map<String, String>> ret = assembleUnits(page.getDocs()[0], unitConf);
+        int num = maxPagingNumber;
+        if (--num > 0 && page.hasNext()) {
+            WebPage next = page.getNext();
+            if (null != next) {
+                ret.addAll(assembleUnits(next.getDocs()[0], unitConf));
+            }
+        }
+
+        return ret;
+    }
+
     // 组装信息单元
-    private List<Map<String, String>> assembleUnits(UnitConf unitConf) throws XPathExpressionException {
+    private List<Map<String, String>> assembleUnits(Document doc, UnitConf unitConf) throws XPathExpressionException {
         List<Node> units = getUnits(doc, unitConf.getUnitPath());
         if (null != units) {
             List<Map<String, String>> ret = new ArrayList<Map<String, String>>();
             for (int i = 0; i < units.size(); ++i) {
                 Node iterNode = units.get(i);
-                Map<String, String> row = extractRow(iterNode);
+                Map<String, String> row = extractRow(iterNode, unitConf);
                 if (null != row) {
                     ret.add(row);
                 }
@@ -103,7 +120,7 @@ public class FBUnitExtractor extends FunctionBlock {
         return null;
     }
 
-    private Map<String, String> extractRow(Node iterNode) throws XPathExpressionException {
+    private Map<String, String> extractRow(Node iterNode, UnitConf unitConf) throws XPathExpressionException {
         int columnCount = unitConf.getPoints().size();
         Map<String, String> row = new HashMap<String, String>(columnCount);
         for (int i = 0; i < columnCount; i++) {

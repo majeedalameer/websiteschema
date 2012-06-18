@@ -21,6 +21,8 @@ public interface UrlLinkDBMapper {
 
     public Map getByRowKey(String rowKey);
 
+    public Map getSimpleResult(String rowKeys);
+
     public long getId(String rowKey);
 
     public int exists(String rowKey);

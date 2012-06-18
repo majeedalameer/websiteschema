@@ -304,10 +304,14 @@ public class Configure {
             if (prop.containsKey(k)) {
                 String prefix = m.group(1);
                 String suffix = m.group(3);
-                String ret = prefix + prop.get(k) + suffix;
-                String newRet = matchAndReplaceSingleLine(ret, prop);
-                if (null != newRet) {
-                    return newRet;
+                String newValue = prop.get(k);
+                String ret = prefix + newValue + suffix;
+                Matcher matcher = pat.matcher(newValue);
+                if (!matcher.matches()) {
+                    String newRet = matchAndReplaceSingleLine(ret, prop);
+                    if (null != newRet) {
+                        return newRet;
+                    }
                 }
                 return ret;
             }
