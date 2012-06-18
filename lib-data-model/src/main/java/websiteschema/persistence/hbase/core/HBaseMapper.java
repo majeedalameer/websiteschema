@@ -34,6 +34,12 @@ public class HBaseMapper<T extends HBaseBean> extends HbaseBasicMapper implement
         return wrapper.getBean(result, clazz);
     }
 
+    @Override
+    public T get(String rowKey, String family) {
+        Result result = select(rowKey, family);
+        return wrapper.getBean(result, clazz);
+    }
+
     public void scan(Function<T> func) {
         ResultScanner rs = scan();
         if (null != rs) {

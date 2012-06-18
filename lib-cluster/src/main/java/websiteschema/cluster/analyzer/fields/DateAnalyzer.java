@@ -223,7 +223,7 @@ public class DateAnalyzer extends AbstractFieldExtractor implements IFieldAnalyz
         return ret;
     }
 
-    public Collection<String> extract(Document doc) {
+    public Collection<String> extract(Document doc, String pageSource) {
         Set<String> ret = new HashSet<String>();
         List<Node> nodes = DocumentUtil.getByXPath(doc, xpath);
         if (null != nodes) {

@@ -36,7 +36,9 @@ public class FBFieldFilter extends FunctionBlock {
             if (null != filters && null != doc) {
                 for (String field : filters.keySet()) {
                     IFieldFilter filter = createFieldFilter(field, filters.get(field));
-                    filter.filtering(doc);
+                    if (null != filter) {
+                        filter.filtering(doc);
+                    }
                 }
             }
         } catch (Exception ex) {

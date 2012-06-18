@@ -29,14 +29,14 @@ public interface IFieldExtractor extends JObject {
      * @param doc
      * @return
      */
-    public Collection<String> extract(Document doc);
+    public Collection<String> extract(Document doc, String pageSource);
 
     /**
      * 抽取数据，结果可能是一个集合
      * @param doc
      * @return
      */
-    public Collection<Map<String, String>> extractExtData(Document doc);
+    public Collection<Map<String, String>> extractExtData(Document doc, String pageSource);
 
     /**
      * 设置基本分析结果

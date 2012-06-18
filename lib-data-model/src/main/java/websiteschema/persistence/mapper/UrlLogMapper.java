@@ -46,6 +46,11 @@ public class UrlLogMapper implements Mapper<UrlLog> {
     }
 
     @Override
+    public UrlLog get(String rowKey, String family) {
+        return get(rowKey);
+    }
+
+    @Override
     public List<UrlLog> getList(String start, String end) {
         return getList(start, end, null);
     }

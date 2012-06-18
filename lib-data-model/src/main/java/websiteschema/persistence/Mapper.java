@@ -17,6 +17,8 @@ public interface Mapper<T> {
 
     public T get(String rowKey);
 
+    public T get(String rowKey, String family);
+
     public List<T> getList(String start, String end);
 
     public List<T> getList(String start, String end, String family);

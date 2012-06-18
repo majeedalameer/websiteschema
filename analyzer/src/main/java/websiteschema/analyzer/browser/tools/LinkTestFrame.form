@@ -164,9 +164,9 @@
         </Component>
         <Component class="javax.swing.JTextField" name="pagingNumberField">
           <Properties>
+            <Property name="editable" type="boolean" value="false"/>
             <Property name="text" type="java.lang.String" value="10"/>
             <Property name="toolTipText" type="java.lang.String" value="&#x6700;&#x591a;&#x7ffb;&#x591a;&#x5c11;&#x9875;"/>
-            <Property name="enabled" type="boolean" value="false"/>
             <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[80, 2147483647]"/>
             </Property>

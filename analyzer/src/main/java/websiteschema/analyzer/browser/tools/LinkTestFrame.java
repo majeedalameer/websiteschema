@@ -41,6 +41,8 @@ public class LinkTestFrame extends javax.swing.JFrame {
     public LinkTestFrame() {
         initComponents();
 
+        pagingNumberField.setEditable(pagingCheckBox.isSelected());
+
         int screenWidth = ((int) java.awt.Toolkit.getDefaultToolkit().getScreenSize().width);
         int screenHeight = ((int) java.awt.Toolkit.getDefaultToolkit().getScreenSize().height);
         int sizeWidth = this.getWidth();
@@ -162,9 +164,9 @@ public class LinkTestFrame extends javax.swing.JFrame {
         });
         jToolBar3.add(pagingCheckBox);
 
+        pagingNumberField.setEditable(false);
         pagingNumberField.setText("10");
         pagingNumberField.setToolTipText("最多翻多少页");
-        pagingNumberField.setEnabled(false);
         pagingNumberField.setMaximumSize(new java.awt.Dimension(80, 2147483647));
         pagingNumberField.setMinimumSize(new java.awt.Dimension(50, 19));
         jToolBar3.add(pagingNumberField);
@@ -268,11 +270,7 @@ public class LinkTestFrame extends javax.swing.JFrame {
 
         @Override
         public void run() {
-            if (pagingCheckBox.isSelected()) {
-                startAll();
-            } else {
-                start();
-            }
+            start();
         }
     };
 
@@ -335,7 +333,10 @@ public class LinkTestFrame extends javax.swing.JFrame {
 
     private List<Link> getLinks(WebPage page) {
         FBLinksExtractor ext = new FBLinksExtractor();
-        ext.docs = page.getDocs();
+        ext.page = page;
+        if (pagingCheckBox.isSelected()) {
+            ext.maxPagingNumber = this.getMaxPagingNumber();
+        }
         ext.xpath = getXPath();
         ext.url = page.getUrl();
         ext.extract();
@@ -345,42 +346,6 @@ public class LinkTestFrame extends javax.swing.JFrame {
     private int getMaxPagingNumber() {
         String str = pagingNumberField.getText();
         return Integer.parseInt(str);
-    }
-
-    private void startAll() {
-        this.startButton.setEnabled(false);
-        this.btnSaveToChannel.setEnabled(false);
-        try {
-            //获取要采集的URL
-            String oneUrl = fidURl.getText().trim();
-            WebPage page = crawl(oneUrl);
-            retLinks = new ArrayList<Link>();
-            if (null != page) {
-                retLinks.addAll(getLinks(page));
-                int num = getMaxPagingNumber();
-                while (page.hasNext() && --num > 0) {
-                    WebPage next = page.getNext();
-                    if (null != next) {
-                        retLinks.addAll(getLinks(next));
-                    }
-                }
-                //对结果进行输出
-                if (null != retLinks && !retLinks.isEmpty()) {
-                    resultArea.setText("");
-                    for (Link lnk : retLinks) {
-                        resultArea.append(lnk.getText() + " -> " + lnk.getHref());
-                        resultArea.append("\n");
-                    }
-                    this.btnSaveToChannel.setEnabled(true);
-                } else {
-                    JOptionPane.showMessageDialog(this, "无法抽取出链接！");
-                }
-            } else {
-                JOptionPane.showMessageDialog(this, "抽取页面异常");
-            }
-        } finally {
-            this.startButton.setEnabled(true);
-        }
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnSaveToChannel;

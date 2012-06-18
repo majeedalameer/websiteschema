@@ -17,6 +17,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import websiteschema.cluster.analyzer.Link;
+import websiteschema.crawler.WebPage;
 import websiteschema.element.DocumentUtil;
 import websiteschema.element.W3CDOMUtil;
 import websiteschema.fb.annotation.Description;
@@ -46,10 +47,16 @@ public class FBLinksExtractor extends FunctionBlock {
     public Document in;
     @DI(name = "DOCS")
     public Document[] docs;
+    @DI(name = "PAGE")
+    public WebPage page;
     @DI(name = "XPATH")
     public String xpath = null;
     @DI(name = "URL")
     public String url;
+    @DI(name = "PAGING")
+    public boolean paging = true;
+    @DI(name = "MAX_PAGING_NUM")
+    public int maxPagingNumber = 1;
     @DO(name = "OUT", relativeEvents = {"EO"})
     public List<Link> links = null;
 
@@ -69,7 +76,9 @@ public class FBLinksExtractor extends FunctionBlock {
     }
 
     private void extractLinks() {
-        if (null != docs && null != xpath && null != url) {
+        if (null != page && null != xpath && null != url) {
+            links = extractLinks(page);
+        } else if (null != docs && null != xpath && null != url) {
             links = new ArrayList<Link>();
             for (Document doc : docs) {
                 List<Link> urls = extractLinks(doc, xpath);
@@ -102,6 +111,37 @@ public class FBLinksExtractor extends FunctionBlock {
                 }
             }
         }
+    }
+
+    private List<Link> extractLinks(WebPage page) {
+        List<Link> ret = extractOnePage(page);
+        int num = maxPagingNumber;
+        while (paging && --num > 0 && page.hasNext()) {
+            WebPage next = page.getNext();
+            if (null != next) {
+                ret.addAll(extractOnePage(next));
+            }
+        }
+        return ret;
+    }
+
+    private List<Link> extractOnePage(WebPage page) {
+        List<Link> ret = new ArrayList<Link>();
+        if (null != page && null != xpath && null != url) {
+            if (null != page.getDocs()) {
+                for (Document doc : page.getDocs()) {
+                    List<Link> urls = extractLinks(doc, xpath);
+                    if (null != urls) {
+                        for (Link lnk : urls) {
+                            if (match(lnk, mustHave, dontHave)) {
+                                ret.add(lnk);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return ret;
     }
 
     private boolean match(Link lnk, List<String> mustHave, List<String> dontHave) {

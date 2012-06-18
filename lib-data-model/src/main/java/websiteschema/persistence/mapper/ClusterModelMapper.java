@@ -37,6 +37,11 @@ public class ClusterModelMapper implements Mapper<ClusterModel> {
     }
 
     @Override
+    public ClusterModel get(String rowKey, String family) {
+        return get(rowKey);
+    }
+
+    @Override
     public List<ClusterModel> getList(String start, String end) {
         throw new UnsupportedOperationException("Not supported yet.");
     }

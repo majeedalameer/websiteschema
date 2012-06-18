@@ -90,7 +90,7 @@ public class FBURLStorage extends FunctionBlock {
 //                    urlLogMapper.put(log);
                     added.add(u);
                 } else {
-                    UrlLink old = mapper.get(rowKey);
+                    UrlLink old = mapper.get(rowKey, "cf");
                     int d = old.getDepth();
                     if (depth < d) {
                         old.setDepth(depth);

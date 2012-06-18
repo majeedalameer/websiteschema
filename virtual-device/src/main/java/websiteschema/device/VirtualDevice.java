@@ -1,6 +1,11 @@
 package websiteschema.device;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.lang.management.ManagementFactory;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,6 +36,7 @@ public class VirtualDevice {
 
     public static void main(String[] args) throws Exception {
         VirtualDevice device = new VirtualDevice();
+        device.writePID();
         device.startJetty();
         device.startWorker();
         device.startScheduler();
@@ -127,6 +133,19 @@ public class VirtualDevice {
         System.exit(0);
     }
 
+    private String getPID() {
+        String processName = ManagementFactory.getRuntimeMXBean().getName();
+        return processName.substring(0, processName.indexOf("@"));
+    }
+
+    public void writePID() throws IOException {
+        File f = new File("device.pid");
+        OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(f));
+        writer.write(String.valueOf(getPID()));
+        writer.flush();
+        writer.close();
+    }
+
     public void startJetty() throws Exception {
         Handler handler = new AbstractHandler() {
 
@@ -139,6 +158,12 @@ public class VirtualDevice {
                     DeviceContext.getInstance().load();
                     response.setContentType("text/plain");
                     response.getWriter().println("{\"success\":\"true\"}");
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    ((Request) request).setHandled(true);
+                } else if ("/action=getpid".equalsIgnoreCase(path)) {
+                    DeviceContext.getInstance().load();
+                    response.setContentType("text/plain");
+                    response.getWriter().println(getPID());
                     response.setStatus(HttpServletResponse.SC_OK);
                     ((Request) request).setHandled(true);
                 } else if ("/action=getstatus".equalsIgnoreCase(path)) {

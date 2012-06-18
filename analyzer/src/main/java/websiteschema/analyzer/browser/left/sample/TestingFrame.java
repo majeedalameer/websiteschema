@@ -73,6 +73,9 @@ public class TestingFrame extends javax.swing.JFrame {
         pagingCheckBox = new javax.swing.JCheckBox();
         jScrollPane1 = new javax.swing.JScrollPane();
         resultArea = new javax.swing.JTextArea();
+        jToolBar2 = new javax.swing.JToolBar();
+        jLabel5 = new javax.swing.JLabel();
+        urlField = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -125,11 +128,18 @@ public class TestingFrame extends javax.swing.JFrame {
         resultArea.setRows(5);
         jScrollPane1.setViewportView(resultArea);
 
+        jToolBar2.setRollover(true);
+
+        jLabel5.setText("链接地址: ");
+        jToolBar2.add(jLabel5);
+        jToolBar2.add(urlField);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 634, Short.MAX_VALUE)
+            .addComponent(jToolBar2, javax.swing.GroupLayout.DEFAULT_SIZE, 634, Short.MAX_VALUE)
             .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 634, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
@@ -137,7 +147,9 @@ public class TestingFrame extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 309, Short.MAX_VALUE))
+                .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 315, Short.MAX_VALUE))
         );
 
         pack();
@@ -154,17 +166,13 @@ public class TestingFrame extends javax.swing.JFrame {
         this.resultArea.updateUI();
     }//GEN-LAST:event_wrapLineCheckBoxActionPerformed
 
-//    private boolean isJavaScriptEnabled() {
-//        context.getConsole().log("JavaScriptEnabled: " + this.javaScriptEnabledCheckBox.isSelected());
-//        this.resultArea.append("JavaScriptEnabled: " + this.javaScriptEnabledCheckBox.isSelected() + "\n");
-//        return this.javaScriptEnabledCheckBox.isSelected();
-//    }
     public BrowserContext getContext() {
         return context;
     }
 
     public void setContext(BrowserContext context) {
         this.context = context;
+        setUrl(context.getBrowser().getURL());
     }
 
     public String getSiteId() {
@@ -173,6 +181,14 @@ public class TestingFrame extends javax.swing.JFrame {
 
     public void setSiteId(String siteId) {
         this.siteId = siteId;
+    }
+
+    public String getUrl() {
+        return urlField.getText().trim();
+    }
+
+    private void setUrl(String url) {
+        this.urlField.setText(url);
     }
 
     class FooThread implements Runnable {
@@ -246,6 +262,7 @@ public class TestingFrame extends javax.swing.JFrame {
     private Doc filteringDocument(Doc orig) {
         Map<String, String> fields = new HashMap<String, String>();
         fields.put("SOURCENAME", "websiteschema.cluster.analyzer.fields.SourceNameFilter");
+        fields.put("AUTHOR", "com.apc.websiteschema.cluster.fields.AuthorFilter");
         FBFieldFilter filter = new FBFieldFilter();
         filter.doc = orig;
         filter.filters = fields;
@@ -259,7 +276,7 @@ public class TestingFrame extends javax.swing.JFrame {
             Mapper<Websiteschema> mapper = BrowserContext.getSpringContext().getBean("websiteschemaMapper", Mapper.class);
             Websiteschema websiteschema = mapper.get(getSiteId());
             //采集指定URL
-            WebPage page = crawl(context.getBrowser().getURL());
+            WebPage page = crawl(getUrl());
 
             if (null != page) {
                 //为采集到的文档进行分类
@@ -293,11 +310,14 @@ public class TestingFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JToolBar jToolBar1;
+    private javax.swing.JToolBar jToolBar2;
     private javax.swing.JCheckBox pagingCheckBox;
     private javax.swing.JTextArea resultArea;
     private javax.swing.JButton startButton;
+    private javax.swing.JTextField urlField;
     private javax.swing.JCheckBox wrapLineCheckBox;
     // End of variables declaration//GEN-END:variables
 }

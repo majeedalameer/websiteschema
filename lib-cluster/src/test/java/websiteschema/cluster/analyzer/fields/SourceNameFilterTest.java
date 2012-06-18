@@ -46,4 +46,12 @@ public class SourceNameFilterTest {
         System.out.println(doc.getValues("SOURCENAME"));
         assert (doc.getValue("SOURCENAME").equals("中国证券网-中证网"));
     }
+
+    @Test
+    public void test4() {
+        SourceNameFilter snf = new SourceNameFilter();
+        String res = snf.filtering("新华网天津房产频道  唐淑倩");
+        System.out.println(res);
+        assert (res.equals("新华网天津房产频道"));
+    }
 }

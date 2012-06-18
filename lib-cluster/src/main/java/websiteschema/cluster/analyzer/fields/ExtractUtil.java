@@ -33,6 +33,13 @@ public class ExtractUtil {
         return ret;
     }
 
+    public String getNodeTextRecusive(Node node) {
+        StringBuilder ret = new StringBuilder();
+        extractNodeText(node, ret);
+
+        return ret.toString();
+    }
+
     public void extractNodeText(Node node, StringBuilder ret) {
         NodeList children = node.getChildNodes();
         for (int i = 0; i < children.getLength(); i++) {

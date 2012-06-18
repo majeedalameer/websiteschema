@@ -4,7 +4,6 @@
  */
 package websiteschema.element.xpath;
 
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,14 +45,14 @@ public class XPathParser {
     }
 
     private String findNode(String xpath, int pos) {
-        if (pos == xpath.length()) {
+        if (pos >= xpath.length()) {
             return null;
         }
         int start = pos;
         int end = start;
 
         //忽略../、//、/
-        while (ignore(xpath, end)) {
+        while (ignore(xpath, end) && end < xpath.length()) {
             end++;
         }
 

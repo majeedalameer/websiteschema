@@ -100,12 +100,12 @@ public class BBSThreadExtractor extends AbstractFieldExtractor {
     }
 
     @Override
-    public Collection<String> extract(Document doc) {
+    public Collection<String> extract(Document doc, String pageSource) {
         return null;
     }
 
     @Override
-    public Collection<Map<String, String>> extractExtData(Document doc) {
+    public Collection<Map<String, String>> extractExtData(Document doc, String pageSource) {
         List<Map<String, String>> ret = new ArrayList<Map<String, String>>();
         Set<String> invalidNodes = null;
         if (null != getBasicAnalysisResult()) {

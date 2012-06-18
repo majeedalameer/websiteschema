@@ -170,6 +170,16 @@ public class DocumentUtil {
         if (null == pre || "".equals(pre)) {
             return xpath;
         }
+
+        if (xpath.contains(" | ")) {
+            String xpathArray[] = xpath.split(" +\\| +");
+            StringBuilder ret = new StringBuilder();
+            for (String xpathN : xpathArray) {
+                ret.append(buildXPath(xpathN, pre)).append(" | ");
+            }
+            return ret.substring(0, ret.length() - 3);
+        }
+
         XPathParser parser = new XPathParser(xpath);
         parser.setNamespace(pre);
         return parser.toString();

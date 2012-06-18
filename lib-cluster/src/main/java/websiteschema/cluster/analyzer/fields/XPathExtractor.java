@@ -24,7 +24,7 @@ public class XPathExtractor extends AbstractFieldExtractor {
     public final static String xpathKey = "XPath";
     public final static String regexKey = "Regex";
 
-    public Collection<String> extract(Document doc) {
+    public Collection<String> extract(Document doc, String pageSource) {
         if (null != xpath && !"".equals(xpath)) {
             return extractByXPath(doc);
         }

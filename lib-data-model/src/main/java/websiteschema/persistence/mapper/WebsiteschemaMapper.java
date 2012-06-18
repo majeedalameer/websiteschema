@@ -37,6 +37,11 @@ public class WebsiteschemaMapper implements Mapper<Websiteschema> {
     }
 
     @Override
+    public Websiteschema get(String rowKey, String family) {
+        return get(rowKey);
+    }
+
+    @Override
     public List<Websiteschema> getList(String start, String end) {
         throw new UnsupportedOperationException("Not supported yet.");
     }

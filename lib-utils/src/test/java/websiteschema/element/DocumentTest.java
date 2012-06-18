@@ -40,6 +40,8 @@ public class DocumentTest {
         assertEquals(buildXPath("/html/META[@id='abc']/text()", "pre"), "/pre:html/pre:META[@id='abc']/text()");
         assertEquals(buildXPath("HTML/BODY/DIV[@id='wrapper']/DIV[@id='container']/DIV[@class='area']/DIV[@class='content focusnews']/DL/DD/DIV[@class='leftCont leftContMain']/UL[@class='hotnews' @id='hotnews']/LI[@class='top']/A[@class='a3']/FONT/text()", "pre"),
                 "pre:HTML/pre:BODY/pre:DIV[@id='wrapper']/pre:DIV[@id='container']/pre:DIV[@class='area']/pre:DIV[@class='content focusnews']/pre:DL/pre:DD/pre:DIV[@class='leftCont leftContMain']/pre:UL[@class='hotnews' @id='hotnews']/pre:LI[@class='top']/pre:A[@class='a3']/pre:FONT/text()");
+
+        assertEquals(buildXPath("/html/META[@id='abc'] | /html/body", "pre"), "/pre:html/pre:META[@id='abc'] | /pre:html/pre:body");
     }
 
     @Test

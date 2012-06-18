@@ -66,6 +66,13 @@
         where rowKey = #{rowKey}
     </select>
 
+    <select id="getSimpleResult" parameterType="string" resultType="java.util.Map">
+        select
+        <include refid="colSimple"/>
+        from Sample
+        where rowKey = #{rowKey}
+    </select>
+
     <select id="getId" parameterType="string" resultType="long">
         select id from Sample
         where rowKey = #{rowKey}

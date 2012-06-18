@@ -64,7 +64,7 @@ public class FBDOMExtractor extends FunctionBlock {
                     in = docs[0];
                 }
                 //抽取标签
-                out = extractFields(in, url, analysisResult.getFieldAnalyzers(), analysisResult.getFieldExtractors());
+                out = extractFields(in, null, url, analysisResult.getFieldAnalyzers(), analysisResult.getFieldExtractors());
             }
             this.triggerEvent("EO");
         } catch (Exception ex) {
@@ -78,7 +78,7 @@ public class FBDOMExtractor extends FunctionBlock {
      * @param in
      * @param fieldAnalyzerNames
      */
-    private Doc extractFields(Document in, String url, Map<String, String> fieldAnalyzerNames, Map<String, String> fieldExtractorNames) {
+    private Doc extractFields(Document in, String pageSource, String url, Map<String, String> fieldAnalyzerNames, Map<String, String> fieldExtractorNames) {
         //初始化Document out
         Doc doc = createDocument(url);
         List<IFieldExtractor> list = new ArrayList<IFieldExtractor>();
@@ -96,11 +96,11 @@ public class FBDOMExtractor extends FunctionBlock {
                 list.add(extractor);
             }
         }
-        extractFields(in, doc, list);
+        extractFields(in, pageSource, doc, list);
         return doc;
     }
 
-    private void extractFields(Document in, Doc doc, List<IFieldExtractor> fields) {
+    private void extractFields(Document in, String pageSource, Doc doc, List<IFieldExtractor> fields) {
         for (IFieldExtractor extractor : fields) {
             //创建字段抽取器
             extractor.setXPathAttr(xpathAttr);
@@ -115,7 +115,7 @@ public class FBDOMExtractor extends FunctionBlock {
                         if (properClusters.contains(clusterName)) {
                             extractor.init(config);
                             //开始抽取
-                            Collection<String> result = extractor.extract(in);
+                            Collection<String> result = extractor.extract(in, pageSource);
                             if (null != result && !result.isEmpty()) {
                                 //添加抽取结果到doc中
                                 for (String res : result) {
@@ -125,7 +125,7 @@ public class FBDOMExtractor extends FunctionBlock {
                                 break;
                             }
                             //抽取扩展数据
-                            Collection<Map<String, String>> extResult = extractor.extractExtData(in);
+                            Collection<Map<String, String>> extResult = extractor.extractExtData(in, pageSource);
                             if (null != extResult && !extResult.isEmpty()) {
                                 //添加抽取结果到doc中
                                 for (Map<String, String> res : extResult) {
@@ -144,11 +144,11 @@ public class FBDOMExtractor extends FunctionBlock {
     }
 
     private Doc getArticle(WebPage page) {
-        Doc ret = extractFields(page.getDocs()[0], page.getUrl(), analysisResult.getFieldAnalyzers(), analysisResult.getFieldExtractors());
+        Doc ret = extractFields(page.getDocs()[0], page.getHtmlSource()[0], page.getUrl(), analysisResult.getFieldAnalyzers(), analysisResult.getFieldExtractors());
         while (paging && page.hasNext()) {
             WebPage next = page.getNext();
             if (null != next) {
-                Doc oneDoc = extractFields(next.getDocs()[0], next.getUrl(), analysisResult.getFieldAnalyzers(), analysisResult.getFieldExtractors());
+                Doc oneDoc = extractFields(next.getDocs()[0], page.getHtmlSource()[0], next.getUrl(), analysisResult.getFieldAnalyzers(), analysisResult.getFieldExtractors());
                 //对某些参数进行过滤
                 ret.addField(Doc.CONTENT_FIELD, oneDoc.getValue(Doc.CONTENT_FIELD));
             } else {

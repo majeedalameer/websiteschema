@@ -43,7 +43,7 @@ public class ContentExtractor extends AbstractFieldExtractor {
     public final static String includeValidKey = "IncludeValidNodeOnly";
     public final static String keepHTMLTagKey = "KeepHTMLTag";
 
-    public Collection<String> extract(Document doc) {
+    public Collection<String> extract(Document doc, String pageSource) {
         reached = false;
         String content = extractContentText(doc);
         if (null != content) {
@@ -79,13 +79,25 @@ public class ContentExtractor extends AbstractFieldExtractor {
             }
             long t2 = System.currentTimeMillis();
             l.debug("----- elaspe times : " + (t2 - t1) + " millseconds.");
-            return StringEscapeUtils.unescapeHtml(content.toString());
+            return StringEscapeUtils.unescapeHtml(filterByPattern(content.toString()));
         }
         return null;
     }
 
     private boolean valid(String str) {
         return null != str && !"".equals(str);
+    }
+
+    public String filterByPattern(String content) {
+        String ret = content;
+        if (StringUtil.isNotEmpty(prefix) && ret.contains(prefix)) {
+            ret = ret.substring(ret.indexOf(prefix) + prefix.length());
+        }
+
+        if (StringUtil.isNotEmpty(suffix) && ret.contains(suffix)) {
+            ret = ret.substring(0, ret.indexOf(suffix));
+        }
+        return ret;
     }
 
     /**
