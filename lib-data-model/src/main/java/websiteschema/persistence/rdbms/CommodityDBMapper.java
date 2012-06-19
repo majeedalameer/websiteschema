@@ -19,6 +19,8 @@ public interface CommodityDBMapper {
     public Map getById(long id);
 
     public Map getByRowKey(String rowKey);
+    
+    public Map getSimpleResult(String rowKeys);
 
     public long getId(String rowKey);
 
