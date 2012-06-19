@@ -42,6 +42,14 @@ public class CommodityMapper implements Mapper<Commodity> {
         Map map = commodityDBMapper.getByRowKey(rowKey);
         return SQLBeanWrapper.getBean(map, Commodity.class, false);
     }
+    
+    @Override
+    public Commodity get(String rowKey, String family) {
+        if ("cf".equals(family)) {
+            return SQLBeanWrapper.getBean(commodityDBMapper.getSimpleResult(rowKey), Commodity.class, false);
+        }
+        return get(rowKey);
+    }
 
     @Override
     public List<Commodity> getList(String start, String end) {
