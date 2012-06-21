@@ -54,6 +54,8 @@ public class FBSearchLinksExtractor extends FunctionBlock {
     public Document[] docs;
     @DI(name = "SELECTITEMXPATH")
     public String selectItemXpath = null;
+    @DI(name = "RANGE")
+    public String range;
     @DI(name = "BUTTONXPATH")
     public String buttonXpath = null;
     @DI(name = "URL")
@@ -112,17 +114,33 @@ public class FBSearchLinksExtractor extends FunctionBlock {
             HtmlSelect select = (HtmlSelect) seletetItemNodes.get(0);
             HtmlImageInput button = (HtmlImageInput) buttonNodes.get(0);
             List<HtmlOption> listOption = select.getOptions();
+            
+            String[] r = new String[2];
+            if(range != null && range.contains("-"))
+            {
+                r = range.split("-");
+            }else if(range != null){
+                r[0]= range;
+                r[1]= new Integer(listOption.size()-1).toString();
+            }else{
+                r[0]= new Integer(0).toString();
+                r[1]= new Integer(listOption.size()-1).toString();
+            }
 
+            int i = 0;
             for (HtmlOption o : listOption) {
                 select.setSelectedAttribute(o, true);
                 final Page page = button.click();
                 Link lnk = new Link();
                 lnk.setHref(webPage.getCrawler().getUrl());
                 lnk.setText(o.getFirstChild().getNodeValue());
-                ret.add(lnk);
+                if(i >= Integer.parseInt(r[0]) && i <= Integer.parseInt(r[1]))
+                    ret.add(lnk);
+                
                 page.cleanUp();
+                i++;
             }
-
+            r = null;
         }
         return ret;
     }   
