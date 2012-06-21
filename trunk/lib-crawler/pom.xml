@@ -75,10 +75,10 @@
             <artifactId>hbase</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.eyeocr</groupId>
-            <artifactId>ocr</artifactId>
+            <groupId>com.eye-ocr</groupId>
+            <artifactId>eye-ocr</artifactId>
             <version>1.0-ALPHA</version>
-        </dependency>
+		</dependency>
     </dependencies>
     <build>
         <testResources>

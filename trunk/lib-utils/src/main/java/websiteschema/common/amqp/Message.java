@@ -25,6 +25,10 @@ public class Message implements java.io.Serializable {
     public Message() {
     }
 
+	public Message(long jobId, long startURLId, long scheId, long wrapperId, String siteId, String jobname, String url, String configure) {
+        this(jobId, startURLId, scheId, wrapperId, siteId, jobname, url, configure, null,0);
+    }
+
     public Message(long jobId, long startURLId, long scheId, long wrapperId, String siteId, String jobname, String url, String configure, String text) {
         this(jobId, startURLId, scheId, wrapperId, siteId, jobname, url, configure, text,0);
     }
