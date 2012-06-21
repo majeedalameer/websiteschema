@@ -101,6 +101,10 @@ public class FBURLQueue extends FunctionBlock {
         } catch (Exception ex) {
             l.error(ex.getMessage(), ex);
             triggerEvent("FATAL");
+        } finally {
+            if (null != queue) {
+                queue.close();
+            }
         }
     }
 }

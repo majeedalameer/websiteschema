@@ -74,9 +74,13 @@ public class FBUnitExtractor extends FunctionBlock {
                 table = assembleUnits(doc, unitConf);
             }
             triggerEvent("EO");
+        } catch (XPathSyntaxException e) {
+            l.debug(e.getMultilineMessage());
+            l.error("[exception] " + url + " upath:" + unitXPath,e);
+        } catch (XPathExpressionException e) {
+            l.error("[exception] " + url + " upath:" + unitXPath, e);
         } catch (Exception ex) {
-            l.error(ex);
-            throw new RuntimeException(ex.getMessage());
+            l.error("[exception] " + url + " upath:" + unitXPath, ex);
         }
     }
 

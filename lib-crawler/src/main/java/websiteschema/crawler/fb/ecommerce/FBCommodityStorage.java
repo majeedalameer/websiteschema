@@ -36,6 +36,7 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.w3c.dom.Document;
 import websiteschema.crawler.Crawler;
 import websiteschema.crawler.SimpleHttpCrawler;
+import websiteschema.crawler.fb.FBNodeToXML;
 import websiteschema.crawler.fb.FBUnitExtractor;
 import websiteschema.element.DocumentUtil;
 import websiteschema.model.domain.CommodityRowkey;
@@ -65,6 +66,12 @@ public class FBCommodityStorage extends FunctionBlock {
     public String propertyXpath;
     @DI(name = "PROPERTYPTS")
     public String propertyPts;
+    @DI(name = "AJAXURL", desc = "属性ajax URL")
+    public String ajaxUrl;
+    @DI(name = "AJAXXPATH", desc = "属性ajax xpath")
+    public String ajaxXpath;
+    @DI(name = "AJAXPTS", desc = "属性ajax PTS")
+    public String ajaxPTS;
     @DI(name = "DESCXPATH", desc = "描述")
     public String descXpath;
     @DI(name = "DESCPTS")
@@ -96,6 +103,8 @@ public class FBCommodityStorage extends FunctionBlock {
     @DO(name = "OUT", relativeEvents = {"EO"})
     public String out;
     private CommodityMapper commodityMapper;
+
+    private List<Map<String,String>> ajaxArgument;
 
     @Algorithm(name = "ADD", desc = "将添加链接保存至表commodity")
     public void addList() {
@@ -185,10 +194,10 @@ public class FBCommodityStorage extends FunctionBlock {
                 newComm.setTitle(comm.getTitle());
                 newComm.setUrl(comm.getUrl());
                 newComm.setCreateTime(comm.getCreateTime());
-                newComm.setParenturl("");
+//                newComm.setParenturl("");
                 newComm.setPicurl(comm.getPicurl());
-                newComm.setPicData(getPicSrcData(comm.getPicurl()));
-//                newComm.setPriceurl(comm.getPriceurl());
+//                newComm.setPicData(getPicSrcData(comm.getPicurl()));
+                newComm.setPriceurl(comm.getPriceurl());
                 newComm.setSiteId(siteId);
                 newComm.setCategory(category);
                 newComm.setColumn(column);
@@ -196,6 +205,7 @@ public class FBCommodityStorage extends FunctionBlock {
 //                newComm.setEvaluate(matchNumber(comm.getEvaluate()));
 //                newComm.setReputation(matchNumber(comm.getReputation()));
                 Document doc = getDoc(comm.getUrl());
+                ajaxArgument = getAjaxArgument(url,doc);
 
                 Map descMap = getDescMap(url, doc);
                 List propertyMap = getPropertyMap(url, doc);
@@ -225,9 +235,7 @@ public class FBCommodityStorage extends FunctionBlock {
                 if (commodityMapper.exists(rowKey)) {
                     Commodity oldComm = commodityMapper.get(rowKey);
                     if (price != null && price.equals(oldComm.getPrice())) {
-                        if (oldComm.getPicData() != null && newComm.getPicData() != null
-                                && oldComm.getPicData().length() >= newComm.getPicData().length()
-                                && oldComm.getPicurlmap() != null
+                        if (oldComm.getPicurlmap() != null
                                 && newComm.getPicurlmap() != null
                                 && oldComm.getPicurlmap().length() >= newComm.getPicurlmap().length()) {
                             isPut = false;
@@ -275,7 +283,61 @@ public class FBCommodityStorage extends FunctionBlock {
     }
 
     /**
-     * 得到型号
+     * 得到商品价格
+     *
+     * @param comm
+     * @return
+     * @throws Exception
+     */
+    private String getPrice(Commodity comm) throws Exception {
+        String price = null;
+        if (comm.getPriceurl() == null) {
+            price = comm.getPrice();
+            if (price == null || price.length() == 0) {
+            } else {
+                price = marchPrice(comm.getPrice());
+            }
+        } else {
+            price = getPriceFromOCR(comm.getPriceurl());
+        }
+
+        return price;
+    }
+
+    /**
+     * 得到图文描述
+     *
+     * @param url
+     * @param doc
+     * @return
+     * @throws Exception
+     */
+    private String getPictureDescFromXpath(String url, Document doc) throws Exception {
+        if (picDescXpath == null || picDescXpath.isEmpty()) {
+            return null;
+        }
+        String pictureDesc = null;
+        FBNodeToXML ue = new FBNodeToXML();
+        ue.doc = doc;
+        if (ue.doc == null) {
+            return null;
+        }
+        ue.url = url;
+        ue.unitXPath = picDescXpath;
+        ue.extractUnits();
+        List<String> list = ue.table;
+
+        if (list == null || list.isEmpty()) {
+            pictureDesc = "";
+        } else {
+            pictureDesc = list.get(0);
+        }
+
+        return pictureDesc;
+    }
+
+    /**
+     * 通过xpath得到型号
      *
      * @param url
      * @param doc
@@ -283,32 +345,32 @@ public class FBCommodityStorage extends FunctionBlock {
      * @throws Exception
      */
     public String getModelFromXpath(String url, Document doc) throws Exception {
+        if (modelXpath == null || modelXpath.isEmpty()) {
+            return null;
+        }
+        List<Map<String, String>> conf = PojoMapper.fromJson(modelPts, List.class);
+        FBUnitExtractor ue = new FBUnitExtractor();
+        ue.doc = doc;
+        if (ue.doc == null) {
+            return null;
+        }
+        ue.url = url;
+        ue.points = conf;
+        ue.unitXPath = modelXpath;
+        ue.extractUnits();
+        List<Map<String, String>> list = ue.table;
         String model = null;
-        if (modelXpath != null) {
-            List<Map<String, String>> conf = PojoMapper.fromJson(modelPts, List.class);
-            FBUnitExtractor ue = new FBUnitExtractor();
-            ue.doc = doc;
-            if (ue.doc == null) {
-                return null;
-            }
-            ue.url = url;
-            ue.points = conf;
-            ue.unitXPath = modelXpath;
-            ue.extractUnits();
-            List<Map<String, String>> list = ue.table;
-
-            if (list.isEmpty()) {
-                model = "";
-            } else {
-                model = list.get(0).get("model");
-            }
+        if (list.isEmpty()) {
+            model = null;
+        } else {
+            model = list.get(0).get("model");
         }
 
         return model;
     }
 
     /**
-     * 得到品牌
+     * 通过xpath得到品牌
      *
      * @param url
      * @param doc
@@ -316,32 +378,33 @@ public class FBCommodityStorage extends FunctionBlock {
      * @throws Exception
      */
     public String getBrandFromXpath(String url, Document doc) throws Exception {
-        String brand = null;
-        if (null != brandXpath) {
-            List<Map<String, String>> conf = PojoMapper.fromJson(brandPts, List.class);
-            FBUnitExtractor ue = new FBUnitExtractor();
-            ue.doc = doc;
-            if (ue.doc == null) {
-                return null;
-            }
-            ue.url = url;
-            ue.points = conf;
-            ue.unitXPath = brandXpath;
-            ue.extractUnits();
-            List<Map<String, String>> list = ue.table;
-
-
-            if (list.isEmpty()) {
-                brand = "";
-            } else {
-                brand = list.get(0).get("brand");
-            }
+        if (brandXpath == null || brandXpath.isEmpty()) {
+            return null;
         }
+        List<Map<String, String>> conf = PojoMapper.fromJson(brandPts, List.class);
+        FBUnitExtractor ue = new FBUnitExtractor();
+        ue.doc = doc;
+        if (ue.doc == null) {
+            return null;
+        }
+        ue.url = url;
+        ue.points = conf;
+        ue.unitXPath = brandXpath;
+        ue.extractUnits();
+        List<Map<String, String>> list = ue.table;
+
+        String brand = null;
+        if (list.isEmpty()) {
+            brand = null;
+        } else {
+            brand = list.get(0).get("brand");
+        }
+
         return brand;
     }
 
     /**
-     * 得到产品介绍的map json
+     * 得到产品介绍的map
      *
      * @param url
      * @return
@@ -371,6 +434,15 @@ public class FBCommodityStorage extends FunctionBlock {
         return marchDesc(r, descMust);
     }
 
+    /**
+     * 通过描述和属性,得到品牌
+     *
+     * @param descMap
+     * @param propertyMap
+     * @param brands
+     * @return
+     * @throws Exception
+     */
     public String getBrand(Map descMap, List<Map<String, String>> propertyMap, String brands) throws Exception {
         String value = "";
         String[] brand = brands.split(",");
@@ -399,7 +471,7 @@ public class FBCommodityStorage extends FunctionBlock {
      */
     public List<Map<String, String>> getPropertyMap(String url, Document doc) throws Exception {
 
-        ArrayList<Map<String, String>> listMap = new ArrayList<Map<String, String>>();
+        List<Map<String, String>> listMap = new ArrayList<Map<String, String>>();
         List<Map<String, String>> conf = PojoMapper.fromJson(propertyPts, List.class);
         FBUnitExtractor ue = new FBUnitExtractor();
         ue.doc = doc;
@@ -428,7 +500,7 @@ public class FBCommodityStorage extends FunctionBlock {
     }
 
     /**
-     * 得到大小的图片的url
+     * 得到大图片的json
      *
      * @param url
      * @return
@@ -456,24 +528,33 @@ public class FBCommodityStorage extends FunctionBlock {
 //        if (list == null || list.size() == 0) {
 //            return "";
 //        }
-
+        Integer i = 1;
         for (Map<String, String> map : list) {
             String sUrl = map.get("picsrc");
             for (String[] r : regexList) {
                 if (sUrl.contains(r[0])) {
                     String bUrl = sUrl.replaceAll(r[0], r[1]);
-                    ret.put(getPicSrcData(sUrl), getPicSrcData(bUrl));
+//                    l.debug("big picture url"+bUrl);
+                    ret.put(i.toString(), getPicSrcData(bUrl));
                 }
             }
+            i++;
         }
+
+        i = 1;
         if (ret.isEmpty()) {
             String sUrl = baseUrl;
             for (String[] r : regexList) {
                 if (sUrl.contains(r[0])) {
                     String bUrl = sUrl.replaceAll(r[0], r[1]);
-                    ret.put(getPicSrcData(sUrl), getPicSrcData(bUrl));
+                    ret.put(i.toString(), getPicSrcData(bUrl));
                 }
             }
+            i++;
+        }
+
+        if (ret.isEmpty()) {
+            ret.put("1", getPicSrcData(baseUrl));
         }
         String r = PojoMapper.toJson(ret);
 //        l.debug(r);
@@ -481,7 +562,7 @@ public class FBCommodityStorage extends FunctionBlock {
     }
 
     /**
-     * 得到图片的二进制数据
+     * 得到图片的base64串
      *
      * @param link
      * @return
@@ -512,12 +593,12 @@ public class FBCommodityStorage extends FunctionBlock {
     }
 
     /**
-     * 得到价格图片的字符串
+     * 通过OCR得到价格图片的字符串
      *
      * @param link
      * @return
      */
-    public String getPriceOCR(String link) throws Exception {
+    private String getPriceFromOCR(String link) throws Exception {
         String s = "";
         URL url = getURL(link);
         if (url == null) {
@@ -526,7 +607,7 @@ public class FBCommodityStorage extends FunctionBlock {
             try {
                 s = OCR.getInstance().recognize(url);
             } catch (Exception e) {
-                l.error("no price", e);
+                l.error(link + " no price", e);
             }
         }
 
@@ -639,7 +720,7 @@ public class FBCommodityStorage extends FunctionBlock {
                 break;
             } catch (Exception ex) {
                 counts++;
-                l.error("URL不可用，连接第 " + counts + " 次" + urlStr, ex);
+                l.error(urlStr + "不可用，连接第 " + counts + " 次" + urlStr, ex);
                 urlStr = null;
                 continue;
             } finally {
@@ -661,5 +742,132 @@ public class FBCommodityStorage extends FunctionBlock {
             }
         }
         return crawler;
+    }
+    /**
+     * 得到属性ajax的参数
+     * @param url
+     * @param doc
+     * @return
+     * @throws Exception 
+     */
+    private List<Map<String, String>> getAjaxArgument(String url, Document doc) throws Exception {
+        if(ajaxXpath == null)
+            return null;
+        List<Map<String, String>> conf = PojoMapper.fromJson(ajaxPTS, List.class);
+        FBUnitExtractor ue = new FBUnitExtractor();
+        ue.doc = doc;
+        if (ue.doc == null) {
+            return null;
+        }
+        ue.url = url;
+        ue.points = conf;
+        ue.unitXPath = ajaxXpath;
+        ue.extractUnits();
+        List<Map<String, String>> list = ue.table;
+        if (list == null || list.size() == 0) {
+            return null;
+        }
+
+
+        return list;
+    }
+    /**
+     * 通过ajax得到属性
+     * @param url
+     * @param doc
+     * @return
+     * @throws Exception 
+     */
+    private List<Map<String, String>> getPropertyFromAjax(String url, Document doc) throws Exception {
+        if(ajaxUrl == null)
+            return null;
+        
+        List<Map<String, String>> listMap = new ArrayList<Map<String, String>>();
+        List<Map<String, String>> conf = PojoMapper.fromJson(propertyPts, List.class);
+
+        StringBuffer sb = new StringBuffer(ajaxUrl);
+        sb.append("?");
+        for (Map<String, String> map : ajaxArgument) {
+            Set<String> key = map.keySet();
+            for (Iterator it = key.iterator(); it.hasNext();) {
+                String name = (String) it.next();
+                String value = map.get(name);
+                sb.append(name+"="+value);
+                sb.append("&");
+            }
+            
+        }
+
+        FBUnitExtractor ue = new FBUnitExtractor();
+        ue.doc = this.getDoc(sb.toString());
+        if (ue.doc == null) {
+            return null;
+        }
+        ue.url = sb.toString();
+        ue.points = conf;
+        ue.unitXPath = propertyXpath;
+        ue.extractUnits();
+        List<Map<String, String>> list = ue.table;
+        if (list == null || list.size() == 0) {
+            return null;
+        }
+
+        for (Map<String, String> map : list) {
+            if (map.size() == 2) {
+                Map<String, String> ret = new HashMap<String, String>();
+                String title = map.get("title").replaceAll("\n|\r|\t|:|：| ", "");
+                String value = map.get("value").replaceAll("\n|\r|\t|:|：| ", "");
+                ret.put(title, value);
+                listMap.add(ret);
+                ret =null;
+            }
+        }
+        return listMap;
+    }
+    
+    /**
+     * 通过ajax得到图文描述
+     *
+     * @param url
+     * @param doc
+     * @return
+     * @throws Exception
+     */
+    private String getPictureDescFromAjax(String url, Document doc) throws Exception {
+        if (ajaxUrl == null) {
+            return "";
+        }
+        String pictureDesc = null;
+        
+        StringBuffer sb = new StringBuffer(ajaxUrl);
+        sb.append("?");
+        for (Map<String, String> map : ajaxArgument) {
+            Set<String> key = map.keySet();
+            for (Iterator it = key.iterator(); it.hasNext();) {
+                String name = (String) it.next();
+                String value = map.get(name);
+                sb.append(name+"="+value);
+                sb.append("&");
+            }
+            
+        }
+        
+        FBNodeToXML ue = new FBNodeToXML();
+        ue.doc = this.getDoc(sb.toString());
+        if (ue.doc == null) {
+            return null;
+        }
+        ue.url = url;
+        ue.unitXPath = picDescXpath;
+        ue.extractUnits();
+        List<String> list = ue.table;
+
+        if (list != null && list.isEmpty()) {
+            pictureDesc = "";
+        } else {
+            pictureDesc = list.get(0);
+        }
+
+        return pictureDesc;
     }
 }

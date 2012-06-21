@@ -53,6 +53,8 @@ public class UrlLinkUtil {
                 } else if (href.indexOf("://") > 0) {
                     // UnsupportProtocol.
                     return new URL(href.trim());
+                } else if (href.contains("javascript")){
+                    return new URL(pageUrl);
                 }
                 URI uri = new URI(pageUrl);
                 return uri.resolve(href.trim()).toURL();
