@@ -33,6 +33,8 @@ import websiteschema.fb.core.FunctionBlock;
 import websiteschema.utils.StringUtil;
 import websiteschema.utils.UrlLinkUtil;
 
+import org.jaxen.XPathSyntaxException;
+
 /**
  *
  * @author mgd

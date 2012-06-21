@@ -167,23 +167,11 @@ public class FBCommodityStorage extends FunctionBlock {
                     continue;
                 }
 
-                String price = null;
-                if (comm.getPriceurl() == null) {
-                    price = comm.getPrice();
-                    if (price == null || price.length() == 0) {
-                        continue;
-                    } else {
-                        price = marchPrice(comm.getPrice());
-                        if (price.length() == 0) {
-                            continue;
-                        }
-                    }
-                } else {
-                    price = getPriceOCR(comm.getPriceurl());
-                    if (price == null) {
-                        continue;
-                    }
+                String price = getPrice(comm);
+                if (price == null || price.length() == 0) {
+                    continue;
                 }
+
                 String rowKey = UrlLinkUtil.getInstance().convertCommodityToRowKey(link, siteId);
 
                 Commodity newComm = new Commodity();
