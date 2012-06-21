@@ -28,6 +28,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import websiteschema.element.xpath.XPathParser;
 import websiteschema.utils.FileUtil;
+import org.apache.log4j.Logger;
 
 /**
  *
