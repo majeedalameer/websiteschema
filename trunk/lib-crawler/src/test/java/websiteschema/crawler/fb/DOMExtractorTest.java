@@ -33,7 +33,7 @@ public class DOMExtractorTest {
         Application app = new Application();
         RuntimeContext context = app.getContext();
         context.loadConfigure("fb/crawler.app");
-        Mapper<Websiteschema> mapper = context.getSpringBeanFactory().getBean("websiteschemaMapper", Mapper.class);
+        Mapper<Websiteschema> mapper = (Mapper<Websiteschema>) context.getSpringBeanFactory().getBean("websiteschemaMapper", Mapper.class);
         Websiteschema websiteschema = mapper.get(siteId_str);
         FBDOMExtractor extractor = new FBDOMExtractor();
         extractor.in = source;
