@@ -24,7 +24,7 @@ public class FBWebsiteschema extends FunctionBlock {
 
     @Algorithm(name = "INIT")
     public void create() {
-        Mapper<Websiteschema> mapper = getContext().getSpringBeanFactory().getBean("websiteschemaMapper", Mapper.class);
+        Mapper<Websiteschema> mapper = (Mapper<Websiteschema>) getContext().getSpringBeanFactory().getBean("websiteschemaMapper", Mapper.class);
         out = mapper.get(siteId);
         if (null != out) {
             triggerEvent("EO");
