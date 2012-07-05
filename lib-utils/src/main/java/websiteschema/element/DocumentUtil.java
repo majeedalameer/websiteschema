@@ -4,8 +4,6 @@
  */
 package websiteschema.element;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import javax.xml.parsers.ParserConfigurationException;
@@ -27,7 +25,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import websiteschema.element.xpath.XPathParser;
-import websiteschema.utils.FileUtil;
+//import websiteschema.utils.FileUtil;
 import org.apache.log4j.Logger;
 
 /**
@@ -157,25 +155,25 @@ public class DocumentUtil {
         return null;
     }
 
-    public static Document getDocument(String file) {
-        try {
-            String content = null;
-            File f = new File(file);
-            if (f.exists()) {
-                content = FileUtil.read(f);
-            } else {
-                content = FileUtil.readResource(file);
-            }
-            DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
-            domFactory.setNamespaceAware(true); // never forget this!
-            DocumentBuilder builder = domFactory.newDocumentBuilder();
-            Document doc = builder.parse(new ByteArrayInputStream(content.getBytes()));
-            return doc;
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return null;
-    }
+//    public static Document getDocument(String file) {
+//        try {
+//            String content = null;
+//            File f = new File(file);
+//            if (f.exists()) {
+//                content = FileUtil.read(f);
+//            } else {
+//                content = FileUtil.readResource(file);
+//            }
+//            DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
+//            domFactory.setNamespaceAware(true); // never forget this!
+//            DocumentBuilder builder = domFactory.newDocumentBuilder();
+//            Document doc = builder.parse(new ByteArrayInputStream(content.getBytes()));
+//            return doc;
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//        }
+//        return null;
+//    }
 
     public static Document convertTo(String xml) throws ParserConfigurationException, IOException, SAXException {
         StringReader sr = new StringReader(xml);
