@@ -5,7 +5,6 @@
 package websiteschema.vips;
 
 import com.webrenderer.swing.dom.IElement;
-import com.webrenderer.swing.dom.IElementCollection;
 import java.util.ArrayList;
 import java.util.List;
 import websiteschema.element.Rectangle;

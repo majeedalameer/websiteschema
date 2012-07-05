@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import websiteschema.conf.Configure;
+import websiteschema.metadata.utils.MetadataServerContext;
 import websiteschema.persistence.rdbms.ChannelMapper;
 import websiteschema.persistence.rdbms.JobMapper;
 import websiteschema.persistence.rdbms.ScheduleMapper;
@@ -57,18 +59,20 @@ public class SchedulerController {
 
     @PostConstruct
     public boolean start() throws IOException {
-        try {
+        try {  
             scheduler.setScheduleMapper(scheduleMapper);
             scheduler.setJobMapper(jobMapper);
             scheduler.setStartURLMapper(startURLMapper);
             scheduler.setWrapperMapper(wrapperMapper);
             scheduler.setTaskMapper(taskMapper);
-            scheduler.setChannelMapper(channelMapper);
+            scheduler.setChannelMapper(channelMapper);   
+           
+            scheduler.setLocationId(MetadataServerContext.getInstance().getConf().getIntProperty("LocationId"));            
             int status = scheduler.status();
             if (JobScheduler.Stopped == status
                     || JobScheduler.Error == status) {
-                l.info("load");
-                scheduler.load();
+                l.info("load");                  
+                scheduler.load();                 
                 l.info("start");
                 scheduler.startup();
             } else if (JobScheduler.Started == status) {

@@ -24,6 +24,7 @@ public class Schedule implements java.io.Serializable {
     long jobId;
     long priority = 0;
     String schedule;
+    int locationId = 4;
     int scheduleType = TYPE_CRON;
     int status = STATUS_INVALID;
     Date createTime = new Date();
@@ -114,5 +115,13 @@ public class Schedule implements java.io.Serializable {
 
     public void setJobname(String jobname) {
         this.jobname = jobname;
+    }
+
+    public int getLocationId() {
+        return locationId;
+    }
+
+    public void setLocationId(int locationId) {
+        this.locationId = locationId;
     }
 }

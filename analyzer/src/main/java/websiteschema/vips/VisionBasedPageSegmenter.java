@@ -8,7 +8,7 @@ import com.webrenderer.swing.dom.IDocument;
 import com.webrenderer.swing.dom.IElement;
 import com.webrenderer.swing.dom.IElementCollection;
 import org.apache.log4j.Logger;
-import websiteschema.analyzer.context.BrowserContext;
+import websiteschema.conf.Configure;
 import websiteschema.element.factory.RectangleFactory;
 import websiteschema.element.factory.XPathAttrFactory;
 import websiteschema.utils.ElementUtil;
@@ -27,8 +27,13 @@ public class VisionBasedPageSegmenter {
     SeparatorList separatorList = null;
     BlockExtractor extractor = null;
     VBTreeConstructor constructor = new VBTreeConstructor();
-    int iterateTimes = BrowserContext.getConfigure().getIntProperty("VIPS", "IterateTimes", 5);
-    boolean showsUp = BrowserContext.getConfigure().getBooleanProperty("VIPS", "ShowsUp", true);
+    int iterateTimes = 5;
+    boolean showsUp = true;
+
+    VisionBasedPageSegmenter(Configure conf) {
+        iterateTimes = conf.getIntProperty("VIPS", "IterateTimes", 5);
+        showsUp = conf.getBooleanProperty("VIPS", "ShowsUp", true);
+    }
 
     public VisionBlock pageSegment(IDocument document) {
         init(document);

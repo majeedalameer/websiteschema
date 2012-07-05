@@ -2,15 +2,10 @@
 /* DBMS name:      MySQL 5.0                                    */
 /* Created on:     2011-11-26 23:34:57                          */
 /*==============================================================*/
-drop table if exists Brand;
-
-drop table if exists Commodity;
 
 drop table if exists Category;
 
 drop table if exists Channel;
-
-drop table if exists Cipher;
 
 drop table if exists ClusterModel;
 
@@ -21,6 +16,8 @@ drop table if exists Follow;
 drop table if exists Job;
 
 drop table if exists Keyword;
+
+drop table if exists Location;
 
 drop table if exists RelatedCategory;
 
@@ -49,53 +46,6 @@ drop table if exists Wrapper;
 drop table if exists ScheduleTask;
 
 drop table if exists ScheduleTaskArchive;
-
-/*==============================================================*/
-/* Table: Brand                                             */
-/*==============================================================*/
-create table Brand
-(
-   id                   bigint not null auto_increment,
-   c_id                 bigint,
-   name                 varchar(1000),
-   keywords             varchar(1000),
-   model                varchar(1000),
-   createTime           datetime,
-   createUser           varchar(30),
-   updateTime           datetime,
-   lastUpdateUser       varchar(30),
-   primary key (id)
-);
-
-/*==============================================================*/
-/* Table: Commodity                                             */
-/*==============================================================*/
-create table Commodity
-(
-   id                   bigint not null auto_increment,
-   rowKey               varchar(2000),
-   url                  varchar(333),
-   siteId               varchar(100),
-   jobId                bigint,
-   channel              varchar(333),
-   columns              varchar(333),
-   category             varchar(333),
-   title                varchar(333),
-   brand                varchar(333),
-   model                varchar(333),
-   price                varchar(333),
-   picurl               varchar(333),
-   picdata              text,
-   picurlmap            text,
-   property             varchar(4000),
-   description          varchar(4000),
-   picDesc              text,
-   createTime           datetime,
-   createUser           varchar(30),
-   updateTime           datetime,
-   lastUpdateUser       varchar(30),
-   primary key (id)
-);
 
 /*==============================================================*/
 /* Table: Category                                              */
@@ -144,12 +94,13 @@ insert into Channel (channel, siteId, status, parentId, url, leaf, createTime, c
 create table ClusterModel
 (
    id                   bigint not null auto_increment,
-   rowKey               varchar(2000),
+   rowKey               varchar(100),
    clusters             mediumtext,
    totalSamples         int,
    statInfo             mediumtext,
    clustererType        varchar(100),
-   primary key (id)
+   primary key (id),
+   unique (rowKey)
 );
 
 /*==============================================================*/
@@ -195,7 +146,7 @@ create table Cipher
    updateTime           datetime,
    lastUpdateUser       varchar(30),
    primary key (id)
-);
+)
 
 /*==============================================================*/
 /* Table: Follow                                                */
@@ -249,6 +200,24 @@ create table Keyword
    lastUpdateUser       varchar(30),
    primary key (id)
 );
+
+/*==============================================================*/
+/* Table: Location                                               */
+/*==============================================================*/
+create table Location
+(
+   id                   int not null auto_increment,
+   name                 varchar(300),not null
+   address              varchar(300),not null
+   createTime           datetime,
+   createUser           varchar(30),
+   updateTime           datetime,
+   lastUpdateUser       varchar(30),
+   primary key (id) 
+);
+
+insert into Location(name, address, createTime, createUser)
+values ('Center','192.168.6.66',now(),'system');
 /*=============================================================*/
 /* Table: RelatedCategory                                      */
 /*=============================================================*/
@@ -269,14 +238,15 @@ create table RelatedCategory
 create table Sample
 (
    id                   bigint not null auto_increment,
-   rowKey               varchar(2000),
-   url                  varchar(300),
+   rowKey               varchar(333),
+   url                  varchar(333),
    siteId               varchar(100),
    content              mediumtext,
    httpStatus           int,
    lastUpdateTime       datetime,
    createTime           datetime,
-   primary key (id)
+   primary key (id),
+   unique (rowKey)
 );
 
 /*=============================================================*/
@@ -287,6 +257,7 @@ create table Schedule
    id                   bigint not null auto_increment,
    startURLId           bigint,
    jobId                bigint,
+   locationId           int,
    schedule             varchar(1000),
    scheduleType         int,
    status               int,
@@ -294,8 +265,8 @@ create table Schedule
    primary key (id)
 );
 
-insert into Schedule(startURLId, jobId, schedule, scheduleType, status, createTime)
-values (1,2,'*/10 * * * ?',0,0,now());
+insert into Schedule(startURLId, jobId, schedule, locationId ,scheduleType, status, createTime)
+values (1,2,'*/10 * * * ?',1,0,0,now());
 
 /*==============================================================*/
 /* Table: Site                                                  */
@@ -315,8 +286,6 @@ create table Site
    lastUpdateUser       varchar(30),
    primary key (id)
 );
-insert into Site(siteId,siteDomain,siteName,siteType,parentId,url,createTime,createUser,updateTime,lastUpdateUser) 
-values ('www_amazon_cn','www.amazon.cn','netease','portal','0','http://www.amazon.cn/',now(),'system',now(),'system');
 
 insert into Site(siteId,siteDomain,siteName,siteType,parentId,url,createTime,createUser,updateTime,lastUpdateUser) 
 values ('www_163_com_1','www.163.com','netease','portal','0','http://www.163.com/',now(),'system',now(),'system');
@@ -395,9 +364,10 @@ values ('default','VirtualDevices','["localhost:12207"]','Crawlers',now(),'syste
 create table UrlLink
 (
    id                   bigint not null auto_increment,
-   rowKey               varchar(2000),
+   rowKey               varchar(333),
    content              mediumtext,
    status               int,
+   linkType             int,
    url                  varchar(333),
    lastUpdateTime       datetime,
    createTime           datetime,
@@ -405,7 +375,8 @@ create table UrlLink
    depth                int,
    httpStatus           int,
    jobname              varchar(100),
-   primary key (id)
+   primary key (id),
+   unique (rowKey)
 );
 
 /*==============================================================*/
@@ -414,10 +385,11 @@ create table UrlLink
 create table UrlLog
 (
    id                   bigint not null auto_increment,
-   rowKey               varchar(2000),
+   rowKey               varchar(333),
    createTime           bigint,
    jobname              varchar(100),
-   primary key (id)
+   primary key (id),
+   unique (rowKey)
 );
 
 /*==============================================================*/
@@ -445,7 +417,7 @@ insert into User(user_id,name,passwd,email,role) values ('yingrui','yingrui','21
 create table Websiteschema
 (
    id                   bigint not null auto_increment,
-   rowKey               varchar(2000),
+   rowKey               varchar(100),
    valid                varchar(5),
    dimension            mediumtext,
    xpathAttr            text,
@@ -454,7 +426,8 @@ create table Websiteschema
    status               int,
    createTime           datetime,
    lastUpdateTime       datetime,
-   primary key (id)
+   primary key (id),
+   unique (rowKey)
 );
 
 /*==============================================================*/

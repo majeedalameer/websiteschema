@@ -22,6 +22,7 @@
         <script type="text/javascript" src="dwr/interface/WrapperService.js"></script>
         <script type="text/javascript" src="js/wrapper/JobEditorPanel.js"></script>
         <script type="text/javascript" src="js/wrapper/AddTaskPanel.js"></script>
+        <script type="text/javascript" src="dwr/interface/SchedulerService.js"></script>
     </head>
 
     <body>
@@ -79,6 +80,25 @@
                 // dataIndex maps the column to the specific data field in
                 // the data store
                 //var nm = new Ext.grid.RowNumberer();
+                   
+                var schedulerStore = new Ext.data.Store({
+                                proxy:  new Ext.data.DWRProxy(SchedulerService.getResults, true),
+                                reader: new Ext.data.ListRangeReader(
+                                    {
+                                        id : 'id',                                    
+                                        totalProperty : 'totalSize'
+                                    },new Ext.data.Record.create(schedulerRecordType )
+                                 ),
+                                 remoteSort: false
+                  });
+                  schedulerStore.load({
+                        params :{
+                            start : 0,
+                            limit : 100,
+                            sort : 'id desc'
+                        }
+                   });
+                
                 var fm = Ext.form;
                 var sm = new Ext.grid.CheckboxSelectionModel();  // add checkbox column
                 var cm = new Ext.grid.ColumnModel([
@@ -133,11 +153,35 @@
                             allowBlank: false
                         })
                     },
+                    
+                    {
+                        header: '调度器名称',
+                        dataIndex: 'locationId',
+                        width: 100,
+                        editor: new fm.ComboBox({
+                            store: schedulerStore, 
+                            TriggerAction:'all',
+                            allowBlank: false,
+                            mode: 'local',
+                            forceSelection: true,
+                            displayField:'name',
+                            valueField:'id'                             
+                        }),
+                        renderer:function(value,metadata,record){
+                            var index = schedulerStore.find('id',value);
+                            if(index!=-1){
+                                return schedulerStore.getAt(index).data.name;
+                            }
+                            return value; 
+                        }
+                        
+                    }
+                    ,
                     {
                         header: '类型',
                         dataIndex: 'scheduleType',
                         width: 60,
-                        hidden : false,
+                        hidden : true,
                         editor: new fm.ComboBox({
                             store : type_store,
                             triggerAction: 'all',
@@ -473,6 +517,7 @@
                 }
 
                 function handleQuery(){
+                    alert(schedulerStore.getTotalCount());
                     store.reload();
                 }
 

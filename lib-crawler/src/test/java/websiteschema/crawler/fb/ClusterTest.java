@@ -20,8 +20,8 @@ import websiteschema.persistence.Mapper;
 public class ClusterTest {
 
     ApplicationContext ctx = new ClassPathXmlApplicationContext("spring-beans.xml");
-    Mapper<ClusterModel> clusterModelMapper = (Mapper<ClusterModel>) ctx.getBean("clusterModelMapper", Mapper.class);
-    Mapper<Websiteschema> websiteschemaMapper = (Mapper<Websiteschema>) ctx.getBean("websiteschemaMapper", Mapper.class);
+    Mapper<ClusterModel> clusterModelMapper = ctx.getBean("clusterModelMapper", Mapper.class);
+    Mapper<Websiteschema> websiteschemaMapper = ctx.getBean("websiteschemaMapper", Mapper.class);
 
     @Test
     public void clustering() {

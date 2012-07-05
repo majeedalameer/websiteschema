@@ -53,8 +53,6 @@ public class UrlLinkUtil {
                 } else if (href.indexOf("://") > 0) {
                     // UnsupportProtocol.
                     return new URL(href.trim());
-                } else if (href.contains("javascript")){
-                    return new URL(pageUrl);
                 }
                 URI uri = new URI(pageUrl);
                 return uri.resolve(href.trim()).toURL();
@@ -150,9 +148,9 @@ public class UrlLinkUtil {
             host = (new StringBuilder(host)).reverse().toString();
 
             if (null != query) {
-                ret = siteId + "+" + schema + "://" + host + path + "?" + query;
+                ret = siteId + "+" + date + "+" + schema + "://" + host + path + "?" + query;
             } else {
-                ret = siteId + "+" + schema + "://" + host + path;
+                ret = siteId + "+" + date + "+" + schema + "://" + host + path;
             }
         }
 
@@ -172,53 +170,9 @@ public class UrlLinkUtil {
             host = (new StringBuilder(host)).reverse().toString();
 
             if (null != query) {
-                ret = siteId + "+" + schema + "://" + host + path + "?" + query;
+                ret = siteId + "+" + date + "+" + schema + "://" + host + path + "?" + query;
             } else {
-                ret = siteId + "+" + schema + "://" + host + path;
-            }
-        }
-
-        return ret;
-    }
-    
-    public String convertCommodityToRowKey(URL url, String siteId) {
-        String ret = null;
-
-        if (null != url) {
-            String schema = url.getProtocol();
-            String host = url.getHost();
-            String query = url.getQuery();
-            String path = url.getPath();
-//            String date = DateUtil.format(new Date(), "yyyy-MM-dd");
-
-//            host = (new StringBuilder(host)).reverse().toString();
-
-            if (null != query) {
-                ret = siteId  + "+" + schema + "://" + host + path + "?" + query;
-            } else {
-                ret = siteId  + "+" + schema + "://" + host + path;
-            }
-        }
-
-        return ret;
-    }
-    
-    public String convertCommodityToRowKey(URL url, String siteId, String category) {
-        String ret = null;
-
-        if (null != url) {
-            String schema = url.getProtocol();
-            String host = url.getHost();
-            String query = url.getQuery();
-            String path = url.getPath();
-//            String date = DateUtil.format(new Date(), "yyyy-MM-dd");
-
-//            host = (new StringBuilder(host)).reverse().toString();
-
-            if (null != query) {
-                ret = siteId + "+" + category + "+" + schema + "://" + host + path + "?" + query;
-            } else {
-                ret = siteId + "+" + category + "+" + schema + "://" + host + path;
+                ret = siteId + "+" + date + "+" + schema + "://" + host + path;
             }
         }
 

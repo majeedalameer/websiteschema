@@ -14,7 +14,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import org.apache.log4j.Logger;
-import websiteschema.analyzer.context.BrowserContext;
+//import websiteschema.analyzer.context.BrowserContext;
 import websiteschema.element.CSSProperties;
 import websiteschema.element.Rectangle;
 import websiteschema.element.StyleSheet;
@@ -23,6 +23,7 @@ import websiteschema.element.factory.RectangleFactory;
 import websiteschema.element.factory.StyleSheetFactory;
 import websiteschema.element.factory.XPathAttrFactory;
 import websiteschema.conf.Configure;
+import websiteschema.vips.VIPSContext;
 import websiteschema.vips.extraction.rule.DivideRuleFactory;
 
 /**
@@ -116,11 +117,11 @@ public class VipsBlockExtractor implements BlockExtractor {
         //hasTextOrVirtualTextNode
     }
 
-    public BrowserContext getContext() {
+    public VIPSContext getContext() {
         return ruleFactory.getContext();
     }
 
-    public void setContext(BrowserContext context) {
+    public void setContext(VIPSContext context) {
         ruleFactory.setContext(context);
     }
 

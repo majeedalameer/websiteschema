@@ -40,7 +40,7 @@ public class WrapperService {
     }
 
     @Transactional
-    public void insert(Wrapper wrapper) {
+    public void insert(Wrapper wrapper) {         
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         wrapper.setCreateUser(userDetails.getUsername());
         wrapper.setLastUpdateUser(wrapper.getCreateUser());

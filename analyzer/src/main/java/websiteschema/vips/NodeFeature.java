@@ -8,7 +8,7 @@ import com.webrenderer.swing.dom.IElement;
 import com.webrenderer.swing.dom.IElementCollection;
 import java.util.Set;
 import org.apache.log4j.Logger;
-import websiteschema.analyzer.context.BrowserContext;
+//import websiteschema.analyzer.context.BrowserContext;
 import websiteschema.element.CSSProperties;
 import websiteschema.element.Rectangle;
 import websiteschema.element.StyleSheet;
@@ -22,7 +22,7 @@ import websiteschema.element.factory.StyleSheetFactory;
 public class NodeFeature {
 
     Logger l = Logger.getRootLogger();
-    static final Set<String> inlineNodeSet = BrowserContext.getConfigure().getSetProperty("VIPS", "InlineNodeName");
+    static final Set<String> inlineNodeSet = VIPSContext.getConfigure().getSetProperty("VIPS", "InlineNodeName");
     static final RectangleFactory rectangleFactory = new RectangleFactory();
     static final StyleSheetFactory styleSheetFactory = new StyleSheetFactory();
     static final NodeFeature instance = new NodeFeature();
@@ -189,7 +189,7 @@ public class NodeFeature {
      * @param ele
      * @return
      */
-    public boolean hasDifferentBackgroundColorWithChild(IElement ele, BrowserContext context, String referrer) {
+    public boolean hasDifferentBackgroundColorWithChild(IElement ele, VIPSContext context, String referrer) {
         StyleSheet styleSheets = context.getStyleSheet(referrer);
         CSSProperties css = styleSheetFactory.createCSSProperties(styleSheets, ele);
         String backgroundColor = css.get("background-color");

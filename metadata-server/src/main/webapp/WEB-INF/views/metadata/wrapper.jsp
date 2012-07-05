@@ -28,8 +28,11 @@
             var pageSize = 20;
             Ext.onReady(function(){
                 Ext.QuickTips.init();
+                //数据获取代理
                 var proxy = new Ext.data.DWRProxy(WrapperService.getResults, true);
+                //数据记录
                 var recordType = new Ext.data.Record.create(wrapperRecordType);
+                //存出了grid所需要的数据
                 var store=new Ext.data.Store({
                     proxy : proxy,
                     reader : new Ext.data.ListRangeReader(
@@ -40,11 +43,16 @@
                 ),
                     remoteSort: false
                 });
+                
+                
+                //获取数据之前从页面取得限制条件
                 proxy.on('beforeload', function(thiz, params) {
                     params.match = Ext.getCmp('MATCH').getValue();
                     params.type = Ext.getCmp('WRAPPERTYPE').getValue();
                     params.sort = 'updateTime desc';
                 });
+                
+                
                 var type_store = new Ext.data.SimpleStore(
                 {
                     fields :['name','value'],
@@ -60,7 +68,9 @@
                 // the data store
                 //var nm = new Ext.grid.RowNumberer();
                 var fm = Ext.form;
-                var sm = new Ext.grid.CheckboxSelectionModel();  // add checkbox column
+                // 创建 checkbox column
+                var sm = new Ext.grid.CheckboxSelectionModel();  
+                //把一个record对象映射到页面一个列的模型
                 var cm = new Ext.grid.ColumnModel([
                     //nm,
                     sm,
@@ -154,7 +164,7 @@
 
                 // by default columns are sortable
                 cm.defaultSortable = false;
-                
+                //就是那个数据框对象
                 var grid = new Ext.grid.EditorGridPanel({
                     //el:'topic-grid',
                     renderTo: 'gridpanel',
@@ -170,7 +180,7 @@
                     sm: sm,
                     cm: cm,
                     
-                    // inline toolbars
+                    //添加工具栏
                     tbar: [ {
                             text: '新建',
                             tooltip: '新建记录',

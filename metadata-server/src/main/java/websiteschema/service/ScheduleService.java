@@ -44,7 +44,7 @@ public class ScheduleService {
     }
 
     @Transactional
-    public void insert(Schedule sche) {
+    public void insert(Schedule sche) {         
         scheduleMapper.insert(sche);
     }
 

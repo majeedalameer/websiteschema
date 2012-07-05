@@ -14,9 +14,10 @@ import websiteschema.persistence.rdbms.JobMapper;
 import websiteschema.persistence.rdbms.StartURLMapper;
 import websiteschema.persistence.rdbms.WrapperMapper;
 import org.apache.log4j.Logger;
-import websiteschema.model.domain.Schedule;
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -28,6 +29,7 @@ import static org.quartz.JobBuilder.*;
 import static org.quartz.TriggerBuilder.*;
 import static org.quartz.CronScheduleBuilder.*;
 import static org.quartz.DateBuilder.*;
+import websiteschema.model.domain.Schedule;
 
 /**
  *
@@ -50,6 +52,7 @@ public class JobScheduler {
     private final Logger l = Logger.getLogger(JobScheduler.class);
     private final String group = "group1";
     private final String tempGroup = "group2";
+    private int locationId;
     // 创建调度者工厂
     private SchedulerFactory schedulerFactory = new StdSchedulerFactory();
 
@@ -60,12 +63,13 @@ public class JobScheduler {
      * 从数据库中加载任务。
      * @throws SchedulerException
      */
-    public void load() throws SchedulerException {
-        // 用工厂创建一个调度者
-        sched = schedulerFactory.getScheduler();
-
-        List<Schedule> all = scheduleMapper.getAll();
-        for (Schedule sche : all) {
+    public void load() throws SchedulerException {         
+        // 用工厂创建一个调度者     
+        sched = schedulerFactory.getScheduler(); 
+        //Map params = new HashMap();
+        //params.put("locationId", locationId);       
+        List<Schedule> all = scheduleMapper.getSchedulesByLocationId(locationId);       
+        for (Schedule sche : all) { 
             load(sche);
         }
     }
@@ -288,5 +292,13 @@ public class JobScheduler {
 
     public void setChannelMapper(ChannelMapper channelMapper) {
         this.channelMapper = channelMapper;
+    }
+
+    public int getLocationId() {
+        return locationId;
+    }
+
+    public void setLocationId(int locationId) {
+        this.locationId = locationId;
     }
 }

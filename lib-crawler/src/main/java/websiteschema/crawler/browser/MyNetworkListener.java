@@ -26,42 +26,42 @@ public class MyNetworkListener implements NetworkListener {
 
     @Override
     public void onProgressChange(NetworkEvent ne) {
-//        l.debug("onProgressChange" + ((float) ne.getCurrentProgress() / (float) ne.getMaximumProgress()));
+        l.debug("onProgressChange" + ((float) ne.getCurrentProgress() / (float) ne.getMaximumProgress()));
     }
 
     @Override
     public void onDocumentLoad(NetworkEvent ne) {
-//        l.debug("onDocumentLoad ");
+        l.debug("onDocumentLoad ");
     }
 
     private void process() {
         synchronized (crawler.lock) {
-//            l.debug("notify");
+            l.debug("notify");
             crawler.lock.notify();
         }
     }
 
     @Override
     public void onDocumentComplete(NetworkEvent ne) {
-//        l.debug("onDocumentComplete " + ne.getURL());
+        l.debug("onDocumentComplete " + ne.getURL());
         crawler.setUrl(ne.getURL());
         process();
     }
 
     @Override
     public void onNetworkStatus(NetworkEvent ne) {
-//        l.debug("onNetworkStatus " + ne.getStatus());
+        l.debug("onNetworkStatus " + ne.getStatus());
     }
 
     @Override
     public void onNetworkError(NetworkEvent ne) {
-//        l.debug("onNetworkError " + ne.getFailure());
+        l.debug("onNetworkError " + ne.getFailure());
     }
 
     @Override
     public void onHTTPResponse(NetworkEvent ne) {
 //        l.debug("onHTTPResponse\n" + ne.getResponseHeaders());
-//        l.debug("onHTTPResponse\n" + ne.getURL() + " : " + ne.getStatusText() + " : " + ne.getStatus());
+        l.debug("onHTTPResponse\n" + ne.getURL() + " : " + ne.getStatusText() + " : " + ne.getStatus());
         if (0 == count++) {
             crawler.setHttpStatus(ne.getStatus());
         }
@@ -69,7 +69,7 @@ public class MyNetworkListener implements NetworkListener {
 
     @Override
     public void onHTTPInterceptHeaders(NetworkEvent ne) {
-//        l.debug("onHTTPInterceptHeaders " + ne.getURL());
+        l.debug("onHTTPInterceptHeaders " + ne.getURL());
 //        l.trace("Send Request Header:\n" + ne.getMutableRequestHeaders());
         if (!crawler.header.isEmpty()) {
             for (String iter : crawler.header.keySet()) {

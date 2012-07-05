@@ -14,7 +14,7 @@ import websiteschema.cluster.analyzer.Doc;
 public class SourceNameFilterTest {
 
     @Test
-    public void test1() {
+    public void should_recognize_sourcename_from_multi_candidates() {
         SourceNameFilter snf = new SourceNameFilter();
         Doc doc = new Doc();
         doc.addField("SOURCENAME", "2012年01月25日19:58");
@@ -26,7 +26,7 @@ public class SourceNameFilterTest {
     }
 
     @Test
-    public void test2() {
+    public void shoud_recognize_sourcename_when_sourcename_and_author_in_same_field() {
         SourceNameFilter snf = new SourceNameFilter();
         Doc doc = new Doc();
         doc.addField("SOURCENAME", "2012年01月25日19:58");
@@ -37,7 +37,7 @@ public class SourceNameFilterTest {
     }
 
     @Test
-    public void test3() {
+    public void shoud_recognize_sourcename_with_separator() {
         SourceNameFilter snf = new SourceNameFilter();
         Doc doc = new Doc();
         doc.addField("SOURCENAME", "来源：中国证券网-中证网");
@@ -48,7 +48,7 @@ public class SourceNameFilterTest {
     }
 
     @Test
-    public void test4() {
+    public void shoud_recognize_channel_as_sourcename() {
         SourceNameFilter snf = new SourceNameFilter();
         String res = snf.filtering("新华网天津房产频道  唐淑倩");
         System.out.println(res);

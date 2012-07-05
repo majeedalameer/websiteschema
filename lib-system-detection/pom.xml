@@ -11,6 +11,5 @@
     <artifactId>lib-system-detection</artifactId>
     <packaging>jar</packaging>
     <name>lib-system-detection</name>
-    <version>1.0-BETA</version>
 
 </project>

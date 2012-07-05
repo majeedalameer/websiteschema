@@ -254,7 +254,11 @@ public class RabbitQueue<T> {
                     String message = new String(delivery.getBody(), charset);
 
                     l.debug(" [x] Received from " + queueName + ": '" + message + "'");
-                    msg = fromJson(message, clazz);
+                    if (!clazz.equals(String.class)) {
+                        msg = fromJson(message, clazz);
+                    } else {
+                        msg = (T) message;
+                    }
                     // 对消息进行简单处理
                     if (null != worker) {
                         worker.invoke(msg);

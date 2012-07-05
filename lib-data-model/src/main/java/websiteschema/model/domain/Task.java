@@ -19,6 +19,7 @@ public class Task implements java.io.Serializable {
     public final static int TIMEOUT = 4;
     public final static int FINISHED = 5;
     public final static int EXCEPTION = 6;
+    
     public final static int TYPE_UNKNOWN = 0;
     public final static int TYPE_LINK = 1;
     public final static int TYPE_CONTENT = 2;

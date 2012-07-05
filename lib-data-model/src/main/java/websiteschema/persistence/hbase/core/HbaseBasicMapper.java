@@ -154,9 +154,9 @@ public class HbaseBasicMapper {
                     }
                     puts.add(put);
                     l.debug(rowKey + " -> " + record);
-                }               
+                }
+                getTable().put(puts);
             }
-            getTable().put(puts);
         } catch (IOException ex) {
             l.error("Table " + getTableName(), ex);
         }

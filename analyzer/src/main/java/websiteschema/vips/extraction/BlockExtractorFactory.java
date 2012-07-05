@@ -4,7 +4,10 @@
  */
 package websiteschema.vips.extraction;
 
-import websiteschema.analyzer.context.BrowserContext;
+//import websiteschema.analyzer.context.BrowserContext;
+
+import websiteschema.vips.VIPSContext;
+
 
 /**
  *
@@ -18,13 +21,13 @@ public class BlockExtractorFactory {
         return instance;
     }
 
-    public BlockExtractor create(BrowserContext context, String referrer, double pageSize, double threshold) {
+    public BlockExtractor create(VIPSContext context, String referrer, double pageSize, double threshold) {
         VipsBlockExtractor extractor = new VipsBlockExtractor();
         extractor.setPageSize(pageSize);
         extractor.setContext(context);
         extractor.setReferrer(referrer);
         extractor.setThreshold(threshold);
-        extractor.setConfigure(BrowserContext.getConfigure());
+        extractor.setConfigure(VIPSContext.getConfigure());
         return extractor;
     }
 }

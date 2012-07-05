@@ -90,6 +90,7 @@
                         dataIndex: 'wrapperId',
                         width: 100,
                         hidden : false,
+                        
                         editor: new fm.ComboBox({
                             store : wrapper_type_store,
                             triggerAction: 'all',
@@ -350,6 +351,7 @@
                 }
 
                 function handleQuery(){
+                    alert(wrapper_type_store.getTotalCount())
                     store.reload();
                 }
 

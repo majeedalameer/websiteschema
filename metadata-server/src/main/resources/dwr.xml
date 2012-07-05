@@ -37,6 +37,10 @@
         <create creator="spring" javascript="WrapperService" >
             <param name="beanName" value="wrapperService"></param>
         </create>
+        
+        <create creator="spring" javascript="SchedulerService" >
+            <param name="beanName" value="schedulerService"></param>
+        </create>
 
         <create creator="spring" javascript="KeywordService" >
             <param name="beanName" value="keywordService"></param>
@@ -88,10 +92,6 @@
 
         <create creator="spring" javascript="FMSSiteService" >
             <param name="beanName" value="FMSSiteService"></param>
-        </create>
-        
-        <create creator="spring" javascript="BrandService" >
-            <param name="beanName" value="brandService"></param>
         </create>
     </allow>
 </dwr>

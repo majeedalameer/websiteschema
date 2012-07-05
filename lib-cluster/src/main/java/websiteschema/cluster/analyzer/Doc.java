@@ -19,14 +19,16 @@ import websiteschema.utils.CollectionUtil;
  *
  * @author ray
  */
-public class Doc {
+public final class Doc {
 
     public final static String CONTENT_FIELD = "CONTENT";
+    String createTimeField = "CREATE_TIME";
     private Map<String, Collection<String>> data;
     private Map<String, Collection<Map<String, String>>> extData;
 
     public Doc() {
         data = new HashMap<String, Collection<String>>();
+        addField(createTimeField, String.valueOf(System.currentTimeMillis() / 1000));
         extData = new HashMap<String, Collection<Map<String, String>>>();
     }
 

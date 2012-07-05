@@ -17,9 +17,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import websiteschema.crawler.WebPage;
 
 import websiteschema.element.DocumentUtil;
@@ -74,10 +72,9 @@ public class FBUnitExtractor extends FunctionBlock {
                 table = assembleUnits(doc, unitConf);
             }
             triggerEvent("EO");
-        } catch (XPathExpressionException e) {
-            l.error("[exception] " + url + " upath:" + unitXPath, e);
         } catch (Exception ex) {
-            l.error("[exception] " + url + " upath:" + unitXPath, ex);
+            l.error(ex);
+            throw new RuntimeException(ex.getMessage());
         }
     }
 
@@ -129,17 +126,8 @@ public class FBUnitExtractor extends FunctionBlock {
             String name = unitConf.getConfig(i, "name");
             String path = unitConf.getConfig(i, "path");
             String regex = unitConf.getConfig(i, "regex");
-            String value = null;
-            try{
-                value = extractCell(iterNode, path, regex);
-            }catch (RuntimeException e) {
-//                l.debug(e.getMessage());
-                value = getNodeFromXPath(iterNode, path.split("/"));
-                
-            }
+            String value = extractCell(iterNode, path, regex);
             if (path.trim().endsWith("@href")) {
-                if(value == null)
-                    continue;
                 String ret = UrlLinkUtil.getInstance().getURL(url, value).toString();
                 if (null != ret) {
                     value = ret;
@@ -199,110 +187,6 @@ public class FBUnitExtractor extends FunctionBlock {
             row = this.table.get(i);
             System.out.println(row);
         }
-    }
-    private String getNodeFromXPath(Node node, String[] paths) {
-        String ret = null;
-        ArrayList<String> paras = new ArrayList<String>();
-        if(paths.length > 1)
-        for (int i = 1; i < paths.length; i++) {
-            paras.add(paths[i]);
-        }
-        else if(node.getNodeType() == Node.TEXT_NODE){
-            ret = node.getNodeValue();
-        } else
-            
-            return ((Element)node).getAttribute(paths[0].substring(1));
-
-        if (node.getNodeType() == Node.TEXT_NODE) {
-            ret = node.getNodeValue();
-        } else {
-//           String str = ((Element)node).getAttributeNS("div/h3/a/", "@href");
-            String nodeName = matchNodeName(paths[0]);
-            String tem = matchNode("\\[(\\S+)\\]", paths[0]);
-            tem = tem.replaceAll("\\[|\\]", "");
-
-            String[] attr = excuAttr(matchNode("@\\S*[^\\]]", paths[0]));
-            if(attr.length == 1){
-                tem = 1 + "";
-            }
-
-            if (node.hasChildNodes()) {
-                NodeList children = node.getChildNodes();
-                if (tem.matches("[0-9]+")) {
-                    Node child = children.item(Integer.parseInt(tem));
-                    if(paras.size() > 1)
-                        return getNodeFromXPath(child, (String[]) paras.toArray(new String[0]));
-                    else
-                        return (child.getChildNodes()).item(0).getNodeValue();
-                } else {
-                    for (int i = 0; i < children.getLength(); i++) {
-                        Node child = children.item(i);
-//                        l.debug("node name is " + child.getNodeName());
-                        if (child.getNodeType() != Node.TEXT_NODE && child.getNodeName().toLowerCase().equals(nodeName)) {
-                            if (paras.size() == 1) {
-                                if (paths[paths.length - 1].equals("text()")) {
-                                    NodeList ch = child.getChildNodes();
-                                    return ch.item(0).getNodeValue();
-                                } else {
-                                    Element el = (Element) child;
-                                    if (el.hasAttribute(paras.get(0).substring(1))) {
-                                        return el.getAttribute(paras.get(0).substring(1));
-                                    }
-                                }
-                            } else if(((Element)child).getAttribute(attr[0]).equals(attr[1])){
-                                return getNodeFromXPath(child, (String[]) paras.toArray(new String[0]));
-                            } 
-                        } else if (nodeName.equals("text()") && child.getNodeType() == Node.TEXT_NODE) {
-                            return child.getNodeValue();
-                        }
-
-                    }
-                }
-            } else {
-                Element el = (Element) node;
-                if (el.hasAttribute(attr[0].substring(1))) {
-                    return el.getAttribute(attr[0].substring(1));
-                }
-            }
-        }
-        return ret;
-    }
-    
-    private String matchNode(String patt, String str) {
-        Pattern pattern = Pattern.compile(patt);//\\[\\S*?\\]
-        String ret = "";
-
-        Matcher matcher = pattern.matcher(str);
-
-        if (matcher.find()) {
-            ret = matcher.group();
-        }
-        return ret;
-    }
-
-    private String matchNodeName(String str) {
-        if (str.indexOf("[") != -1) {
-            return str.substring(0, str.indexOf("["));
-        } else {
-            return str;
-        }
-    }
-    
-    private String[] excuAttr(String attr) {
-        ArrayList<String> list = new ArrayList<String>();
-
-        if (attr == null || attr.length() == 0) {
-            return (String[]) list.toArray(new String[0]);
-        }
-        String att = attr.substring(1);
-        String[] ret = att.split("=");
-
-
-        list.add(ret[0]);
-        if(ret.length > 1)
-        list.add(ret[1].substring(1, ret[1].length() - 1));
-
-        return (String[]) list.toArray(new String[0]);
     }
 
     class UnitConf {

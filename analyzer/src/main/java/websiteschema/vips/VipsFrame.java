@@ -15,7 +15,6 @@ import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import javax.swing.JFrame;
 import javax.swing.JScrollBar;
-import websiteschema.vips.VipsCanvas;
 
 /**
  *

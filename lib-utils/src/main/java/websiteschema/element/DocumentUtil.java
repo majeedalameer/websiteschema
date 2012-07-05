@@ -28,15 +28,12 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import websiteschema.element.xpath.XPathParser;
 import websiteschema.utils.FileUtil;
-import org.apache.log4j.Logger;
 
 /**
  *
  * @author ray
  */
 public class DocumentUtil {
-
-    private static Logger l = Logger.getLogger(DocumentUtil.class);
 
     public static String getXMLString(Document doc) {
         return toString(doc);
@@ -59,7 +56,8 @@ public class DocumentUtil {
                 t.transform(new DOMSource(document.getDocumentElement()),
                         strResult);
             } catch (Exception e) {
-                l.error("DocumentUtil.toString(Document): " + e);
+                System.err.println("DocumentUtil.toString(Document): " + e);
+                e.printStackTrace();
             }
             result = strResult.getWriter().toString();
         }
@@ -92,30 +90,6 @@ public class DocumentUtil {
             ex.printStackTrace();
         }
         return nodes;
-    }
-    /**
-     * 得到包含Node结点的Html
-     */
-    public static String getHtmlStringByNode(Node node) {
-        String result = null;
-        if (null != node) {
-            verifyDocument(node);
-            StringWriter strWtr = new StringWriter();
-            StreamResult strResult = new StreamResult(strWtr);
-            TransformerFactory tfac = TransformerFactory.newInstance();
-            try {
-                Transformer t = tfac.newTransformer();
-                t.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-                t.setOutputProperty(OutputKeys.INDENT, "yes");
-                t.setOutputProperty(OutputKeys.METHOD, "html"); // xml, html,// text
-                t.transform(new DOMSource(node),strResult);
-            } catch (Exception e) {
-                l.error("DocumentUtil.toString(Document): ",e);
-            }
-            result = strResult.getWriter().toString();
-            result = result.replaceAll(" xmlns=\"http://www.w3.org/1999/xhtml\"", "");
-        }
-        return result;
     }
 
     /**

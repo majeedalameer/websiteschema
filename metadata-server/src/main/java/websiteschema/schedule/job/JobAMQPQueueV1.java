@@ -41,8 +41,10 @@ public class JobAMQPQueueV1 implements Job {
         l.debug("Instance " + key + " of schedulerId: " + schedulerId + ", and jobId is: " + jobId + ", and startURLId is: " + startURLId);
         websiteschema.model.domain.Job job = jobMapper.getById(jobId);
         String jobConfig = job.getConfigure();
+        System.out.println("--------------------------"+jobConfig);
         l.debug(jobConfig);
         try {
+            //生成Task,配置调度器
             Task task = new Task(schedulerId);
             task.setTaskType(Task.TYPE_LINK);
             taskMapper.insert(task);
@@ -50,10 +52,12 @@ public class JobAMQPQueueV1 implements Job {
             boolean suc = false;
             Map<String, String> conf = CollectionUtil.toMap(jobConfig);
             String queueName = conf.get("QUEUE_NAME");
+            //声称Rabbitqueue
             RabbitQueue<Message> queue = StringUtil.isNotEmpty(queueName)
                     ? TaskHandler.getInstance().getQueue(queueName) : TaskHandler.getInstance().getQueue();
             Message msg = create(job);
             msg.setTaskId(task.getId());
+            //发送信息，返回发送状态
             suc = queue.offer(msg);
             if (suc) {
                 l.debug("Message about Job " + jobId + " has been emitted to queue: " + queue.getQueueName());

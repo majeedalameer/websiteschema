@@ -5,7 +5,6 @@
             <goals>
                 <goal>package</goal>
                 <goal>jetty:run-exploded</goal>
-                
             </goals>
         </action>
     </actions>

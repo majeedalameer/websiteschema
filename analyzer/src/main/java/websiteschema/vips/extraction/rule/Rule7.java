@@ -5,7 +5,7 @@
 package websiteschema.vips.extraction.rule;
 
 import com.webrenderer.swing.dom.IElement;
-import websiteschema.analyzer.context.BrowserContext;
+import websiteschema.vips.VIPSContext;
 
 /**
  * Rule7: If the background color of this node is different from one of its children's, divided this node.
@@ -13,14 +13,14 @@ import websiteschema.analyzer.context.BrowserContext;
  */
 public class Rule7 extends AbstractRule {
 
-    BrowserContext context;
+    VIPSContext context;
     String referrer;
 
     public Rule7() {
         this(null, null);
     }
 
-    public Rule7(BrowserContext context, String referrer) {
+    public Rule7(VIPSContext context, String referrer) {
         this.context = context;
         this.referrer = referrer;
     }
@@ -34,11 +34,11 @@ public class Rule7 extends AbstractRule {
         }
     }
 
-    public BrowserContext getContext() {
+    public VIPSContext getContext() {
         return context;
     }
 
-    public void setContext(BrowserContext context) {
+    public void setContext(VIPSContext context) {
         this.context = context;
     }
 

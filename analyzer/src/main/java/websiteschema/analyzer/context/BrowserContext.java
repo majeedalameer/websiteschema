@@ -14,37 +14,23 @@ import websiteschema.analyzer.browser.SimpleBrowser;
 import websiteschema.element.StyleSheet;
 import websiteschema.conf.Configure;
 import websiteschema.utils.Console;
+import websiteschema.vips.VIPSContext;
 
 /**
  *
  * @author ray
  */
-public class BrowserContext {
+public class BrowserContext extends VIPSContext {
 
-    Console console;
     IMozillaBrowserCanvas browser = null;
-    private static final Configure configure = new Configure("configure-site.ini");
-    Map<String, StyleSheet> styleSheets = new HashMap<String, StyleSheet>();
     Map<String, Map<String, String>> urlAndMIME = new LinkedHashMap<String, Map<String, String>>();
 //    AnalysisPanel analysisPanel;
     private static final ApplicationContext ctx = new ClassPathXmlApplicationContext("spring-beans.xml");
     private String reference = null;
     private SimpleBrowser simpleBrowser;
 
-    public static Configure getConfigure() {
-        return configure;
-    }
-
     public static ApplicationContext getSpringContext() {
         return ctx;
-    }
-
-    public Console getConsole() {
-        return console;
-    }
-
-    public void setConsole(Console console) {
-        this.console = console;
     }
 
     public SimpleBrowser getSimpleBrowser() {
@@ -61,14 +47,6 @@ public class BrowserContext {
 
     public void setBrowser(IMozillaBrowserCanvas browser) {
         this.browser = browser;
-    }
-
-    public void setStyleSheet(String url, StyleSheet styleSheet) {
-        this.styleSheets.put(url, styleSheet);
-    }
-
-    public StyleSheet getStyleSheet(String url) {
-        return this.styleSheets.get(url);
     }
 
     public void setReference(String ref) {

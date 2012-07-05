@@ -6,7 +6,8 @@ package websiteschema.vips.extraction.rule;
 
 import java.lang.reflect.Method;
 import java.util.Set;
-import websiteschema.analyzer.context.BrowserContext;
+//import websiteschema.analyzer.context.BrowserContext;
+import websiteschema.vips.VIPSContext;
 
 /**
  *
@@ -18,7 +19,7 @@ public class DivideRuleFactory {
     double threshold = 0.0;
     String referrer = "";
     Set<String> allDividableNode = null;
-    BrowserContext context = null;
+    VIPSContext context = null;
 
     public DivideRule create(String className) {
         DivideRule rule = null;
@@ -47,7 +48,7 @@ public class DivideRuleFactory {
                                 && Set.class.equals(arg)) {
                             method.invoke(obj, allDividableNode);
                         } else if (methodName.contains("context".toLowerCase())
-                                && BrowserContext.class.equals(arg)) {
+                                && VIPSContext.class.equals(arg)) {
                             method.invoke(obj, context);
                         }
                     }
@@ -92,11 +93,11 @@ public class DivideRuleFactory {
         this.threshold = threshold;
     }
 
-    public BrowserContext getContext() {
+    public VIPSContext getContext() {
         return context;
     }
 
-    public void setContext(BrowserContext context) {
+    public void setContext(VIPSContext context) {
         this.context = context;
     }
 }

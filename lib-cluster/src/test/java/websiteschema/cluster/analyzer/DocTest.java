@@ -13,6 +13,7 @@ import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import org.junit.Assert;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -27,9 +28,24 @@ import websiteschema.utils.FileUtil;
 public class DocTest {
 
     @Test
-    public void testParse() {
+    public void should_Contains_Create_Time_Field() {
         try {
-            Document doc = create("guba.xml");
+            Document doc = loadDocument("guba.xml");
+            Doc d = new Doc(doc);
+
+            String crDate = d.getValue("CREATE_TIME");
+            System.out.println(crDate);
+            assert (null != crDate && crDate.matches("\\d+"));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void should_load_XML_File_with_Ext_Fields() {
+        try {
+            Document doc = loadDocument("guba.xml");
             Doc d = new Doc(doc);
 
             Collection<Map<String, String>> threads = d.getExtValues("THREADS");
@@ -46,19 +62,19 @@ public class DocTest {
             System.out.println(text);
         } catch (Exception ex) {
             ex.printStackTrace();
-            assert (false);
+            Assert.fail();
         }
     }
 
     @Test
-    public void testToW3CDocument() {
+    public void should_Change_Field_Name_When_Output_to_W3C_Document() {
         try {
-            Document guba1 = create("guba.xml");
-            Document guba2 = create("guba_2.xml");
+            Document guba1 = loadDocument("guba.xml");
+            Document guba2 = loadDocument("guba_2.xml");
             Doc d = new Doc(guba1);
             Doc d2 = new Doc(guba2);
 
-            Document index = create();
+            Document index = createNewDocument();
             Element root = index.createElement("ROOT");
             index.appendChild(root);
 
@@ -76,13 +92,17 @@ public class DocTest {
             d2.toW3CDocument(index, eleDoc2, map);
             String text = DocumentUtil.getXMLString(index);
             System.out.println(text);
+            assert(text.contains("PUBLISHDATE"));
+            assert(text.contains("DRETITLE"));
+            assert(text.contains("DREREFERENCE"));
+            assert(text.contains("DRECONTENT"));
         } catch (Exception ex) {
             ex.printStackTrace();
-            assert (false);
+            Assert.fail();
         }
     }
 
-    private Document create(String file) throws ParserConfigurationException, IOException, SAXException {
+    private Document loadDocument(String file) throws ParserConfigurationException, IOException, SAXException {
         String content = FileUtil.readResource(file);
         DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
         domFactory.setNamespaceAware(true); // never forget this!
@@ -91,7 +111,7 @@ public class DocTest {
         return doc;
     }
 
-    private Document create() {
+    private Document createNewDocument() {
         try {
             DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
             domFactory.setNamespaceAware(true); // never forget this!

@@ -64,7 +64,7 @@ public class FBURLQueue extends FunctionBlock {
             Message msg = new Message(jobId, startURLId, scheId, wrapperId,
                     siteId, jobname,
                     url, //URL
-                    configure, "",depth);
+                    configure, depth);
             queue.offer(msg);
             triggerEvent("EO");
         } catch (Exception ex) {
@@ -82,7 +82,7 @@ public class FBURLQueue extends FunctionBlock {
                     Message msg = new Message(jobId, startURLId, scheId, wrapperId,
                             siteId, jobname,
                             u.getHref(), //URL
-                            configure, u.getText(),depth);
+                            configure, depth);
 
                     msg.setChnlId(chnlId);
                     TaskMapper taskMapper = this.getContext().getSpringBean("taskMapper", TaskMapper.class);
@@ -101,10 +101,6 @@ public class FBURLQueue extends FunctionBlock {
         } catch (Exception ex) {
             l.error(ex.getMessage(), ex);
             triggerEvent("FATAL");
-        } finally {
-            if (null != queue) {
-                queue.close();
-            }
         }
     }
 }

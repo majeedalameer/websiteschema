@@ -15,30 +15,30 @@
         <org.slf4j.version>1.5.10</org.slf4j.version>
         <webrenderer.version>6.0b3</webrenderer.version>
         <hive-version>0.7.1-cdh3u1</hive-version>
-        <hbase-version>0.92.0</hbase-version>
-        <hadoop-version>1.0.0</hadoop-version>
+        <hbase-version>0.90.4-cdh3u2</hbase-version>
+        <hadoop-version>0.20.2-cdh3u2</hadoop-version>
         <avro-version>1.5.4</avro-version>
 
         <!-- 团队开发环境 -->
-<!--        <rabbitmq-server>192.168.4.173</rabbitmq-server>
+        <rabbitmq-server>192.168.4.173</rabbitmq-server>
         <metadata-deploy-host>192.168.4.173</metadata-deploy-host>
         <hbase.master>hadoop-hbase1</hbase.master>
         <hbase.zookeeper.quorum>hadoop-hbase1</hbase.zookeeper.quorum>
-        <jdbc-url>jdbc:mysql://192.168.4.173:3306/websiteschema</jdbc-url>-->
+        <jdbc-url>jdbc:mysql://192.168.4.189:3306/websiteschema</jdbc-url>
 
         <!-- 团队开发测试环境 -->
-        <rabbitmq-server>172.16.100.161</rabbitmq-server>
+<!--        <rabbitmq-server>172.16.100.161</rabbitmq-server>
         <metadata-deploy-host>172.16.100.161</metadata-deploy-host>
         <hbase.master>hadoop2</hbase.master>
         <hbase.zookeeper.quorum>hadoop1,hadoop2,hadoop3,hadoop4,hadoop5</hbase.zookeeper.quorum>
-        <jdbc-url>jdbc:mysql://172.16.100.162:3306/websiteschema</jdbc-url>
+        <jdbc-url>jdbc:mysql://172.16.100.162:3306/websiteschema</jdbc-url>-->
 
         <!-- 个人开发环境 -->
-<!--        <rabbitmq-server>localhost</rabbitmq-server>
+<!--  <rabbitmq-server>localhost</rabbitmq-server>
         <metadata-deploy-host>localhost</metadata-deploy-host>
         <hbase.master>localhost</hbase.master>
         <hbase.zookeeper.quorum>localhost</hbase.zookeeper.quorum>
-        <jdbc-url>jdbc:mysql://localhost:3306/websiteschema</jdbc-url>-->
+        <jdbc-url>jdbc:mysql://localhost:3306/websiteschema</jdbc-url>--> 
         <jdbc-username>websiteschema</jdbc-username>
         <jdbc-passwd>websiteschema</jdbc-passwd>
         <webrenderer.classifier>linux64</webrenderer.classifier>
@@ -151,25 +151,25 @@
                 <artifactId>hbase</artifactId>
                 <version>${hbase-version}</version>
             </dependency>
-<!--            <dependency>
+            <dependency>
                 <groupId>org.apache.hbase</groupId>
                 <artifactId>hbase</artifactId>
                 <version>${hbase-version}</version>
                 <classifier>sources</classifier>
                 <optional>true</optional>
-            </dependency>-->
+            </dependency>
             <dependency>
                 <groupId>org.apache.hadoop</groupId>
                 <artifactId>hadoop-core</artifactId>
                 <version>${hadoop-version}</version>
             </dependency>
-<!--            <dependency>
+            <dependency>
                 <groupId>org.apache.hadoop</groupId>
                 <artifactId>hadoop-core</artifactId>
                 <version>${hadoop-version}</version>
                 <classifier>sources</classifier>
                 <optional>true</optional>
-            </dependency>-->
+            </dependency>
             <dependency>
                 <groupId>org.apache.avro</groupId>
                 <artifactId>avro</artifactId>

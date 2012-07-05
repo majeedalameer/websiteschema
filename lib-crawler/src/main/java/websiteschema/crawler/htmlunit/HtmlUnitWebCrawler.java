@@ -78,7 +78,6 @@ public class HtmlUnitWebCrawler implements Crawler {
             public WebResponse getResponse(WebRequest request) throws IOException {
                 System.err.println("__________" + request.getUrl());
                 ++requestNumber;
-                url = request.getUrl().toString();
 //                if (requestNumber > maxRequestNumber) {
 //                    request.setUrl(...);
 //                }

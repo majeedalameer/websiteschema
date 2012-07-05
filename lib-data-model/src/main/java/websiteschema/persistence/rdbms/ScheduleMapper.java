@@ -19,10 +19,12 @@ public interface ScheduleMapper {
 
     public List<Schedule> getSchedules(Map params);
 
-    public List<Schedule> getAll();
+    public List<Schedule> getAll(); 
 
     public List<Schedule> getSchedulesByStartURL(long startURL);
-
+    
+    public List<Schedule> getSchedulesByLocationId(long locationId);
+    
     public Schedule getById(long id);
 
     public void update(Schedule schedule);

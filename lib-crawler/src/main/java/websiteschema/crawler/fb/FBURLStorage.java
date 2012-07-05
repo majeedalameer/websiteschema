@@ -96,7 +96,6 @@ public class FBURLStorage extends FunctionBlock {
                         old.setDepth(depth);
                         mapper.put(old);
                     }
-                    added.add(u);
                 }
             }
 

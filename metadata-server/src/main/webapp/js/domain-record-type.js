@@ -189,45 +189,6 @@ var sysConfRecordType = [
 }
 ];
 
-var brandRecordType = [
-{
-    name : 'id',
-    type : 'long'
-},
-{
-    name : 'c_id',
-    type : 'string'
-},
-{
-    name : 'name',
-    type : 'string'
-},
-{
-    name : 'keywords',
-    type : 'string'
-},
-{
-    name : 'model',
-    type : 'string'
-},
-{
-    name : 'createTime',
-    type : 'date'
-},
-{
-    name : 'createUser',
-    type : 'string'
-},
-{
-    name : 'updateTime',
-    type : 'date'
-},
-{
-    name : 'lastUpdateUser',
-    type : 'string'
-}
-];
-
 var categoryRecordType = [
 {
     name : 'id',
@@ -299,6 +260,10 @@ var scheduleRecordType = [
 {
     name : 'schedule',
     type : 'string'
+},
+{
+    name:'locationId' ,
+    type:'int'
 },
 {
     name : 'scheduleType',
@@ -442,6 +407,36 @@ var wrapperRecordType = [
 }
 ];
 
+var schedulerRecordType =[
+    {
+        name : 'id',
+        type : 'long'
+    },   
+    {
+        name : 'name',
+        type : 'String'
+    },  
+    {
+        name : 'address',
+        type : 'String'
+    },
+    {
+        name : 'createTime',
+        type : 'date'
+    },  
+    {
+        name : 'createUser',
+        type : 'String'
+    },
+    {
+        name : 'updateTime',
+        type : 'date'
+    },
+    {
+        name : 'lastUpdateUser',
+        type : 'String'
+    }    
+]
 
 var siteRecordType = [
 {

@@ -39,7 +39,7 @@ public class VIPSImpl {
      * Creator VIPS Segmenter
      */
     private void init() {
-        segmenter = new VisionBasedPageSegmenter();
+        segmenter = new VisionBasedPageSegmenter(BrowserContext.getConfigure());
         segmenter.setPDoC(BrowserContext.getConfigure().getIntProperty("VIPS", "PDoC"));
     }
 
