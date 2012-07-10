@@ -149,6 +149,11 @@
             <artifactId>oauth-signature</artifactId>
             <version>1.8</version>
         </dependency>
+        <dependency>
+            <groupId>net.sourceforge.htmlcleaner</groupId>
+            <artifactId>htmlcleaner</artifactId>
+            <version>2.2</version>
+        </dependency>
     </dependencies>
     <build>
         <testResources>
