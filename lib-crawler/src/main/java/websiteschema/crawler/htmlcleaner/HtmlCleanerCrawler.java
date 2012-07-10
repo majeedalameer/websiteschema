@@ -124,7 +124,6 @@ public class HtmlCleanerCrawler implements Crawler {
         GetMethod get = new GetMethod(url_str);
         try {
             Thread.sleep(10);
-            url = url_str;
             HttpClient hc = new HttpClient();
             Collection<Header> headers = new ArrayList<Header>();
             headers.add(new Header("Accept", "*/*"));
@@ -141,6 +140,7 @@ public class HtmlCleanerCrawler implements Crawler {
 
             hc.executeMethod(get);
 
+            url = get.getURI().getURI();
             String html = "";
             Header encode = get.getResponseHeader("Content-Encoding");
             if (encode.getValue().contains("gzip")) {
