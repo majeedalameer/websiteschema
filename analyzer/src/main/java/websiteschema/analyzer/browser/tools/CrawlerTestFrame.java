@@ -12,6 +12,7 @@ package websiteschema.analyzer.browser.tools;
 
 import java.util.Map;
 import org.w3c.dom.Document;
+import websiteschema.analyzer.context.BrowserContext;
 import websiteschema.cluster.DocumentConvertor;
 import websiteschema.crawler.Crawler;
 import websiteschema.crawler.WebPage;
@@ -283,6 +284,10 @@ public class CrawlerTestFrame extends javax.swing.JFrame {
         try {
             Class clazz = Class.forName(className);
             Crawler ret = (Crawler) clazz.newInstance();
+            String userAgent = BrowserContext.getConfigure().getProperty("Browser", "User-Agent");
+            if (null != userAgent) {
+                ret.addHeader("User-Agent", userAgent);
+            }
             return ret;
         } catch (Exception ex) {
             ex.printStackTrace();

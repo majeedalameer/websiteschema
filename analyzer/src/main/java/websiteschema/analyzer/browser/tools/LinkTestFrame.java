@@ -292,6 +292,10 @@ public class LinkTestFrame extends javax.swing.JFrame {
             } else {
                 crawler = new websiteschema.crawler.SimpleHttpCrawler();
             }
+            String userAgent = BrowserContext.getConfigure().getProperty("Browser", "User-Agent");
+            if (null != userAgent) {
+                crawler.addHeader("User-Agent", userAgent);
+            }
             long t1 = System.currentTimeMillis();
             WebPage page = crawler.crawlWebPage(url);
             long t2 = System.currentTimeMillis();
