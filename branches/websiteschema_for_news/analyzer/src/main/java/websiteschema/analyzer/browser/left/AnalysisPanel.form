@@ -399,7 +399,11 @@
                           <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Component id="analyzeParamButton" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <Component id="testButton" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Group type="102" alignment="0" attributes="0">
+                          <Component id="testButton" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                          <Component id="checkResultButton" min="-2" max="-2" attributes="0"/>
+                      </Group>
                   </Group>
                   <EmptySpace pref="30" max="32767" attributes="0"/>
               </Group>
@@ -424,7 +428,10 @@
                       <Component id="analyzeParamButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="testButton" min="-2" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="testButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="checkResultButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
               </Group>
           </Group>
         </DimensionLayout>
@@ -490,6 +497,15 @@
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="analyzeParamButtonActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JButton" name="checkResultButton">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="&#x67e5;&#x770b;&#x7ed3;&#x679c;"/>
+            <Property name="toolTipText" type="java.lang.String" value="&#x67e5;&#x770b;&#x6307;&#x5b9a;URL&#x7684;&#x91c7;&#x96c6;&#x7ed3;&#x679c;"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="checkResultButtonActionPerformed"/>
           </Events>
         </Component>
       </SubComponents>

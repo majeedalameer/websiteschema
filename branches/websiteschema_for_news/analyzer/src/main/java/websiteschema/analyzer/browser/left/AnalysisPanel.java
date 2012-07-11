@@ -113,6 +113,7 @@ public class AnalysisPanel extends javax.swing.JPanel implements IConfigureHandl
         trainButton = new javax.swing.JButton();
         testButton = new javax.swing.JButton();
         analyzeParamButton = new javax.swing.JButton();
+        checkResultButton = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         propTable = new javax.swing.JTable();
         saveSettingsButton = new javax.swing.JButton();
@@ -341,6 +342,14 @@ public class AnalysisPanel extends javax.swing.JPanel implements IConfigureHandl
             }
         });
 
+        checkResultButton.setText("查看结果");
+        checkResultButton.setToolTipText("查看指定URL的采集结果");
+        checkResultButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                checkResultButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -360,7 +369,10 @@ public class AnalysisPanel extends javax.swing.JPanel implements IConfigureHandl
                         .addComponent(viewCategoryButton)
                         .addGap(18, 18, 18)
                         .addComponent(analyzeParamButton))
-                    .addComponent(testButton))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(testButton)
+                        .addGap(18, 18, 18)
+                        .addComponent(checkResultButton)))
                 .addContainerGap(30, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
@@ -379,7 +391,9 @@ public class AnalysisPanel extends javax.swing.JPanel implements IConfigureHandl
                     .addComponent(viewCategoryButton)
                     .addComponent(analyzeParamButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(testButton))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(testButton)
+                    .addComponent(checkResultButton)))
         );
 
         propTable.setModel(new javax.swing.table.DefaultTableModel(
@@ -689,6 +703,16 @@ public class AnalysisPanel extends javax.swing.JPanel implements IConfigureHandl
         }
     }//GEN-LAST:event_delPropButtonActionPerformed
 
+    private void checkResultButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkResultButtonActionPerformed
+        // TODO add your handling code here:
+        final JFrame popup = new JFrame("查看采集结果");
+        popup.setSize(800, 600);
+        ResultViewPanel panel = new ResultViewPanel();
+        panel.setUrl(context.getBrowser().getURL());
+        popup.getContentPane().add(BorderLayout.CENTER, panel);
+        popup.setVisible(true);
+    }//GEN-LAST:event_checkResultButtonActionPerformed
+
     private JPanel createPageAnalysisGUI() {
         String siteId = this.getSiteId();
         SiteMapper siteMapper = BrowserContext.getSpringContext().getBean("siteMapper", SiteMapper.class);
@@ -870,6 +894,7 @@ public class AnalysisPanel extends javax.swing.JPanel implements IConfigureHandl
     private javax.swing.JButton addLinksButton;
     private javax.swing.JButton addPropButton;
     private javax.swing.JButton analyzeParamButton;
+    private javax.swing.JButton checkResultButton;
     private javax.swing.JButton collectSampleButton;
     private javax.swing.JButton confirmAddButton;
     private javax.swing.JComboBox crawlerTypeCombo;
