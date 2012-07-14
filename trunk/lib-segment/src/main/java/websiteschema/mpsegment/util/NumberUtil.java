@@ -3,10 +3,7 @@ package websiteschema.mpsegment.util;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 
-public class ChNumberConverter {
-
-    public ChNumberConverter() {
-    }
+public class NumberUtil {
 
     public static void initialize() {
         hm = new HashMap();
@@ -367,7 +364,6 @@ public class ChNumberConverter {
         }
         return d1;
     }
-
     public static final String minus = "负";
     public static final String digits[] = {
         "零", "一", "二", "三", "四", "五", "六", "七", "八", "九"

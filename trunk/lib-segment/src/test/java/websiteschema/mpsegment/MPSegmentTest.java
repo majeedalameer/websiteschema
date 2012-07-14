@@ -29,6 +29,14 @@ public class MPSegmentTest {
         Assert.assertEquals(words.getWord(1), "长城");
     }
 
+//    @Test
+//    public void should_Know_Some_Foreign_Names() {
+//        String str = "基里连科的世界";
+//        SegmentEngine engine = SegmentEngine.getInstance();
+//        SegmentWorker worker = engine.getSegmentWorker();
+//        SegmentResult words = worker.segment(str);
+//        System.out.println(words);
+//    }
     @Test
     public void should_Know_Some_Chinese_Names() {
         String str = "张三丰创造了太极拳。";
@@ -41,12 +49,53 @@ public class MPSegmentTest {
     }
 
     @Test
+    public void should_Support_Query_Syntax() {
+        String str = "中国~[250]";
+        SegmentEngine engine = SegmentEngine.getInstance();
+        SegmentWorker worker = engine.getSegmentWorker();
+        SegmentResult words = worker.segment(str);
+        System.out.print(words + " ");
+        Assert.assertEquals(words.getWord(0), "中国~[250]");
+
+        str = "中国*";
+        words = worker.segment(str);
+        System.out.print(words + " ");
+        Assert.assertEquals(words.getWord(0), "中国*");
+
+        str = "中国:title";
+        words = worker.segment(str);
+        System.out.print(words + " ");
+        Assert.assertEquals(words.getWord(0), "中国:TITLE");
+
+        str = "中国?";
+        words = worker.segment(str);
+        System.out.println(words);
+        Assert.assertEquals(words.getWord(0), "中国?");
+    }
+
+    @Test
     public void should_Recognize_Some_Chinese_Place_Names() {
-        String str = "今天去了张家村。";
+        String str = "7月去了德江县。";
         SegmentEngine engine = SegmentEngine.getInstance();
         SegmentWorker worker = engine.getSegmentWorker();
         SegmentResult words = worker.segment(str);
         System.out.println(words);
+        Assert.assertEquals("德江县", words.getWord(3));
+    }
+
+    @Test
+    public void should_Recognize_Date_and_Time() {
+        String str = "7月1日10时计划开始。";
+        SegmentEngine engine = SegmentEngine.getInstance();
+        SegmentWorker worker = engine.getSegmentWorker();
+        SegmentResult words = worker.segment(str);
+        System.out.println(words);
+        Assert.assertEquals("7月", words.getWord(0));
+        Assert.assertEquals("1日", words.getWord(1));
+        Assert.assertEquals("10时", words.getWord(2));
+        Assert.assertEquals(POSUtil.POS_T, words.getPOS(0));
+        Assert.assertEquals(POSUtil.POS_T, words.getPOS(1));
+        Assert.assertEquals(POSUtil.POS_T, words.getPOS(2));
     }
 
     @Test

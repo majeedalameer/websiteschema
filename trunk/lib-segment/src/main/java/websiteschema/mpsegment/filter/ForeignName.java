@@ -14,10 +14,14 @@ public class ForeignName {
 
     }
 
+    private boolean containsChar(String s) {
+        return foreignNameCharsHashMap.containsKey(s);
+    }
+
     public boolean isForiegnName(String s) {
         boolean flag = true;
         for (int i = 0; i < s.length(); i++) {
-            if (foreignNameCharsHashMap.get(s.substring(i, i + 1)) > 0) {
+            if (containsChar(s.substring(i, i + 1))) {
                 continue;
             }
             flag = false;

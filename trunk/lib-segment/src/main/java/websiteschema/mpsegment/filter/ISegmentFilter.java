@@ -4,5 +4,7 @@ import websiteschema.mpsegment.core.SegmentResult;
 
 public interface ISegmentFilter {
 
-    public abstract void filter(SegmentResult segmentResult);
+    public void filtering();
+
+    public void setSegmentResult(SegmentResult segmentResult);
 }

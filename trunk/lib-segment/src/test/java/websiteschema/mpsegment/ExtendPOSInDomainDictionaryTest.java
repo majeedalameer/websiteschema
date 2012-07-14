@@ -24,7 +24,8 @@ public class ExtendPOSInDomainDictionaryTest extends TestCase {
             for (int i = 0; i < words.length(); i++) {
                 System.out.println(words.getWord(i) + " - " + POSUtil.getPOSString(words.getPOS(i)) + " - " + words.getConcept(i));
             }
-        } catch (Exception e) {
+        } catch (Exception ex) {
+            ex.printStackTrace();
             assert (false);
         }
     }
