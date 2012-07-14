@@ -1,7 +1,6 @@
 package websiteschema.mpsegment.core;
 
-import websiteschema.mpsegment.filter.ISegmentFilter;
-import websiteschema.mpsegment.filter.UnknownFilter;
+import websiteschema.mpsegment.filter.SegmentResultFilter;
 
 public class SegmentWorker {
 
@@ -9,7 +8,7 @@ public class SegmentWorker {
         unKnownFilter = null;
         maxSegStrLength = 400000;
         mpSegment = new MPSegment();
-        unKnownFilter = new UnknownFilter();
+        unKnownFilter = new SegmentResultFilter();
     }
 
     public void setUseDomainDictionary(boolean flag) {
@@ -41,7 +40,7 @@ public class SegmentWorker {
     public void setUseContextFreqSegment(boolean useContextFreqSegment) {
         mpSegment.setUseContextFreqSegment(useContextFreqSegment);
     }
-    private ISegmentFilter unKnownFilter;
+    private SegmentResultFilter unKnownFilter;
     private int maxSegStrLength;
     private MPSegment mpSegment;
     private boolean recognizePOS = true;
