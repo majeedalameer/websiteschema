@@ -1,8 +1,6 @@
 package websiteschema.mpsegment.dict;
 
-import websiteschema.mpsegment.conf.ReadDataFile;
-import websiteschema.mpsegment.util.BufReader;
-import websiteschema.mpsegment.util.ByteArrayReader;
+import websiteschema.mpsegment.util.*;
 import java.io.*;
 import java.util.HashMap;
 
@@ -73,8 +71,9 @@ public class HashDictionary implements IDictionary {
 
     private synchronized void loadDict(String s) {
         try {
-            ByteArrayReader bytearrayreader = new ByteArrayReader(new ReadDataFile().getData("segment.dict"));
-            loadDict(((BufReader) (bytearrayreader)));
+//            ByteArrayReader bytearrayreader = new ByteArrayReader(new ReadDataFile().getData("segment.dict"));
+            BufReader bytearrayreader = new ByteArrayReader(FileUtil.getResourceAsStream("segment.dict"));
+            loadDict(bytearrayreader);
             bytearrayreader.close();
             bytearrayreader = null;
         } catch (IOException ex) {
@@ -82,7 +81,7 @@ public class HashDictionary implements IDictionary {
         }
     }
 
-    public synchronized void loadDict(BufReader bufreader)
+    private void loadDict(BufReader bufreader)
             throws IOException {
         wordOccuredSum = 0;
         maxWordLength = 0;

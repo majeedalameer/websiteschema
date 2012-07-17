@@ -1,7 +1,7 @@
 package websiteschema.mpsegment.dict;
 
-import websiteschema.mpsegment.conf.ReadDataFile;
 import java.io.*;
+import websiteschema.mpsegment.util.FileUtil;
 
 public class POSAndFreq {
 
@@ -94,7 +94,7 @@ public class POSAndFreq {
     public static void loadPOSDb(String s) {
         try {
             if (top <= 0) {
-                ObjectInputStream objectinputstream = new ObjectInputStream(new ByteArrayInputStream(new ReadDataFile().getData("segment.fre")));
+                ObjectInputStream objectinputstream = new ObjectInputStream(FileUtil.getResourceAsStream("segment.fre"));
                 top = objectinputstream.readInt();
                 pos = (int[]) objectinputstream.readObject();
                 freq = (int[]) objectinputstream.readObject();

@@ -1,9 +1,9 @@
 package websiteschema.mpsegment.dict;
 
-import websiteschema.mpsegment.conf.ReadDataFile;
 import java.io.*;
 import java.util.Map;
 import org.apache.log4j.Logger;
+import websiteschema.mpsegment.util.FileUtil;
 import websiteschema.mpsegment.util.SerializeHandler;
 
 public class ChNameDictionary {
@@ -12,7 +12,6 @@ public class ChNameDictionary {
 
     public ChNameDictionary() {
         factor = 0.88400000000000001D;
-        totalXingFreq = 0;
         totalXingProb = 0.0D;
         xingTop = 1;
         mingTop = 1;
@@ -20,7 +19,6 @@ public class ChNameDictionary {
 
     public void outSummary() {
         System.out.println((new StringBuilder("xingTop=")).append(xingTop).toString());
-        System.out.println((new StringBuilder("totalXingFreq=")).append(totalXingFreq).toString());
         System.out.println((new StringBuilder("totalXingProb=")).append(totalXingProb).toString());
         System.out.println((new StringBuilder("mingTop=")).append(mingTop).toString());
         for (int i1 = 0; i1 < 3; i1++) {
@@ -29,62 +27,65 @@ public class ChNameDictionary {
     }
 
     private int getXingProb(String s) {
-        int i1 = get(xingHashMap, s);
-        double d1 = 0.0D;
-        if (i1 <= 0) {
-            i1 = 0;
+        int index = get(xingHashMap, s);
+        double prob = 0.0D;
+        if (index <= 0) {
+            index = 0;
         } else {
-            d1 = (double) xingFreq[i1] * (1.0D + xingProb[i1]);
+            prob = (double) xingFreq[index] * (1.0D + xingProb[index]);
         }
-        return (int) d1;
+        return (int) prob;
     }
 
-    private int getMingFreq0(String s) {
-        int i1 = get(mingHashMap, s);
-        if (i1 <= 0) {
-            i1 = 0;
-        } else {
-            i1 = mingFreqs[i1][0];
-        }
-        return i1;
-    }
-
-    private int get(Map<String,Integer> map, String key) {
-        if(map.containsKey(key)) {
+    private int get(Map<String, Integer> map, String key) {
+        if (map.containsKey(key)) {
             return map.get(key);
         }
         return 0;
     }
 
-    private int getMingFreq1(String s) {
-        int i1 = get(mingHashMap, s);
-        if (i1 <= 0) {
-            i1 = 0;
+    private int getMingFreq0(String name) {
+        int index = get(mingHashMap, name);
+        if (index <= 0) {
+            index = 0;
         } else {
-            i1 = mingFreqs[i1][1];
+            index = mingFreqs[index][0];
         }
-        return i1;
+        return index;
     }
 
-    private int getMingFreq2(String s) {
-        int i1 = get(mingHashMap, s);
-        if (i1 <= 0) {
-            i1 = 0;
+    private int getMingFreq1(String name) {
+        int index = get(mingHashMap, name);
+        if (index <= 0) {
+            index = 0;
         } else {
-            i1 = mingFreqs[i1][2];
+            index = mingFreqs[index][1];
         }
-        return i1;
+        return index;
     }
 
-    public boolean isXing(String s) {
-        int i1 = get(xingHashMap, s);
-        return i1 > 0;
+    private int getMingFreq2(String name) {
+        int index = get(mingHashMap, name);
+        if (index <= 0) {
+            index = 0;
+        } else {
+            index = mingFreqs[index][2];
+        }
+        return index;
     }
 
-    public double computeLgLP3(String s, String s1, String s2) {
-        double d2 = getXingProb(s);
-        double d3 = getMingFreq0(s1);
-        double d4 = getMingFreq1(s2);
+    public boolean isXing(String familyName) {
+        return xingHashMap.containsKey(familyName);
+    }
+
+    public double computeLgLP3(String familyName, String fisrtNameWord, String secondNameWord) {
+        double d2 = getXingProb(familyName);
+        double d3 = getMingFreq0(fisrtNameWord);
+        double d4 = getMingFreq1(secondNameWord);
+        return getNameWordProb(d2, d3, d4);
+    }
+
+    private double getNameWordProb(double d2, double d3, double d4) {
         d2 = d2 * factor * ((d3 + d4) / 1000000D);
         if (d4 <= 0.0D && d2 > 1.0D) {
             d2 *= 0.90000000000000002D;
@@ -96,16 +97,16 @@ public class ChNameDictionary {
         double d2 = getXingProb(s.substring(0, 1));
         double d3 = getMingFreq0(s.substring(1));
         double d4 = getMingFreq1(s1);
-        d2 = d2 * factor * ((d3 + d4) / 1000000D);
-        if (d4 <= 0.0D && d2 > 1.0D) {
-            d2 *= 0.90000000000000002D;
-        }
-        return d2;
+        return getNameWordProb(d2, d3, d4);
     }
 
     public double computeLgLP2(String s, String s1) {
         double d2 = getXingProb(s);
         double d3 = getMingFreq2(s1);
+        return getNameWordProb(d2, d3);
+    }
+
+    private double getNameWordProb(double d2, double d3) {
         d2 *= d3 / 1000000D;
         return d2;
     }
@@ -119,94 +120,12 @@ public class ChNameDictionary {
     }
 
     public double getRightBoundaryWordLP(String s) {
-        int i1 = get(rightBoundaryHashMap, s);
+        int index = get(rightBoundaryHashMap, s);
         double d1 = 0.0D;
-        if (i1 > 0) {
-            d1 = (rightBoundaryProbs[i1] - 0.10000000000000001D) / 3D;
+        if (index > 0) {
+            d1 = (rightBoundaryProbs[index] - 0.10000000000000001D) / 3D;
         }
         return d1;
-    }
-
-    public void testName(String s) {
-        System.out.print(s);
-        boolean flag = false;
-        byte mingLength = 3;
-        int i1 = s.length();
-        String s3 = "";
-        if (get(fuXing, s.substring(0, 2)) > 0) {
-            flag = true;
-        }
-        String s1;
-        String s2;
-        if (flag) {
-            s1 = s.substring(0, 2);
-            if (i1 > 3) {
-                s2 = s.substring(2, 3);
-                s3 = s.substring(3, 4);
-            } else {
-                s2 = s.substring(2, 3);
-                mingLength = 2;
-            }
-        } else {
-            s1 = s.substring(0, 1);
-            if (i1 > 2) {
-                s2 = s.substring(1, 2);
-                s3 = s.substring(2, 3);
-            } else {
-                s2 = s.substring(1, 2);
-                mingLength = 2;
-            }
-        }
-        if (mingLength == 2) {
-            System.out.println((new StringBuilder(",")).append(computeLgLP2(s1, s2)).toString());
-        } else {
-            if (computeLgLP3(s1, s2, s3) > computeLgLP2(s2, s3)) {
-                System.out.print((new StringBuilder(",")).append(computeLgLP3(s1, s2, s3)).toString());
-                System.out.println((new StringBuilder(",")).append(computeLgLP2(s2, s3)).toString());
-            } else {
-                System.out.print((new StringBuilder(",")).append(computeLgLP3(s1, s2, s3)).toString());
-                System.out.println((new StringBuilder(",")).append(computeLgLP2(s2, s3)).append(",1").toString());
-            }
-            System.out.println((new StringBuilder(String.valueOf(computeLgLP3(s1, s2, s3)))).append("  ").append(computeLgLP2(s2, s3)).toString());
-        }
-    }
-
-    public void readFuxing()
-            throws Exception {
-        FileReader filereader = new FileReader("D:/dwp2007/dictionary/name/train1/fuxing.txt");
-        BufferedReader bufferedreader = new BufferedReader(filereader);
-        String s = "";
-        for (String s1 = ""; s1 != null;) {
-            s1 = bufferedreader.readLine();
-            if (s1 == null) {
-                break;
-            }
-            s1 = s1.trim();
-            fuXing.put(s1, 1);
-        }
-
-        bufferedreader.close();
-        filereader.close();
-    }
-
-    public void testNameFile(String s)
-            throws Exception {
-        FileReader filereader = new FileReader(s);
-        BufferedReader bufferedreader = new BufferedReader(filereader);
-        String s1 = "";
-        for (String s2 = ""; s2 != null;) {
-            s2 = bufferedreader.readLine();
-            if (s2 == null) {
-                break;
-            }
-            s2 = s2.trim();
-            if (s2.length() >= 2) {
-                testName(s2);
-            }
-        }
-
-        bufferedreader.close();
-        filereader.close();
     }
 
     public String toText() {
@@ -271,12 +190,12 @@ public class ChNameDictionary {
         return sb.toString();
     }
 
-    public void saveNameDict(String s) {
+    public void saveNameDict(String dictFile) {
         try {
-            SerializeHandler writeHandler = new SerializeHandler(new File(s), SerializeHandler.MODE_WRITE_ONLY);
+            SerializeHandler writeHandler = new SerializeHandler(new File(dictFile), SerializeHandler.MODE_WRITE_ONLY);
             writeHandler.serializeMapStringInt(xingHashMap);
             writeHandler.serializeArrayInt(xingFreq);
-            writeHandler.serializeDouble(totalXingProb);
+//            writeHandler.serializeDouble(totalXingProb);
             writeHandler.serializeMapStringInt(mingHashMap);
             writeHandler.serialize2DArrayInt(mingFreqs);
             writeHandler.serializeArrayDouble(totalMingProb);
@@ -286,33 +205,33 @@ public class ChNameDictionary {
             writeHandler.serializeArrayDouble(rightBoundaryProbs);
             writeHandler.close();
         } catch (Exception exception) {
-            System.out.println((new StringBuilder("Error: saveNameDict.save(")).append(s).append(") ").append(exception.getMessage()).toString());
-            l.error((new StringBuilder("Error: saveNameDict.save(")).append(s).append(") ").append(exception.getMessage()).toString());
+            System.out.println((new StringBuilder("Error: saveNameDict.save(")).append(dictFile).append(") ").append(exception.getMessage()).toString());
+            l.error((new StringBuilder("Error: saveNameDict.save(")).append(dictFile).append(") ").append(exception.getMessage()).toString());
         }
     }
 
     public void loadNameDict(String dictFile) {
         try {
-            ObjectInputStream objectinputstream = null;
+            DataInputStream objectinputstream = null;
             File f = new File(dictFile);
             SerializeHandler readHandler = null;
             if (f.exists()) {
                 readHandler = new SerializeHandler(f, SerializeHandler.MODE_READ_ONLY);
             } else {
-                objectinputstream = new ObjectInputStream(
-                        new ByteArrayInputStream(new ReadDataFile().getData(dictFile)));
+                objectinputstream = new DataInputStream(
+                        FileUtil.getResourceAsStream(dictFile));
                 readHandler = new SerializeHandler(objectinputstream);
             }
-            xingHashMap = readHandler.deserializeMapStringInt();//(TObjectIntHashMap) objectinputstream.readObject();
-            xingFreq = readHandler.deserializeArrayInt();//(int[]) objectinputstream.readObject();
-            totalXingProb = readHandler.deserializeDouble();//objectinputstream.readDouble();
-            mingHashMap = readHandler.deserializeMapStringInt();//(TObjectIntHashMap) objectinputstream.readObject();
-            mingFreqs = readHandler.deserialize2DArrayInt();//(int[][]) objectinputstream.readObject();
-            totalMingProb = readHandler.deserializeArrayDouble();//(double[]) objectinputstream.readObject();
-            fuXing = readHandler.deserializeMapStringInt();//(TObjectIntHashMap) objectinputstream.readObject();
-            xingProb = readHandler.deserializeArrayDouble();//(double[]) objectinputstream.readObject();
-            rightBoundaryHashMap = readHandler.deserializeMapStringInt();//(TObjectIntHashMap) objectinputstream.readObject();
-            rightBoundaryProbs = readHandler.deserializeArrayDouble();//(double[]) objectinputstream.readObject();
+            xingHashMap = readHandler.deserializeMapStringInt();
+            xingFreq = readHandler.deserializeArrayInt();
+//            totalXingProb = readHandler.deserializeDouble();
+            mingHashMap = readHandler.deserializeMapStringInt();
+            mingFreqs = readHandler.deserialize2DArrayInt();
+            totalMingProb = readHandler.deserializeArrayDouble();
+            fuXing = readHandler.deserializeMapStringInt();
+            xingProb = readHandler.deserializeArrayDouble();
+            rightBoundaryHashMap = readHandler.deserializeMapStringInt();
+            rightBoundaryProbs = readHandler.deserializeArrayDouble();
             objectinputstream.close();
         } catch (Exception exception) {
             System.out.println((new StringBuilder()).append("[Segment] ").append(dictFile).append("没找到！").append(exception.getMessage()).toString());
@@ -323,7 +242,6 @@ public class ChNameDictionary {
     private Map<String, Integer> xingHashMap;
     private int xingFreq[];
     private double xingProb[];
-    private int totalXingFreq;
     private double totalXingProb;
     private Map<String, Integer> mingHashMap;
     private int mingFreqs[][];

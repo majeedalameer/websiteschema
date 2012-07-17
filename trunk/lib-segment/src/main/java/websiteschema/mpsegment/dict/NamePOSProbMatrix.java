@@ -1,7 +1,5 @@
 package websiteschema.mpsegment.dict;
 
-import websiteschema.mpsegment.conf.ReadDataFile;
-
 import websiteschema.mpsegment.util.*;
 import java.io.*;
 
@@ -68,20 +66,16 @@ public class NamePOSProbMatrix {
             for (int l = 0; l < numPOS; l++) {
                 System.out.print((new StringBuilder(String.valueOf(posBigram[i][l]))).append(" ").toString());
             }
-
             System.out.println((new StringBuilder("---")).append(i).toString());
         }
-
         System.out.println("---------------------------");
         for (int j = 0; j < numPOS; j++) {
             System.out.println((new StringBuilder(String.valueOf(POSUtil.getPOSString(j)))).append(" ").append(posFreq[j]).toString());
         }
-
         System.out.println("---------------------------");
         for (int k = 0; k < numPOS; k++) {
             System.out.println(posFreq[k]);
         }
-
         System.out.println("---------------------------");
     }
 
@@ -90,15 +84,12 @@ public class NamePOSProbMatrix {
             for (int k = 0; k < numPOS; k++) {
                 System.out.print((new StringBuilder(String.valueOf(posBigram3[i][k]))).append(" ").toString());
             }
-
             System.out.println((new StringBuilder("---")).append(i).toString());
         }
-
         System.out.println("---------------------------");
         for (int j = 0; j < numPOS; j++) {
             System.out.println((new StringBuilder(String.valueOf(POSUtil.getPOSString(j)))).append(" ").append(posFreq[j]).toString());
         }
-
         System.out.println("---------------------------");
     }
 
@@ -127,7 +118,7 @@ public class NamePOSProbMatrix {
         }
     }
 
-    public void loadProbMatrix(BufReader bufreader)
+    private void loadProbMatrix(BufReader bufreader)
             throws IOException {
         try {
             numPOS = bufreader.readInt();
@@ -150,38 +141,32 @@ public class NamePOSProbMatrix {
 
             }
 
-        } catch (IOException ioexception) {
-            ioexception.printStackTrace();
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
     }
 
-
-    public String toText(){
+    public String toText() {
 
         String ls = System.getProperty("line.separator");
-       String space = " ";
-       StringBuffer sb=new StringBuffer();
+        String space = " ";
+        StringBuilder sb = new StringBuilder();
 
-
-        sb.append("//namePOSMatrix.fre"+ls);
-        sb.append("[NumPOS]"+ls);
-        sb.append(numPOS+ls);
-
-        sb.append("[posFreq]"+ls);
-        for (int i=0;i<numPOS;i++)
-            sb.append(posFreq[i]+space);
+        sb.append("//namePOSMatrix.fre").append(ls);
+        sb.append("[NumPOS]").append(ls);
+        sb.append(numPOS).append(ls);
+        sb.append("[posFreq]").append(ls);
+        for (int i = 0; i < numPOS; i++) {
+            sb.append(posFreq[i]).append(space);
+        }
         sb.append(ls);
-
-        sb.append("[posBigram]"+ls);
-        for (int i=0;i<numPOS;i++){
-            for (int j=0;j<numPOS;j++){
-                sb.append(posBigram[i][j]+space);
+        sb.append("[posBigram]").append(ls);
+        for (int i = 0; i < numPOS; i++) {
+            for (int j = 0; j < numPOS; j++) {
+                sb.append(posBigram[i][j]).append(space);
             }
-
             sb.append(ls);
         }
-
-
         return sb.toString();
     }
 
@@ -229,13 +214,13 @@ public class NamePOSProbMatrix {
 
     }
 
-    public void loadProbMatrix(String s) {
+    private void loadProbMatrix(String s) {
         try {
-            ByteArrayReader bytearrayreader = new ByteArrayReader(new ReadDataFile().getData("namePOSMatrix.fre"));
-            loadProbMatrix(((BufReader) (bytearrayreader)));
+            BufReader bytearrayreader = new ByteArrayReader(FileUtil.getResourceAsStream("namePOSMatrix.fre"));
+            loadProbMatrix(bytearrayreader);
             bytearrayreader.close();
             bytearrayreader = null;
-        } catch (IOException ioexception) {
+        } catch (IOException ex) {
             System.out.println((new StringBuilder()).append("[Segment] ").append(s).append("\u6CA1\u627E\u5230\uFF01").toString());
         }
     }
@@ -285,6 +270,5 @@ public class NamePOSProbMatrix {
     private int posBigram[][];
     private int posBigram3[][];
     private int corpusSize;
-    
     private int sortedBigram[][];
 }

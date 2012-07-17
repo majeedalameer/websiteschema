@@ -7,15 +7,15 @@ import websiteschema.mpsegment.conf.Configure;
 public class WordImpl
         implements Serializable, Comparable, IWord {
 
-    public WordImpl(String s) {
+    public WordImpl(String wordName) {
         log2Freq = 0;
-        wordName = s;
+        this.wordName = wordName;
         domaintype = 0;
     }
 
-    public WordImpl(String s, int i) {
+    public WordImpl(String wordName, int i) {
         log2Freq = 0;
-        wordName = s;
+        this.wordName = wordName;
         domaintype = i;
     }
 
