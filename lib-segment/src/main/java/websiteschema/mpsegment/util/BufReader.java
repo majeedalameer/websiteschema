@@ -5,17 +5,15 @@ import java.io.IOException;
 
 public interface BufReader {
 
-    public abstract void close() throws IOException;
+    public void close() throws IOException;
 
-    public abstract int read() throws IOException;
+    public int read() throws IOException;
 
-    public abstract int read(byte abyte0[]) throws IOException;
+    public int read(byte abyte0[]) throws IOException;
 
-    public abstract int read(byte abyte0[], int i, int j) throws IOException;
+    public byte readByte() throws IOException;
 
-    public abstract byte readByte() throws IOException;
+    public int readInt() throws IOException;
 
-    public abstract int readInt() throws IOException;
-
-    public abstract int readIntByte() throws IOException;
+    public int readIntByte() throws IOException;
 }

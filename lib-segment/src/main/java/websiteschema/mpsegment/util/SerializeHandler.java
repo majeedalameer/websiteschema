@@ -4,6 +4,8 @@
  */
 package websiteschema.mpsegment.util;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -18,8 +20,8 @@ import java.util.*;
  */
 public class SerializeHandler {
 
-    ObjectInputStream input;
-    ObjectOutputStream output;
+    DataInputStream input;
+    DataOutputStream output;
     public final static int MODE_READ_ONLY = 0;
     public final static int MODE_WRITE_ONLY = 1;
 
@@ -28,17 +30,17 @@ public class SerializeHandler {
             f.createNewFile();
         }
         if (mode == MODE_WRITE_ONLY) {
-            output = new ObjectOutputStream(new FileOutputStream(f));
+            output = new DataOutputStream(new FileOutputStream(f));
         } else if (mode == MODE_READ_ONLY) {
-            input = new ObjectInputStream(new FileInputStream(f));
+            input = new DataInputStream(new FileInputStream(f));
         }
     }
 
-    public SerializeHandler(ObjectInputStream input) {
+    public SerializeHandler(DataInputStream input) {
         this.input = input;
     }
 
-    public SerializeHandler(ObjectOutputStream output) {
+    public SerializeHandler(DataOutputStream output) {
         this.output = output;
     }
 

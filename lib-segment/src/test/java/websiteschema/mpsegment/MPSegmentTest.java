@@ -26,7 +26,9 @@ public class MPSegmentTest {
         System.out.println(words);
         Assert.assertEquals(words.length(), 2);
         Assert.assertEquals(words.getWord(0), "中国");
+        Assert.assertEquals(words.getPOS(0), POSUtil.POS_NS);
         Assert.assertEquals(words.getWord(1), "长城");
+        Assert.assertEquals(words.getPOS(1), POSUtil.POS_NS);
     }
 
 //    @Test
@@ -46,6 +48,23 @@ public class MPSegmentTest {
         System.out.println(words);
         Assert.assertEquals(words.getWord(0), "张三丰");
         Assert.assertEquals(words.getPOS(0), POSUtil.POS_NR);
+        Assert.assertEquals(words.getPOS(1), POSUtil.POS_V);
+        Assert.assertEquals(words.getPOS(2), POSUtil.POS_U);
+        Assert.assertEquals(words.getPOS(3), POSUtil.POS_N);
+        Assert.assertEquals(words.getPOS(4), POSUtil.POS_W);
+
+        str = "太极拳的创始人是张三丰";
+        words = worker.segment(str);
+        System.out.println(words);
+        Assert.assertEquals(words.getWord(4), "张三丰");
+
+        str = "她的名字叫罗张";
+        words = worker.segment(str);
+        System.out.println(words);
+
+        str = "张丰收的生活";
+        words = worker.segment(str);
+        System.out.println(words);
     }
 
     @Test

@@ -35,8 +35,8 @@ public class WordUtil {
 
     public static boolean isAlphaNumericWithUnderScore(String wordString) {
         boolean flag = true;
-        for (int i1 = 0; i1 < wordString.length(); i1++) {
-            char c1 = wordString.charAt(i1);
+        for (int i = 0; i < wordString.length(); i++) {
+            char c1 = wordString.charAt(i);
             if (isCharaterOrDigit(c1) || c1 == '_') {
                 continue;
             }
@@ -49,9 +49,9 @@ public class WordUtil {
 
     public static boolean isAlphaNumericWithUnderScore_Slash_Colon(String wordString) {
         boolean flag = true;
-        for (int i1 = 0; i1 < wordString.length(); i1++) {
-            char c1 = wordString.charAt(i1);
-            if (isCharaterOrDigit(c1) || c1 == '_' || c1 == '/' || c1 == ':') {
+        for (int i = 0; i < wordString.length(); i++) {
+            char ch = wordString.charAt(i);
+            if (isCharaterOrDigit(ch) || ch == '_' || ch == '/' || ch == ':') {
                 continue;
             }
             flag = false;
@@ -63,9 +63,9 @@ public class WordUtil {
 
     public static boolean isLetterOrDigitWithUnderscore(String wordString) {
         boolean flag = true;
-        for (int i1 = 0; i1 < wordString.length(); i1++) {
-            char c1 = wordString.charAt(i1);
-            if (Character.isLetterOrDigit(c1) || c1 == '_') {
+        for (int i = 0; i < wordString.length(); i++) {
+            char ch = wordString.charAt(i);
+            if (Character.isLetterOrDigit(ch) || ch == '_') {
                 continue;
             }
             flag = false;
@@ -75,7 +75,7 @@ public class WordUtil {
         return flag;
     }
 
-    public static boolean isPosP_C_U_W_UN(int POS) {
+    public static boolean isPos_P_C_U_W_UN(int POS) {
         return POS == POSUtil.POS_P || POS == POSUtil.POS_C || POS == POSUtil.POS_U || POS == POSUtil.POS_W || POS == POSUtil.POS_UNKOWN;
     }
 
@@ -91,8 +91,8 @@ public class WordUtil {
         return flag;
     }
 
-    public static boolean isSpecialMingChar(String s1) {
-        return s1.equals("向") || s1.equals("自") || s1.equals("乃") || s1.equals("以") || s1.equals("从") || s1.equals("和") || s1.equals("得") || s1.equals("为") || s1.equals("则") || s1.equals("如");
+    public static boolean isSpecialMingChar(String ch) {
+        return ch.equals("向") || ch.equals("自") || ch.equals("乃") || ch.equals("以") || ch.equals("从") || ch.equals("和") || ch.equals("得") || ch.equals("为") || ch.equals("则") || ch.equals("如");
     }
     private static String glueChars = "*?~/_[]:";
     private static String glueChar = Configure.getInstance().getGlueChar();//"~_:";

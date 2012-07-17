@@ -1,8 +1,6 @@
 package websiteschema.mpsegment.dict;
 
-import websiteschema.mpsegment.conf.ReadDataFile;
-import websiteschema.mpsegment.util.BufReader;
-import websiteschema.mpsegment.util.ByteArrayReader;
+import websiteschema.mpsegment.util.*;
 import java.io.*;
 
 public class POSProbMatrix {
@@ -96,47 +94,41 @@ public class POSProbMatrix {
 
             }
 
-        } catch (IOException ioexception) {
-            ioexception.printStackTrace();
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
     }
 
+    public String toText() {
 
-    public String toText(){
+        String ls = System.getProperty("line.separator");
+        String space = " ";
+        StringBuilder sb = new StringBuilder();
 
-       String ls = System.getProperty("line.separator");
-       String space = " ";
-       StringBuffer sb=new StringBuffer();
+        sb.append("//POSMatrix.fre").append(ls);
+        sb.append("[numPOS]").append(ls);
+        sb.append(numPOS).append(ls);
+        sb.append("[posFreq]").append(ls);
+        for (int i = 0; i < numPOS; i++) {
+            sb.append(posFreq[i]).append(space);
+        }
 
-       sb.append("//POSMatrix.fre"+ls);
-       sb.append("[numPOS]"+ls);
-       sb.append(numPOS+ls);
-       sb.append("[posFreq]"+ls);
-       for (int i=0;i<numPOS;i++)
-           sb.append(posFreq[i]+space);
+        sb.append(ls);
+        sb.append("[posBigram]").append(ls);
 
-       sb.append(ls);
-
-       sb.append("[posBigram]"+ls);
-
-       for (int i=0;i<numPOS;i++)
-       {
-           for (int j=0;j<numPOS;j++)
-               sb.append(posBigram[i][j]+space);
-
-           sb.append(ls);
-       }
-       
-
-
-       return sb.toString();
-
+        for (int i = 0; i < numPOS; i++) {
+            for (int j = 0; j < numPOS; j++) {
+                sb.append(posBigram[i][j]).append(space);
+            }
+            sb.append(ls);
+        }
+        return sb.toString();
     }
 
-    public void loadProbMatrix(String s) {
+    private void loadProbMatrix(String s) {
         try {
-            ByteArrayReader bytearrayreader = new ByteArrayReader(new ReadDataFile().getData("POSMatrix.fre"));
-            loadProbMatrix(((BufReader) (bytearrayreader)));
+            BufReader bytearrayreader = new ByteArrayReader(FileUtil.getResourceAsStream("POSMatrix.fre"));
+            loadProbMatrix(bytearrayreader);
             bytearrayreader.close();
             bytearrayreader = null;
         } catch (IOException ioexception) {
@@ -158,8 +150,8 @@ public class POSProbMatrix {
 
             }
 
-        } catch (IOException ioexception) {
-            ioexception.printStackTrace();
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
     }
 

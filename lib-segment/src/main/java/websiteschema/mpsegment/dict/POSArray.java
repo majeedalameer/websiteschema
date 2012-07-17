@@ -163,11 +163,11 @@ public class POSArray
 
     private void load(BufReader resources)
             throws IOException {
-        int i = resources.readIntByte();
-        posTable = new HashMap<String, POS>(i);
-        for (int j = 0; j < i; j++) {
-            int k = resources.readIntByte();
-            byte nameBytes[] = new byte[k];
+        int size = resources.readIntByte();
+        posTable = new HashMap<String, POS>(size);
+        for (int i = 0; i < size; i++) {
+            int len = resources.readIntByte();
+            byte nameBytes[] = new byte[len];
             resources.read(nameBytes);
             String name = new String(nameBytes);
             int count = resources.readInt();

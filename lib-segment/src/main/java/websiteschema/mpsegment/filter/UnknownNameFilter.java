@@ -16,10 +16,6 @@ import static websiteschema.mpsegment.util.WordUtil.*;
  */
 public class UnknownNameFilter extends AbstractSegmentFilter {
 
-    private boolean useChNameDict = true;
-    private boolean recognizeChineseName = Configure.getInstance().isChineseNameIdentify();
-    private boolean xingMingSeparate = Configure.getInstance().isSegmentMin();
-    private boolean useForeignNameDict = false;
     private static ChNameDictionary chNameDict = null;
     private static double factor1 = 1.1180000000000001D;
     private static double factor2 = 0.65000000000000002D;
@@ -27,6 +23,17 @@ public class UnknownNameFilter extends AbstractSegmentFilter {
     private static int posNR = POSUtil.POS_NR;
     private static int posM = POSUtil.POS_M;
     private static ForeignName foreignName = null;
+    private boolean useChNameDict = true;
+    private boolean recognizeChineseName = Configure.getInstance().isChineseNameIdentify();
+    private boolean xingMingSeparate = Configure.getInstance().isSegmentMin();
+    private boolean useForeignNameDict = false;
+    private int segmentResultLength = 0;
+    private int maxNameWordLength = 5;
+    private int nameStartIndex = -1;
+    private int nameEndIndex = -1;
+    private boolean hasPossibleFoundName = false;
+    private int wordIndex = 0;
+    private int numOfNameWordItem = -1;
 
     public UnknownNameFilter() {
         initialize();
@@ -45,99 +52,110 @@ public class UnknownNameFilter extends AbstractSegmentFilter {
         }
     }
 
+    private boolean isWordConfirmed(int wordIndex) {
+        return wordPosIndexes[wordIndex] > 0;
+    }
+
+    private boolean reachTheEnd(int wordIndex) {
+        return wordIndex + 1 >= segmentResultLength;
+    }
+
+    private void processPotentialName() {
+        if (nameEndIndex - nameStartIndex >= 1) {
+            int recognizedNameLength = recognizeNameWord();
+            if (numOfNameWordItem >= 2) {
+                wordIndex = nameStartIndex + recognizedNameLength;
+            } else {
+                wordIndex = nameStartIndex + 1;
+            }
+        }
+        markPositionImpossibleToBeName();
+    }
+
     @Override
     public void doFilter() {
         if (useChNameDict && recognizeChineseName) {
-            int length = segmentResult.length();
-            int j1 = 0;
-            int k1 = -1;
-            int l1 = -1;
-            boolean flag = false;
+            segmentResultLength = segmentResult.length();
+            markPositionImpossibleToBeName();
 
-            for (; j1 < length; j1++) {
-                if (wordPosIndexes[j1] > 0) {
+            for (wordIndex = 0; wordIndex < segmentResultLength; wordIndex++) {
+                if (isWordConfirmed(wordIndex)) {
                     continue;
                 }
-                if (flag && (l1 - k1 >= 5 || j1 + 1 == length)) {
-                    if (j1 + 1 == length) {
-                        l1 = j1;
+                if (hasPossibleFoundName && (nameEndIndex - nameStartIndex >= maxNameWordLength || reachTheEnd(wordIndex))) {
+                    if (reachTheEnd(wordIndex)) {
+                        nameEndIndex = wordIndex;
                     }
-                    int i2 = processNRWordItems(k1, l1);
-                    if (i2 >= 2) {
-                        j1 = k1 + i2;
-                    } else {
-                        j1 = k1 + 1;
-                    }
-                    flag = false;
-                    k1 = -1;
-                    l1 = -1;
-                    if (j1 + 1 > length) {
+                    processPotentialName();
+                    if (wordIndex + 1 > segmentResultLength) {
                         break;
                     }
                 }
-                if (segmentResult.getPOS(j1) == 27) {
-                    if (k1 < 0) {
-                        k1 = j1;
-                        flag = true;
-                    } else {
-                        l1 = j1;
-                    }
-                } else if (flag) {
-                    if (isPosP_C_U_W_UN(segmentResult.getPOS(j1)) && !isChineseJieCi(segmentResult.getWord(j1)) || segmentResult.getWord(j1).length() > 2) {
-                        flag = false;
-                        if (l1 - k1 >= 1) {
-                            int j2 = processNRWordItems(k1, l1);
-                            if (j2 >= 2) {
-                                j1 = (k1 + j2) - 1;
-                            } else {
-                                j1 = k1;
+
+                if (segmentResult.getPOS(wordIndex) == POSUtil.POS_NR) {
+                    markPositionMaybeName();
+                } else {
+                    boolean isPos_P_C_U_W_UN = isPos_P_C_U_W_UN(segmentResult.getPOS(wordIndex));
+                    boolean isChineseJieCi = isChineseJieCi(segmentResult.getWord(wordIndex));
+                    if (hasPossibleFoundName) {
+                        if ((isPos_P_C_U_W_UN && !isChineseJieCi)
+                                || segmentResult.getWord(wordIndex).length() > 2) {
+                            processPotentialName();
+                        } else {
+                            nameEndIndex = wordIndex;
+                            if (wordIndex + 1 == segmentResultLength && nameEndIndex - nameStartIndex >= 1) {
+                                assert (false);
+                                recognizeNameWord();
                             }
                         }
-                        k1 = -1;
-                        l1 = -1;
-                    } else {
-                        l1 = j1;
-                        int k2;
-                        if (j1 + 1 == length && l1 - k1 >= 1) {
-                            k2 = processNRWordItems(k1, l1);
-                        }
-                    }
-                } else if (segmentResult.getWord(j1).length() == 1 && !isPosP_C_U_W_UN(segmentResult.getPOS(j1)) || isChineseJieCi(segmentResult.getWord(j1))) {
-                    if (k1 < 0) {
-                        k1 = j1;
-                        flag = true;
-                    } else {
-                        l1 = j1;
+                    } else if (segmentResult.getWord(wordIndex).length() == 1
+                            && !isPos_P_C_U_W_UN || isChineseJieCi) {
+                        markPositionMaybeName();
                     }
                 }
             }
         }
     }
 
-    private int processNRWordItems(int i1, int j1) {
-        int numNRWordItem = getNumNRWordItem(i1, j1);
-        if (numNRWordItem > 0 && i1 > 0 && segmentResult.getPOS(i1 - 1) == posM) {
-            numNRWordItem = 0;
+    private void markPositionMaybeName() {
+        if (nameStartIndex < 0) {
+            nameStartIndex = wordIndex;
+            hasPossibleFoundName = true;
+        } else {
+            nameEndIndex = wordIndex;
         }
-        if (numNRWordItem > 0) {
+    }
+
+    private void markPositionImpossibleToBeName() {
+        hasPossibleFoundName = false;
+        nameStartIndex = -1;
+        nameEndIndex = -1;
+    }
+
+    private int recognizeNameWord() {
+        recognizeNameWordBetween(nameStartIndex, nameEndIndex);
+        if (numOfNameWordItem > 0 && nameStartIndex > 0 && segmentResult.getPOS(nameStartIndex - 1) == posM) {
+            numOfNameWordItem = 0;
+        }
+        if (numOfNameWordItem > 0) {
             if (xingMingSeparate) {
-                if (numNRWordItem >= 3) {
-                    mergeWordsWithPOS(i1 + 1, i1 + 2, posNR);
+                if (numOfNameWordItem >= 3) {
+                    mergeWordsWithPOS(nameStartIndex + 1, nameStartIndex + 2, posNR);
                 }
-            } else if (numNRWordItem >= 2) {
-                mergeWordsWithPOS(i1, (i1 + numNRWordItem) - 1, posNR);
+            } else if (numOfNameWordItem >= 2) {
+                mergeWordsWithPOS(nameStartIndex, (nameStartIndex + numOfNameWordItem) - 1, posNR);
             }
         } else if (useForeignNameDict) {
-            numNRWordItem = processForeignName(i1, j1);
+            numOfNameWordItem = processForeignName(nameStartIndex, nameEndIndex);
         }
-        return numNRWordItem;
+        return numOfNameWordItem;
     }
 
-    private int getNumNRWordItem(int begin, int end) {
+    private int recognizeNameWordBetween(int begin, int end) {
         int gap = (end - begin) + 1;
-        int l1 = -1;
+        numOfNameWordItem = -1;
         if (segmentResult.getWord(begin).length() > 2 || segmentResult.getWord(begin + 1).length() > 2) {
-            return l1;
+            return numOfNameWordItem;
         }
         if (segmentResult.getWord(begin + 1).length() == 1) {
             if (gap >= 3) {
@@ -153,56 +171,49 @@ public class UnknownNameFilter extends AbstractSegmentFilter {
                     d1 *= getRightBoundaryWordLP(segmentResult.getWord(begin + 2));
                 }
                 if (d4 > d1 && d4 > factor1) {
-                    l1 = 3;
+                    numOfNameWordItem = 3;
                     if (isSpecialMingChar(begin + 2)) {
                         double d5 = chNameDict.computeLgMing23(segmentResult.getWord(begin + 1), segmentResult.getWord(begin + 2));
-                        l1 = 2;
+                        numOfNameWordItem = 2;
                         if (d5 > 1.1339999999999999D || d5 > 0.90000000000000002D && d4 > 1.6000000000000001D && d4 / d1 > 2D) {
-                            l1 = 3;
+                            numOfNameWordItem = 3;
                         }
                     } else if (processSpecialMingChar(begin + 1)) {
-                        l1 = -1;
+                        numOfNameWordItem = -1;
                     }
                 } else if (d1 > d4 && d1 > factor2) {
-                    l1 = 2;
+                    numOfNameWordItem = 2;
                     if (isSpecialMingChar(begin + 1)) {
-                        l1 = -1;
+                        numOfNameWordItem = -1;
                     }
                 }
             } else {
                 double d2 = chNameDict.computeLgLP2(segmentResult.getWord(begin), segmentResult.getWord(begin + 1));
                 if (d2 > factor2) {
-                    l1 = 2;
+                    numOfNameWordItem = 2;
                     if (isSpecialMingChar(begin + 1)) {
-                        l1 = -1;
+                        numOfNameWordItem = -1;
                     }
                 } else if (d2 <= 0.0D && segmentResult.getWord(begin).length() == 2) {
-                    l1 = getNumNR(begin);
+                    numOfNameWordItem = getNumNR(begin);
                 }
             }
         } else if (segmentResult.getWord(begin + 1).length() == 2) {
             double d3 = chNameDict.computeLgLP3(segmentResult.getWord(begin), segmentResult.getWord(begin + 1).substring(0, 1), segmentResult.getWord(begin + 1).substring(1, 2));
             if (d3 > factor3) {
-                l1 = 2;
+                numOfNameWordItem = 2;
             }
         }
-        return l1;
+        return numOfNameWordItem;
     }
 
     private int processForeignName(int i1, int j1) {
-
         int l1 = -1;
-        //System.out.println(" / ");
         for (int i2 = i1; i2 <= j1; i2++) {
             if (!foreignName.isForiegnName(segmentResult.getWord(i2))) {
                 break;
             }
             l1 = i2;
-            //System.out.print((new StringBuilder(String.valueOf(wordAtoms.getWords(i2)))).append(" ").toString());
-        }
-
-        if (l1 > i1 + 1) {
-            //  System.out.println("=======");
         }
         return l1;
     }

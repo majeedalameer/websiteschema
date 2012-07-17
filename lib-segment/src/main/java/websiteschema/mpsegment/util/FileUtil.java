@@ -4,7 +4,8 @@ import java.io.*;
 
 public class FileUtil {
 
-    public FileUtil() {
+    public static InputStream getResourceAsStream(String resource) throws IOException {
+        return FileUtil.class.getClassLoader().getResourceAsStream("websiteschema/mpsegment/" + resource);
     }
 
     public static boolean saveStringToFile(String s, String s1) {
