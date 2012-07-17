@@ -10,7 +10,6 @@ public final class Configure {
     private static final Configure configure = new Configure();
 
     private Configure() {
-        getCnnlpPath();
         Properties p = new Properties();
         try {
             l.debug("load maxprob-default.cfg: " + Configure.class.getClassLoader().getResource("maxprob-default.cfg"));
@@ -29,47 +28,27 @@ public final class Configure {
         return configure;
     }
 
-    private String getCnnlpPath() {
-        if (zhida_home == null) {
-            Properties properties = System.getProperties();
-            l.debug((new StringBuilder()).append("[System] file.encoding = ").append(properties.getProperty("file.encoding")).toString());
-            zhida_home = properties.getProperty("ZHIDA_HOME");
-            if (zhida_home == null || zhida_home.length() <= 1) {
-                zhida_home = (new ReadEnv()).getCnnlpHome();
-                if (zhida_home == null) {
-                    try {
-                        Properties properties1 = ReadEnv.getEnvVars();
-                        zhida_home = properties1.getProperty("ZHIDA_HOME");
-                        l.debug((new StringBuilder()).append("[system] ZHIDA_HOME = ").append(zhida_home).toString());
-                    } catch (Throwable throwable) {
-                        l.error(throwable.getMessage(), throwable);
-                    }
-                } else {
-                    l.debug((new StringBuilder()).append("[system] ZHIDA_HOME ").append("\u6CA1\u6709\u8BBE\u7F6E\uFF01").toString());
-                }
-            }
-        }
-        zhida_home = "";
-        return zhida_home;
+    private String getHomePath() {
+        return homePath;
     }
 
-    public void setCnnlpPath(String cnnlpPath) {
-        int i1 = cnnlpPath.length();
+    public void setHomePath(String path) {
+        int i1 = path.length();
         if (i1 >= 1) {
-            if (cnnlpPath.charAt(i1 - 1) == '/' || cnnlpPath.charAt(i1 - 1) == '\\') {
-                zhida_home = cnnlpPath;
+            if (path.charAt(i1 - 1) == '/' || path.charAt(i1 - 1) == '\\') {
+                homePath = path;
             } else {
-                zhida_home = (new StringBuilder(String.valueOf(cnnlpPath))).append("/").toString();
+                homePath = (new StringBuilder(String.valueOf(path))).append("/").toString();
             }
         }
     }
 
     public String getDictFile() {
-        return (new StringBuilder(String.valueOf(zhida_home))).append("./segment.dat").toString();
+        return new StringBuilder(homePath).append("./segment.dat").toString();
     }
 
     public final void initialize(Properties prop) {
-        l.debug((new StringBuilder()).append("[System] load properties begin...").toString());
+        l.debug(new StringBuilder().append("[System] load properties begin...").toString());
         try {
             segment_maximumthreads = Integer.parseInt(prop.getProperty("segment.maximumthreads", "2").trim());
             segment_dict = prop.getProperty("cnnlp.lexical.segment.MPSegment", "segment.dict");
@@ -105,7 +84,7 @@ public final class Configure {
         } catch (Exception e) {
             l.error((new StringBuilder()).append("[System] Could not find ").append(cfgFile).append(" !").toString());
         }
-        l.debug((new StringBuilder()).append("[System] load properties finished !").toString());
+        l.debug(new StringBuilder().append("[System] load properties finished !").toString());
     }
 
     public String getFileEncoding() {
@@ -117,23 +96,23 @@ public final class Configure {
     }
 
     public String getSegmentDict() {
-        return (new StringBuilder(String.valueOf(getCnnlpPath()))).append(segment_dict).toString();
+        return new StringBuilder(getHomePath()).append(segment_dict).toString();
     }
 
     public String getPOSMatrix() {
-        return (new StringBuilder(String.valueOf(getCnnlpPath()))).append(POSMatrix_fre).toString();
+        return new StringBuilder(getHomePath()).append(POSMatrix_fre).toString();
     }
 
     public String getNamePOSMatrix() {
-        return (new StringBuilder(String.valueOf(getCnnlpPath()))).append(NamePOSMatrix_fre).toString();
+        return new StringBuilder(getHomePath()).append(NamePOSMatrix_fre).toString();
     }
 
     public String getChNameDict() {
-        return (new StringBuilder(String.valueOf(getCnnlpPath()))).append(ChNameDict).toString();
+        return new StringBuilder(getHomePath()).append(ChNameDict).toString();
     }
 
     public String getWordFreqFile() {
-        return (new StringBuilder(String.valueOf(getCnnlpPath()))).append(word_freq).toString();
+        return new StringBuilder(getHomePath()).append(word_freq).toString();
     }
 
     public boolean isLoadDomainDictionary() {
@@ -141,11 +120,11 @@ public final class Configure {
     }
 
     public String getDomainDictionaryFile() {
-        return (new StringBuilder(String.valueOf(getCnnlpPath()))).append(domaindictionary).toString();
+        return new StringBuilder(getHomePath()).append(domaindictionary).toString();
     }
 
     public String getDomainOntologyFile() {
-        return (new StringBuilder(String.valueOf(getCnnlpPath()))).append(domain_dof).toString();
+        return new StringBuilder(getHomePath()).append(domain_dof).toString();
     }
 
     public boolean isLoadUserDictionary() {
@@ -153,11 +132,11 @@ public final class Configure {
     }
 
     public String getUserDictionaryFile() {
-        return (new StringBuilder(String.valueOf(getCnnlpPath()))).append(userdict_txt).toString();
+        return new StringBuilder(getHomePath()).append(userdict_txt).toString();
     }
 
     public String getStopWordFile() {
-        return (new StringBuilder(String.valueOf(getCnnlpPath()))).append(stopword_txt).toString();
+        return new StringBuilder(getHomePath()).append(stopword_txt).toString();
     }
 
     public boolean isSupportQuerySyntax() {
@@ -231,7 +210,7 @@ public final class Configure {
     public boolean isExtendPOSInDomainDictionary() {
         return ExtendPOSInDomainDictionary;
     }
-    private String zhida_home = null;
+    private String homePath = "";
     private int segment_maximumthreads = 2;
     private String default_encoding = "gbk";
     private String cfgFile = "./cnnlp.cfg";
@@ -263,7 +242,6 @@ public final class Configure {
     private boolean halfshapeall = false;
     private boolean uppercaseall = false;
     private int maxwordlength = 8;
-
     //领域词典中的词是否扩展其在普通词典中的词性
     private boolean ExtendPOSInDomainDictionary = false;
 }

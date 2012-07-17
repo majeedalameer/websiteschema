@@ -12,14 +12,12 @@ public class ChNameDictionary {
 
     public ChNameDictionary() {
         factor = 0.88400000000000001D;
-        totalXingProb = 0.0D;
         xingTop = 1;
         mingTop = 1;
     }
 
     public void outSummary() {
         System.out.println((new StringBuilder("xingTop=")).append(xingTop).toString());
-        System.out.println((new StringBuilder("totalXingProb=")).append(totalXingProb).toString());
         System.out.println((new StringBuilder("mingTop=")).append(mingTop).toString());
         for (int i1 = 0; i1 < 3; i1++) {
             System.out.println((new StringBuilder("totalMingProb[i]=")).append(totalMingProb[i1]).toString());
@@ -144,8 +142,6 @@ public class ChNameDictionary {
         }
 
         sb.append(ls);
-        sb.append("[totalXingProb]").append(ls);
-        sb.append(totalXingProb).append(ls);
         sb.append("[mingHashMap] //").append(mingHashMap.size()).append(ls);
 
         for (String key : mingHashMap.keySet()) {
@@ -195,7 +191,6 @@ public class ChNameDictionary {
             SerializeHandler writeHandler = new SerializeHandler(new File(dictFile), SerializeHandler.MODE_WRITE_ONLY);
             writeHandler.serializeMapStringInt(xingHashMap);
             writeHandler.serializeArrayInt(xingFreq);
-//            writeHandler.serializeDouble(totalXingProb);
             writeHandler.serializeMapStringInt(mingHashMap);
             writeHandler.serialize2DArrayInt(mingFreqs);
             writeHandler.serializeArrayDouble(totalMingProb);
@@ -224,7 +219,6 @@ public class ChNameDictionary {
             }
             xingHashMap = readHandler.deserializeMapStringInt();
             xingFreq = readHandler.deserializeArrayInt();
-//            totalXingProb = readHandler.deserializeDouble();
             mingHashMap = readHandler.deserializeMapStringInt();
             mingFreqs = readHandler.deserialize2DArrayInt();
             totalMingProb = readHandler.deserializeArrayDouble();
@@ -242,7 +236,6 @@ public class ChNameDictionary {
     private Map<String, Integer> xingHashMap;
     private int xingFreq[];
     private double xingProb[];
-    private double totalXingProb;
     private Map<String, Integer> mingHashMap;
     private int mingFreqs[][];
     private double totalMingProb[];
