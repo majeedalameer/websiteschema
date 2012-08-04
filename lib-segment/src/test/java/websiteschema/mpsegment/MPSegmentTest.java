@@ -6,10 +6,10 @@ package websiteschema.mpsegment;
 
 import org.junit.Assert;
 import org.junit.Test;
-import websiteschema.mpsegment.dict.POSUtil;
 import websiteschema.mpsegment.core.SegmentEngine;
-import websiteschema.mpsegment.core.SegmentWorker;
 import websiteschema.mpsegment.core.SegmentResult;
+import websiteschema.mpsegment.core.SegmentWorker;
+import websiteschema.mpsegment.dict.POSUtil;
 
 /**
  *
