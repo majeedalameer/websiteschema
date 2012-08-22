@@ -5,7 +5,6 @@
 package websiteschema.mpsegment.hmm;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -22,13 +21,8 @@ public class Viterbi<S, O> {
     Emission<O> e = new Emission<O>();
     int n = 3; // ngram
 
-//    Comparator<T> comparator = null;
-//    TreeNodeSort<T> sortor = null;
-    public void setComparator(Comparator<Integer> comparator) {
-        tran.setComparator(comparator);
-    }
 
-    public void setSortor(TreeNodeSortor<Integer> sortor) {
+    public void setSortor(TreeNodeSortor sortor) {
         tran.setSortor(sortor);
     }
 
@@ -103,8 +97,8 @@ public class Viterbi<S, O> {
             observeBank.add(o1);
         }
 
-        Set<Integer> relatedStates = e.getStateProbByObserve(o1.getName());
-        if (relatedStates.isEmpty()) {
+        Set<Integer> relatedStates = e.getStateProbByObserve(o1.getIndex());
+        if (null == relatedStates || relatedStates.isEmpty()) {
             throw new ObserveListException("unknown observe object " + o + ".");
         }
         ret.states = new int[listObserve.size()][];
@@ -129,8 +123,8 @@ public class Viterbi<S, O> {
                 oi = new Observe<O>(o);
                 observeBank.add(oi);
             }
-//            Map<Integer, Double> iStates = e.getStateProbByObserve(oi.getIndex());
-            Set<Integer> stateSet = e.getStateProbByObserve(oi.getName());
+
+            Set<Integer> stateSet = e.getStateProbByObserve(oi.getIndex());
             if (stateSet.isEmpty()) {
                 throw new ObserveListException("unknown observe object " + o + ".");
             }

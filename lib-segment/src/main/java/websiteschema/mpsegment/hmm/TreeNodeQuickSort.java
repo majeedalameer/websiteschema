@@ -10,15 +10,22 @@ import java.util.Comparator;
  *
  * @author ray
  */
-public class TreeNodeQuickSort<T> implements TreeNodeSortor<T> {
+public class TreeNodeQuickSort implements TreeNodeSortor {
 
-    Comparator<Trie<T>> comparator = null;
+    Comparator<Trie> comparator = null;
+    
+    public TreeNodeQuickSort() {
+        comparator = new Comparator<Trie>() {
 
-    public void setComparator(Comparator<Trie<T>> comparator) {
-        this.comparator = comparator;
+            @Override
+            public int compare(Trie o1, Trie o2) {
+                return o1.key - o2.key;
+            }
+        };
     }
 
-    public Trie<T>[] sort(Trie<T>[] values) {
+    @Override
+    public Trie[] sort(Trie[] values) {
         if (values == null || values.length == 0) {
             return values;
         }
@@ -27,10 +34,10 @@ public class TreeNodeQuickSort<T> implements TreeNodeSortor<T> {
         return values;
     }
 
-    private void quicksort(Trie<T>[] numbers, int low, int high) {
+    private void quicksort(Trie[] numbers, int low, int high) {
         int i = low, j = high;
         // Get the pivot element from the middle of the list
-        Trie<T> pivot = numbers[(low + high) / 2];
+        Trie pivot = numbers[(low + high) / 2];
 
         // Divide into two lists
         while (i <= j) {
@@ -69,8 +76,8 @@ public class TreeNodeQuickSort<T> implements TreeNodeSortor<T> {
         }
     }
 
-    private void exchange(Trie<T>[] numbers, int i, int j) {
-        Trie<T> temp = numbers[i];
+    private void exchange(Trie[] numbers, int i, int j) {
+        Trie temp = numbers[i];
         numbers[i] = numbers[j];
         numbers[j] = temp;
     }

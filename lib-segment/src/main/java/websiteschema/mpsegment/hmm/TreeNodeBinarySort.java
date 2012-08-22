@@ -10,19 +10,24 @@ import java.util.*;
  *
  * @author ray
  */
-public class TreeNodeBinarySort<T> implements TreeNodeSortor<T> {
+public class TreeNodeBinarySort implements TreeNodeSortor {
 
-    Comparator<Trie<T>> comparator = null;
+    Comparator<Trie> comparator = null;
+    
+    public TreeNodeBinarySort() {
+        comparator = new Comparator<Trie>() {
 
-    public void setComparator(Comparator<Trie<T>> comparator) {
-        this.comparator = comparator;
+            @Override
+            public int compare(Trie o1, Trie o2) {
+                return o1.key - o2.key;
+            }
+        };
     }
 
-    public Trie<T>[] sort(Trie<T>[] values) {
-        List<Trie<T>> tmp = new ArrayList<Trie<T>>();
-        for(Trie<T> node : values){
-            tmp.add(node);
-        }
+    @Override
+    public Trie[] sort(Trie[] values) {
+        List<Trie> tmp = new ArrayList<Trie>();
+        tmp.addAll(Arrays.asList(values));
         Collections.sort(tmp, comparator);
         return tmp.toArray(values);
     }
