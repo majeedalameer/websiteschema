@@ -5,7 +5,6 @@
 package websiteschema.mpsegment;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import junit.framework.Assert;
 import org.junit.Test;
@@ -17,25 +16,12 @@ import websiteschema.mpsegment.hmm.*;
 public class ViterbiTest {
 
     @Test
-    public void testViterbi() {
+    public void should_return_status_333332_with_giving_observes_THTHTH() {
         List<String> o = new ArrayList<String>();
         Viterbi<String, String> viterbi = new Viterbi<String, String>();
-        TreeNodeSortor<Integer> sortor = new TreeNodeBinarySort<Integer>();
-        sortor.setComparator(new Comparator<Trie<Integer>>() {
-
-            @Override
-            public int compare(Trie<Integer> t, Trie<Integer> t1) {
-                return t.getKey().compareTo(t1.getKey());
-            }
-        });
+        TreeNodeSortor sortor = new TreeNodeBinarySort();
+        
         viterbi.setSortor(sortor);
-        viterbi.setComparator(new Comparator<Integer>() {
-
-            @Override
-            public int compare(Integer t, Integer t1) {
-                return t.compareTo(t1);
-            }
-        });
 
         initTestData(viterbi);
         viterbi.setN(2);
@@ -61,25 +47,13 @@ public class ViterbiTest {
         }
     }
 
-    public void testViterbiWithUnknownState() {
+    @Test
+    public void should_handle_unknown_State() {
         List<String> o = new ArrayList<String>();
         Viterbi<String, String> viterbi = new Viterbi<String, String>();
-        TreeNodeSortor<Integer> sortor = new TreeNodeBinarySort<Integer>();
-        sortor.setComparator(new Comparator<Trie<Integer>>() {
-
-            @Override
-            public int compare(Trie<Integer> t, Trie<Integer> t1) {
-                return t.getKey().compareTo(t1.getKey());
-            }
-        });
+        TreeNodeSortor sortor = new TreeNodeBinarySort();
+        
         viterbi.setSortor(sortor);
-        viterbi.setComparator(new Comparator<Integer>() {
-
-            @Override
-            public int compare(Integer t, Integer t1) {
-                return t.compareTo(t1);
-            }
-        });
 
         initTestData(viterbi);
         viterbi.setN(2);
@@ -141,7 +115,6 @@ public class ViterbiTest {
         v.getE().setProb(o2.getIndex(), s2.getIndex(), 0.2);
         v.getE().setProb(o1.getIndex(), s3.getIndex(), 0.2);
         v.getE().setProb(o2.getIndex(), s3.getIndex(), 0.8);
-        v.getE().setObserveBank(v.getObserveBank());
 
         //Pi = [0.2 0.3 0.5]
         v.getPi().setPi(s1.getIndex(), 0.2);

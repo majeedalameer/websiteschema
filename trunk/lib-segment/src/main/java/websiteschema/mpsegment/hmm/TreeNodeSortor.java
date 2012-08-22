@@ -4,15 +4,11 @@
  */
 package websiteschema.mpsegment.hmm;
 
-import java.util.Comparator;
-
 /**
  *
  * @author ray
  */
-public interface TreeNodeSortor<T> {
+public interface TreeNodeSortor {
 
-    public void setComparator(Comparator<Trie<T>> comparator);
-
-    public Trie<T>[] sort(Trie<T>[] values);
+    public Trie[] sort(Trie[] values);
 }

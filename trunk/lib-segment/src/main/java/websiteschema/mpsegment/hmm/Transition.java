@@ -12,41 +12,35 @@ import java.util.Comparator;
  */
 public class Transition<T> {
 
-    Trie<Integer> root = null;
+    Trie root = null;
 
-    public Trie<Integer> getRoot() {
+    public Trie getRoot() {
         return root;
     }
     NodeRepository<T, Node<T>> stateBank = null;
     Comparator<Integer> comparator = null;
-    TreeNodeSortor<Integer> sortor = null;
+    TreeNodeSortor sortor = null;
 
     public void setStateBank(NodeRepository<T, Node<T>> stateBank) {
         this.stateBank = stateBank;
     }
 
-    public void setSortor(TreeNodeSortor<Integer> sortor) {
+    public void setSortor(TreeNodeSortor sortor) {
         this.sortor = sortor;
     }
 
-    public void setComparator(Comparator<Integer> comparator) {
-        this.comparator = comparator;
-    }
-
     public Transition() {
-        this.root = new Trie<Integer>();
+        this.root = new Trie();
     }
 
-    public Transition(Trie<Integer> root, NodeRepository<T, Node<T>> bank) {
+    public Transition(Trie root, NodeRepository<T, Node<T>> bank) {
         this.root = root;
         this.stateBank = bank;
     }
 
     public void setProb(int s1, int s2, double prob) {
-        Integer[] ngram = new Integer[2];
-        ngram[0] = stateBank.get(s1).getIndex();
-        ngram[1] = stateBank.get(s2).getIndex();
-        Trie<Integer> node = root.insert(ngram, sortor, comparator);
+        int[] ngram = new int[]{s1, s2};
+        Trie node = root.insert(ngram, sortor);
         node.setProb(prob);
     }
 
@@ -94,8 +88,8 @@ public class Transition<T> {
         return ret;
     }
 
-    private Integer[] getNodeArray(T[] ngram) {
-        Integer[] array = new Integer[ngram.length];
+    private int[] getNodeArray(T[] ngram) {
+        int[] array = new int[ngram.length];
         for(int i = 0; i < ngram.length; i++) {
             array[i] = stateBank.get(ngram[i]).getIndex();
         }
@@ -105,7 +99,7 @@ public class Transition<T> {
     private double getProb(T[] ngram) {
         double ret;
 
-        Trie node = root.searchNode(getNodeArray(ngram), comparator);
+        Trie node = root.searchNode(getNodeArray(ngram));
         if (null != node) {
             ret = node.getProb();
         } else {

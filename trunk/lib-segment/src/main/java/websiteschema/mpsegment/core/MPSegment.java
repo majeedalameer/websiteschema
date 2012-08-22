@@ -1,12 +1,14 @@
 package websiteschema.mpsegment.core;
 
 import websiteschema.mpsegment.conf.Configure;
+import websiteschema.mpsegment.dict.DictionaryFactory;
+import websiteschema.mpsegment.dict.HashDictionary;
+import websiteschema.mpsegment.dict.IWord;
+import websiteschema.mpsegment.dict.domain.DomainDictFactory;
+import websiteschema.mpsegment.dict.domain.DomainDictionary;
 import websiteschema.mpsegment.graph.Dijkstra;
 import websiteschema.mpsegment.graph.Path;
 import websiteschema.mpsegment.graph.SingleMatrixGraph;
-import websiteschema.mpsegment.dict.*;
-import websiteschema.mpsegment.dict.domain.DomainDictionary;
-import websiteschema.mpsegment.dict.domain.DomainDictFactory;
 
 public class MPSegment {
 
@@ -100,7 +102,7 @@ public class MPSegment {
             p = dijk.getShortestPath(1, length + 1);
         }
         setPathMarks(p, result);
-        findPOS(p, result);
+        findPOS(p);
         result.setPOSs(posTagging.getPosTagArray());
         posTagging.clear();
         clear();
@@ -134,10 +136,9 @@ public class MPSegment {
         return result;
     }
 
-    private void findPOS(Path p, SegmentResult result) {
+    private void findPOS(Path p) {
         posTagging.setPath(p);
         posTagging.setGraph(graph);
-        posTagging.setSegmentResult(result);
         posTagging.initializePOSTable();
         posTagging.disambiguate();
         posTagging.getTagString();
@@ -157,7 +158,7 @@ public class MPSegment {
         dijk.setGraph(graph);
         Path p = getShortestPath(sentence);
         setPathMarks(p, result);
-        findPOS(p, result);
+        findPOS(p);
         result.setPOSs(posTagging.getPosTagArray());
         posTagging.clear();
         clear();

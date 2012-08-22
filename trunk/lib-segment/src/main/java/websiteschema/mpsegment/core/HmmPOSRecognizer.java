@@ -157,9 +157,6 @@ public class HmmPOSRecognizer {
         Collections.reverse(intArrayList);
     }
 
-    public void setSegmentResult(SegmentResult result) {
-        segmentResult = result;
-    }
     private int maxPathLength;
     private int maxPosPerWord;
     private IGraph graph;
@@ -171,5 +168,4 @@ public class HmmPOSRecognizer {
     private int previousMaxPosIs[][];
     private ArrayList<Integer> intArrayList;
     private int pathLength;
-    private SegmentResult segmentResult;
 }

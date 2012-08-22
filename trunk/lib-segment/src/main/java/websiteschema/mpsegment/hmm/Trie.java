@@ -4,7 +4,6 @@
  */
 package websiteschema.mpsegment.hmm;
 
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -12,50 +11,50 @@ import java.util.List;
  *
  * @author ray
  */
-public class Trie<T> implements java.io.Serializable {
+public class Trie implements java.io.Serializable {
 
-    T key = null;
+    int key = -1;
     int count = 0;
     double prob = 0.0;
-    Trie<T> descendant[] = null;
+    Trie descendant[] = null;
 
-    public T getKey() {
+    public int getKey() {
         return key;
     }
 
-    public void buildIndex(int c, TreeNodeSortor<T> sortor) {
+    public void buildIndex(int c, TreeNodeSortor sortor) {
         prob = (double) count / (double) (c + 1.0);
         if (null != descendant) {
-            for (Trie<T> node : descendant) {
+            for (Trie node : descendant) {
                 node.buildIndex(count, sortor);
             }
             sortor.sort(descendant);
         }
     }
 
-    public Trie<T> insert(T[] ngram, TreeNodeSortor<T> sortor, Comparator<T> comparator) {
+    public Trie insert(int[] ngram, TreeNodeSortor sortor) {
         count++;
         if (ngram.length > 0) {
-            T k = ngram[0];
-            Trie<T> n = null != descendant ? binarySearch(descendant, descendant.length, k, comparator) : null;
+            int k = ngram[0];
+            Trie n = null != descendant ? binarySearch(descendant, descendant.length, k) : null;
             if (null == n) {
-                n = new Trie<T>();
+                n = new Trie();
                 n.key = k;
                 add(n);
                 descendant = sortor.sort(descendant);
             }
 
-            T rec[] = (T[]) new Object[ngram.length - 1];
+            int rec[] = new int[ngram.length - 1];
             for (int i = 1; i < ngram.length; i++) {
                 rec[i - 1] = ngram[i];
             }
-            return n.insert(rec, sortor, comparator);
+            return n.insert(rec, sortor);
         } else {
             return this;
         }
     }
 
-    private void add(Trie<T> e) {
+    private void add(Trie e) {
         int i = 0;
         if (null == descendant) {
             descendant = new Trie[1];
@@ -68,21 +67,21 @@ public class Trie<T> implements java.io.Serializable {
         descendant[i] = e;
     }
 
-    public Trie<T> searchNode(T[] ngram, Comparator<T> comparator) {
-        T k = ngram[0];
-        Trie<T> n = searchNode(k, comparator);
+    public Trie searchNode(int[] ngram) {
+        int k = ngram[0];
+        Trie n = searchNode(k);
         if (null != n && ngram.length > 1) {
-            T rec[] = (T[]) new Object[ngram.length - 1];
+            int rec[] = (int[]) new int[ngram.length - 1];
             for (int i = 1; i < ngram.length; i++) {
                 rec[i - 1] = ngram[i];
             }
-            return n.searchNode(rec, comparator);
+            return n.searchNode(rec);
         }
         return n;
     }
 
-    public Trie<T> searchNode(T k, Comparator<T> comparator) {
-        return null != descendant ? binarySearch(descendant, descendant.length, k, comparator) : null;
+    public Trie searchNode(int k) {
+        return null != descendant ? binarySearch(descendant, descendant.length, k) : null;
     }
 
     public int getCount() {
@@ -101,7 +100,7 @@ public class Trie<T> implements java.io.Serializable {
         this.prob = prob;
     }
 
-    public Trie<T> binarySearch(Trie<T>[] list, int listLength, T searchItem, Comparator<T> comparator) {
+    public Trie binarySearch(Trie[] list, int listLength, int searchItem) {
         if (null == list) {
             return null;
         }
@@ -113,7 +112,7 @@ public class Trie<T> implements java.io.Serializable {
         while (first <= last && !found) {
             mid = (first + last) / 2;
 
-            int i = comparator.compare(list[mid].key, searchItem);
+            int i = list[mid].key - searchItem;
 
             if (i == 0) {
                 found = true;
@@ -142,19 +141,12 @@ public class Trie<T> implements java.io.Serializable {
         }
     }
 
-    public static Character[] stringToCharArray(String s) {
-        Character array[] = new Character[s.length()];
-        for (int i = 0; i < s.length(); i++) {
-            array[i] = s.charAt(i);
-        }
-        return array;
-    }
 
     public long getNumberOfNodeWhichCountLt(int lt) {
         long c = count < lt ? 1 : 0;
 
         if (null != descendant) {
-            for (Trie<T> node : descendant) {
+            for (Trie node : descendant) {
                 c += node.getNumberOfNodeWhichCountLt(lt);
             }
         }
@@ -167,9 +159,9 @@ public class Trie<T> implements java.io.Serializable {
             return;
         }
         if (null != descendant) {
-            List<Trie<T>> l = new LinkedList<Trie<T>>();
+            List<Trie> l = new LinkedList<Trie>();
             for (int i = 0; i < descendant.length; i++) {
-                Trie<T> node = descendant[i];
+                Trie node = descendant[i];
                 if (node.getCount() >= lt) {
                     l.add(node);
                     node.cutCountLowerThan(lt);
