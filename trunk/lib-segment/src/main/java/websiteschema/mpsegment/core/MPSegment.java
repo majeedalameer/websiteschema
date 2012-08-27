@@ -7,6 +7,7 @@ import websiteschema.mpsegment.dict.IWord;
 import websiteschema.mpsegment.dict.domain.DomainDictFactory;
 import websiteschema.mpsegment.dict.domain.DomainDictionary;
 import websiteschema.mpsegment.graph.Dijkstra;
+import websiteschema.mpsegment.graph.IGraph;
 import websiteschema.mpsegment.graph.Path;
 import websiteschema.mpsegment.graph.SingleMatrixGraph;
 
@@ -102,9 +103,7 @@ public class MPSegment {
             p = dijk.getShortestPath(1, length + 1);
         }
         setPathMarks(p, result);
-        findPOS(p);
-        result.setPOSs(posTagging.getPosTagArray());
-        posTagging.clear();
+        result.setPOSArray(findPOS(p, graph));
         clear();
         return result;
     }
@@ -136,13 +135,8 @@ public class MPSegment {
         return result;
     }
 
-    private void findPOS(Path p) {
-        posTagging.setPath(p);
-        posTagging.setGraph(graph);
-        posTagging.initializePOSTable();
-        posTagging.disambiguate();
-        posTagging.getTagString();
-        posTagging.setPosTagArrayList();
+    private int[] findPOS(Path p, IGraph graph) {
+        return posTagging.findPOS(p, graph);
     }
 
     private Path getShortestPath(String sentence) {
@@ -158,9 +152,7 @@ public class MPSegment {
         dijk.setGraph(graph);
         Path p = getShortestPath(sentence);
         setPathMarks(p, result);
-        findPOS(p);
-        result.setPOSs(posTagging.getPosTagArray());
-        posTagging.clear();
+        result.setPOSArray(findPOS(p, graph));
         clear();
         return result;
     }
@@ -285,8 +277,8 @@ public class MPSegment {
     private boolean loadDomainDictionary = Configure.getInstance().isLoadDomainDictionary();
     private boolean loadUserDictionary = Configure.getInstance().isLoadUserDictionary();
     private Dijkstra dijk;
-    private SingleMatrixGraph graph;
-    private HmmPOSRecognizer posTagging;
+    private IGraph graph;
+    private IPOSRecognizer posTagging;
     private boolean useCache;
     private UnknownWordCache objectCache;
     private boolean lastSection;

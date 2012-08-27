@@ -12,13 +12,13 @@ import java.util.Set;
  * reference: http://www.cs.umb.edu/~srevilak/viterbi/
  * @author ray
  */
-public class Viterbi<S, O> {
+public class Viterbi {
 
-    NodeRepository<S, Node<S>> stateBank = new NodeRepository<S, Node<S>>();
-    NodeRepository<O, Node<O>> observeBank = new NodeRepository<O, Node<O>>();
-    Transition<S> tran = new Transition<S>();
+    NodeRepository stateBank = new NodeRepository();
+    NodeRepository observeBank = new NodeRepository();
+    Transition tran = new Transition();
     Pi pi = new Pi();
-    Emission<O> e = new Emission<O>();
+    Emission e = new Emission();
     int n = 3; // ngram
 
 
@@ -38,11 +38,11 @@ public class Viterbi<S, O> {
         this.e = e;
     }
 
-    public NodeRepository<O, Node<O>> getObserveBank() {
+    public NodeRepository getObserveBank() {
         return observeBank;
     }
 
-    public void setObserveBank(NodeRepository<O, Node<O>> observeBank) {
+    public void setObserveBank(NodeRepository observeBank) {
         this.observeBank = observeBank;
     }
 
@@ -54,19 +54,19 @@ public class Viterbi<S, O> {
         this.pi = pi;
     }
 
-    public NodeRepository<S, Node<S>> getStateBank() {
+    public NodeRepository getStateBank() {
         return stateBank;
     }
 
-    public void setStateBank(NodeRepository<S, Node<S>> stateBank) {
+    public void setStateBank(NodeRepository stateBank) {
         this.stateBank = stateBank;
     }
 
-    public Transition<S> getTran() {
+    public Transition getTran() {
         return tran;
     }
 
-    public void setTran(Transition<S> tran) {
+    public void setTran(Transition tran) {
         this.tran = tran;
     }
 
@@ -83,17 +83,17 @@ public class Viterbi<S, O> {
         return ret;
     }
 
-    public HmmResult caculateHmmResult(List<O> listObserve) throws ObserveListException {
+    private HmmResult caculateHmmResult(List<String> listObserve) throws ObserveListException {
         HmmResult ret = new HmmResult();
 
         if (listObserve.isEmpty()) {
             throw new ObserveListException("observe list is empty.");
         }
 
-        O o = listObserve.get(0);
-        Node<O> o1 = observeBank.get(o);
+        String o = listObserve.get(0);
+        Node o1 = observeBank.get(o);
         if (o1 == null) {
-            o1 = new Observe<O>(o);
+            o1 = new Node(o);
             observeBank.add(o1);
         }
 
@@ -110,7 +110,7 @@ public class Viterbi<S, O> {
         int index = 0;
         for (Integer s : relatedStates) {
             ret.states[0][index] = s;
-            ret.delta[0][index] = Math.log(pi.getPi(s)) + Math.log(e.getProb(o1.getIndex(), s));
+            ret.delta[0][index] = Math.log(pi.getPi(s)) + Math.log(e.getProb(s, o1.getIndex()));
             ret.psai[0][index] = 0;
             index++;
         }
@@ -118,9 +118,9 @@ public class Viterbi<S, O> {
         //
         for (int p = 1; p < listObserve.size(); p++) {
             o = listObserve.get(p);
-            Node<O> oi = observeBank.get(o);
+            Node oi = observeBank.get(o);
             if (oi == null) {
-                oi = new Observe<O>(o);
+                oi = new Node(o);
                 observeBank.add(oi);
             }
 
@@ -139,7 +139,7 @@ public class Viterbi<S, O> {
                 int ls = 0;
                 for (int j = 0; j < ret.states[p - 1].length; j++) {
                     int[] statePath = getStatePath(ret.states, ret.psai, p - 1, n - 1, j);
-                    double b = Math.log(e.getProb(oi.getIndex(), state));
+                    double b = Math.log(e.getProb(state, oi.getIndex()));
                     double Aij = Math.log(tran.getProb(statePath, state));
                     double psai_j = ret.delta[p - 1][j] + Aij;
                     double delta_j = psai_j + b;
@@ -163,8 +163,8 @@ public class Viterbi<S, O> {
         return ret;
     }
 
-    public List<Node<S>> caculateWithLog(List<O> listObserve) throws ObserveListException {
-        List<Node<S>> path = new ArrayList<Node<S>>();
+    public List<Node> caculateWithLog(List<String> listObserve) throws ObserveListException {
+        List<Node> path = new ArrayList<Node>();
         HmmResult ret = caculateHmmResult(listObserve);
         //
         double maxProb = Double.NEGATIVE_INFINITY;

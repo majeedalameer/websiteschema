@@ -2,7 +2,6 @@ package websiteschema.mpsegment.core;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import websiteschema.mpsegment.conf.Configure;
 import websiteschema.mpsegment.dict.IWord;
 import websiteschema.mpsegment.dict.POSProbMatrix;
@@ -13,7 +12,7 @@ import websiteschema.mpsegment.graph.Path;
  * Part of speech recognition using HMM.
  * @author ray
  */
-public class HmmPOSRecognizer {
+public class HmmPOSRecognizer implements IPOSRecognizer {
 
     public HmmPOSRecognizer() {
         maxPathLength = 1024;
@@ -27,7 +26,7 @@ public class HmmPOSRecognizer {
         intArrayList = new ArrayList<Integer>();
     }
 
-    public void setSegPathLength(int i1) {
+    private void setSegPathLength(int i1) {
         pathLength = i1 + 2;
         if (pathLength > maxPathLength) {
             pathLength = maxPathLength;
@@ -53,15 +52,7 @@ public class HmmPOSRecognizer {
         }
     }
 
-    public void setGraph(IGraph iigraph) {
-        graph = iigraph;
-    }
-
-    public void setPath(Path p) {
-        path = p;
-    }
-
-    public void initializePOSTable() {
+    private void initializePOSTable() {
         if (getPathLength() < 1) {
             return;
         }
@@ -76,15 +67,15 @@ public class HmmPOSRecognizer {
         }
     }
 
-    public IWord getWordInIndex(int index) {
-        return (IWord) graph.getEdgeObject(path.iget(index), path.iget(index + 1));
+    private IWord getWordInIndex(int index) {
+        return graph.getEdgeObject(path.iget(index), path.iget(index + 1));
     }
 
-    public double getCoProb(int posIndex1, int posIndex2) {
+    private double getCoProb(int posIndex1, int posIndex2) {
         return posProbMatrix.getCoProb(posIndex1, posIndex2);
     }
 
-    public double getWordProb(int posIndex1, int freq) {
+    private double getWordProb(int posIndex1, int freq) {
         if (posProbMatrix.getTagFreqs(posIndex1) > 0) {
             return (double) (freq + 1) / (double) posProbMatrix.getTagFreqs(posIndex1);
         } else {
@@ -95,7 +86,7 @@ public class HmmPOSRecognizer {
     /**
      * Vertbi
      */
-    public void disambiguate() {
+    private void disambiguate() {
         double maxCoProb = 999999D;
 
         setSegPathLength(getPathLength());
@@ -124,11 +115,7 @@ public class HmmPOSRecognizer {
 
     }
 
-    public List<Integer> getPosTagArrayList() {
-        return intArrayList;
-    }
-
-    public void setPosTagArrayList() {
+    private void setPosTagArrayList() {
         int i1 = 0;
         intArrayList.clear();
         for (int wordI = path.getLength() - 1; wordI >= 0; wordI--) {
@@ -139,7 +126,7 @@ public class HmmPOSRecognizer {
         Collections.reverse(intArrayList);
     }
 
-    public int[] getPosTagArray() {
+    private int[] getPOSArray() {
         int ai[] = new int[intArrayList.size()];
         for (int i1 = 0; i1 < intArrayList.size(); i1++) {
             ai[i1] = intArrayList.get(i1);
@@ -147,14 +134,16 @@ public class HmmPOSRecognizer {
 
         return ai;
     }
-
-    public void getTagString() {
-        int i1 = 0;
-        for (int j1 = getPathLength() - 1; j1 >= 0; j1--) {
-            i1 = previousMaxPosIs[j1][i1];
-        }
-
-        Collections.reverse(intArrayList);
+    
+    @Override
+    public int[] findPOS(Path path, IGraph graph) {
+        this.path = path;
+        this.graph = graph;
+        initializePOSTable();
+        disambiguate();
+        setPosTagArrayList();
+        clear();
+        return getPOSArray();
     }
 
     private int maxPathLength;

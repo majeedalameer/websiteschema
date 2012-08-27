@@ -1,6 +1,7 @@
 package websiteschema.mpsegment.graph;
 
 import java.util.Arrays;
+import websiteschema.mpsegment.dict.IWord;
 
 public class SingleMatrixGraph implements IGraph {
 
@@ -19,7 +20,6 @@ public class SingleMatrixGraph implements IGraph {
             objects = new Object[vertexNumber];
             wordSet = new ObjectArraySet(vertexNumber * (maxEdgesPerVertex - 1));
             existingVertex = 0;
-            return;
         }
     }
 
@@ -46,7 +46,6 @@ public class SingleMatrixGraph implements IGraph {
         wordSet.clear();
     }
 
-    @Override
     public int getVerticesNumber() {
         return maxVertices;
     }
@@ -61,7 +60,7 @@ public class SingleMatrixGraph implements IGraph {
     }
 
     @Override
-    public void addEdgeObject(int head, int tail, int weight, Object obj) {
+    public void addEdge(int head, int tail, int weight, IWord obj) {
         int edgeOfVertex = 0;
         if (weight <= 0) {
             throw new IllegalArgumentException((new StringBuilder()).append("Invalid weight ! ").append(weight).append(". Must be > 0").toString());
@@ -111,7 +110,7 @@ public class SingleMatrixGraph implements IGraph {
     }
 
     @Override
-    public Object getEdgeObject(int head, int tail) {
+    public IWord getEdgeObject(int head, int tail) {
         int edgeOfVertex = 0;
         int wordIndex = 0;
         while (edgeOfVertex < maxEdgesPerVertex && vertices[head][edgeOfVertex] != 0 && edges[vertices[head][edgeOfVertex]][0] != tail) {
