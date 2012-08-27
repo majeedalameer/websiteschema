@@ -12,7 +12,7 @@ import websiteschema.mpsegment.dict.HashDictionary;
 import websiteschema.mpsegment.dict.IWord;
 import websiteschema.mpsegment.dict.domain.DomainDictFactory;
 import websiteschema.mpsegment.dict.domain.DomainDictionary;
-import websiteschema.mpsegment.graph.SingleMatrixGraph;
+import websiteschema.mpsegment.graph.IGraph;
 
 /**
  *
@@ -20,7 +20,7 @@ import websiteschema.mpsegment.graph.SingleMatrixGraph;
  */
 public class GraphBuilder {
 
-    private final SingleMatrixGraph singleMatrixGraph;
+    private final IGraph graph;
     private final double logCorpus;
     private final HashDictionary hashDictionary = DictionaryFactory.getInstance().getCoreDictionary();
     private final boolean useDomainDictionary;
@@ -28,8 +28,8 @@ public class GraphBuilder {
     private Map<String, Integer> contextFreqMap = new HashMap<String, Integer>();
     private boolean useContextFreqSegment = false;
 
-    public GraphBuilder(SingleMatrixGraph singleMatrixGraph, double logCorpus, boolean useDomainDictionary, UnknownWordCache objectCache) {
-        this.singleMatrixGraph = singleMatrixGraph;
+    public GraphBuilder(IGraph graph, double logCorpus, boolean useDomainDictionary, UnknownWordCache objectCache) {
+        this.graph = graph;
         this.logCorpus = logCorpus;
         this.useDomainDictionary = useDomainDictionary;
         this.objectCache = objectCache;
@@ -132,7 +132,7 @@ public class GraphBuilder {
 
     private void addEdgeObject(int head, int tail, int weight, IWord word) {
 //        System.out.println(word.getWordName() + " weight " + weight);
-        singleMatrixGraph.addEdgeObject(head, tail, weight, word);
+        graph.addEdge(head, tail, weight, word);
     }
 
     public void scanContextFreq(final int startPos) {
@@ -183,7 +183,7 @@ public class GraphBuilder {
         }
         final int slen = sentence.length();
         for (int i = 0; i < slen; i++) {
-            singleMatrixGraph.addVertex();
+            graph.addVertex();
         }
 
         for (int begin = startPos; begin < slen; begin += lastMinWordLen) {

@@ -4,24 +4,25 @@
  */
 package websiteschema.mpsegment.hmm;
 
-import java.util.Comparator;
+import java.io.IOException;
+import websiteschema.mpsegment.util.ISerialize;
+import websiteschema.mpsegment.util.SerializeHandler;
 
 /**
  *
  * @author ray
  */
-public class Transition<T> {
+public class Transition implements ISerialize {
 
     Trie root = null;
 
     public Trie getRoot() {
         return root;
     }
-    NodeRepository<T, Node<T>> stateBank = null;
-    Comparator<Integer> comparator = null;
+    NodeRepository stateBank = null;
     TreeNodeSortor sortor = null;
 
-    public void setStateBank(NodeRepository<T, Node<T>> stateBank) {
+    public void setStateBank(NodeRepository stateBank) {
         this.stateBank = stateBank;
     }
 
@@ -33,7 +34,7 @@ public class Transition<T> {
         this.root = new Trie();
     }
 
-    public Transition(Trie root, NodeRepository<T, Node<T>> bank) {
+    public Transition(Trie root, NodeRepository bank) {
         this.root = root;
         this.stateBank = bank;
     }
@@ -45,7 +46,7 @@ public class Transition<T> {
     }
 
     public double getProb(int[] s) {
-        T[] ngram = (T[]) new Object[s.length];
+        String[] ngram = new String[s.length];
         for (int i = 0; i < s.length; i++) {
             ngram[i] = stateBank.get(s[i]).getName();
         }
@@ -53,7 +54,7 @@ public class Transition<T> {
     }
 
     public double getProb(int[] c, int s) {
-        T[] ngram = (T[]) new Object[c.length + 1];
+        String[] ngram = new String[c.length + 1];
         for (int i = 0; i < c.length; i++) {
             ngram[i] = stateBank.get(c[i]).getName();
         }
@@ -63,13 +64,13 @@ public class Transition<T> {
     }
 
     public double getProb(int s1, int s2) {
-        T[] ngram = (T[]) new Object[2];
+        String[] ngram = new String[2];
         ngram[0] = stateBank.get(s1).getName();
         ngram[1] = stateBank.get(s2).getName();
         return getProb(ngram, 2);
     }
 
-    public double getProb(T[] ngram, int n) {
+    public double getProb(String[] ngram, int n) {
         double ret = 0.00000001D;
 
         //bigram
@@ -78,7 +79,7 @@ public class Transition<T> {
         }
 
         for (int i = n; i > 0; i--) {
-            T[] igram = (T[]) new Object[i];
+            String[] igram = new String[i];
             for (int j = 1; j <= i; j++) {
                 igram[i - j] = ngram[n - j];
             }
@@ -88,7 +89,7 @@ public class Transition<T> {
         return ret;
     }
 
-    private int[] getNodeArray(T[] ngram) {
+    private int[] getNodeArray(String[] ngram) {
         int[] array = new int[ngram.length];
         for(int i = 0; i < ngram.length; i++) {
             array[i] = stateBank.get(ngram[i]).getIndex();
@@ -96,7 +97,7 @@ public class Transition<T> {
         return array;
     }
     
-    private double getProb(T[] ngram) {
+    private double getProb(String[] ngram) {
         double ret;
 
         Trie node = root.searchNode(getNodeArray(ngram));
@@ -107,5 +108,17 @@ public class Transition<T> {
         }
 
         return ret;
+    }
+
+    @Override
+    public void save(SerializeHandler writeHandler) throws IOException {
+        root.save(writeHandler);
+        stateBank.save(writeHandler);
+    }
+
+    @Override
+    public void load(SerializeHandler readHandler) throws IOException {
+        root.load(readHandler);
+        stateBank.load(readHandler);
     }
 }

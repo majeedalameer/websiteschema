@@ -1,16 +1,16 @@
 package websiteschema.mpsegment.graph;
 
-public interface IGraph {
+import websiteschema.mpsegment.dict.IWord;
 
-    public int getVerticesNumber();
+public interface IGraph {
 
     public void addVertex();
 
-    public void addEdgeObject(int head, int tail, int weight, Object obj);
+    public void addEdge(int head, int tail, int weight, IWord obj);
 
     public int getEdgeWeight(int head, int tail);
 
-    public Object getEdgeObject(int head, int tail);
+    public IWord getEdgeObject(int head, int tail);
 
     public int[] getAdjacentVertices(int vertex);
 

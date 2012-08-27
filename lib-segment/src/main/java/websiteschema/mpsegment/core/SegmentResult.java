@@ -17,7 +17,7 @@ public class SegmentResult {
         this.words = words;
     }
 
-    public void setPOSs(int tags[]) {
+    public void setPOSArray(int tags[]) {
         this.posArray = tags;
     }
 
@@ -29,7 +29,7 @@ public class SegmentResult {
         return words;
     }
 
-    public int[] getPOSs() {
+    public int[] getPOSArray() {
         return posArray;
     }
 
@@ -152,7 +152,7 @@ public class SegmentResult {
 
         for (int i = length; i < total; i++) {
             arrayWord[i] = segmentResult.getWord(i - length);
-            if (segmentResult.getPOSs() != null) {
+            if (segmentResult.getPOSArray() != null) {
                 arrayPOS[i] = segmentResult.getPOS(i - length);
             } else {
                 arrayPOS[i] = 0;

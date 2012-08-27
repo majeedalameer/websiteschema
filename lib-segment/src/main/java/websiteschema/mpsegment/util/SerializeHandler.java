@@ -64,6 +64,20 @@ public class SerializeHandler {
             output.flush();
         }
     }
+    
+    public void serializeMapIntDouble(Map<Integer, Double> map) throws IOException {
+        if (null != map) {
+            output.writeInt(map.size());
+            if (!map.isEmpty()) {
+                for (Integer key : map.keySet()) {
+                    double value = map.get(key);
+                    output.writeInt(key);
+                    output.writeDouble(value);
+                }
+            }
+            output.flush();
+        }
+    }
 
     public Map<String, Integer> deserializeMapStringInt() throws IOException {
         Map<String, Integer> map = null;
@@ -77,6 +91,22 @@ public class SerializeHandler {
             }
         } else {
             map = new HashMap<String, Integer>();
+        }
+        return map;
+    }
+    
+    public Map<Integer, Double> deserializeMapIntDouble() throws IOException {
+        Map<Integer, Double> map = null;
+        int size = input.readInt();
+        if (size > 0) {
+            map = new HashMap<Integer, Double>(size);
+            for (int i = 0; i < size; i++) {
+                int key = input.readInt();
+                double value = input.readDouble();
+                map.put(key, value);
+            }
+        } else {
+            map = new HashMap<Integer, Double>();
         }
         return map;
     }
@@ -169,5 +199,14 @@ public class SerializeHandler {
 
     public int deserializeInt() throws IOException {
         return input.readInt();
+    }
+    
+    public void serializeString(String str) throws IOException {
+        output.writeUTF(str);
+        output.flush();
+    }
+    
+    public String deserializeString() throws IOException {
+        return input.readUTF();
     }
 }

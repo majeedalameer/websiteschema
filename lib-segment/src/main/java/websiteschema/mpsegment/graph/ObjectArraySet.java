@@ -1,19 +1,21 @@
 // Source File Name:   ObjectArraySet.java
 package websiteschema.mpsegment.graph;
 
+import websiteschema.mpsegment.dict.IWord;
+
 public class ObjectArraySet {
 
     public ObjectArraySet() {
         top = 0;
         size = 1;
-        objects = new Object[size];
+        objects = new IWord[size];
     }
 
     public ObjectArraySet(int i) {
         top = 0;
 
         size = i;
-        objects = new Object[size];
+        objects = new IWord[size];
     }
 
     public void clear() {
@@ -27,13 +29,11 @@ public class ObjectArraySet {
         top = 0;
     }
 
-    public void add(Object obj) {
+    public void add(IWord obj) {
         if (top >= size) {
             size = size + 1024;
-            Object objectsNew[] = new Object[size];
-            for (int i = 0; i < objects.length; i++) {
-                objectsNew[i] = objects[i];
-            }
+            IWord objectsNew[] = new IWord[size];
+            System.arraycopy(objects, 0, objectsNew, 0, objects.length);
             objects = null;
             objects = objectsNew;
         }
@@ -41,7 +41,7 @@ public class ObjectArraySet {
         top++;
     }
 
-    public Object get(int i) {
+    public IWord get(int i) {
         return objects[i];
     }
 
@@ -56,7 +56,7 @@ public class ObjectArraySet {
 
         return false;
     }
-    private Object objects[];
+    private IWord objects[];
     public int top;
     public int size;
 }

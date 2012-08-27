@@ -4,14 +4,17 @@
  */
 package websiteschema.mpsegment.hmm;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import websiteschema.mpsegment.util.ISerialize;
+import websiteschema.mpsegment.util.SerializeHandler;
 
 /**
  *
  * @author ray
  */
-public class Trie implements java.io.Serializable {
+public class Trie implements ISerialize {
 
     int key = -1;
     int count = 0;
@@ -54,7 +57,7 @@ public class Trie implements java.io.Serializable {
         }
     }
 
-    private void add(Trie e) {
+    protected void add(Trie e) {
         int i = 0;
         if (null == descendant) {
             descendant = new Trie[1];
@@ -169,6 +172,37 @@ public class Trie implements java.io.Serializable {
             }
 
             descendant = l.toArray(new Trie[0]);
+        }
+    }
+    
+    @Override
+    public void save(SerializeHandler writeHandler) throws IOException {
+        writeHandler.serializeInt(key);
+        writeHandler.serializeInt(count);
+        writeHandler.serializeDouble(prob);
+        if(null != descendant) {
+            writeHandler.serializeInt(descendant.length);
+            for(Trie child : descendant) {
+                child.save(writeHandler);
+            }
+        } else {
+            writeHandler.serializeInt(0);
+        }
+    }
+    
+    @Override
+    public void load(SerializeHandler readHandler) throws IOException {
+        key = readHandler.deserializeInt();
+        count = readHandler.deserializeInt();
+        prob = readHandler.deserializeDouble();
+        int numberOfDescendant = readHandler.deserializeInt();
+        if(numberOfDescendant > 0) {
+            descendant = new Trie[numberOfDescendant];
+            for(int i = 0; i < numberOfDescendant; i++) {
+                Trie child = new Trie();
+                child.load(readHandler);
+                descendant[i] = child;
+            }
         }
     }
 }

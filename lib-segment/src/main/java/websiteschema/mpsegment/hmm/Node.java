@@ -4,17 +4,56 @@
  */
 package websiteschema.mpsegment.hmm;
 
+import java.io.IOException;
+import websiteschema.mpsegment.util.ISerialize;
+import websiteschema.mpsegment.util.SerializeHandler;
+
 /**
  * Graphic Model Node
  * @author ray
  */
-public interface Node<T> {
+public class Node implements ISerialize {
 
-    public int getIndex();
+    private int index = -1;
+    private String name = null;
 
-    public void setIndex(int index);
+    public Node() {
+    }
+    
+    public Node(String name) {
+        this.name = name;
+    }
 
-    public T getName();
+    public Node(String name, int index) {
+        this.name = name;
+        this.index = index;
+    }
 
-    public void setName(T name);
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public void save(SerializeHandler writeHandler) throws IOException {
+        writeHandler.serializeString(name);
+        writeHandler.serializeInt(index);
+    }
+
+    @Override
+    public void load(SerializeHandler readHandler) throws IOException {
+        name = readHandler.deserializeString();
+        index = readHandler.deserializeInt();
+    }
 }
