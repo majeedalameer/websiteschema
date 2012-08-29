@@ -19,7 +19,7 @@ public class Transition implements ISerialize {
     public Trie getRoot() {
         return root;
     }
-    NodeRepository stateBank = null;
+    NodeRepository stateBank = new NodeRepository();
     TreeNodeSortor sortor = null;
 
     public void setStateBank(NodeRepository stateBank) {
@@ -53,7 +53,7 @@ public class Transition implements ISerialize {
         return getProb(ngram, ngram.length);
     }
 
-    public double getProb(int[] c, int s) {
+    public double getCoProb(int[] c, int s) {
         String[] ngram = new String[c.length + 1];
         for (int i = 0; i < c.length; i++) {
             ngram[i] = stateBank.get(c[i]).getName();
