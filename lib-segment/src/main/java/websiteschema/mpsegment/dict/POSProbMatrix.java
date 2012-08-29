@@ -1,21 +1,25 @@
 package websiteschema.mpsegment.dict;
 
-import websiteschema.mpsegment.util.*;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import websiteschema.mpsegment.util.BufReader;
+import websiteschema.mpsegment.util.ByteArrayReader;
+import websiteschema.mpsegment.util.FileUtil;
 
 public class POSProbMatrix {
 
     public POSProbMatrix() {
         numPOS = 45;
         posFreq = new int[numPOS];
-        posBigram = new int[numPOS][numPOS];
+        posTranMatrix = new int[numPOS][numPOS];
         corpusSize = 1;
     }
 
     public POSProbMatrix(String s) {
         numPOS = 45;
         posFreq = new int[numPOS];
-        posBigram = new int[numPOS][numPOS];
+        posTranMatrix = new int[numPOS][numPOS];
         corpusSize = 1;
         loadProbMatrix(s);
     }
@@ -34,7 +38,7 @@ public class POSProbMatrix {
             j = POSUtil.getPOSIndex(s1);
         }
         if (i >= 0 && j >= 0) {
-            posBigram[i][j]++;
+            posTranMatrix[i][j]++;
             posFreq[j]++;
             if (j >= 44) {
                 System.out.println((new StringBuilder("---")).append(s1).toString());
@@ -45,7 +49,7 @@ public class POSProbMatrix {
     public void outMatrix() {
         for (int i = 0; i < numPOS; i++) {
             for (int l = 0; l < numPOS; l++) {
-                System.out.print((new StringBuilder(String.valueOf(posBigram[i][l]))).append(" ").toString());
+                System.out.print((new StringBuilder(String.valueOf(posTranMatrix[i][l]))).append(" ").toString());
             }
 
             System.out.println((new StringBuilder("---")).append(i).toString());
@@ -73,7 +77,7 @@ public class POSProbMatrix {
         if (posFreq[posIndex1] == 0) {
             return 1.0000000000000001E-005D;
         } else {
-            double d2 = (0.29999999999999999D * (double) (posFreq[posIndex2] + 1)) / (double) corpusSize + (0.69999999999999996D * (double) (posBigram[posIndex1][posIndex2] + 1)) / (double) posFreq[posIndex1];
+            double d2 = (0.29999999999999999D * (double) (posFreq[posIndex2] + 1)) / (double) corpusSize + (0.69999999999999996D * (double) (posTranMatrix[posIndex1][posIndex2] + 1)) / (double) posFreq[posIndex1];
             return d2;
         }
     }
@@ -89,7 +93,7 @@ public class POSProbMatrix {
 
             for (int j = 0; j < numPOS; j++) {
                 for (int k = 0; k < numPOS; k++) {
-                    posBigram[j][k] = bufreader.readInt();
+                    posTranMatrix[j][k] = bufreader.readInt();
                 }
 
             }
@@ -118,7 +122,7 @@ public class POSProbMatrix {
 
         for (int i = 0; i < numPOS; i++) {
             for (int j = 0; j < numPOS; j++) {
-                sb.append(posBigram[i][j]).append(space);
+                sb.append(posTranMatrix[i][j]).append(space);
             }
             sb.append(ls);
         }
@@ -145,7 +149,7 @@ public class POSProbMatrix {
 
             for (int j = 0; j < numPOS; j++) {
                 for (int k = 0; k < numPOS; k++) {
-                    randomaccessfile.writeInt(posBigram[j][k]);
+                    randomaccessfile.writeInt(posTranMatrix[j][k]);
                 }
 
             }
@@ -171,6 +175,14 @@ public class POSProbMatrix {
     }
     private int numPOS;
     private int posFreq[];
-    private int posBigram[][];
+    private int posTranMatrix[][];
+
+    public int[] getPosFreq() {
+        return posFreq;
+    }
+
+    public int[][] getPosTranMatrix() {
+        return posTranMatrix;
+    }
     private int corpusSize;
 }

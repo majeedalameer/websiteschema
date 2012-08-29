@@ -55,7 +55,7 @@ public class MPSegment {
     }
 
     private void initializePOSTagging() {
-        posTagging = new HmmPOSRecognizer();
+        posTagging = new POSRecognizer();
     }
 
     public int getLogCorpus() {
@@ -103,7 +103,7 @@ public class MPSegment {
             p = dijk.getShortestPath(1, length + 1);
         }
         setPathMarks(p, result);
-        result.setPOSArray(findPOS(p, graph));
+        result.setPOSArray(posTagging.findPOS(p, graph));
         clear();
         return result;
     }
@@ -135,10 +135,6 @@ public class MPSegment {
         return result;
     }
 
-    private int[] findPOS(Path p, IGraph graph) {
-        return posTagging.findPOS(p, graph);
-    }
-
     private Path getShortestPath(String sentence) {
         buildGraph(sentence, 0);
         int sentenceLength = sentence.length();
@@ -152,7 +148,7 @@ public class MPSegment {
         dijk.setGraph(graph);
         Path p = getShortestPath(sentence);
         setPathMarks(p, result);
-        result.setPOSArray(findPOS(p, graph));
+        result.setPOSArray(posTagging.findPOS(p, graph));
         clear();
         return result;
     }

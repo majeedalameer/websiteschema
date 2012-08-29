@@ -19,7 +19,7 @@ public class Viterbi {
     Transition tran = new Transition();
     Pi pi = new Pi();
     Emission e = new Emission();
-    int n = 3; // ngram
+    int n = 2; // ngram
 
 
     public void setSortor(TreeNodeSortor sortor) {
@@ -140,7 +140,7 @@ public class Viterbi {
                 for (int j = 0; j < ret.states[p - 1].length; j++) {
                     int[] statePath = getStatePath(ret.states, ret.psai, p - 1, n - 1, j);
                     double b = Math.log(e.getProb(state, oi.getIndex()));
-                    double Aij = Math.log(tran.getProb(statePath, state));
+                    double Aij = Math.log(tran.getCoProb(statePath, state));
                     double psai_j = ret.delta[p - 1][j] + Aij;
                     double delta_j = psai_j + b;
                     if (delta_j > maxDelta) {
