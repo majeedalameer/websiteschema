@@ -44,6 +44,8 @@ public class POSRecognizer implements IPOSRecognizer, ISerialize {
 
     private void initViterbiWithEmissionAndObserve() {
         observeList.clear();
+        viterbi.setE(new Emission());
+        viterbi.setObserveBank(new NodeRepository());
         for (int i = 0; i < path.getLength(); i++) {
             IWord word = getWordIndexAt(i);
             initViterbiWith(word);
