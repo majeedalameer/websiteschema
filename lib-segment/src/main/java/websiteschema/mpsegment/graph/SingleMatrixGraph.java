@@ -141,46 +141,6 @@ public class SingleMatrixGraph implements IGraph {
         }
     }
 
-    public int getStopVertex2(int start, int end) {
-        int gap = (end - start) + 1;
-        Arrays.fill(passedRvn, 0);
-        if (gap > passedRvn.length) {
-            start = end - passedRvn.length;
-            if (start < 0) {
-                start = 0;
-            }
-        }
-        gap = (end - start) + 1;
-        for (int vn = start; vn <= end; vn++) {
-            int maxTail = 0;
-            for (int edgeNUmber = 0; edgeNUmber < maxEdgesPerVertex; edgeNUmber++) {
-                if (vertices[vn][edgeNUmber] == 0) {
-                    continue;  // no edge, continue to find next edge
-                }
-                int tail = edges[vertices[vn][edgeNUmber]][0];
-                if (tail > maxTail) {
-                    maxTail = tail;
-                }
-            }
-
-            if (maxTail <= vn + 1) {
-                continue;  //this edge's tail does not stretch beyond vn, so discard
-            }
-
-            for (int distance = 1; distance < maxTail - vn; distance++) {
-                if ((vn - start) + distance < passedRvn.length) {  //ensure no outofbound of passedRvn[]
-                    passedRvn[(vn - start) + distance] = 1;
-                }
-            }
-        }
-
-        int delta = end - start;
-        while (delta > 0 && passedRvn[delta] >= 1) {
-            delta--;
-        }
-        return delta + start;
-    }
-
     @Override
     public int getStopVertex(int start, int end) {
         int stopVertex = start;

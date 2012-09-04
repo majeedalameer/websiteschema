@@ -22,6 +22,7 @@ import websiteschema.mpsegment.util.SerializeHandler;
  */
 public class POSRecognizer implements IPOSRecognizer, ISerialize {
 
+    private final static String posDataResource = "websiteschema/mpsegment/pos.dat";
     private Viterbi viterbi;
     private IGraph graph;
     private Path path;
@@ -35,9 +36,9 @@ public class POSRecognizer implements IPOSRecognizer, ISerialize {
         try {
             SerializeHandler readHandler = new SerializeHandler(
                     new DataInputStream(
-                    POSRecognizer.class.getClassLoader().getResourceAsStream("websiteschema/mpsegment/pos.dat")));
+                    POSRecognizer.class.getClassLoader().getResourceAsStream(posDataResource)));
             load(readHandler);
-        } catch (Exception ex) {
+        } catch (IOException ex) {
             ex.printStackTrace();
         }
     }
@@ -97,9 +98,8 @@ public class POSRecognizer implements IPOSRecognizer, ISerialize {
             }
             return posArray;
         } catch (ObserveListException ex) {
-            ex.printStackTrace();
+            throw new RuntimeException("Could not find POS array." + ex.getMessage(), ex);
         }
-        throw new RuntimeException("Could not find POS array.");
     }
 
     @Override

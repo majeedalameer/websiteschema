@@ -6,10 +6,7 @@ import websiteschema.mpsegment.dict.HashDictionary;
 import websiteschema.mpsegment.dict.IWord;
 import websiteschema.mpsegment.dict.domain.DomainDictFactory;
 import websiteschema.mpsegment.dict.domain.DomainDictionary;
-import websiteschema.mpsegment.graph.Dijkstra;
-import websiteschema.mpsegment.graph.IGraph;
-import websiteschema.mpsegment.graph.Path;
-import websiteschema.mpsegment.graph.SingleMatrixGraph;
+import websiteschema.mpsegment.graph.*;
 
 public class MPSegment {
 
@@ -50,7 +47,8 @@ public class MPSegment {
     }
 
     private void initializeGraph() {
-        graph = new SingleMatrixGraph(1024);
+        graph = new Graph();
+//        graph = new SingleMatrixGraph(1024);
         dijk = new Dijkstra(1024);
     }
 

@@ -26,7 +26,9 @@ public class SegmentWorker {
                 sentence = sentence.substring(0, maxSegStrLength);
             }
             result = mpSegment.segmentMP(sentence, recognizePOS);
-            unKnownFilter.filter(result);
+            if (recognizePOS) {
+                unKnownFilter.filter(result);
+            }
         } else {
             result = new SegmentResult(0);
         }
@@ -39,6 +41,14 @@ public class SegmentWorker {
 
     public void setUseContextFreqSegment(boolean useContextFreqSegment) {
         mpSegment.setUseContextFreqSegment(useContextFreqSegment);
+    }
+
+    public boolean isRecognizePOS() {
+        return recognizePOS;
+    }
+
+    public void setRecognizePOS(boolean recognizePOS) {
+        this.recognizePOS = recognizePOS;
     }
     private SegmentResultFilter unKnownFilter;
     private int maxSegStrLength;

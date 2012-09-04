@@ -1,17 +1,12 @@
 package websiteschema.mpsegment.dict;
 
-import websiteschema.mpsegment.util.BufReader;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.HashMap;
 import websiteschema.mpsegment.conf.Configure;
+import websiteschema.mpsegment.util.BufReader;
 
 public class HeadIndexer {
-
-//    public HeadIndexer(RandomAccessFile randomaccessfile, POSArray posArray)
-//            throws IOException {
-//        iWordItems = null;
-//        load(randomaccessfile, posArray);
-//    }
 
     public HeadIndexer(BufReader bufreader, POSArray posArray)
             throws IOException {
@@ -37,10 +32,6 @@ public class HeadIndexer {
 
     public String getHeadWord() {
         return headWordString;
-    }
-
-    public IWord[] getWordItems() {
-        return iWordItems;
     }
 
     @Override
@@ -78,13 +69,15 @@ public class HeadIndexer {
         maxWordLength = 0;
         wordOccuredSum = 0;
         iWordItems = new WordImpl[numWordItem];
-        for (int k = 0; k < numWordItem; k++) {
+        indexMap = new HashMap<String, Integer>(numWordItem);
+        for (int i = 0; i < numWordItem; i++) {
             WordImpl worditem2 = new WordImpl(bufreader);
             wordOccuredSum += worditem2.getOccuredSum();
             if (maxWordLength < worditem2.getWordLength()) {
                 maxWordLength = worditem2.getWordLength();
             }
-            iWordItems[k] = worditem2;
+            iWordItems[i] = worditem2;
+            indexMap.put(worditem2.getWordName(), i);
             posArray.add(worditem2.getPOSArray());
         }
 
@@ -120,40 +113,6 @@ public class HeadIndexer {
         int i = lookupWordItem(s);
         if (i >= 0) {
             return iWordItems[i];
-        } else {
-            return null;
-        }
-    }
-
-    public IWord findWord(String s) {
-
-        int j = -1;
-        if (s.length() == 1) {
-            if (s.equals(iWordItems[0].getWordName())) {
-                return iWordItems[0];
-            } else {
-                return null;
-            }
-        }
-        int j1 = getMaxWordLength();
-        if (s.length() < j1) {
-            j1 = s.length();
-        }
-        for (int k1 = 1; k1 < j1; k1++) {
-            String s1 = s.substring(0, k1 + 1);
-            int i = lookupWordItem(s1);
-            if (i < 0) {
-                continue;
-            }
-
-            j = i;
-            if (j + 1 >= iWordItems.length || !iWordItems[j + 1].getWordName().startsWith(s1, 0)) {
-                break;
-            }
-        }
-
-        if (j >= 0) {
-            return iWordItems[j];
         } else {
             return null;
         }
@@ -209,90 +168,12 @@ public class HeadIndexer {
         }
     }
 
-    public IWord[] findWordStartWith(String s, int i) {
-        int j = 0;
-        int i1 = 0;
-        int j1 = getMaxWordLength();
-        if (s.length() < j1) {
-            j1 = s.length();
-        }
-        j = lookupWordItem2(s);
-        if (j < 0) {
-            j = -j;
-        }
-        i = s.length() + i;
-        if (j >= 0) {
-            for (int k = j; k < iWordItems.length; k++) {
-                String s1 = iWordItems[k].getWordName();
-                if (!s1.startsWith(s, 0)) {
-                    break;
-                }
-                if (s1.length() <= i) {
-                    i1++;
-                }
-            }
-
-            if (i1 >= 0) {
-                IWord aiworditem[] = new IWord[i1];
-                int l = j;
-                i1 = 0;
-                for (; l < iWordItems.length; l++) {
-                    String s2 = iWordItems[l].getWordName();
-                    if (!s2.startsWith(s, 0)) {
-                        break;
-                    }
-                    if (s2.length() <= i) {
-                        aiworditem[i1] = iWordItems[l];
-                        i1++;
-                    }
-                }
-
-                return aiworditem;
-            } else {
-                return null;
-            }
-        } else {
-            return null;
-        }
-    }
-
-    private int lookupWordItem(String s) {
-        int k = 0;
-        for (int l = iWordItems.length - 1; k <= l;) {
-            int i = (k + l) / 2;
-            int j = iWordItems[i].getWordName().compareTo(s);
-            if (j == 0) {
-                return i;
-            }
-            if (j < 0) {
-                k = i + 1;
-            } else {
-                l = i - 1;
-            }
-        }
-
-        return -1;
-    }
-
-    private int lookupWordItem2(String s) {
-        int k = 0;
-        for (int l = iWordItems.length - 1; k <= l;) {
-            int i = (k + l) / 2;
-            int j = iWordItems[i].getWordName().compareTo(s);
-            if (j == 0) {
-                return i;
-            }
-            if (j < 0) {
-                k = i + 1;
-            } else {
-                l = i - 1;
-            }
-        }
-
-        return -k;
+    private int lookupWordItem(String word) {
+        return indexMap.containsKey(word) ? indexMap.get(word) : -1;
     }
     private String headWordString;
     private int maxWordLength;
     private int wordOccuredSum;
     private IWord iWordItems[];
+    private HashMap<String, Integer> indexMap;
 }

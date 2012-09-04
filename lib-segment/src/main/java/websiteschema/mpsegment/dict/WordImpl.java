@@ -39,10 +39,17 @@ public class WordImpl
 
     @Override
     public POSArray getPOSArray() {
-        POSArray posArray = new POSArray();
-        for (int j = 0; j < wordPOSNumber; j++) {
-            String name = POSUtil.getPOSString(POSAndFreq.getPOS(indexOfPosDB + j));
-            int count = POSAndFreq.getFreq(indexOfPosDB + j);
+        if (null == posArray || posArray.getSize() != wordPOSNumber) {
+            return buildPOSArray();
+        }
+        return posArray;
+    }
+
+    private POSArray buildPOSArray() {
+        posArray = new POSArray();
+        for (int i = 0; i < wordPOSNumber; i++) {
+            String name = POSUtil.getPOSString(POSAndFreq.getPOS(indexOfPosDB + i));
+            int count = POSAndFreq.getFreq(indexOfPosDB + i);
             POS pos = new POS(name, count);
             posArray.add(pos);
         }
@@ -222,4 +229,5 @@ public class WordImpl
     private int log2Freq;
     private int indexOfPosDB;
     private int wordPOSNumber;
+    private POSArray posArray;
 }

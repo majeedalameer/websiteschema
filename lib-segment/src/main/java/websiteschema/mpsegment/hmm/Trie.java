@@ -20,22 +20,27 @@ public class Trie implements ISerialize {
     int count = 0;
     double prob = 0.0;
     Trie descendant[] = null;
+    private static TreeNodeSortor sortor = new TreeNodeBinarySort();
 
+    public static void setTreeNodeSorter(TreeNodeSortor treeNodeSortor) {
+        sortor = treeNodeSortor;
+    }
+    
     public int getKey() {
         return key;
     }
 
-    public void buildIndex(int c, TreeNodeSortor sortor) {
+    public void buildIndex(int c) {
         prob = (double) count / (double) (c + 1.0);
         if (null != descendant) {
             for (Trie node : descendant) {
-                node.buildIndex(count, sortor);
+                node.buildIndex(count);
             }
             sortor.sort(descendant);
         }
     }
 
-    public Trie insert(int[] ngram, TreeNodeSortor sortor) {
+    public Trie insert(int[] ngram) {
         count++;
         if (ngram.length > 0) {
             int k = ngram[0];
@@ -51,7 +56,7 @@ public class Trie implements ISerialize {
             for (int i = 1; i < ngram.length; i++) {
                 rec[i - 1] = ngram[i];
             }
-            return n.insert(rec, sortor);
+            return n.insert(rec);
         } else {
             return this;
         }

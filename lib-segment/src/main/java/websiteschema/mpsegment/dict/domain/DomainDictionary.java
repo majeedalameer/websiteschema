@@ -1,8 +1,12 @@
 package websiteschema.mpsegment.dict.domain;
 
-import websiteschema.mpsegment.dict.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import websiteschema.mpsegment.conf.Configure;
+import websiteschema.mpsegment.dict.DomainWordItem;
+import websiteschema.mpsegment.dict.IDictionary;
+import websiteschema.mpsegment.dict.IWord;
 
 public class DomainDictionary implements IDictionary {
 
@@ -36,6 +40,9 @@ public class DomainDictionary implements IDictionary {
         int index = arrayWordItem.size();
         wordNameIndexHashMap.put(wordName, index);
         arrayWordItem.add(word);
+        if(wordName.length() > maxWordLength) {
+            maxWordLength = wordName.length();
+        }
         return index;
     }
 
@@ -114,13 +121,13 @@ public class DomainDictionary implements IDictionary {
 
     @Override
     public IWord getWordItem(String wordName) {
-        int l1 = maxWordLength;
-        if (wordName.length() < l1) {
-            l1 = wordName.length();
+        int maxWordLen = maxWordLength;
+        if (wordName.length() < maxWordLen) {
+            maxWordLen = wordName.length();
         }
         DomainWordItem word = null;
-        for (int i2 = l1; i2 >= 2; i2--) {
-            String s2 = wordName.substring(0, i2);
+        for (int i = maxWordLen; i >= 2; i--) {
+            String s2 = wordName.substring(0, i);
             int wordIndex = getWordIndex(s2);
             if (wordIndex <= 0) {
                 continue;
@@ -159,7 +166,5 @@ public class DomainDictionary implements IDictionary {
     private List<DomainWordItem> arrayWordItem;
     private HashMap<Integer, Integer> synonymIndexHashMap;
     private HashMap<Integer, List<Integer>> synonymHashMap;
-    private int maxWordLength = Configure.getInstance().getMaxWordLength();
-    private int domainType = 200;
-    private int defaultFreq = 50;
+    private int maxWordLength = 0;
 }
