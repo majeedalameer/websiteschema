@@ -1,8 +1,10 @@
 package websiteschema.mpsegment.dict;
 
-import websiteschema.mpsegment.util.*;
 import java.io.*;
 import java.util.HashMap;
+import websiteschema.mpsegment.util.BufReader;
+import websiteschema.mpsegment.util.ByteArrayReader;
+import websiteschema.mpsegment.util.FileUtil;
 
 public class HashDictionary implements IDictionary {
 
@@ -11,7 +13,6 @@ public class HashDictionary implements IDictionary {
         wordOccuredSum = 0;
         wordCount = 0;
         posArray = null;
-        multiCandidate = true;
         if (!loaded) {
             loadDict(s);
             loaded = true;
@@ -42,10 +43,6 @@ public class HashDictionary implements IDictionary {
         headIndexersHashMap.clear();
     }
 
-    public void setMultiCandidate(boolean flag) {
-        multiCandidate = flag;
-    }
-
     public String dictoString() {
         StringBuilder stringbuffer = new StringBuilder();
         //不同首字数量
@@ -71,7 +68,6 @@ public class HashDictionary implements IDictionary {
 
     private synchronized void loadDict(String s) {
         try {
-//            ByteArrayReader bytearrayreader = new ByteArrayReader(new ReadDataFile().getData("segment.dict"));
             BufReader bytearrayreader = new ByteArrayReader(FileUtil.getResourceAsStream("segment.dict"));
             loadDict(bytearrayreader);
             bytearrayreader.close();
@@ -97,7 +93,7 @@ public class HashDictionary implements IDictionary {
             }
             wordCount += headindexer.getWordCount();
             headIndexers[i] = headindexer;
-            headIndexersHashMap.put(headindexer.getHeadWord(), headindexer);
+            headIndexersHashMap.put(headindexer.getHeadStr(), headindexer);
         }
 
     }
@@ -178,33 +174,33 @@ public class HashDictionary implements IDictionary {
         String head = wordStr.substring(0, 1);
         HeadIndexer headindexer = lookupHeadIndexer(head);
         if (headindexer != null) {
-            IWord aiworditem1[] = headindexer.findMultiWord(wordStr);
-            if (multiCandidate && aiworditem1 != null) {
-                return aiworditem1[0];
+            IWord word = headindexer.findWord(wordStr);
+            if (word != null) {
+                return word;
             }
         }
         return null;
     }
 
     @Override
-    public IWord[] getWordItems(String wordStr) {
-        String head = wordStr.substring(0, 1);
+    public IWord[] getWordItems(String sentenceStr) {
+        String head = sentenceStr.substring(0, 1);
         HeadIndexer headindexer = lookupHeadIndexer(head);
         if (headindexer != null) {
-            IWord aiworditem1[] = headindexer.findMultiWord(wordStr);
-            if (multiCandidate && aiworditem1 != null) {
-                return aiworditem1;
+            IWord words[] = headindexer.findMultiWord(sentenceStr);
+            if (words != null) {
+                return words;
             }
         }
         return null;
     }
 
-    public IWord getExactWordItem(String s) {
+    public IWord getExactWordItem(String wordStr) {
         IWord iworditem = null;
-        String s1 = s.substring(0, 1);
-        HeadIndexer headindexer = lookupHeadIndexer(s1);
+        String head = wordStr.substring(0, 1);
+        HeadIndexer headindexer = lookupHeadIndexer(head);
         if (headindexer != null) {
-            iworditem = headindexer.searchWord(s);
+            iworditem = headindexer.searchWord(wordStr);
         }
         return iworditem;
     }
@@ -215,5 +211,4 @@ public class HashDictionary implements IDictionary {
     private int wordOccuredSum;
     private int wordCount;
     private POSArray posArray;
-    private boolean multiCandidate;
 }

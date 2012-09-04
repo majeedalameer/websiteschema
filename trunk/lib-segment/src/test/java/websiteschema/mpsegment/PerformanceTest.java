@@ -121,14 +121,15 @@ public class PerformanceTest {
 
     public static void main(String[] args) throws IOException {
         System.out.println("Run for performance profile.");
+        SegmentWorker segmenter = SegmentEngine.getInstance().getSegmentWorker();
+        segmenter.setRecognizePOS(true);
+        segmenter.setUseContextFreqSegment(true);
+        segmenter.segment("世界您好！");
         while (true) {
             BufferedReader reader = new BufferedReader(
                     new InputStreamReader(
                     PerformanceTest.class.getClassLoader().getResourceAsStream("Sophie's_World.txt"), "UTF-8"));
-            SegmentWorker segmenter = SegmentEngine.getInstance().getSegmentWorker();
-            segmenter.setRecognizePOS(true);
-            segmenter.setUseContextFreqSegment(true);
-            segmenter.segment("世界您好！");
+
             String line;
             do {
                 line = reader.readLine();
@@ -137,5 +138,4 @@ public class PerformanceTest {
             segmenter.setUseContextFreqSegment(false);
         }
     }
-    
 }
