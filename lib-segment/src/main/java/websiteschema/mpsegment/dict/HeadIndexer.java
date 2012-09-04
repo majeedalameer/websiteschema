@@ -10,12 +10,8 @@ public class HeadIndexer {
 
     public HeadIndexer(BufReader bufreader, POSArray posArray)
             throws IOException {
-        iWordItems = null;
+        wordItems = null;
         load(bufreader, posArray);
-    }
-
-    public int getCapacity() {
-        return iWordItems.length;
     }
 
     public int getWordOccuredSum() {
@@ -23,25 +19,25 @@ public class HeadIndexer {
     }
 
     public int getWordCount() {
-        return iWordItems.length;
+        return wordItems.length;
     }
 
     public final int getMaxWordLength() {
         return maxWordLength;
     }
 
-    public String getHeadWord() {
-        return headWordString;
+    public String getHeadStr() {
+        return headStr;
     }
 
     @Override
     public String toString() {
         StringBuilder stringbuffer = new StringBuilder();
-        stringbuffer.append((new StringBuilder("首字:")).append(getHeadWord()).append("(不同词数量:").append(getCapacity()).toString());
+        stringbuffer.append((new StringBuilder("首字:")).append(getHeadStr()).append("(不同词数量:").append(getWordCount()).toString());
         stringbuffer.append((new StringBuilder(",最长词长度:")).append(getMaxWordLength()).toString());
         stringbuffer.append((new StringBuilder(",所有词的全部出现次数:")).append(getWordOccuredSum()).append(")\n").toString());
-        for (int i = 0; i < iWordItems.length; i++) {
-            IWord iworditem = iWordItems[i];
+        for (int i = 0; i < wordItems.length; i++) {
+            IWord iworditem = wordItems[i];
             stringbuffer.append(iworditem.toString());
         }
 
@@ -50,8 +46,8 @@ public class HeadIndexer {
 
     public String toDBFString() {
         StringBuilder stringbuffer = new StringBuilder();
-        for (int i = 0; i < iWordItems.length; i++) {
-            IWord iworditem = iWordItems[i];
+        for (int i = 0; i < wordItems.length; i++) {
+            IWord iworditem = wordItems[i];
             stringbuffer.append(iworditem.toDBFString());
             stringbuffer.append("\n");
         }
@@ -64,47 +60,50 @@ public class HeadIndexer {
         int headWordByte = bufreader.readIntByte();
         byte headWordBytes[] = new byte[headWordByte];
         bufreader.read(headWordBytes);
-        headWordString = new String(headWordBytes, Configure.getInstance().getFileEncoding());
+        headStr = new String(headWordBytes, Configure.getInstance().getFileEncoding());
         int numWordItem = bufreader.readInt();
         maxWordLength = 0;
         wordOccuredSum = 0;
-        iWordItems = new WordImpl[numWordItem];
+        wordItems = new WordImpl[numWordItem];
         indexMap = new HashMap<String, Integer>(numWordItem);
         for (int i = 0; i < numWordItem; i++) {
-            WordImpl worditem2 = new WordImpl(bufreader);
-            wordOccuredSum += worditem2.getOccuredSum();
-            if (maxWordLength < worditem2.getWordLength()) {
-                maxWordLength = worditem2.getWordLength();
+            WordImpl word = new WordImpl(bufreader);
+            wordOccuredSum += word.getOccuredSum();
+            if (maxWordLength < word.getWordLength()) {
+                maxWordLength = word.getWordLength();
             }
-            iWordItems[i] = worditem2;
-            indexMap.put(worditem2.getWordName(), i);
-            posArray.add(worditem2.getPOSArray());
+            wordItems[i] = word;
+            indexMap.put(word.getWordName(), i);
+            if(i == 0) {
+                headWord = word;
+            }
+            posArray.add(word.getPOSArray());
         }
 
     }
 
-    public String toText() {
+    public final String toText() {
         String ls = System.getProperty("line.separator");
         String space = " ";
         StringBuilder sb = new StringBuilder();
         sb.append("[headIndexer]").append(ls);
-        sb.append(headWordString).append(space);
-        sb.append(iWordItems.length).append(ls);
-        for (int i = 0; i < iWordItems.length; i++) {
-            sb.append(((WordImpl) iWordItems[i]).toText());
+        sb.append(headStr).append(space);
+        sb.append(wordItems.length).append(ls);
+        for (int i = 0; i < wordItems.length; i++) {
+            sb.append(((WordImpl) wordItems[i]).toText());
         }
         sb.append(ls);
         return sb.toString();
     }
 
-    public void save(RandomAccessFile randomaccessfile)
+    public final void save(RandomAccessFile randomaccessfile)
             throws IOException {
-        byte abyte0[] = headWordString.getBytes(Configure.getInstance().getFileEncoding());
+        byte abyte0[] = headStr.getBytes(Configure.getInstance().getFileEncoding());
         randomaccessfile.write((byte) abyte0.length);
         randomaccessfile.write(abyte0);
-        randomaccessfile.writeInt(getCapacity());
-        for (int i = 0; i < iWordItems.length; i++) {
-            iWordItems[i].save(randomaccessfile);
+        randomaccessfile.writeInt(getWordCount());
+        for (int i = 0; i < wordItems.length; i++) {
+            wordItems[i].save(randomaccessfile);
         }
 
     }
@@ -112,7 +111,7 @@ public class HeadIndexer {
     public IWord searchWord(String s) {
         int i = lookupWordItem(s);
         if (i >= 0) {
-            return iWordItems[i];
+            return wordItems[i];
         } else {
             return null;
         }
@@ -124,9 +123,9 @@ public class HeadIndexer {
         int secondWordIndex = -1;
         int thirdWordIndex = -1;
         if (wordStr.length() == 1) {
-            if (wordStr.equals(iWordItems[0].getWordName())) {
+            if (wordStr.equals(wordItems[0].getWordName())) {
                 IWord words[] = new IWord[1];
-                words[0] = iWordItems[0];
+                words[0] = headWord;
                 return words;
             } else {
                 return null;
@@ -148,32 +147,56 @@ public class HeadIndexer {
                 thirdWordIndex = firstWordIndex;
             }
             firstWordIndex = wordIndex;
-            if (firstWordIndex + 1 >= iWordItems.length || !iWordItems[firstWordIndex + 1].getWordName().startsWith(candidateWord, 0)) {
+            if (firstWordIndex + 1 >= wordItems.length || !wordItems[firstWordIndex + 1].getWordName().startsWith(candidateWord, 0)) {
                 break;
             }
         }
 
         if (firstWordIndex >= 0) {
             IWord words[] = new IWord[foundWordCount];
-            words[0] = iWordItems[firstWordIndex];
+            words[0] = wordItems[firstWordIndex];
             if (secondWordIndex > 0) {
-                words[1] = iWordItems[secondWordIndex];
+                words[1] = wordItems[secondWordIndex];
             }
             if (thirdWordIndex > 0) {
-                words[2] = iWordItems[thirdWordIndex];
+                words[2] = wordItems[thirdWordIndex];
             }
             return words;
         } else {
             return null;
         }
     }
+    
+    public IWord findWord(String wordStr) {
+        if (wordStr.length() == 1) {
+            if (wordStr.equals(headStr)) {
+                return headWord;
+            } else {
+                return null;
+            }
+        }
+        int maxWordLen = getMaxWordLength();
+        if (wordStr.length() < maxWordLen) {
+            maxWordLen = wordStr.length();
+        }
+        for (int i = 1; i < maxWordLen; i++) {
+            String candidateWord = wordStr.substring(0, i + 1);
+            IWord word = searchWord(candidateWord);
+            if (null == word) {
+                continue;
+            }
+            return word;
+        }
+        return null;
+    }
 
     private int lookupWordItem(String word) {
         return indexMap.containsKey(word) ? indexMap.get(word) : -1;
     }
-    private String headWordString;
+    private String headStr;
     private int maxWordLength;
     private int wordOccuredSum;
-    private IWord iWordItems[];
+    private IWord headWord;
+    private IWord wordItems[];
     private HashMap<String, Integer> indexMap;
 }
