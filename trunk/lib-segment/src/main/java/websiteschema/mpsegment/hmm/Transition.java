@@ -27,7 +27,7 @@ public class Transition implements ISerialize {
     }
 
     public void setSortor(TreeNodeSortor sortor) {
-        this.sortor = sortor;
+        Trie.setTreeNodeSorter(sortor);
     }
 
     public Transition() {
@@ -41,7 +41,7 @@ public class Transition implements ISerialize {
 
     public void setProb(int s1, int s2, double prob) {
         int[] ngram = new int[]{s1, s2};
-        Trie node = root.insert(ngram, sortor);
+        Trie node = root.insert(ngram);
         node.setProb(prob);
     }
 

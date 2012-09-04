@@ -1,9 +1,12 @@
 package websiteschema.mpsegment.dict;
 
-import websiteschema.mpsegment.util.BufReader;
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.HashMap;
 import org.apache.log4j.Logger;
+import websiteschema.mpsegment.util.BufReader;
 
 public class POSArray
         implements Serializable {
@@ -95,18 +98,24 @@ public class POSArray
     }
 
     public int[][] getWordPOSTable() {
+        if(null == arrayPOSAndFreq) {
+            arrayPOSAndFreq = buildPOSArray();
+        }
+        return arrayPOSAndFreq;
+    }
+
+    private int[][] buildPOSArray() {
         POS arrayPOS[] = new POS[getSize()];
         int i = 0;
         for (String name : posTable.keySet()) {
             arrayPOS[i++] = posTable.get(name);
         }
-        int arrayPOSAndFreq[][] = new int[arrayPOS.length][2];
+        int POSAndFreq[][] = new int[arrayPOS.length][2];
         for (int j = 0; j < arrayPOS.length; j++) {
-            arrayPOSAndFreq[j][0] = POSUtil.getPOSIndex(arrayPOS[j].getName());
-            arrayPOSAndFreq[j][1] = arrayPOS[j].getCount();
+            POSAndFreq[j][0] = POSUtil.getPOSIndex(arrayPOS[j].getName());
+            POSAndFreq[j][1] = arrayPOS[j].getCount();
         }
-
-        return arrayPOSAndFreq;
+        return POSAndFreq;
     }
 
     public int getWordPOSTable(int arrayPOSAndFreq[][]) {
@@ -239,4 +248,5 @@ public class POSArray
         return stringbuffer.toString();
     }
     HashMap<String, POS> posTable;
+    int arrayPOSAndFreq[][] = null;
 }
