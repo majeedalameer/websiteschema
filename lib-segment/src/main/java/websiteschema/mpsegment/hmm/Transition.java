@@ -45,32 +45,33 @@ public class Transition implements ISerialize {
         node.setProb(prob);
     }
 
-    public double getProb(int[] s) {
-        String[] ngram = new String[s.length];
-        for (int i = 0; i < s.length; i++) {
-            ngram[i] = stateBank.get(s[i]).getName();
+    private double getProb(int[] ngram) {
+        double ret;
+
+        Trie node = root.searchNode(ngram);
+        if (null != node) {
+            ret = node.getProb();
+        } else {
+            ret = 1.0 / root.getCount();
         }
-        return getProb(ngram, ngram.length);
+
+        return ret;
     }
 
     public double getCoProb(int[] c, int s) {
-        String[] ngram = new String[c.length + 1];
-        for (int i = 0; i < c.length; i++) {
-            ngram[i] = stateBank.get(c[i]).getName();
-        }
-        ngram[c.length] = stateBank.get(s).getName();
+        int[] ngram = new int[c.length + 1];
+        System.arraycopy(c, 0, ngram, 0, c.length);
+        ngram[c.length] = s;
 
         return getProb(ngram, ngram.length);
     }
 
     public double getProb(int s1, int s2) {
-        String[] ngram = new String[2];
-        ngram[0] = stateBank.get(s1).getName();
-        ngram[1] = stateBank.get(s2).getName();
+        int[] ngram = new int[]{s1,s2};
         return getProb(ngram, 2);
     }
 
-    public double getProb(String[] ngram, int n) {
+    public double getProb(int[] ngram, int n) {
         double ret = 0.00000001D;
 
         //bigram
@@ -79,7 +80,7 @@ public class Transition implements ISerialize {
         }
 
         for (int i = n; i > 0; i--) {
-            String[] igram = new String[i];
+            int[] igram = new int[i];
             for (int j = 1; j <= i; j++) {
                 igram[i - j] = ngram[n - j];
             }

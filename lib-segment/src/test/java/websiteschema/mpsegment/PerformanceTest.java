@@ -123,9 +123,9 @@ public class PerformanceTest {
         System.out.println("Run for performance profile.");
         SegmentWorker segmenter = SegmentEngine.getInstance().getSegmentWorker();
         segmenter.setRecognizePOS(true);
-        segmenter.setUseContextFreqSegment(true);
         segmenter.segment("世界您好！");
         while (true) {
+            segmenter.setUseContextFreqSegment(true);
             BufferedReader reader = new BufferedReader(
                     new InputStreamReader(
                     PerformanceTest.class.getClassLoader().getResourceAsStream("Sophie's_World.txt"), "UTF-8"));

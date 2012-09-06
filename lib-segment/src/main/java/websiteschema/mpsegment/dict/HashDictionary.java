@@ -95,24 +95,6 @@ public class HashDictionary implements IDictionary {
             headIndexers[i] = headindexer;
             headIndexersHashMap.put(headindexer.getHeadStr(), headindexer);
         }
-
-    }
-
-    public String toText() {
-        String line = System.getProperty("line.separator");
-        StringBuilder sb = new StringBuilder();
-        sb.append("//segment.dict").append(line);
-        // number of head indexers
-        sb.append("[headIndexers.length]").append(line);
-        sb.append(headIndexers.length).append(line);
-        sb.append("//iWordItems: wordName logFreq posDBBase wordPOSTable ").append(line);
-        //Head Indexers
-        sb.append("[HeadIndexers]").append(line);
-        for (int i = 0; i < headIndexers.length; i++) {
-            sb.append(headIndexers[i].toText());
-        }
-
-        return sb.toString();
     }
 
     public void saveDict(RandomAccessFile randomaccessfile) {
@@ -200,7 +182,7 @@ public class HashDictionary implements IDictionary {
         String head = wordStr.substring(0, 1);
         HeadIndexer headindexer = lookupHeadIndexer(head);
         if (headindexer != null) {
-            iworditem = headindexer.searchWord(wordStr);
+            iworditem = headindexer.get(wordStr);
         }
         return iworditem;
     }
