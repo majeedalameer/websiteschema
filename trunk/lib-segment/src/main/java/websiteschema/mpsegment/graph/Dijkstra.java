@@ -2,7 +2,7 @@ package websiteschema.mpsegment.graph;
 
 import java.util.*;
 
-public class Dijkstra {
+public class Dijkstra implements IShortestPath {
 
     public class PriorityQueue {
 
@@ -115,8 +115,9 @@ public class Dijkstra {
         backTracelMap = new ArrayMap(maxGraphSize);
     }
 
-    public void setGraph(IGraph iigraph) {
-        graph = iigraph;
+    @Override
+    public void setGraph(IGraph graph) {
+        this.graph = graph;
     }
 
     /**
@@ -187,6 +188,7 @@ public class Dijkstra {
      * @param j
      * @return
      */
+    @Override
     public Path getShortestPath(int start, int end) {
         checkIllegalParams(start);
         checkIllegalParams(end);
@@ -229,5 +231,5 @@ public class Dijkstra {
     private PriorityQueue reachedVertexQueue;
     private ArrayMap verticesToDistanceMap;
     private ArrayMap backTracelMap;
-    private ArrayList list;
+    private ArrayList<Integer> list;
 }

@@ -9,7 +9,6 @@ import org.junit.Test;
 import websiteschema.mpsegment.dict.DomainWordItem;
 
 /**
- *
  * @author ray
  */
 public class WordItemTest {

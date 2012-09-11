@@ -4,6 +4,7 @@
  */
 package websiteschema.mpsegment.graph;
 
+import websiteschema.mpsegment.conf.Configure;
 import websiteschema.mpsegment.dict.IWord;
 
 /**
@@ -12,8 +13,12 @@ import websiteschema.mpsegment.dict.IWord;
  */
 public class Graph implements IGraph {
 
-    private SparseMatrix<IWord> matrix = new SparseMatrix<IWord>(1024);
+    private final static int size = Configure.SectionSize();
+    private SparseMatrix<IWord> matrix = new SparseMatrix<IWord>(size);
 
+    public Graph() {
+    }
+    
     @Override
     public void addVertex() {
     }

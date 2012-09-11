@@ -8,7 +8,6 @@ import websiteschema.mpsegment.dict.domain.DomainDictLoader;
 import websiteschema.mpsegment.dict.domain.DomainDictionary;
 
 /**
- *
  * @author ray
  */
 public class SimpleDomainDictLoader implements DomainDictLoader {

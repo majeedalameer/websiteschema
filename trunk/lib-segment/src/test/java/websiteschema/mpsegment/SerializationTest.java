@@ -7,12 +7,12 @@ package websiteschema.mpsegment;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.junit.Assert;
 import org.junit.Test;
 import websiteschema.mpsegment.util.SerializeHandler;
 
 /**
- *
  * @author ray
  */
 public class SerializationTest {
@@ -67,7 +67,7 @@ public class SerializationTest {
 
     @Test
     public void should_serialize_2d_array_and_deserialize_it() {
-        int[][] array = new int[][]{{1, 2, 3, 4},{ 5, 6, 7, 8}};
+        int[][] array = new int[][]{{1, 2, 3, 4}, {5, 6, 7, 8}};
         String filename = "test-map.dat";
         File file = new File(filename);
         try {

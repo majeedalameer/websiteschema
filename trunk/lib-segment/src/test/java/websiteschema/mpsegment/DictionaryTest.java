@@ -10,13 +10,14 @@ import websiteschema.mpsegment.dict.IWord;
 import websiteschema.mpsegment.core.SegmentEngine;
 import websiteschema.mpsegment.core.SegmentResult;
 import websiteschema.mpsegment.core.SegmentWorker;
+
 import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 import websiteschema.mpsegment.conf.Configure;
 
 /**
- *
  * @author ray
  */
 public class DictionaryTest {

@@ -1,6 +1,5 @@
 package websiteschema.mpsegment.graph;
 
-import java.util.Arrays;
 import websiteschema.mpsegment.dict.IWord;
 
 public class SingleMatrixGraph implements IGraph {

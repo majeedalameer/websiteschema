@@ -10,7 +10,6 @@ import websiteschema.mpsegment.dict.POS;
 import websiteschema.mpsegment.dict.POSArray;
 
 /**
- *
  * @author ray
  */
 public class POSArrayTest {

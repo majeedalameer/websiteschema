@@ -10,7 +10,6 @@ import websiteschema.mpsegment.util.NumberUtil;
 
 
 /**
- *
  * @author ray
  */
 public class ChineseNumberTest {
@@ -21,7 +20,7 @@ public class ChineseNumberTest {
         Assert.assertEquals((new StringBuilder("digital=")).append(NumberUtil.ChineseToEnglishNumberStr("1998.8")).toString(), "digital=");
         Assert.assertEquals(NumberUtil.ChineseToEnglishNumberStr("千万分之一.五"), "千万分之1.5");
         Assert.assertEquals(NumberUtil.ChineseToEnglishNumberStr("七十亿零陆十五万四千三百二十"), "7000654320");
-        assert(NumberUtil.ChineseToEnglishNumber("负零点二三五六") + 0.2356D < 0.000001D);
+        assert (NumberUtil.ChineseToEnglishNumber("负零点二三五六") + 0.2356D < 0.000001D);
         Assert.assertEquals(NumberUtil.ChineseToEnglishNumberStr("贰百叁十肆万"), "2340000");
         Assert.assertEquals(NumberUtil.ChineseToEnglishNumberStr("零壹贰叁肆伍陆柒捌玖拾"), "123456799");
     }

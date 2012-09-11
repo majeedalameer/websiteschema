@@ -5,12 +5,12 @@
 package websiteschema.mpsegment;
 
 import java.io.File;
+
 import org.junit.Assert;
 import org.junit.Test;
 import websiteschema.mpsegment.dict.ChNameDictionary;
 
 /**
- *
  * @author ray
  */
 public class ChineseNameDictionaryTest {

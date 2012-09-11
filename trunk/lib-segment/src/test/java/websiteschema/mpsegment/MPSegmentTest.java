@@ -12,7 +12,6 @@ import websiteschema.mpsegment.core.SegmentWorker;
 import websiteschema.mpsegment.dict.POSUtil;
 
 /**
- *
  * @author ray
  */
 public class MPSegmentTest {
@@ -31,14 +30,6 @@ public class MPSegmentTest {
         Assert.assertEquals(words.getPOS(1), POSUtil.POS_NS);
     }
 
-//    @Test
-//    public void should_Know_Some_Foreign_Names() {
-//        String str = "基里连科的世界";
-//        SegmentEngine engine = SegmentEngine.getInstance();
-//        SegmentWorker worker = engine.getSegmentWorker();
-//        SegmentResult words = worker.segment(str);
-//        System.out.println(words);
-//    }
     @Test
     public void should_Know_Some_Chinese_Names() {
         String str = "张三丰创造了太极拳。";
