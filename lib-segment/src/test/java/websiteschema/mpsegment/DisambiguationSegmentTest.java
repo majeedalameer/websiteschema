@@ -11,7 +11,6 @@ import websiteschema.mpsegment.core.SegmentResult;
 import websiteschema.mpsegment.core.SegmentWorker;
 
 /**
- *
  * @author ray
  */
 public class DisambiguationSegmentTest {
@@ -135,7 +134,7 @@ public class DisambiguationSegmentTest {
         Assert.assertEquals(words.getWord(1), "把");
         System.out.println(words);
     }
-    
+
     @Test
     public void should_know_General_and_Would() {
         String str = "产量三年中 将增长两倍。";

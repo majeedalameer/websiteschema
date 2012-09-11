@@ -1,6 +1,8 @@
 package websiteschema.mpsegment.graph;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class Path
         implements Cloneable {
@@ -9,8 +11,8 @@ public class Path
         vertexList = new ArrayList();
     }
 
-    public Path(List list) {
-        vertexList = (ArrayList) list;
+    public Path(List<Integer> list) {
+        vertexList = list;
     }
 
     public void Clear() {
@@ -21,8 +23,8 @@ public class Path
         return vertexList.size() - 1;
     }
 
-    public Path addVertex(Object obj) {
-        vertexList.add(obj);
+    public Path addVertex(int vertex) {
+        vertexList.add(vertex);
         return this;
     }
 
@@ -44,17 +46,17 @@ public class Path
         return vertexList.get(vertexList.size() - 1);
     }
 
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        Path path = null;
-        try {
-            path = (Path) super.clone();
-        } catch (CloneNotSupportedException ex) {
-            throw ex;
-        }
-        path.vertexList = (ArrayList) vertexList.clone();
-        return path;
-    }
+//    @Override
+//    public Object clone() throws CloneNotSupportedException {
+//        Path path = null;
+//        try {
+//            path = (Path) super.clone();
+//        } catch (CloneNotSupportedException ex) {
+//            throw ex;
+//        }
+//        path.vertexList = (ArrayList) vertexList.clone();
+//        return path;
+//    }
 
     @Override
     public String toString() {
@@ -70,5 +72,5 @@ public class Path
         }
         return s;
     }
-    private ArrayList vertexList;
+    private List<Integer> vertexList;
 }

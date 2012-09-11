@@ -13,7 +13,6 @@ import websiteschema.mpsegment.dict.HashDictionary;
 import websiteschema.mpsegment.util.FileUtil;
 
 /**
- *
  * @author ray
  */
 public class HashDictionaryTest {

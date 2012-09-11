@@ -49,7 +49,8 @@ public class MPSegment {
     private void initializeGraph() {
         graph = new Graph();
 //        graph = new SingleMatrixGraph(1024);
-        dijk = new Dijkstra(1024);
+//        dijk = new Dijkstra(1024);
+        dijk = new DijkstraImpl();
     }
 
     private void initializePOSTagging() {
@@ -270,7 +271,7 @@ public class MPSegment {
     private int maxWordLength;
     private boolean loadDomainDictionary = Configure.getInstance().isLoadDomainDictionary();
     private boolean loadUserDictionary = Configure.getInstance().isLoadUserDictionary();
-    private Dijkstra dijk;
+    private IShortestPath dijk;
     private IGraph graph;
     private IPOSRecognizer posTagging;
     private boolean useCache;

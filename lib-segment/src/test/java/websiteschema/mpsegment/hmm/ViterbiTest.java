@@ -6,10 +6,11 @@ package websiteschema.mpsegment.hmm;
 
 import java.util.Arrays;
 import java.util.List;
+
 import junit.framework.Assert;
 import org.junit.Test;
+
 /**
- *
  * @author ray
  */
 public class ViterbiTest {
@@ -18,13 +19,13 @@ public class ViterbiTest {
     public void should_return_status_333332_with_giving_observes_THTHTH() {
         Viterbi viterbi = new Viterbi();
         TreeNodeSortor sortor = new TreeNodeBinarySort();
-        
+
         viterbi.setSortor(sortor);
 
         initTestData(viterbi);
         viterbi.setN(2);
 
-        List<String> o = Arrays.asList(new String[]{ "T", "H", "T", "H", "T", "H" });
+        List<String> o = Arrays.asList(new String[]{"T", "H", "T", "H", "T", "H"});
         try {
             List<Node> s;
             s = viterbi.caculateWithLog(o);
@@ -41,10 +42,10 @@ public class ViterbiTest {
 
     @Test
     public void should_handle_unknown_State() {
-        List<String> o = Arrays.asList(new String[]{"A","H"});
+        List<String> o = Arrays.asList(new String[]{"A", "H"});
         Viterbi viterbi = new Viterbi();
         TreeNodeSortor sortor = new TreeNodeBinarySort();
-        
+
         viterbi.setSortor(sortor);
 
         initTestData(viterbi);

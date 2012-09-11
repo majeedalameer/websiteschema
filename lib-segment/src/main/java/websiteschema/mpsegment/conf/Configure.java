@@ -32,6 +32,10 @@ public final class Configure {
         return homePath;
     }
 
+    public static int SectionSize() {
+        return 1024;
+    }
+
     public void setHomePath(String path) {
         int i1 = path.length();
         if (i1 >= 1) {

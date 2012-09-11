@@ -8,8 +8,8 @@ package websiteschema.mpsegment;
 import org.junit.Assert;
 import org.junit.Test;
 import websiteschema.mpsegment.core.UnknownWordCache;
+
 /**
- *
  * @author ray
  */
 public class UnknownWordCacheTest {
@@ -20,9 +20,9 @@ public class UnknownWordCacheTest {
         cache.getNewWordItem("A");
         cache.getNewWordItem("B");
         cache.getNewWordItem("C");
-        assert(!cache.contains("A"));
-        assert(cache.contains("B"));
-        assert(cache.contains("C"));
+        assert (!cache.contains("A"));
+        assert (cache.contains("B"));
+        assert (cache.contains("C"));
     }
 
 }

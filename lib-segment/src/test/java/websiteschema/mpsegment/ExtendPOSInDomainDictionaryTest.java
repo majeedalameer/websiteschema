@@ -11,7 +11,6 @@ import websiteschema.mpsegment.core.SegmentResult;
 import junit.framework.TestCase;
 
 /**
- *
  * @author taskmgr
  */
 public class ExtendPOSInDomainDictionaryTest extends TestCase {

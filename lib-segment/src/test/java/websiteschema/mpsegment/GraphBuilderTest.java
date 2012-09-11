@@ -5,6 +5,7 @@
 package websiteschema.mpsegment;
 
 import java.util.Map;
+
 import org.junit.Assert;
 import org.junit.Test;
 import websiteschema.mpsegment.core.GraphBuilder;
@@ -12,7 +13,6 @@ import websiteschema.mpsegment.core.UnknownWordCache;
 import websiteschema.mpsegment.dict.DictionaryFactory;
 
 /**
- *
  * @author ray
  */
 public class GraphBuilderTest {
