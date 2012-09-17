@@ -4,6 +4,8 @@
  */
 package websiteschema.mpsegment.dict;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 
 
@@ -16,6 +18,8 @@ public interface IWordArray {
     public IWord find(String word);
     
     public IWord[] getWordItems();
+
+    public void add(IWord word);
 }
 
 
@@ -34,6 +38,20 @@ class BinaryWordArray implements IWordArray {
             return wordItems[index];
         }
         return null;
+    }
+
+    @Override
+    public void add(IWord word) {
+        IWord[] temp = new IWord[wordItems.length + 1];
+        System.arraycopy(wordItems, 0, temp, 0, wordItems.length);
+        temp[wordItems.length] = word;
+        Arrays.sort(temp, new Comparator<IWord>() {
+            @Override
+            public int compare(IWord o1, IWord o2) {
+                return o1.getWordName().compareTo(o2.getWordName());
+            }
+        });
+        wordItems = temp;
     }
 
     private int lookupWordItem(String word) {
@@ -87,6 +105,11 @@ class HashWordArray implements IWordArray {
     @Override
     public IWord[] getWordItems() {
         return wordItems;
+    }
+
+    @Override
+    public void add(IWord word) {
+        throw new UnsupportedOperationException();
     }
 }
 

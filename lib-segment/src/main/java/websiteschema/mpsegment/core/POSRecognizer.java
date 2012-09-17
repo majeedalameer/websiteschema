@@ -20,10 +20,9 @@ import websiteschema.mpsegment.util.SerializeHandler;
  *
  * @author twer
  */
-public class POSRecognizer implements IPOSRecognizer, ISerialize {
+public class POSRecognizer implements IPOSRecognizer {
 
-    private final static String posDataResource = "websiteschema/mpsegment/pos.dat";
-    private Viterbi viterbi;
+    private final Viterbi viterbi;
     private IGraph graph;
     private Path path;
     private int[] posFreq;
@@ -31,16 +30,8 @@ public class POSRecognizer implements IPOSRecognizer, ISerialize {
 
     public POSRecognizer() {
         viterbi = new Viterbi();
-        TreeNodeSortor sortor = new TreeNodeBinarySort();
-        viterbi.setSortor(sortor);
-        try {
-            SerializeHandler readHandler = new SerializeHandler(
-                    new DataInputStream(
-                    POSRecognizer.class.getClassLoader().getResourceAsStream(posDataResource)));
-            load(readHandler);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
+        viterbi.setSortor(new TreeNodeQuickSort());
+        load();
     }
 
     private void initViterbiWithEmissionAndObserve() {
@@ -90,7 +81,7 @@ public class POSRecognizer implements IPOSRecognizer, ISerialize {
         this.graph = graph;
         initViterbiWithEmissionAndObserve();
         try {
-            List<Node> stateList = viterbi.caculateWithLog(observeList);
+            List<Node> stateList = viterbi.calculateWithLog(observeList);
             int[] posArray = new int[stateList.size()];
             int i = 0;
             for (Node state : stateList) {
@@ -102,7 +93,6 @@ public class POSRecognizer implements IPOSRecognizer, ISerialize {
         }
     }
 
-    @Override
     public void save(SerializeHandler writeHandler) throws IOException {
         writeHandler.serializeArrayInt(posFreq);
         viterbi.getTran().save(writeHandler);
@@ -110,11 +100,10 @@ public class POSRecognizer implements IPOSRecognizer, ISerialize {
         viterbi.getStateBank().save(writeHandler);
     }
 
-    @Override
-    public final void load(SerializeHandler readHandler) throws IOException {
-        posFreq = readHandler.deserializeArrayInt();
-        viterbi.getTran().load(readHandler);
-        viterbi.getPi().load(readHandler);
-        viterbi.getStateBank().load(readHandler);
+    public final void load() {
+        posFreq = POSResources.getInstance().getPosFreq();
+        viterbi.setTran(POSResources.getInstance().getTransition());
+        viterbi.setPi(POSResources.getInstance().getPi());
+        viterbi.setStateBank(POSResources.getInstance().getStateBank());
     }
 }

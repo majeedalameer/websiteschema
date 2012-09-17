@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package websiteschema.mpsegment;
+package websiteschema.mpsegment.dict;
 
 import org.junit.Assert;
 import org.junit.Test;

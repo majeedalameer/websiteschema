@@ -83,7 +83,7 @@ public class Viterbi {
         return ret;
     }
 
-    private HmmResult caculateHmmResult(List<String> listObserve) throws ObserveListException {
+    private HmmResult calculateHmmResult(List<String> listObserve) throws ObserveListException {
         HmmResult ret = new HmmResult();
 
         if (listObserve.isEmpty()) {
@@ -163,10 +163,8 @@ public class Viterbi {
         return ret;
     }
 
-    public List<Node> caculateWithLog(List<String> listObserve) throws ObserveListException {
-        List<Node> path = new ArrayList<Node>();
-        HmmResult ret = caculateHmmResult(listObserve);
-        //
+    public List<Node> calculateWithLog(List<String> listObserve) throws ObserveListException {
+        HmmResult ret = calculateHmmResult(listObserve);
         double maxProb = Double.NEGATIVE_INFINITY;
         int pos = 0;
         for (int j = 0; j < ret.delta[listObserve.size() - 1].length; j++) {
@@ -178,6 +176,7 @@ public class Viterbi {
         }
 
         int[] statePath = getStatePath(ret.states, ret.psai, listObserve.size() - 1, listObserve.size(), pos);
+        List<Node> path = new ArrayList<Node>();
         for (int state : statePath) {
             path.add(stateBank.get(state));
         }

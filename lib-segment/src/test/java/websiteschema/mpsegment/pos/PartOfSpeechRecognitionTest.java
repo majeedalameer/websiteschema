@@ -65,7 +65,7 @@ public class PartOfSpeechRecognitionTest {
         POSRecognizer recognizer = new POSRecognizer();
         File file = new File("pos.dat");
         SerializeHandler readHandler = new SerializeHandler(file, SerializeHandler.MODE_READ_ONLY);
-        recognizer.load(readHandler);
+        recognizer.load();
         file.deleteOnExit();
     }
 }
