@@ -48,8 +48,6 @@ public class MPSegment {
 
     private void initializeGraph() {
         graph = new Graph();
-//        graph = new SingleMatrixGraph(1024);
-//        dijk = new Dijkstra(1024);
         dijk = new DijkstraImpl();
     }
 

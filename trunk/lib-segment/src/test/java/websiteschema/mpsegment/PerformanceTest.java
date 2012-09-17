@@ -119,7 +119,7 @@ public class PerformanceTest {
     }
 
     @Test
-    public void should_spend_memory_within_50_MB() throws IOException, InterruptedException {
+    public void should_spend_memory_within_40_MB() throws IOException, InterruptedException {
         BufferedReader reader = new BufferedReader(
                 new InputStreamReader(
                         getClass().getClassLoader().getResourceAsStream("Sophie's_World.txt"), "UTF-8"));
@@ -128,11 +128,9 @@ public class PerformanceTest {
         segmentWorker.setUseContextFreqSegment(true);
         segmentWorker.segment("世界您好！");
         String line;
-        int total = 0;
         do {
             line = reader.readLine();
-            SegmentResult result = segmentWorker.segment(line);
-            total += result.length();
+            segmentWorker.segment(line);
         } while (null != line);
         segmentWorker.setUseContextFreqSegment(false);
         Runtime.getRuntime().gc();
@@ -140,7 +138,7 @@ public class PerformanceTest {
         long totalMemory = Runtime.getRuntime().totalMemory();
         long freeMemory = Runtime.getRuntime().freeMemory();
         long memorySize = (totalMemory - freeMemory) / 1024 / 1024;
-        System.out.println("should_spend_memory_within_50_MB");
+        System.out.println("should_spend_memory_within_40_MB");
         System.out.println("    Current application has taken " + memorySize + "MB memory size.");
         Assert.assertTrue(memorySize < 40);
     }

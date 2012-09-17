@@ -10,13 +10,13 @@ public class WordImpl
     public WordImpl(String wordName) {
         log2Freq = 0;
         this.wordName = wordName;
-        domaintype = 0;
+        domainType = 0;
     }
 
     public WordImpl(String wordName, int i) {
         log2Freq = 0;
         this.wordName = wordName;
-        domaintype = i;
+        domainType = i;
     }
 
     public WordImpl(BufReader bufreader)
@@ -93,12 +93,12 @@ public class WordImpl
 
     @Override
     public void setDomainType(int i) {
-        domaintype = i;
+        domainType = i;
     }
 
     @Override
     public int getDomainType() {
-        return domaintype;
+        return domainType;
     }
 
     @Override
@@ -137,8 +137,8 @@ public class WordImpl
         byte abyte0[] = new byte[byte0];
         randomaccessfile.read(abyte0);
         wordName = new String(abyte0, Configure.getInstance().getFileEncoding());
-        domaintype = randomaccessfile.readInt();
-        domaintype /= 100;
+        domainType = randomaccessfile.readInt();
+        domainType /= 100;
         indexOfPosDB = randomaccessfile.readInt();
         wordPOSNumber = randomaccessfile.readInt();
     }
@@ -148,7 +148,7 @@ public class WordImpl
         StringBuilder sb = new StringBuilder();
 
         sb.append(wordName).append(space);
-        sb.append(domaintype).append(space);
+        sb.append(domainType).append(space);
         sb.append(indexOfPosDB).append(space);
         sb.append(wordPOSNumber).append(space);
         return sb.toString();
@@ -160,8 +160,8 @@ public class WordImpl
         byte wordNameBytes[] = new byte[i];
         bufreader.read(wordNameBytes);
         wordName = new String(wordNameBytes, Configure.getInstance().getFileEncoding());
-        domaintype = bufreader.readInt();
-        domaintype /= 100;
+        domainType = bufreader.readInt();
+        domainType /= 100;
         indexOfPosDB = bufreader.readInt();
         wordPOSNumber = bufreader.readInt();
     }
@@ -172,8 +172,8 @@ public class WordImpl
         byte abyte0[] = wordName.getBytes(Configure.getInstance().getFileEncoding());
         randomaccessfile.write((byte) abyte0.length);
         randomaccessfile.write(abyte0);
-        domaintype *= 100;
-        int i = domaintype;
+        domainType *= 100;
+        int i = domainType;
         randomaccessfile.writeInt(i);
         randomaccessfile.writeInt(indexOfPosDB);
         randomaccessfile.writeInt(wordPOSNumber);
@@ -205,27 +205,27 @@ public class WordImpl
 
     @Override
     public String toString() {
-        StringBuilder stringbuffer = new StringBuilder();
-        stringbuffer.append((new StringBuilder(String.valueOf(getWordName()))).append("\n").toString());
-        stringbuffer.append(getPOSArray().toString());
-        return stringbuffer.toString();
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append((new StringBuilder(String.valueOf(getWordName()))).append("\n").toString());
+        stringBuilder.append(getPOSArray().toString());
+        return stringBuilder.toString();
     }
 
     @Override
     public String toWordString() {
-        StringBuilder stringbuffer = new StringBuilder();
-        stringbuffer.append((new StringBuilder(String.valueOf(getWordName()))).append("\\").toString());
-        return stringbuffer.toString();
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append((new StringBuilder(String.valueOf(getWordName()))).append("\\").toString());
+        return stringBuilder.toString();
     }
 
     @Override
     public String toDBFString() {
-        StringBuilder stringbuffer = new StringBuilder();
-        stringbuffer.append(getPOSArray().toDBFString(getWordName()));
-        return stringbuffer.toString();
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(getPOSArray().toDBFString(getWordName()));
+        return stringBuilder.toString();
     }
     private String wordName;
-    private int domaintype;
+    private int domainType;
     private int log2Freq;
     private int indexOfPosDB;
     private int wordPOSNumber;

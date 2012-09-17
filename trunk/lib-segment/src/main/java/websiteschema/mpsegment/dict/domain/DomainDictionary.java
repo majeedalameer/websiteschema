@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import websiteschema.mpsegment.conf.Configure;
 import websiteschema.mpsegment.dict.DomainWordItem;
+import websiteschema.mpsegment.dict.HeadIndexer;
 import websiteschema.mpsegment.dict.IDictionary;
 import websiteschema.mpsegment.dict.IWord;
 
@@ -55,7 +56,7 @@ public class DomainDictionary implements IDictionary {
     }
 
     public void pushWord(String wordName, String synonym, String pos, int freq, int domainType) {
-        if (wordName == null || wordName.trim().equals("") || pos == null || pos.trim().equals("")) {
+        if (wordName == null || wordName.trim().equals("") || pos == null || pos.trim().equals("") || wordName.trim().length() < 2) {
             return;
         }
         wordName = wordName.trim();
@@ -162,6 +163,8 @@ public class DomainDictionary implements IDictionary {
     public IWord[] getWordItems(String wordStr) {
         return new IWord[]{getWordItem(wordStr)};
     }
+
+    private HashMap<String, HeadIndexer> headIndexerHashMap = new HashMap<String, HeadIndexer>();
     private HashMap<String, Integer> wordNameIndexHashMap;
     private List<DomainWordItem> arrayWordItem;
     private HashMap<Integer, Integer> synonymIndexHashMap;

@@ -56,7 +56,7 @@ public final class Configure {
         try {
             segment_maximumthreads = Integer.parseInt(prop.getProperty("segment.maximumthreads", "2").trim());
             segment_dict = prop.getProperty("cnnlp.lexical.segment.MPSegment", "segment.dict");
-            POSMatrix_fre = prop.getProperty("cnnlp.lexical.segment.POSTagging", "POSMatrix.fre");
+            POSMatrix_fre = prop.getProperty("cnnlp.lexical.segment.POSTagging", "pos.dat");
             NamePOSMatrix_fre = prop.getProperty("cnnlp.lexical.segment.NameTagging", "NamePOSMatrix.fre");
             ChNameDict = prop.getProperty("cnnlp.lexical.segment.ChNameDict", "ChName.dict");
             word_freq = prop.getProperty("ir.wordfreq", "word.freq");

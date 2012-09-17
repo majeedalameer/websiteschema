@@ -28,7 +28,7 @@ public class ViterbiTest {
         List<String> o = Arrays.asList(new String[]{"T", "H", "T", "H", "T", "H"});
         try {
             List<Node> s;
-            s = viterbi.caculateWithLog(o);
+            s = viterbi.calculateWithLog(o);
             StringBuilder sb = new StringBuilder();
             for (Node state : s) {
                 System.out.print(state.getName() + " ");
@@ -53,7 +53,7 @@ public class ViterbiTest {
 
         try {
             List<Node> s;
-            s = viterbi.caculateWithLog(o);
+            s = viterbi.calculateWithLog(o);
             StringBuilder sb = new StringBuilder();
             for (Node state : s) {
                 System.out.print(state.getName() + " ");

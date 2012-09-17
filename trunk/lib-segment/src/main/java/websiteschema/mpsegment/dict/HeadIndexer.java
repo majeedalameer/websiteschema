@@ -13,6 +13,24 @@ public class HeadIndexer {
         load(bufreader, posArray);
     }
 
+    public HeadIndexer(IWord headWord) {
+        this.headStr = headWord.getWordName().substring(0, 1);
+        this.headWord = headWord;
+        wordCount = 1;
+        wordOccuredSum = 1;
+        maxWordLength = headStr.length();
+        wordArray = new BinaryWordArray(new IWord[]{this.headWord});
+    }
+
+    public HeadIndexer(IWord headWord, int headLength) {
+        this.headStr = headWord.getWordName().substring(0, headLength);
+        this.headWord = headWord;
+        wordCount = 1;
+        wordOccuredSum = 1;
+        maxWordLength = headStr.length();
+        wordArray = new BinaryWordArray(new IWord[]{this.headWord});
+    }
+
     public int getWordOccuredSum() {
         return wordOccuredSum;
     }
@@ -29,31 +47,45 @@ public class HeadIndexer {
         return headStr;
     }
 
+    public void add(IWord word) {
+        String wordName = word.getWordName();
+        if(get(wordName) == null) {
+            if(wordName.startsWith(headStr)) {
+                if(wordName.length() > getMaxWordLength()) {
+                    maxWordLength = wordName.length();
+                }
+                wordCount++;
+                wordOccuredSum++;
+                wordArray.add(word);
+            }
+        }
+    }
+
     @Override
     public String toString() {
-        StringBuilder stringbuffer = new StringBuilder();
-        stringbuffer.append((new StringBuilder("首字:")).append(getHeadStr()).append("(不同词数量:").append(getWordCount()).toString());
-        stringbuffer.append((new StringBuilder(",最长词长度:")).append(getMaxWordLength()).toString());
-        stringbuffer.append((new StringBuilder(",所有词的全部出现次数:")).append(getWordOccuredSum()).append(")\n").toString());
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append((new StringBuilder("首字:")).append(getHeadStr()).append("(不同词数量:").append(getWordCount()).toString());
+        stringBuilder.append((new StringBuilder(",最长词长度:")).append(getMaxWordLength()).toString());
+        stringBuilder.append((new StringBuilder(",所有词的全部出现次数:")).append(getWordOccuredSum()).append(")\n").toString());
         IWord[] wordItems = wordArray.getWordItems();
         for (int i = 0; i < wordCount; i++) {
-            IWord iworditem = wordItems[i];
-            stringbuffer.append(iworditem.toString());
+            IWord word = wordItems[i];
+            stringBuilder.append(word.toString());
         }
 
-        return stringbuffer.toString();
+        return stringBuilder.toString();
     }
 
     public String toDBFString() {
-        StringBuilder stringbuffer = new StringBuilder();
+        StringBuilder stringBuilder = new StringBuilder();
         IWord[] wordItems = wordArray.getWordItems();
         for (int i = 0; i < wordItems.length; i++) {
-            IWord iworditem = wordItems[i];
-            stringbuffer.append(iworditem.toDBFString());
-            stringbuffer.append("\n");
+            IWord word = wordItems[i];
+            stringBuilder.append(word.toDBFString());
+            stringBuilder.append("\n");
         }
 
-        return stringbuffer.toString();
+        return stringBuilder.toString();
     }
 
     public final void load(BufReader bufreader, POSArray posArray)
@@ -90,9 +122,9 @@ public class HeadIndexer {
 
     public final void save(RandomAccessFile randomaccessfile)
             throws IOException {
-        byte abyte0[] = headStr.getBytes(Configure.getInstance().getFileEncoding());
-        randomaccessfile.write((byte) abyte0.length);
-        randomaccessfile.write(abyte0);
+        byte bytes[] = headStr.getBytes(Configure.getInstance().getFileEncoding());
+        randomaccessfile.write((byte) bytes.length);
+        randomaccessfile.write(bytes);
         randomaccessfile.writeInt(getWordCount());
         IWord[] wordItems = wordArray.getWordItems();
         for (int i = 0; i < wordItems.length; i++) {
