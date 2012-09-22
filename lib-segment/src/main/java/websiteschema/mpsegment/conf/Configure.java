@@ -179,6 +179,10 @@ public final class Configure {
         return xingmingseparate;
     }
 
+    public void setXingmingseparate(boolean separate) {
+        xingmingseparate = separate;
+    }
+
     public boolean isHalfShapeAll() {
         return halfshapeall;
     }
