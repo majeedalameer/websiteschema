@@ -7,6 +7,7 @@ package websiteschema.mpsegment.tools;
 import websiteschema.mpsegment.conf.Configure;
 import websiteschema.mpsegment.core.SegmentEngine;
 import websiteschema.mpsegment.core.SegmentResult;
+import websiteschema.mpsegment.util.NumberUtil;
 import websiteschema.mpsegment.util.StringUtil;
 
 import java.io.IOException;
@@ -156,6 +157,12 @@ public class SegmentAccuracy {
         String expectWord = StringUtil.doUpperCaseAndHalfShape(expect);
         if (expectWord.equalsIgnoreCase(actual)) {
             return true;
+        }
+        if(Character.isDigit(actual.charAt(0))) {
+            String number = NumberUtil.chineseToEnglishNumberStr(expect);
+            if(actual.equals(number)) {
+                return true;
+            }
         }
         return false;
     }

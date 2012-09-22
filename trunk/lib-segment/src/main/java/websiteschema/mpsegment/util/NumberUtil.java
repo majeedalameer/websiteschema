@@ -21,14 +21,14 @@ public class NumberUtil {
         hm.put("陆", new Integer(6));
     }
 
-    public static String EnglishToChineseNumber(long l) {
+    public static String toChineseNumber(long l) {
         int ai[] = new int[30];
         int i = 0;
         boolean flag = false;
         boolean flag1 = false;
         boolean flag2 = false;
         boolean flag3 = false;
-        StringBuilder stringbuffer = new StringBuilder();
+        StringBuilder stringBuilder = new StringBuilder();
         if (l == 0L) {
             return digits[0];
         }
@@ -47,31 +47,31 @@ public class NumberUtil {
                 if (ai[k] != 0) {
                     flag2 = false;
                     flag3 = true;
-                    stringbuffer.insert(0, (new StringBuilder(String.valueOf(digits[ai[k]]))).append(afterWan[k / 4]).toString());
+                    stringBuilder.insert(0, (new StringBuilder(String.valueOf(digits[ai[k]]))).append(afterWan[k / 4]).toString());
                 } else if (k + 3 < i && ai[k + 3] != 0 || k + 2 < i && ai[k + 2] != 0 || k + 1 < i && ai[k + 1] != 0) {
-                    stringbuffer.insert(0, afterWan[k / 4]);
+                    stringBuilder.insert(0, afterWan[k / 4]);
                 }
             } else if (ai[k] != 0) {
                 flag2 = false;
                 flag3 = true;
                 if (i == 2 && k == 1 && ai[k] == 1) {
-                    stringbuffer.insert(0, beforeWan[k % 4 - 1]);
+                    stringBuilder.insert(0, beforeWan[k % 4 - 1]);
                 } else {
-                    stringbuffer.insert(0, (new StringBuilder(String.valueOf(digits[ai[k]]))).append(beforeWan[k % 4 - 1]).toString());
+                    stringBuilder.insert(0, (new StringBuilder(String.valueOf(digits[ai[k]]))).append(beforeWan[k % 4 - 1]).toString());
                 }
             } else if (flag3 && !flag2) {
                 flag2 = true;
-                stringbuffer.insert(0, digits[ai[k]]);
+                stringBuilder.insert(0, digits[ai[k]]);
             }
         }
 
         if (flag1) {
-            stringbuffer.insert(0, "负");
+            stringBuilder.insert(0, "负");
         }
-        return stringbuffer.toString();
+        return stringBuilder.toString();
     }
 
-    public static String EnglishToChineseNumber(String s) {
+    public static String toChineseNumber(String s) {
         String s1 = null;
         String s3 = "";
         String s6 = "";
@@ -83,7 +83,7 @@ public class NumberUtil {
         if (i >= 0) {
             String s4 = s2.substring(0, i);
             long l = strToLong(s4, 0L);
-            s4 = EnglishToChineseNumber(l);
+            s4 = toChineseNumber(l);
             if (i < s2.length()) {
                 String s5 = s2.substring(i + 1);
                 if (s5 != null && s5.length() > 0) {
@@ -100,7 +100,7 @@ public class NumberUtil {
             }
         } else {
             long l1 = strToLong(s2, 0L);
-            s1 = EnglishToChineseNumber(l1);
+            s1 = toChineseNumber(l1);
         }
         return s1;
     }
@@ -173,7 +173,7 @@ public class NumberUtil {
         return flag;
     }
 
-    public static String ChineseToEnglishNumberStr(String s) {
+    public static String chineseToEnglishNumberStr(String s) {
         String s1 = "";
         if (s != null && s.indexOf("分之") > 0) {
             s1 = s.substring(0, s.indexOf("分之") + 2);
@@ -192,7 +192,7 @@ public class NumberUtil {
         if (s.indexOf("-") > 0 || s.indexOf("－") > 0) {
             return "";
         }
-        String s2 = ChineseToEnglishNumberS(s);
+        String s2 = chinesePositiveRealNumberToEnglishNumber(s);
         if (s1.length() > 0) {
             s2 = (new StringBuilder(String.valueOf(s1))).append(s2).toString();
         }
@@ -203,39 +203,25 @@ public class NumberUtil {
         return s2;
     }
 
-    public static boolean isDigitalStr(String s) {
-        boolean flag = true;
-        if (s.length() <= 0) {
-            flag = false;
-        } else {
-            for (int i = 0; i < s.length(); i++) {
-                if (Character.isDigit(s.charAt(i)) || s.charAt(i) == '.' || s.charAt(i) == '-' || s.charAt(i) == '+' || s.charAt(i) == '．') {
-                    continue;
-                }
-                flag = false;
-                break;
-            }
-
-        }
-        return flag;
-    }
-
-    public static String ChineseToEnglishNumberS(String s) {
-        double d = ChineseToEnglishNumber(s);
-        if (d == 0.0D && (!s.equals("零") || !s.equals("〇") || !s.equals("０"))) {
+    public static String chinesePositiveRealNumberToEnglishNumber(String positiveRealNumberStr) {
+        double number = chineseToEnglishNumber(positiveRealNumberStr);
+        if (number == 0.0D && (!positiveRealNumberStr.equals("零") || !positiveRealNumberStr.equals("〇") || !positiveRealNumberStr.equals("０"))) {
             return "";
         }
         DecimalFormat decimalformat;
-        if (s.indexOf("点") > 0 || s.indexOf(".") > 0 || s.indexOf("．") > 0) {
+        if (containsDot(positiveRealNumberStr)) {
             decimalformat = new DecimalFormat("###.#########");
         } else {
             decimalformat = new DecimalFormat("###");
         }
-        String s1 = decimalformat.format(d);
-        return s1;
+        return decimalformat.format(number);
     }
 
-    public static double ChineseToEnglishNumber(String s) {
+    private static boolean containsDot(String str) {
+        return str.contains("点") || str.contains(".") || str.contains("．") || str.contains("·");
+    }
+
+    public static double chineseToEnglishNumber(String s) {
         boolean flag = false;
         int j = 0;
 

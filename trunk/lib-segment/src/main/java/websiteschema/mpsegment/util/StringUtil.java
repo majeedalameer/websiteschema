@@ -66,10 +66,6 @@ public class StringUtil {
         return new String(chArray);
     }
 
-    public static boolean isWordStartWithAlphabeticalOrDigital(String word) {
-        return isCharAlphabeticalOrDigital(word.charAt(0));
-    }
-
     public static boolean isCharAlphabeticalOrDigital(char ch) {
         if (ch >= 'A' && ch <= 'Z' || ch >= 'a' && ch <= 'z' || ch >= '0' && ch <= '9' || ch >= '\uFF21' && ch <= '\uFF41' || ch >= '\uFF3A' && ch <= '\uFF5A' || ch >= '\uFF10' && ch <= '\uFF19') {
             return true;
