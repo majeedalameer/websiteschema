@@ -41,6 +41,14 @@ public class SegmentResult {
         return words[i];
     }
 
+    public int getWordIndexInOriginalString(int index) {
+        int wordIndexInOriginalString = 0;
+        for(int i = 0; i < index; i++) {
+            wordIndexInOriginalString += words[i].length();
+        }
+        return wordIndexInOriginalString;
+    }
+
     public int getPOS(int i) {
         return posArray[i];
     }
@@ -97,6 +105,14 @@ public class SegmentResult {
         }
 
         return retString.toString();
+    }
+
+    public String toOriginalString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        for(int i = 0; i < length(); i ++) {
+            stringBuilder.append(getWord(i));
+        }
+        return stringBuilder.toString();
     }
 
     public void setWord(int index, String word, int tag) {

@@ -13,6 +13,7 @@ import websiteschema.mpsegment.dict.IWord;
 import websiteschema.mpsegment.dict.domain.DomainDictFactory;
 import websiteschema.mpsegment.dict.domain.DomainDictionary;
 import websiteschema.mpsegment.graph.IGraph;
+import websiteschema.mpsegment.util.StringUtil;
 
 /**
  *
@@ -35,38 +36,24 @@ public class GraphBuilder {
         this.objectCache = objectCache;
     }
 
-    private boolean isWordStartWithAlphabeticalOrDigital(char ch) {
-        boolean flag = false;
-        if (ch >= 'A' && ch <= 'Z' || ch >= 'a' && ch <= 'z' || ch >= '0' && ch <= '9' || ch >= '\uFF21' && ch <= '\uFF41' || ch >= '\uFF3A' && ch <= '\uFF5A' || ch >= '\uFF10' && ch <= '\uFF19') {
-            flag = true;
-        }
-        return flag;
-    }
-
     private String doUpperCaseAndHalfShape(String word) {
         if (isUpperCaseOrHalfShapeAll) {
-            char chArray[] = word.toCharArray();
-            for (int i1 = 0; i1 < chArray.length; i1++) {
-                if (isWordStartWithAlphabeticalOrDigital(chArray[i1])) {
-                    if (isHalfShapeAll && (chArray[i1] >= '\uFF21' && chArray[i1] <= '\uFF41' || chArray[i1] >= '\uFF3A' && chArray[i1] <= '\uFF5A' || chArray[i1] >= '\uFF10' && chArray[i1] <= '\uFF19')) {
-                        chArray[i1] = (char) (chArray[i1] - 65248);
-                    }
-                    if (isUpperCaseAll && chArray[i1] >= 'a' && chArray[i1] <= 'z') {
-                        chArray[i1] = (char) (chArray[i1] - 32);
-                    }
-                }
+            if(isHalfShapeAll && isUpperCaseAll) {
+                return StringUtil.doUpperCaseAndHalfShape(word);
             }
-
-            return new String(chArray);
+            if(isHalfShapeAll) {
+                return StringUtil.halfShape(word);
+            }
+            return StringUtil.toUpperCase(word);
         }
         return word;
     }
 
     private int scanEnglishWordAndShorten(int begin) {
-        final int slen = sentence.length();
+        final int sentenceLength = sentence.length();
         int index = begin;
-        if (isWordStartWithAlphabeticalOrDigital(sentence.charAt(index))) {
-            while (index < slen && isWordStartWithAlphabeticalOrDigital(sentence.charAt(index))) {
+        if (StringUtil.isCharAlphabeticalOrDigital(sentence.charAt(index))) {
+            while (index < sentenceLength && StringUtil.isCharAlphabeticalOrDigital(sentence.charAt(index))) {
                 index++;
             }
             index--;
@@ -75,9 +62,8 @@ public class GraphBuilder {
     }
 
     private int getLastMinWordLength(int begin) {
-        int minWordLen = begin;
         int index = scanEnglishWordAndShorten(begin);
-        minWordLen = (index - begin) + 1;
+        int minWordLen = (index - begin) + 1;
         return minWordLen;
     }
 

@@ -24,8 +24,6 @@ public class UnknownNameFilter extends AbstractSegmentFilter {
     private static int posM = POSUtil.POS_M;
     private static ForeignName foreignName = null;
     private boolean useChNameDict = true;
-    private boolean recognizeChineseName = Configure.getInstance().isChineseNameIdentify();
-    private boolean xingMingSeparate = Configure.getInstance().isSegmentMin();
     private boolean useForeignNameDict = false;
     private int segmentResultLength = 0;
     private int maxNameWordLength = 5;
@@ -74,7 +72,7 @@ public class UnknownNameFilter extends AbstractSegmentFilter {
 
     @Override
     public void doFilter() {
-        if (useChNameDict && recognizeChineseName) {
+        if (useChNameDict && Configure.getInstance().isChineseNameIdentify()) {
             segmentResultLength = segmentResult.length();
             markPositionImpossibleToBeName();
 
@@ -138,7 +136,7 @@ public class UnknownNameFilter extends AbstractSegmentFilter {
             numOfNameWordItem = 0;
         }
         if (numOfNameWordItem > 0) {
-            if (xingMingSeparate) {
+            if (Configure.getInstance().isXingMingSeparate()) {
                 if (numOfNameWordItem >= 3) {
                     mergeWordsWithPOS(nameStartIndex + 1, nameStartIndex + 2, posNR);
                 }
