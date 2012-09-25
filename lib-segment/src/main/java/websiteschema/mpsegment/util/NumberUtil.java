@@ -144,7 +144,7 @@ public class NumberUtil {
         if (hm == null) {
             initialize();
         }
-        return hm.get(s) != null;
+        return hm.containsKey(s);
     }
 
     public static int isDigital(String s) {
@@ -156,13 +156,13 @@ public class NumberUtil {
         }
     }
 
-    public static boolean isChineseDigitalStr(String s) {
+    public static boolean isChineseDigitalStr(String chineseNumberStr) {
         boolean flag = false;
-        if (s.length() <= 0) {
+        if (chineseNumberStr.length() <= 0) {
             flag = false;
         } else {
-            for (int i = 0; i < s.length(); i++) {
-                if (!isDefined(s.substring(i, i + 1))) {
+            for (int i = 0; i < chineseNumberStr.length(); i++) {
+                if (!isDefined(chineseNumberStr.substring(i, i + 1))) {
                     continue;
                 }
                 flag = true;
@@ -173,30 +173,30 @@ public class NumberUtil {
         return flag;
     }
 
-    public static String chineseToEnglishNumberStr(String s) {
+    public static String chineseToEnglishNumberStr(String chineseNumberStr) {
         String s1 = "";
-        if (s != null && s.indexOf("分之") > 0) {
-            s1 = s.substring(0, s.indexOf("分之") + 2);
-            s = s.substring(s1.length());
+        if (chineseNumberStr != null && chineseNumberStr.indexOf("分之") > 0) {
+            s1 = chineseNumberStr.substring(0, chineseNumberStr.indexOf("分之") + 2);
+            chineseNumberStr = chineseNumberStr.substring(s1.length());
         }
-        if (s != null && s.indexOf("第") == 0) {
-            s1 = s.substring(0, 1);
-            s = s.substring(1);
+        if (chineseNumberStr != null && chineseNumberStr.indexOf("第") == 0) {
+            s1 = chineseNumberStr.substring(0, 1);
+            chineseNumberStr = chineseNumberStr.substring(1);
         }
-        if (s == null || s.length() < 1) {
+        if (chineseNumberStr == null || chineseNumberStr.length() < 1) {
             return "";
         }
-        if (!isChineseDigitalStr(s)) {
+        if (!isChineseDigitalStr(chineseNumberStr)) {
             return "";
         }
-        if (s.indexOf("-") > 0 || s.indexOf("－") > 0) {
+        if (chineseNumberStr.indexOf("-") > 0 || chineseNumberStr.indexOf("－") > 0) {
             return "";
         }
-        String s2 = chinesePositiveRealNumberToEnglishNumber(s);
+        String s2 = chinesePositiveRealNumberToEnglishNumber(chineseNumberStr);
         if (s1.length() > 0) {
             s2 = (new StringBuilder(String.valueOf(s1))).append(s2).toString();
         }
-        String s3 = s.substring(s.length() - 1);
+        String s3 = chineseNumberStr.substring(chineseNumberStr.length() - 1);
         if (!isDefined(s3) && "〇零十拾百佰千仟万亿兆.．".indexOf(s3) < 0) {
             s2 = (new StringBuilder(String.valueOf(s2))).append(s3).toString();
         }

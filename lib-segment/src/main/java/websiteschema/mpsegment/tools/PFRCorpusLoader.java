@@ -30,7 +30,6 @@ public class PFRCorpusLoader {
     private SegmentResult buildSegmentResult(String line) {
         String elements[] = line.split("\\s+");
 
-        SegmentResult result = new SegmentResult();
         List<String> words = new ArrayList<String>();
         int[] posArray = new int[elements.length - 1];
         int[] concepts = new int[elements.length - 1];
@@ -58,6 +57,7 @@ public class PFRCorpusLoader {
             posArray[i] = POSUtil.getPOSIndex(info[1].toUpperCase());
         }
 
+        SegmentResult result = new SegmentResult(words.size());
         result.setWords(words.toArray(new String[0]));
         result.setPOSArray(posArray);
         result.setConcepts(concepts);
