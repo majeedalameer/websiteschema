@@ -7,6 +7,9 @@ package websiteschema.mpsegment.tools;
 import websiteschema.mpsegment.conf.Configure;
 import websiteschema.mpsegment.core.SegmentEngine;
 import websiteschema.mpsegment.core.SegmentResult;
+import websiteschema.mpsegment.core.SegmentWorker;
+import websiteschema.mpsegment.core.WordAtom;
+import websiteschema.mpsegment.dict.POSUtil;
 import websiteschema.mpsegment.util.NumberUtil;
 import websiteschema.mpsegment.util.StringUtil;
 
@@ -25,6 +28,8 @@ public class SegmentAccuracy {
     private int wrong = 0;
     private double accuracyRate;
     private int errorNewWord = 0;
+    private int errorNER_NR = 0;
+    private int errorNER_NS = 0;
     private int errorContain = 0;
     private int errorOther = 0;
 
@@ -32,17 +37,20 @@ public class SegmentAccuracy {
     private Set<String> wordsWithContainDisambiguate = new HashSet<String>();
 
     public SegmentAccuracy(String testCorpus) throws IOException {
-        loader = new PFRCorpusLoader(getClass().getClassLoader().getResourceAsStream("PFR-199801-utf-8.txt"));
+        loader = new PFRCorpusLoader(getClass().getClassLoader().getResourceAsStream(testCorpus));
     }
 
     public void checkSegmentAccuracy() {
         boolean xingMingSeparate = Configure.getInstance().isXingMingSeparate();
         Configure.getInstance().setXingmingseparate(true);
+        SegmentWorker segmentWorker = SegmentEngine.getInstance().getSegmentWorker();
+        boolean isUseContextFreq = segmentWorker.isUseContextFreqSegment();
+        segmentWorker.setUseContextFreqSegment(true);
         try {
             SegmentResult expectResult = loader.readLine();
             while (expectResult != null) {
                 String sentence = expectResult.toOriginalString();
-                SegmentResult actualResult = SegmentEngine.getInstance().getSegmentWorker().segment(sentence);
+                SegmentResult actualResult = segmentWorker.segment(sentence);
 
                 totalWords += expectResult.length();
 
@@ -53,6 +61,7 @@ public class SegmentAccuracy {
             ex.printStackTrace();
         } finally {
             Configure.getInstance().setXingmingseparate(xingMingSeparate);
+            segmentWorker.setUseContextFreqSegment(isUseContextFreq);
         }
         assert (correct > 0 && totalWords > 0);
         accuracyRate = (double) correct / (double) totalWords;
@@ -74,6 +83,14 @@ public class SegmentAccuracy {
         return errorNewWord;
     }
 
+    public int getErrorNER_NR() {
+        return errorNER_NR;
+    }
+
+    public int getErrorNER_NS() {
+        return errorNER_NS;
+    }
+
     public int getErrorContain() {
         return errorContain;
     }
@@ -93,7 +110,7 @@ public class SegmentAccuracy {
     private void compare(SegmentResult expectResult, SegmentResult actualResult) {
         int lastMatchIndex = -1;
         for (int i = 0; i < expectResult.length(); i++) {
-            String expectWord = expectResult.getWord(i);
+            WordAtom expectWord = expectResult.getWordAtom(i);
             int indexInOriginalString = expectResult.getWordIndexInOriginalString(i);
             int match = lookupMatch(actualResult, expectWord, lastMatchIndex + 1, indexInOriginalString);
             if (match >= 0) {
@@ -105,21 +122,21 @@ public class SegmentAccuracy {
         }
     }
 
-    private int lookupMatch(SegmentResult actualResult, String expectWord, int start, final int indexInOriginalString) {
+    private int lookupMatch(SegmentResult actualResult, WordAtom expectWord, int start, final int indexInOriginalString) {
         for (int i = start; i < actualResult.length(); i++) {
             String actualWord = actualResult.getWord(i);
-            if (isSameWord(expectWord, actualWord)) {
-                int indexInOriginalStringOfActualWord = actualResult.getWordIndexInOriginalString(i);
-                if (indexInOriginalStringOfActualWord == indexInOriginalString) {
+            if (isSameWord(expectWord.word, actualWord)) {
+                if (actualResult.getWordIndexInOriginalString(i) == indexInOriginalString) {
                     return i;
                 }
             }
         }
-        analyzeErrorReason(actualResult, expectWord, start, indexInOriginalString, indexInOriginalString + expectWord.length());
+        analyzeErrorReason(actualResult, expectWord, start, indexInOriginalString);
         return -1;
     }
 
-    private String analyzeErrorReason(SegmentResult actualResult, String expect, int start, int from, int to) {
+    private String analyzeErrorReason(SegmentResult actualResult, WordAtom expect, int start, int from) {
+        int to = from + expect.length();
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = start; i < actualResult.length(); i++) {
             int indexInOriginalString = actualResult.getWordIndexInOriginalString(i);
@@ -135,19 +152,25 @@ public class SegmentAccuracy {
             // Should remove the word from dictionary.
             errorContain++;
 //            System.out.println(expect + " in " + errorSegment);
-        } else if (errorSegment.replaceAll(" ", "").equals(expect)) {
+        } else if (errorSegment.replaceAll(" ", "").equals(expect.word)) {
             // Need to add expected word into dictionary
             // Or found a new word
-            errorNewWord++;
-            possibleNewWords.add(expect);
+            if (expect.pos == POSUtil.POS_NR) {
+                errorNER_NR++;
+            } else if (expect.pos == POSUtil.POS_NS) {
+                errorNER_NS++;
+            } else {
+                errorNewWord++;
+                possibleNewWords.add(expect.word);
+            }
 //            System.out.println(expect + " in " + errorSegment);
-        } else if (errorSegment.contains(expect)){
+        } else if (errorSegment.contains(expect.word)) {
             errorContain++;
             wordsWithContainDisambiguate.add(errorSegment);
 //            System.out.println(expect + " in " + errorSegment);
         } else {
             errorOther++;
-            System.out.println(expect + " in " + errorSegment);
+//            System.out.println(expect.word + " in " + errorSegment);
         }
 
         return errorSegment;
@@ -158,9 +181,9 @@ public class SegmentAccuracy {
         if (expectWord.equalsIgnoreCase(actual)) {
             return true;
         }
-        if(Character.isDigit(actual.charAt(0))) {
+        if (Character.isDigit(actual.charAt(0))) {
             String number = NumberUtil.chineseToEnglishNumberStr(expect);
-            if(actual.equals(number)) {
+            if (actual.equals(number)) {
                 return true;
             }
         }

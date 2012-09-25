@@ -4,87 +4,74 @@ import websiteschema.mpsegment.dict.POSUtil;
 
 public class SegmentResult {
 
-    public SegmentResult() {
-    }
-
     public SegmentResult(int size) {
-        words = new String[size];
-        posArray = new int[size];
-        concepts = new int[size];
+        initWordElements(size);
     }
 
     public void setWords(String words[]) {
-        this.words = words;
+        for(int i = 0; i < words.length; i++) {
+            wordAtoms[i].word = words[i];
+        }
+    }
+
+    private void initWordElements(int size) {
+        wordAtoms = new WordAtom[size];
+        for(int i = 0; i < size; i++) {
+            wordAtoms[i] = new WordAtom();
+        }
     }
 
     public void setPOSArray(int tags[]) {
-        this.posArray = tags;
+        for(int i = 0; i < tags.length; i++) {
+            wordAtoms[i].pos = tags[i];
+        }
     }
 
     public void setConcepts(int marks[]) {
-        this.concepts = marks;
-    }
-
-    public String[] getWords() {
-        return words;
-    }
-
-    public int[] getPOSArray() {
-        return posArray;
-    }
-
-    public int[] getConcepts() {
-        return concepts;
+        for(int i = 0; i < marks.length; i++) {
+            wordAtoms[i].concept = marks[i];
+        }
     }
 
     public String getWord(int i) {
-        return words[i];
+        return wordAtoms[i].word;
     }
 
     public int getWordIndexInOriginalString(int index) {
         int wordIndexInOriginalString = 0;
         for(int i = 0; i < index; i++) {
-            wordIndexInOriginalString += words[i].length();
+            wordIndexInOriginalString += wordAtoms[i].word.length();
         }
         return wordIndexInOriginalString;
     }
 
     public int getPOS(int i) {
-        return posArray[i];
+        return wordAtoms[i].pos;
     }
 
     public int getConcept(int i) {
-        return concepts[i];
-    }
-
-    public int getIndex(String word) {
-        int index = -1;
-        for (int j = 0; j < words.length; j++) {
-            if (!words[j].equals(word)) {
-                continue;
-            }
-            index = j;
-            break;
-        }
-
-        return index;
+        return wordAtoms[i].concept;
     }
 
     public int length() {
-        if (words != null) {
-            return words.length;
+        if (wordAtoms != null) {
+            return wordAtoms.length;
         } else {
             return 0;
         }
     }
 
-    private int trimLength() {
-        if (words != null) {
-            int i = words.length;
-            if (i > 1 && words[i - 1].length() <= 0) {
+    public WordAtom getWordAtom(int i) {
+        return wordAtoms[i];
+    }
+
+    private int compactLength() {
+        if (wordAtoms != null) {
+            int i = wordAtoms.length;
+            if (i > 1 && wordAtoms[i - 1].word.length() <= 0) {
                 int j;
                 for (j = i - 1; j > 1; j--) {
-                    if (words[j].length() > 0) {
+                    if (wordAtoms[j].word.length() > 0) {
                         break;
                     }
                 }
@@ -99,9 +86,9 @@ public class SegmentResult {
     @Override
     public String toString() {
         StringBuilder retString = new StringBuilder();
-        int length = trimLength();
+        int length = compactLength();
         for (int j = 0; j < length; j++) {
-            retString.append(words[j]).append("/").append(POSUtil.getPOSString(posArray[j])).append(" ");
+            retString.append(getWord(j)).append("/").append(POSUtil.getPOSString(getPOS(j))).append(" ");
         }
 
         return retString.toString();
@@ -116,71 +103,42 @@ public class SegmentResult {
     }
 
     public void setWord(int index, String word, int tag) {
-        words[index] = word;
-        posArray[index] = tag;
-        concepts[index] = 0;
+        wordAtoms[index].word = word;
+        wordAtoms[index].pos = tag;
+        wordAtoms[index].concept = 0;
     }
 
     public void setPOS(int index, int pos) {
-        posArray[index] = pos;
+        wordAtoms[index].pos = pos;
     }
 
     public void letWord1EqualWord2(int wordIndex1, int wordIndex2) {
-        words[wordIndex1] = words[wordIndex2];
-        posArray[wordIndex1] = posArray[wordIndex2];
-        concepts[wordIndex1] = concepts[wordIndex2];
+        wordAtoms[wordIndex1].word = wordAtoms[wordIndex2].word;
+        wordAtoms[wordIndex1].pos = wordAtoms[wordIndex2].pos;
+        wordAtoms[wordIndex1].concept = wordAtoms[wordIndex2].concept;
     }
 
-    public void cutTail(int end) {
-        int len = end;
-        String arrayWord[] = new String[len];
-        int arrayPOS[] = new int[len];
-        int arrayConcept[] = new int[len];
-        for (int k = 0; k < len; k++) {
-            arrayWord[k] = getWord(k);
-            if (posArray != null) {
-                arrayPOS[k] = getPOS(k);
-            } else {
-                arrayPOS[k] = 0;
-            }
-            arrayConcept[k] = getConcept(k);
+    public void cutTail(final int end) {
+        WordAtom[] atoms = new WordAtom[end];
+        for (int i = 0; i < end; i++) {
+            atoms[i] = wordAtoms[i];
         }
-        this.words = arrayWord;
-        this.posArray = arrayPOS;
-        this.concepts = arrayConcept;
+        this.wordAtoms = atoms;
     }
 
     public void append(SegmentResult segmentResult) {
-        int length = length();
-        int total = length + segmentResult.length();
-        String arrayWord[] = new String[total];
-        int arrayPOS[] = new int[total];
-        int arrayConcept[] = new int[total];
-        for (int i = 0; i < length; i++) {
-            arrayWord[i] = getWord(i);
-            if (posArray != null) {
-                arrayPOS[i] = getPOS(i);
-            } else {
-                arrayPOS[i] = 0;
-            }
-            arrayConcept[i] = getConcept(i);
+        int total = length() + segmentResult.length();
+        WordAtom[] atoms = new WordAtom[total];
+
+        for (int i = 0; i < length(); i++) {
+            atoms[i] = wordAtoms[i];
         }
 
-        for (int i = length; i < total; i++) {
-            arrayWord[i] = segmentResult.getWord(i - length);
-            if (segmentResult.getPOSArray() != null) {
-                arrayPOS[i] = segmentResult.getPOS(i - length);
-            } else {
-                arrayPOS[i] = 0;
-            }
-            arrayConcept[i] = segmentResult.getConcept(i - length);
+        for (int i = length(); i < total; i++) {
+            atoms[i] = segmentResult.getWordAtom(i - length());
         }
-
-        words = arrayWord;
-        posArray = arrayPOS;
-        concepts = arrayConcept;
+        wordAtoms = atoms;
     }
-    private String words[];
-    private int posArray[];
-    private int concepts[];
+
+    private WordAtom[] wordAtoms;
 }

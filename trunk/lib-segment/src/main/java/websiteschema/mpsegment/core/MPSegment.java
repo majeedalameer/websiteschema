@@ -77,7 +77,6 @@ public class MPSegment {
     }
 
     private SegmentResult sectionSegmentWithPOS(String sentence) {
-        SegmentResult result = new SegmentResult();
         lastSectionStr = "";
         int length = sentence.length();
         buildGraph(sentence, 0);
@@ -99,14 +98,13 @@ public class MPSegment {
             lastSectionStr = "";
             p = dijk.getShortestPath(1, length + 1);
         }
-        setPathMarks(p, result);
+        SegmentResult result = setPathMarks(p);
         result.setPOSArray(posTagging.findPOS(p, graph));
         clear();
         return result;
     }
 
     private SegmentResult sectionSegment(String sentence) {
-        SegmentResult result = new SegmentResult();
         if (lastSectionStr != null && lastSectionStr.length() > 0) {
             sentence = (new StringBuilder(String.valueOf(lastSectionStr))).append(sentence).toString();
             lastSectionStr = "";
@@ -126,8 +124,8 @@ public class MPSegment {
         } else {
             endVertex = length + 1;
         }
-        path = dijk.getShortestPath(1, endVertex);
-        setPathMarks(path, result);
+        Path path = dijk.getShortestPath(1, endVertex);
+        SegmentResult result = setPathMarks(path);
         clear();
         return result;
     }
@@ -141,10 +139,9 @@ public class MPSegment {
     }
 
     private SegmentResult segmentWithPOS(String sentence) {
-        SegmentResult result = new SegmentResult();
         dijk.setGraph(graph);
         Path p = getShortestPath(sentence);
-        setPathMarks(p, result);
+        SegmentResult result = setPathMarks(p);
         result.setPOSArray(posTagging.findPOS(p, graph));
         clear();
         return result;
@@ -156,9 +153,8 @@ public class MPSegment {
     }
 
     private SegmentResult segment(String sentence) {
-        SegmentResult result = new SegmentResult();
         Path p = getShortestPath(sentence);
-        setPathMarks(p, result);
+        SegmentResult result = setPathMarks(p);
         clear();
         return result;
     }
@@ -174,7 +170,7 @@ public class MPSegment {
             lastSectionStr = "";
             result = withPOS ? segmentWithPOS(sentence) : segment(sentence);
         } else {
-            result = new SegmentResult();
+            result = new SegmentResult(0);
             lastSectionStr = "";
             int sections = sentenceLength / 1000;
             if (sentenceLength != sections * 1000) {
@@ -204,13 +200,14 @@ public class MPSegment {
         return result;
     }
 
-    private void setPathMarks(Path path, SegmentResult wordatoms) {
+    private SegmentResult setPathMarks(Path path) {
         int length = path.getLength();
         String wordNames[] = new String[length];
         int log2Freqs[] = new int[length];
         if (length < 1) {
-            return;
+            return null;
         }
+        SegmentResult segmentResult = new SegmentResult(length);
         for (int j2 = 0; j2 < length; j2++) {
             int edgeWeight = graph.getEdgeWeight(path.iget(j2), path.iget(j2 + 1));
             if (edgeWeight == 0) {
@@ -224,8 +221,9 @@ public class MPSegment {
             }
         }
 
-        wordatoms.setWords(wordNames);
-        wordatoms.setConcepts(log2Freqs);
+        segmentResult.setWords(wordNames);
+        segmentResult.setConcepts(log2Freqs);
+        return segmentResult;
     }
 
     public int getTF(String word) {
@@ -276,7 +274,6 @@ public class MPSegment {
     private UnknownWordCache objectCache;
     private boolean lastSection;
     private String lastSectionStr;
-    private Path path;
     private double logCorpus;
     private boolean useDomainDictionary;
     private final static int CorpusSize = 8000000;
