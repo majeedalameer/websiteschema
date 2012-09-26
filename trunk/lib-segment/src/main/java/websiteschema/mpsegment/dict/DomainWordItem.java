@@ -1,8 +1,11 @@
 package websiteschema.mpsegment.dict;
 
-import websiteschema.mpsegment.util.BufReader;
-import java.io.*;
 import websiteschema.mpsegment.conf.Configure;
+import websiteschema.mpsegment.util.BufReader;
+
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.io.Serializable;
 
 public class DomainWordItem
         implements Serializable, Comparable, IWord {
@@ -46,6 +49,11 @@ public class DomainWordItem
     @Override
     public POSArray getPOSArray() {
         return posArray;
+    }
+
+    @Override
+    public int[][] getWordPOSTable() {
+        return getPOSArray().getWordPOSTable();
     }
 
     @Override

@@ -1,20 +1,21 @@
 package websiteschema.mpsegment.dict;
 
-import java.io.*;
-import java.util.HashMap;
 import websiteschema.mpsegment.util.BufReader;
 import websiteschema.mpsegment.util.ByteArrayReader;
 import websiteschema.mpsegment.util.FileUtil;
 
+import java.io.*;
+import java.util.HashMap;
+
 public class HashDictionary implements IDictionary {
 
-    public HashDictionary(String s) {
+    public HashDictionary(String dictResource) {
         maxWordLength = 0;
         wordOccuredSum = 0;
         wordCount = 0;
         posArray = null;
         if (!loaded) {
-            loadDict(s);
+            loadDict(dictResource);
             loaded = true;
         }
     }
@@ -44,34 +45,30 @@ public class HashDictionary implements IDictionary {
     }
 
     public String dictoString() {
-        StringBuilder stringbuffer = new StringBuilder();
-        //不同首字数量
-        stringbuffer.append((new StringBuilder("不同首字数量:")).append(getCapacity()).toString());
-        //最长词长度
-        stringbuffer.append((new StringBuilder(",最长词长度:")).append(getMaxWordLength()).toString());
-        //所有词的全部出现次数
-        stringbuffer.append((new StringBuilder(",所有词的全部出现次数:")).append(getWordOccuredSum()).append("\n").toString());
-        //词性列表：(共出现次数
-        stringbuffer.append((new StringBuilder("词性列表：(共出现次数")).append(posArray.getOccuredSum()).append(")\n").toString());
-        stringbuffer.append(posArray.toString());
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append((new StringBuilder("不同首字数量:")).append(getCapacity()).toString());
+        stringBuilder.append((new StringBuilder(",最长词长度:")).append(getMaxWordLength()).toString());
+        stringBuilder.append((new StringBuilder(",所有词的全部出现次数:")).append(getWordOccuredSum()).append("\n").toString());
+        stringBuilder.append((new StringBuilder("词性列表：(共出现次数")).append(posArray.getOccuredSum()).append(")\n").toString());
+        stringBuilder.append(posArray.toString());
 
-        System.out.println(stringbuffer.toString());
-        stringbuffer.setLength(0);
+        System.out.println(stringBuilder.toString());
+        stringBuilder.setLength(0);
         for (int k = 0; k < headIndexers.length; k++) {
-            stringbuffer.append(headIndexers[k].toDBFString());
-            System.out.print(stringbuffer.toString());
-            stringbuffer.setLength(0);
+            stringBuilder.append(headIndexers[k].toDBFString());
+            System.out.print(stringBuilder.toString());
+            stringBuilder.setLength(0);
         }
 
-        return stringbuffer.toString();
+        return stringBuilder.toString();
     }
 
     private synchronized void loadDict(String s) {
         try {
-            BufReader bytearrayreader = new ByteArrayReader(FileUtil.getResourceAsStream("segment.dict"));
-            loadDict(bytearrayreader);
-            bytearrayreader.close();
-            bytearrayreader = null;
+            BufReader bufReader = new ByteArrayReader(FileUtil.getResourceAsStream("segment.dict"));
+            loadDict(bufReader);
+            bufReader.close();
+            bufReader = null;
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -123,27 +120,27 @@ public class HashDictionary implements IDictionary {
         }
     }
 
-    public void logToFile(String s) {
+    public void dumpToFile(String s) {
         File file = new File(s);
         try {
             BufferedOutputStream bufferedoutputstream = new BufferedOutputStream(new FileOutputStream(file));
-            StringBuilder stringbuffer = new StringBuilder();
-            stringbuffer.append((new StringBuilder("不同首字数量:")).append(getCapacity()).toString());
-            stringbuffer.append((new StringBuilder(",最长词长度:")).append(getMaxWordLength()).toString());
-            stringbuffer.append((new StringBuilder(",所有词的全部出现次数:")).append(getWordOccuredSum()).append("\n").toString());
-            stringbuffer.append((new StringBuilder("词性列表：(共出现次数")).append(posArray.getOccuredSum()).append(")\n").toString());
-            stringbuffer.append(posArray.toString());
-            bufferedoutputstream.write(stringbuffer.toString().getBytes());
-            stringbuffer.setLength(0);
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append((new StringBuilder("不同首字数量:")).append(getCapacity()).toString());
+            stringBuilder.append((new StringBuilder(",最长词长度:")).append(getMaxWordLength()).toString());
+            stringBuilder.append((new StringBuilder(",所有词的全部出现次数:")).append(getWordOccuredSum()).append("\n").toString());
+            stringBuilder.append((new StringBuilder("词性列表：(共出现次数")).append(posArray.getOccuredSum()).append(")\n").toString());
+            stringBuilder.append(posArray.toString());
+            bufferedoutputstream.write(stringBuilder.toString().getBytes());
+            stringBuilder.setLength(0);
             for (int k = 0; k < headIndexers.length; k++) {
-                stringbuffer.append(headIndexers[k].toDBFString());
-                bufferedoutputstream.write(stringbuffer.toString().getBytes());
-                stringbuffer.setLength(0);
+                stringBuilder.append(headIndexers[k].toDBFString());
+                bufferedoutputstream.write(stringBuilder.toString().getBytes());
+                stringBuilder.setLength(0);
             }
 
             bufferedoutputstream.close();
         } catch (IOException ioexception) {
-            System.out.println((new StringBuilder("HashDictionary.logToFile() error:")).append(ioexception.getMessage()).toString());
+            System.out.println((new StringBuilder("HashDictionary.dumpToFile() error:")).append(ioexception.getMessage()).toString());
         }
     }
 
@@ -167,9 +164,9 @@ public class HashDictionary implements IDictionary {
     @Override
     public IWord[] getWordItems(String sentenceStr) {
         String head = sentenceStr.substring(0, 1);
-        HeadIndexer headindexer = lookupHeadIndexer(head);
-        if (headindexer != null) {
-            IWord words[] = headindexer.findMultiWord(sentenceStr);
+        HeadIndexer headIndexer = lookupHeadIndexer(head);
+        if (headIndexer != null) {
+            IWord words[] = headIndexer.findMultiWord(sentenceStr);
             if (words != null) {
                 return words;
             }
@@ -178,13 +175,13 @@ public class HashDictionary implements IDictionary {
     }
 
     public IWord getExactWordItem(String wordStr) {
-        IWord iworditem = null;
+        IWord word = null;
         String head = wordStr.substring(0, 1);
         HeadIndexer headindexer = lookupHeadIndexer(head);
         if (headindexer != null) {
-            iworditem = headindexer.get(wordStr);
+            word = headindexer.get(wordStr);
         }
-        return iworditem;
+        return word;
     }
     private HashMap headIndexersHashMap = new HashMap();
     private HeadIndexer headIndexers[];

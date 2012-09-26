@@ -1,11 +1,13 @@
 package websiteschema.mpsegment.dict;
 
-import websiteschema.mpsegment.util.BufReader;
-import java.io.*;
 import websiteschema.mpsegment.conf.Configure;
+import websiteschema.mpsegment.util.BufReader;
 
-public class WordImpl
-        implements Serializable, Comparable, IWord {
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.io.Serializable;
+
+public class WordImpl implements Serializable, Comparable, IWord {
 
     public WordImpl(String wordName) {
         log2Freq = 0;
@@ -45,7 +47,15 @@ public class WordImpl
         return posArray;
     }
 
+    @Override
+    public int[][] getWordPOSTable() {
+        return getPOSArray().getWordPOSTable();
+    }
+
     private POSArray buildPOSArray() {
+        if (posArray != null) {
+            return posArray;
+        }
         posArray = new POSArray();
         for (int i = 0; i < wordPOSNumber; i++) {
             String name = POSUtil.getPOSString(POSAndFreq.getPOS(indexOfPosDB + i));
@@ -54,6 +64,10 @@ public class WordImpl
             posArray.add(pos);
         }
         return posArray;
+    }
+
+    public void setPosArray(POSArray posArray) {
+        this.posArray = posArray;
     }
 
     @Override
@@ -224,6 +238,7 @@ public class WordImpl
         stringBuilder.append(getPOSArray().toDBFString(getWordName()));
         return stringBuilder.toString();
     }
+
     private String wordName;
     private int domainType;
     private int log2Freq;
