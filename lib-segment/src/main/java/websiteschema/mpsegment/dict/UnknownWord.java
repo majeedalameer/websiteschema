@@ -2,10 +2,6 @@ package websiteschema.mpsegment.dict;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import websiteschema.mpsegment.dict.IWord;
-import websiteschema.mpsegment.dict.POS;
-import websiteschema.mpsegment.dict.POSArray;
-import websiteschema.mpsegment.dict.POSUtil;
 
 /**
  *
@@ -54,6 +50,11 @@ public class UnknownWord implements IWord {
     @Override
     public POSArray getPOSArray() {
         return POSArrayFactory.getUnknownWordPOSArray();
+    }
+
+    @Override
+    public int[][] getWordPOSTable() {
+        return getPOSArray().getWordPOSTable();
     }
 
     @Override

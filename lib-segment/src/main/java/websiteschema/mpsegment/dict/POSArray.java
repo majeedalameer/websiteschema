@@ -1,12 +1,14 @@
 package websiteschema.mpsegment.dict;
 
+import org.apache.log4j.Logger;
+import websiteschema.mpsegment.util.BufReader;
+
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
-import org.apache.log4j.Logger;
-import websiteschema.mpsegment.util.BufReader;
+import java.util.LinkedHashMap;
 
 public class POSArray
         implements Serializable {
@@ -24,7 +26,7 @@ public class POSArray
     }
 
     public POSArray() {
-        posTable = new HashMap<String, POS>();
+        posTable = new LinkedHashMap<String, POS>();
     }
 
     public void setPOSCount(String pos, int freq) {
@@ -156,7 +158,7 @@ public class POSArray
     private void load(RandomAccessFile resources)
             throws IOException {
         byte numPos = resources.readByte();
-        posTable = new HashMap<String, POS>(numPos);
+        posTable = new LinkedHashMap<String, POS>(numPos);
         for (int i = 0; i < numPos; i++) {
             byte nameLength = resources.readByte();
             byte nameBytes[] = new byte[nameLength];
@@ -173,7 +175,7 @@ public class POSArray
     private void load(BufReader resources)
             throws IOException {
         int size = resources.readIntByte();
-        posTable = new HashMap<String, POS>(size);
+        posTable = new LinkedHashMap<String, POS>(size);
         for (int i = 0; i < size; i++) {
             int len = resources.readIntByte();
             byte nameBytes[] = new byte[len];
@@ -197,9 +199,9 @@ public class POSArray
         }
         Arrays.sort(pos);
         for (int j = 0; j < pos.length; j++) {
-            byte abyte0[] = pos[j].getName().getBytes();
-            randomaccessfile.write((byte) abyte0.length);
-            randomaccessfile.write(abyte0);
+            byte bytes[] = pos[j].getName().getBytes();
+            randomaccessfile.write((byte) bytes.length);
+            randomaccessfile.write(bytes);
             randomaccessfile.writeInt(pos[j].getCount());
         }
 
@@ -229,24 +231,24 @@ public class POSArray
 
     @Override
     public String toString() {
-        StringBuilder stringbuffer = new StringBuilder();
+        StringBuilder stringBuilder = new StringBuilder();
         for (String name : posTable.keySet()) {
             POS pos = posTable.get(name);
-            stringbuffer.append((new StringBuilder(String.valueOf(pos.toString()))).append("\n").toString());
+            stringBuilder.append((new StringBuilder(String.valueOf(pos.toString()))).append("\n").toString());
         }
 
-        return stringbuffer.toString();
+        return stringBuilder.toString();
     }
 
     public String toDBFString(String s) {
-        StringBuilder stringbuffer = new StringBuilder();
+        StringBuilder stringBuilder = new StringBuilder();
         for (String name : posTable.keySet()) {
             POS pos = posTable.get(name);
-            stringbuffer.append((new StringBuilder(String.valueOf(s))).append(pos.toDBFString()).append("\n").toString());
+            stringBuilder.append((new StringBuilder(String.valueOf(s))).append(pos.toDBFString()).append("\n").toString());
         }
 
-        return stringbuffer.toString();
+        return stringBuilder.toString();
     }
-    HashMap<String, POS> posTable;
+    LinkedHashMap<String, POS> posTable;
     int arrayPOSAndFreq[][] = null;
 }
