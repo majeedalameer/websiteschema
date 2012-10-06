@@ -4,7 +4,6 @@
  */
 package websiteschema.mpsegment.filter;
 
-import websiteschema.mpsegment.conf.Configure;
 import websiteschema.mpsegment.dict.POSUtil;
 
 /**
@@ -14,7 +13,7 @@ import websiteschema.mpsegment.dict.POSUtil;
 public class UnknownPlaceFilter extends AbstractSegmentFilter {
 
     private static String adminLevels = "省市县区乡镇村旗州";
-    private boolean recognizeDiMing = !Configure.getInstance().isSegmentMin();
+    private boolean recognizeDiMing = true;
 
     @Override
     public void doFilter() {

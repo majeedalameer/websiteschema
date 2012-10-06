@@ -84,7 +84,7 @@ public class UnknownWord implements IWord {
     }
 
     @Override
-    public void setOccuredCount(int i) {
+    public void setOccuredSum(int i) {
     }
 
     @Override

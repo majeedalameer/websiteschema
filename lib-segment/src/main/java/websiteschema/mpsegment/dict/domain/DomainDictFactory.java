@@ -1,10 +1,13 @@
 package websiteschema.mpsegment.dict.domain;
 
-import websiteschema.mpsegment.conf.Configure;
-import websiteschema.mpsegment.dict.IWord;
-import websiteschema.mpsegment.dict.HashDictionary;
-import java.util.*;
 import org.apache.log4j.Logger;
+import websiteschema.mpsegment.conf.Configure;
+import websiteschema.mpsegment.dict.HashDictionary;
+import websiteschema.mpsegment.dict.IWord;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class DomainDictFactory {
 
@@ -31,10 +34,6 @@ public class DomainDictFactory {
             DomainDictionary dict = new DomainDictionary();
             domainDict = dict;
         }
-    }
-
-    public void addSynonym(String word, String synonym) {
-        domainDict.addSynonym(word, synonym);
     }
 
     public String[] getAllSynonym(String wordName) {
@@ -64,13 +63,13 @@ public class DomainDictFactory {
             // @2011-05-30 领域词典中的词是否扩展其在普通词典中的词性
             if (Configure.getInstance().isExtendPOSInDomainDictionary()) {
                 HashDictionary hashDictionary = new HashDictionary(Configure.getInstance().getSegmentDict());
-                List<IWord> allWords = dict.getAllWords();
-                for (int i = 0; i < allWords.size(); i++) {
-                    IWord dWord = allWords.get(i);
+                Iterator<IWord> iterator = dict.iterator();
+                while(iterator.hasNext()) {
+                    IWord dWord = iterator.next();
                     if (dWord == null) {
                         continue;
                     }
-                    IWord hWord = hashDictionary.getExactWordItem(dWord.getWordName());
+                    IWord hWord = hashDictionary.lookupWord(dWord.getWordName());
                     if (hWord == null) {
                         continue;
                     }

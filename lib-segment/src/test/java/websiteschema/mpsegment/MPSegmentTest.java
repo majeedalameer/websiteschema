@@ -6,6 +6,7 @@ package websiteschema.mpsegment;
 
 import org.junit.Assert;
 import org.junit.Test;
+import websiteschema.mpsegment.conf.Configure;
 import websiteschema.mpsegment.core.SegmentEngine;
 import websiteschema.mpsegment.core.SegmentResult;
 import websiteschema.mpsegment.core.SegmentWorker;
@@ -143,6 +144,21 @@ public class MPSegmentTest {
         Assert.assertEquals(words.getPOS(3), POSUtil.POS_T);
         Assert.assertEquals(words.getWord(4), "1日");
         Assert.assertEquals(words.getPOS(4), POSUtil.POS_T);
+    }
+
+    @Test
+    public void should_segment_big_word_to_litter_words() {
+        String str = "中华人民共和国在1949年10月1日正式宣布成立。";
+        SegmentEngine engine = SegmentEngine.getInstance();
+        boolean segmentMin = Configure.getInstance().isSegmentMin();
+        Configure.getInstance().setSegmentMin(true);
+        SegmentWorker worker = engine.getSegmentWorker();
+        SegmentResult words = worker.segment(str);
+        Configure.getInstance().setSegmentMin(segmentMin);
+        System.out.println(words);
+        Assert.assertEquals(words.getWord(0), "中华");
+        Assert.assertEquals(words.getWord(1), "人民");
+        Assert.assertEquals(words.getWord(2), "共和国");
     }
 
     @Test

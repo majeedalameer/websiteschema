@@ -1,9 +1,13 @@
 package websiteschema.mpsegment.dict;
 
+import java.util.Iterator;
+
 public interface IDictionary {
 
-    public IWord getWordItem(String wordStr);
+    public IWord getWord(String wordStr);
 
-    public IWord[] getWordItems(String wordStr);
+    public IWord[] getWords(String wordStr);
+
+    public Iterator<IWord> iterator();
 
 }

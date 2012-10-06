@@ -31,7 +31,7 @@ public interface IWord {
 
     public void setOccuredCount(String s, int i);
 
-    public void setOccuredCount(int i);
+    public void setOccuredSum(int i);
 
     public void setWordName(String s);
 

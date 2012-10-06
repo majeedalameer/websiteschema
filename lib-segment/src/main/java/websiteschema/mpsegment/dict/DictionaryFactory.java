@@ -2,9 +2,15 @@ package websiteschema.mpsegment.dict;
 
 import org.apache.log4j.Logger;
 import websiteschema.mpsegment.conf.Configure;
-import websiteschema.mpsegment.dict.domain.DomainDictFactory;
 import websiteschema.mpsegment.core.MPSegment;
+import websiteschema.mpsegment.dict.domain.DomainDictFactory;
+import websiteschema.mpsegment.dict.domain.DomainDictionary;
+import websiteschema.mpsegment.tools.StringWordConverter;
 import websiteschema.mpsegment.util.FileUtil;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class DictionaryFactory {
 
@@ -14,6 +20,7 @@ public class DictionaryFactory {
     public static DictionaryFactory getInstance() {
         return ins;
     }
+
     private HashDictionary coreDict;
     private DomainDictFactory domainFactory;
     private boolean loadDomainDictionary = Configure.getInstance().isLoadDomainDictionary();
@@ -23,11 +30,7 @@ public class DictionaryFactory {
         return coreDict;
     }
 
-//    public DomainDictionary getDomainDictionary() {
-//        return domainFactory.getDomainDictionary();
-//    }
-
-    public void loadDictionary() {
+    public void loadDictionary2() {
         String segment_dict = Configure.getInstance().getSegmentDict();
         String segment_dict_fre = (new StringBuilder(String.valueOf(FileUtil.removeExtension(segment_dict)))).append(".fre").toString();
         long l1 = System.currentTimeMillis();
@@ -35,7 +38,51 @@ public class DictionaryFactory {
         coreDict = new HashDictionary(Configure.getInstance().getSegmentDict());
 
         l1 = System.currentTimeMillis() - l1;
-        l.debug((new StringBuilder()).append("[Segment] ").append("loading dictionary time used(\u8017\u8D39\u65F6\u95F4)\uFF1A").append(l1).toString());
+        l.debug((new StringBuilder()).append("[Segment] ").append("loading dictionary time used(ms): ").append(l1).toString());
+    }
+
+    public void loadDictionary() {
+        try {
+            ArrayList<String> list = loadWordStr("websiteschema/mpsegment/dict.txt");
+
+            String[] array = list.toArray(new String[0]);
+            Arrays.sort(array);
+
+            StringWordConverter converter = new StringWordConverter();
+            for (String wordStr : array) {
+                IWord word = converter.convert(wordStr);
+                if (word != null) {
+                    coreDict.addWord(word);
+                }
+            }
+            array = null;
+        } catch (IOException e) {
+            l.error(e);
+        } catch (DictionaryException e) {
+            l.error(e);
+        }
+    }
+
+    private ArrayList<String> loadWordStr(String dictResource) throws IOException {
+        InputStream resourceStream = null;
+        File file = new File(dictResource);
+        if (file.exists()) {
+            resourceStream = new FileInputStream(file);
+        } else {
+            resourceStream = DictionaryFactory.class.getClassLoader().getResourceAsStream(dictResource);
+        }
+        BufferedReader reader = new BufferedReader(new InputStreamReader(resourceStream, "utf-8"));
+
+        coreDict = new HashDictionary();
+        String line = reader.readLine();
+        ArrayList<String> listWordStr = new ArrayList<String>();
+        while (line != null) {
+            listWordStr.add(line.trim());
+            line = reader.readLine();
+        }
+        reader.close();
+        reader = null;
+        return listWordStr;
     }
 
     public void loadDomainDictionary() {
@@ -49,12 +96,17 @@ public class DictionaryFactory {
         if (loadUserDictionary) {
             long l1 = System.currentTimeMillis();
             String userDictFile = Configure.getInstance().getUserDictionaryFile();
-            UserDictionaryLoader userDict = new UserDictionaryLoader(DomainDictFactory.getInstance().getDomainDictionary(), coreDict);
-            userDict.loadUserDictionary(userDictFile);
-            userDict.buildDisambiguationRule(new MPSegment());
-            userDict.clear();
+            DomainDictionary domainDictionary = DomainDictFactory.getInstance().getDomainDictionary();
+            UserDictionaryLoader userDictionaryLoader = new UserDictionaryLoader(domainDictionary, coreDict);
+            try {
+                userDictionaryLoader.loadUserDictionary(userDictFile);
+                userDictionaryLoader.buildDisambiguationRule(new MPSegment());
+            } catch (DictionaryException e) {
+                l.error(e);
+            }
+            userDictionaryLoader.clear();
             l1 = System.currentTimeMillis() - l1;
-            l.debug((new StringBuilder()).append("[Segment] ").append("loading user dictionary time used(\u8017\u8D39\u65F6\u95F4)\uFF1A").append(l1).toString());
+            l.debug((new StringBuilder()).append("[Segment] ").append("loading user dictionary time used(ms): ").append(l1).toString());
         }
     }
 }

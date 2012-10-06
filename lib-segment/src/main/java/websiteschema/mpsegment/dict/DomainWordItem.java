@@ -40,7 +40,7 @@ public class DomainWordItem
     }
 
     @Override
-    public void setOccuredCount(int factor) {
+    public void setOccuredSum(int factor) {
         posArray.setPOSCount(factor);
         log2Freq = 0;
         getLog2Freq();
@@ -101,12 +101,12 @@ public class DomainWordItem
 
     @Override
     public long getOccuredSum() {
-        return posArray.getOccuredSum();
+        return posArray.getOccurredSum();
     }
 
     @Override
     public long getOccuredCount(String s) {
-        return posArray.getOccuredCount(s);
+        return posArray.getOccurredCount(s);
     }
 
     @Override

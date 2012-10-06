@@ -20,7 +20,7 @@ public class UserDictionaryLoader {
 
     private boolean existedInHashDict(String s) {
         boolean flag = false;
-        if (!checkExist && hashDictionary != null && hashDictionary.getExactWordItem(s) != null) {
+        if (!checkExist && hashDictionary != null && hashDictionary.lookupWord(s) != null) {
             flag = true;
         }
         return flag;
@@ -30,8 +30,8 @@ public class UserDictionaryLoader {
         disambiguateRuleArrayList.clear();
     }
 
-    public void loadUserDictionary(String file) {
-        String encoding = Configure.getInstance().getFileEncoding();
+    public void loadUserDictionary(String file) throws DictionaryException {
+        String encoding = "utf-8";
         try {
             int i = 0;
 
@@ -54,7 +54,7 @@ public class UserDictionaryLoader {
         }
     }
 
-    private void processUserDictLine(String s) {
+    private void processUserDictLine(String s) throws DictionaryException {
         String line = s;
         int freq = defaultFreq;
         String pos = "N";
@@ -107,7 +107,7 @@ public class UserDictionaryLoader {
         disambiguateRuleArrayList.add(s);
     }
 
-    public void buildDisambiguationRule(MPSegment mpSegment) {
+    public void buildDisambiguationRule(MPSegment mpSegment) throws DictionaryException {
         if (disambiguateRuleArrayList.size() > 0) {
             for (int k = 0; k < disambiguateRuleArrayList.size(); k++) {
                 String rule = (String) disambiguateRuleArrayList.get(k);
@@ -181,7 +181,7 @@ public class UserDictionaryLoader {
     private void setOccurredCount(MPSegment mpsegment, String s, int factor) {
         IWord iworditem = mpsegment.getItem(s);
         if (iworditem != null) {
-            iworditem.setOccuredCount(factor);
+            iworditem.setOccuredSum(factor);
         }
     }
 

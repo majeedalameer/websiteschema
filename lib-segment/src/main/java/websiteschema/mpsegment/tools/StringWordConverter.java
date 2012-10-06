@@ -11,11 +11,11 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class StringToWordConverter {
+public class StringWordConverter {
 
     private static Pattern patternWord = Pattern.compile("\"(.*)\"\\s*=\\s*(\\{.*\\})");
     private static Pattern patternPair = Pattern.compile("([\\w\\d]+)\\s*:\\s*((\\{[^\\}]+?\\})|([\\w\\d]+))\\s*(,|$)");
-    WordImpl word;
+//    private WordImpl word;
     private static String domainTypeKey = "domainType";
     private static String posTableKey = "POSTable";
 
@@ -25,31 +25,34 @@ public class StringToWordConverter {
             String wordName = m.group(1);
             Map<String, String> properties = convertToMap(m.group(2));
             try {
-                wordName = java.net.URLDecoder.decode(wordName, "utf-8");
+                wordName = new String(java.net.URLDecoder.decode(wordName, "utf-8"));
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
 
-            word = new WordImpl(wordName);
-            setDomainType(properties.get(domainTypeKey));
-            setPOSTable(properties.get(posTableKey));
+            WordImpl word = new WordImpl(wordName);
+            setDomainType(properties.get(domainTypeKey), word);
+            setPOSTable(properties.get(posTableKey), word);
+            properties = null;
             return word;
         }
         return null;
     }
 
-    private void setPOSTable(String posTableString) {
+    private void setPOSTable(String posTableString, WordImpl word) {
         if(null != posTableString) {
             Map<String,String> posTable = convertToMap(posTableString);
             POSArray posArray = new POSArray();
             for(String pos : posTable.keySet()) {
                 posArray.add(new POS(pos, Integer.parseInt(posTable.get(pos))));
             }
+            posArray.buildPOSArray();
             word.setPosArray(posArray);
+            posTable = null;
         }
     }
 
-    private void setDomainType(String domainType) {
+    private void setDomainType(String domainType, WordImpl word) {
         if(null != domainType) {
             word.setDomainType(Integer.parseInt(domainType));
         }

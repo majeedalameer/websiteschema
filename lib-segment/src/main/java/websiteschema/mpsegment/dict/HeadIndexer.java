@@ -1,33 +1,36 @@
 package websiteschema.mpsegment.dict;
 
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.util.LinkedList;
 import websiteschema.mpsegment.conf.Configure;
 import websiteschema.mpsegment.util.BufReader;
 
-public class HeadIndexer {
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.util.LinkedList;
 
-    public HeadIndexer(BufReader bufreader, POSArray posArray)
+public class HeadIndexer<Word extends IWord> {
+
+    private static int Word_Array_Size_Threshold = 64;
+
+    public HeadIndexer(BufReader bufreader)
             throws IOException {
-        load(bufreader, posArray);
+        load(bufreader);
     }
 
-    public HeadIndexer(IWord headWord) {
+    public HeadIndexer(Word headWord) {
         this.headStr = headWord.getWordName().substring(0, 1);
         this.headWord = headWord;
         wordCount = 1;
         wordOccuredSum = 1;
-        maxWordLength = headStr.length();
+        maxWordLength = headWord.getWordLength();
         wordArray = new BinaryWordArray(new IWord[]{this.headWord});
     }
 
-    public HeadIndexer(IWord headWord, int headLength) {
+    public HeadIndexer(Word headWord, int headLength) {
         this.headStr = headWord.getWordName().substring(0, headLength);
         this.headWord = headWord;
         wordCount = 1;
         wordOccuredSum = 1;
-        maxWordLength = headStr.length();
+        maxWordLength = headWord.getWordLength();
         wordArray = new BinaryWordArray(new IWord[]{this.headWord});
     }
 
@@ -47,19 +50,30 @@ public class HeadIndexer {
         return headStr;
     }
 
-    public void add(IWord word) {
+    public void add(Word word) throws DictionaryException {
         String wordName = word.getWordName();
-        if(get(wordName) == null) {
-            if(wordName.startsWith(headStr)) {
-                if(wordName.length() > getMaxWordLength()) {
-                    maxWordLength = wordName.length();
-                }
-                wordCount++;
-                wordOccuredSum++;
-                wordArray.add(word);
+        if (get(wordName) == null) {
+            if (wordName.startsWith(headStr)) {
+                addWord(wordName, word);
+            } else {
+                throw new DictionaryException("Head string is not start with " + headStr);
             }
         }
     }
+
+    private void addWord(String wordName, Word word) {
+        if (wordName.length() > getMaxWordLength()) {
+            maxWordLength = wordName.length();
+        }
+        wordCount++;
+        wordOccuredSum++;
+        if (wordCount > Word_Array_Size_Threshold && wordArray instanceof BinaryWordArray) {
+            IWordArray tmpWordArray = new HashWordArray(wordArray.getWordItems());
+            wordArray = tmpWordArray;
+        }
+        wordArray.add(word);
+    }
+
 
     @Override
     public String toString() {
@@ -88,12 +102,12 @@ public class HeadIndexer {
         return stringBuilder.toString();
     }
 
-    public final void load(BufReader bufreader, POSArray posArray)
+    public final void load(BufReader bufreader)
             throws IOException {
         int headWordByte = bufreader.readIntByte();
         byte headWordBytes[] = new byte[headWordByte];
         bufreader.read(headWordBytes);
-        headStr = new String(headWordBytes, Configure.getInstance().getFileEncoding());
+        headStr = new String(headWordBytes, "gbk");
         wordCount = bufreader.readInt();
         maxWordLength = 0;
         wordOccuredSum = 0;
@@ -106,16 +120,15 @@ public class HeadIndexer {
             }
             wordItems[i] = word;
             if (i == 0) {
-                headWord = word;
+                headWord = (Word) word;
             }
-            posArray.add(word.getPOSArray());
         }
         // TODO: 5711 HeadIndexers have words less than 64, which total number is 51426,
         //       232 HeadIndexers have words more than 64, which total number is 27261
-        if (wordCount <= 64) {
-            wordArray = new BinaryWordArray(wordItems);
+        if (wordCount <= Word_Array_Size_Threshold) {
+            wordArray = new BinaryWordArray<Word>((Word[])wordItems);
         } else {
-            wordArray = new HashWordArray(wordItems);
+            wordArray = new HashWordArray<Word>((Word[])wordItems);
         }
 
     }
@@ -133,14 +146,14 @@ public class HeadIndexer {
 
     }
 
-    public IWord get(String word) {
+    public Word get(String word) {
         return wordArray.find(word);
     }
 
-    public IWord[] findMultiWord(String wordStr) {
+    public Word[] findMultiWord(String wordStr) {
         if (wordStr.length() == 1) {
             if (wordStr.equals(headWord.getWordName())) {
-                IWord words[] = new IWord[1];
+                Word words[] = (Word[])new IWord[1];
                 words[0] = headWord;
                 return words;
             } else {
@@ -165,13 +178,13 @@ public class HeadIndexer {
         }
 
         if (array.size() > 0) {
-            return array.toArray(new IWord[0]);
+            return (Word[])array.toArray(new IWord[0]);
         } else {
             return null;
         }
     }
 
-    public IWord findWord(String wordStr) {
+    public Word findWord(String wordStr) {
         if (wordStr.length() == 1) {
             if (wordStr.equals(headStr)) {
                 return headWord;
@@ -185,7 +198,7 @@ public class HeadIndexer {
         }
         for (int i = 1; i < maxWordLen; i++) {
             String candidateWord = wordStr.substring(0, i + 1);
-            IWord word = get(candidateWord);
+            Word word = get(candidateWord);
             if (null == word) {
                 continue;
             }
@@ -193,10 +206,15 @@ public class HeadIndexer {
         }
         return null;
     }
+
+    protected IWordArray getWordArray() {
+        return wordArray;
+    }
+
     private String headStr;
     private int maxWordLength;
     private int wordOccuredSum;
     private int wordCount;
-    private IWord headWord;
-    private IWordArray wordArray;
+    private Word headWord;
+    private IWordArray<Word> wordArray;
 }

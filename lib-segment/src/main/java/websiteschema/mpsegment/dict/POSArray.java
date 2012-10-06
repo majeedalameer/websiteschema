@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class POSArray
         implements Serializable {
@@ -33,7 +33,7 @@ public class POSArray
         if (pos == null || pos.trim().equals("")) {
             return;
         }
-        POS a1 = (POS) posTable.get(pos.trim());
+        POS a1 = posTable.get(pos.trim());
         if (a1 != null) {
             a1.setCount(freq);
         } else {
@@ -43,7 +43,7 @@ public class POSArray
     }
 
     public void setPOSCount(int count) {
-        double discount = (double) getOccuredSum();
+        double discount = (double) getOccurredSum();
         if (discount > 0.0D) {
             discount = (double) count / discount;
         }
@@ -55,25 +55,34 @@ public class POSArray
 
     }
 
-    public HashMap<String, POS> getPOSTable() {
+    private Map<String, POS> getPOSTable() {
         return posTable;
     }
 
     public void add(POSArray posArray) {
-        if (posArray == null) {
+        if (posArray == null && arrayPOSAndFreq == null) {
             return;
+        }
+
+        if (posArray == null) {
+            posTable = new LinkedHashMap<String, POS>(arrayPOSAndFreq.length);
+            for(int i = 0; i < arrayPOSAndFreq.length; i++) {
+                String posString = POSUtil.getPOSString(arrayPOSAndFreq[i][0]);
+                posTable.put(posString, new POS(posString, arrayPOSAndFreq[i][1]));
+            }
         }
 
         for (String name : posArray.getPOSTable().keySet()) {
             add(posArray.getPOSTable().get(name));
         }
+
     }
 
     public void add(POS pos) {
         if (pos == null) {
             return;
         }
-        POS a2 = (POS) posTable.get(pos.getName());
+        POS a2 = posTable.get(pos.getName());
         if (a2 != null) {
             a2.setCount(a2.getCount() + pos.getCount());
         } else {
@@ -86,7 +95,7 @@ public class POSArray
         if (s == null || s.trim().equals("")) {
             return;
         }
-        POS a1 = (POS) posTable.get(s.trim());
+        POS a1 = posTable.get(s.trim());
         if (a1 != null) {
             a1.setCount(a1.getCount() + 1);
         } else {
@@ -106,18 +115,21 @@ public class POSArray
         return arrayPOSAndFreq;
     }
 
-    private int[][] buildPOSArray() {
+    public int[][] buildPOSArray() {
         POS arrayPOS[] = new POS[getSize()];
         int i = 0;
         for (String name : posTable.keySet()) {
             arrayPOS[i++] = posTable.get(name);
         }
-        int POSAndFreq[][] = new int[arrayPOS.length][2];
+        int[][] posAndFreq = new int[arrayPOS.length][2];
         for (int j = 0; j < arrayPOS.length; j++) {
-            POSAndFreq[j][0] = POSUtil.getPOSIndex(arrayPOS[j].getName());
-            POSAndFreq[j][1] = arrayPOS[j].getCount();
+            posAndFreq[j][0] = POSUtil.getPOSIndex(arrayPOS[j].getName());
+            posAndFreq[j][1] = arrayPOS[j].getCount();
         }
-        return POSAndFreq;
+        posTable.clear();
+        posTable = null;
+        this.arrayPOSAndFreq = posAndFreq;
+        return posAndFreq;
     }
 
     public int getWordPOSTable(int arrayPOSAndFreq[][]) {
@@ -169,7 +181,6 @@ public class POSArray
             POS pos = new POS(name, count);
             posTable.put(name, pos);
         }
-
     }
 
     private void load(BufReader resources)
@@ -186,7 +197,6 @@ public class POSArray
             POS pos = new POS(name, count);
             posTable.put(name, pos);
         }
-
     }
 
     public void save(RandomAccessFile randomaccessfile)
@@ -207,11 +217,11 @@ public class POSArray
 
     }
 
-    public long getOccuredCount(String s) {
+    public long getOccurredCount(String s) {
         if (s == null || s.trim().equals("")) {
             return 0L;
         }
-        POS pos = (POS) posTable.get(s.trim());
+        POS pos = posTable.get(s.trim());
         if (pos == null) {
             return 0L;
         } else {
@@ -219,7 +229,7 @@ public class POSArray
         }
     }
 
-    public long getOccuredSum() {
+    public long getOccurredSum() {
         long sum = 0L;
         for (String name : posTable.keySet()) {
             POS pos = posTable.get(name);
@@ -232,8 +242,8 @@ public class POSArray
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
-        for (String name : posTable.keySet()) {
-            POS pos = posTable.get(name);
+        for(int i = 0; i < arrayPOSAndFreq.length; i++) {
+            POS pos = new POS(POSUtil.getPOSString(arrayPOSAndFreq[i][0]), arrayPOSAndFreq[i][1]);
             stringBuilder.append((new StringBuilder(String.valueOf(pos.toString()))).append("\n").toString());
         }
 
@@ -242,8 +252,8 @@ public class POSArray
 
     public String toDBFString(String s) {
         StringBuilder stringBuilder = new StringBuilder();
-        for (String name : posTable.keySet()) {
-            POS pos = posTable.get(name);
+        for(int i = 0; i < arrayPOSAndFreq.length; i++) {
+            POS pos = new POS(POSUtil.getPOSString(arrayPOSAndFreq[i][0]), arrayPOSAndFreq[i][1]);
             stringBuilder.append((new StringBuilder(String.valueOf(s))).append(pos.toDBFString()).append("\n").toString());
         }
 
