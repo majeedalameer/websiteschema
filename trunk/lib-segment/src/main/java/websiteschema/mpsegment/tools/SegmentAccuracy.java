@@ -151,7 +151,7 @@ public class SegmentAccuracy {
             // Bigger word contains the littler words.
             // Should remove the word from dictionary.
             errorContain++;
-//            System.out.println(expect + " in " + errorSegment);
+//            System.out.println(expect.word + " in " + errorSegment);
         } else if (errorSegment.replaceAll(" ", "").equals(expect.word)) {
             // Need to add expected word into dictionary
             // Or found a new word
@@ -163,11 +163,11 @@ public class SegmentAccuracy {
                 errorNewWord++;
                 possibleNewWords.add(expect.word);
             }
-//            System.out.println(expect + " in " + errorSegment);
+//            System.out.println(expect.word + " in " + errorSegment);
         } else if (errorSegment.contains(expect.word)) {
             errorContain++;
             wordsWithContainDisambiguate.add(errorSegment);
-//            System.out.println(expect + " in " + errorSegment);
+//            System.out.println(expect.word + " in " + errorSegment);
         } else {
             errorOther++;
 //            System.out.println(expect.word + " in " + errorSegment);

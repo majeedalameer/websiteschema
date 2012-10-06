@@ -4,8 +4,6 @@
  */
 package websiteschema.mpsegment.core;
 
-import java.util.HashMap;
-import java.util.Map;
 import websiteschema.mpsegment.conf.Configure;
 import websiteschema.mpsegment.dict.DictionaryFactory;
 import websiteschema.mpsegment.dict.HashDictionary;
@@ -15,8 +13,10 @@ import websiteschema.mpsegment.dict.domain.DomainDictionary;
 import websiteschema.mpsegment.graph.IGraph;
 import websiteschema.mpsegment.util.StringUtil;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
- *
  * @author ray
  */
 public class GraphBuilder {
@@ -38,10 +38,10 @@ public class GraphBuilder {
 
     private String doUpperCaseAndHalfShape(String word) {
         if (isUpperCaseOrHalfShapeAll) {
-            if(isHalfShapeAll && isUpperCaseAll) {
+            if (isHalfShapeAll && isUpperCaseAll) {
                 return StringUtil.doUpperCaseAndHalfShape(word);
             }
-            if(isHalfShapeAll) {
+            if (isHalfShapeAll) {
                 return StringUtil.halfShape(word);
             }
             return StringUtil.toUpperCase(word);
@@ -72,8 +72,9 @@ public class GraphBuilder {
         final int slen = sentence.length();
         final int rest = slen - begin;
         if (maxWordLength <= rest) {
-            int end = (begin + maxWordLength + lastMinWordLen) - 1 < slen
-                    ? (begin + maxWordLength + lastMinWordLen) - 1 : slen;
+            int end = (begin + maxWordLength + lastMinWordLen) - 1;
+            end = end < slen
+                    ? end : slen;
             candidateWord = sentence.substring(begin, end);
         } else {
             candidateWord = sentence.substring(begin);
@@ -81,30 +82,30 @@ public class GraphBuilder {
         return candidateWord;
     }
 
-    private int getWeight(IWord iworditem) {
+    private int getWeight(IWord word) {
         if (useContextFreqSegment) {
-            String word = iworditem.getWordName();
+            String wordName = word.getWordName();
             int weight = 1;
-            if (word.length() > 1) {
-                int contextFreq = contextFreqMap.containsKey(word) ? contextFreqMap.get(word) : 1;
-                int freq = getFreqWeight(iworditem);
+            if (wordName.length() > 1) {
+                int contextFreq = contextFreqMap.containsKey(wordName) ? contextFreqMap.get(wordName) : 1;
+                int freq = getFreqWeight(word);
                 weight = (int) (freq + getContextFreqWeight(freq, contextFreq));
             } else {
-                weight = getFreqWeight(iworditem);
+                weight = getFreqWeight(word);
             }
             if (weight <= 0) {
                 weight = 1;
             }
             return weight;
         }
-        int weight = getFreqWeight(iworditem);
+        int weight = getFreqWeight(word);
         return weight;
     }
 
-    private int getFreqWeight(IWord iworditem) {
-        int log2Freq = iworditem.getLog2Freq();
+    private int getFreqWeight(IWord word) {
+        int log2Freq = word.getLog2Freq();
         if (logCorpus > log2Freq) {
-            int freqWeight = (int) (logCorpus - iworditem.getLog2Freq());
+            int freqWeight = (int) (logCorpus - word.getLog2Freq());
             return freqWeight;
         } else {
             return 1;
@@ -184,23 +185,26 @@ public class GraphBuilder {
 
             //find all possible slices except single word
             final String candidateWord = getCandidateSentence(begin);
-            final IWord iworditem = getItem(candidateWord, lastMinWordLen);
+            final IWord the1stMatchWord = getItem(candidateWord, lastMinWordLen);
             //将查找到的词添加到图中。
             //为了减少图的分支，同时因为单字词在中文中往往没有太多意义。
             //如果存在多个多字词，则不向图中添加单字词
-            if (iworditem != null && iworditem.getWordLength() > 1) {
+            if (the1stMatchWord != null && the1stMatchWord.getWordLength() > 1) {
                 //查找结果不为空且不是单字词
-                addEdgeObject(begin + 1, begin + iworditem.getWordLength() + 1, getWeight(iworditem), iworditem);
-                {
-                    if (the2ndMatchWord != null) {
-                        addEdgeObject(begin + 1, begin + the2ndMatchWord.getWordLength() + 1, getWeight(the2ndMatchWord), the2ndMatchWord);
-                    } else {
-                        //仅有一个多字词，需要向图中添加单字词
-                        addEdgeObject(begin + 1, begin + lastMinWordLen + 1, getWeight(singleCharWord), singleCharWord);
-                    }
-                    if (the3rdMatchWord != null) {
-                        addEdgeObject(begin + 1, begin + the3rdMatchWord.getWordLength() + 1, getWeight(the3rdMatchWord), the3rdMatchWord);
-                    }
+                if (the2ndMatchWord != null) {
+                    addEdgeObject(begin + 1, begin + the2ndMatchWord.getWordLength() + 1, getWeight(the2ndMatchWord), the2ndMatchWord);
+                } else {
+                    //仅有一个多字词，需要向图中添加单字词
+                    addEdgeObject(begin + 1, begin + lastMinWordLen + 1, getWeight(singleCharWord), singleCharWord);
+                }
+                if (the3rdMatchWord != null) {
+                    addEdgeObject(begin + 1, begin + the3rdMatchWord.getWordLength() + 1, getWeight(the3rdMatchWord), the3rdMatchWord);
+                }
+                boolean segmentMin = Configure.getInstance().isSegmentMin();
+                boolean matchedWordMoreThanOne = matchedWordCount > 1;
+                boolean firstWordIsBigWord = the1stMatchWord.getWordLength() > BigWordLength;
+                if (!segmentMin || !matchedWordMoreThanOne || !firstWordIsBigWord) {
+                    addEdgeObject(begin + 1, begin + the1stMatchWord.getWordLength() + 1, getWeight(the1stMatchWord), the1stMatchWord);
                 }
             } else {
                 addEdgeObject(begin + 1, begin + lastMinWordLen + 1, getWeight(singleCharWord), singleCharWord);
@@ -208,55 +212,57 @@ public class GraphBuilder {
         }
     }
 
-    private IWord get1stMatchWord(IWord[] iworditems) {
-        return null != iworditems && iworditems.length > 0 ? iworditems[0] : null;
+    private IWord get1stMatchWord(IWord[] words) {
+        return null != words && words.length > 0 ? words[0] : null;
     }
 
-    private IWord get2ndMatchWord(IWord[] iworditems) {
-        return null != iworditems && iworditems.length > 1 ? iworditems[1] : null;
+    private IWord get2ndMatchWord(IWord[] words) {
+        return null != words && words.length > 1 ? words[1] : null;
     }
 
-    private IWord get3rdMatchWord(IWord[] iworditems) {
-        return null != iworditems && iworditems.length > 2 ? iworditems[2] : null;
+    private IWord get3rdMatchWord(IWord[] words) {
+        return null != words && words.length > 2 ? words[2] : null;
     }
 
     private IWord getMultiWordsInHashDictionary(String candidateWord) {
-        IWord iworditem = null;
-        IWord[] iworditems = hashDictionary.getWordItems(candidateWord);
-        if (null != iworditems) {
-            iworditem = get1stMatchWord(iworditems);
-            if (iworditem != null) {
-                the2ndMatchWord = get2ndMatchWord(iworditems);
-                the3rdMatchWord = get3rdMatchWord(iworditems);
+        IWord word = null;
+        IWord[] words = hashDictionary.getWords(candidateWord);
+        matchedWordCount = null != words ? words.length : 0;
+        if (null != words) {
+            word = get1stMatchWord(words);
+            if (word != null) {
+                the2ndMatchWord = get2ndMatchWord(words);
+                the3rdMatchWord = get3rdMatchWord(words);
             }
         }
-        return iworditem;
+        return word;
     }
 
     private IWord getItem(String candidateWord, int minWordLength) {
-        IWord iworditem = null;
+        IWord word = null;
         if (useDomainDictionary && (loadDomainDictionary || loadUserDictionary) && candidateWord.length() > 1) {
-            iworditem = getDomainDictionary().getWordItem(candidateWord, minWordLength);
+            word = getDomainDictionary().getWordItem(candidateWord, minWordLength);
         }
-        if (iworditem == null) {
+        if (word == null) {
             //如果在领域词典中没有找到对应的词
             //则在核心词典中继续查找
-            iworditem = getMultiWordsInHashDictionary(candidateWord);
+            word = getMultiWordsInHashDictionary(candidateWord);
         } else {
             //如果在领域词典中找到对应的词
             //继续在核心词典中查找，并排除在返回结果中和领域词典里相同的词
-            IWord[] iworditems = hashDictionary.getWordItems(candidateWord);
-            the2ndMatchWord = get1stMatchWord(iworditems);
+            IWord[] words = hashDictionary.getWords(candidateWord);
+            matchedWordCount = null != words ? words.length : 0;
+            the2ndMatchWord = get1stMatchWord(words);
             if (the2ndMatchWord != null) {
-                if (iworditem.getWordName().length() == the2ndMatchWord.getWordName().length()) {
+                if (word.getWordName().length() == the2ndMatchWord.getWordName().length()) {
                     //如果用户辞典或领域辞典的长度和普通辞典相同
-                    the2ndMatchWord = get2ndMatchWord(iworditems);
-                    the3rdMatchWord = get3rdMatchWord(iworditems);
+                    the2ndMatchWord = get2ndMatchWord(words);
+                    the3rdMatchWord = get3rdMatchWord(words);
                     if (the2ndMatchWord != null) {
-                        if (iworditem.getWordName().length() == the2ndMatchWord.getWordName().length()) {
+                        if (word.getWordName().length() == the2ndMatchWord.getWordName().length()) {
                             the2ndMatchWord = null;
                         }
-                        if (the3rdMatchWord != null && iworditem.getWordName().length() == the3rdMatchWord.getWordName().length()) {
+                        if (the3rdMatchWord != null && word.getWordName().length() == the3rdMatchWord.getWordName().length()) {
                             the3rdMatchWord = null;
                         }
                         if (the2ndMatchWord == null) {
@@ -266,19 +272,19 @@ public class GraphBuilder {
                     }
                 } else {
                     //如果用户辞典或领域辞典的长度和普通辞典不相同
-                    the3rdMatchWord = get2ndMatchWord(iworditems);
+                    the3rdMatchWord = get2ndMatchWord(words);
                     if (the3rdMatchWord != null) {
-                        if (iworditem.getWordName().length() == the3rdMatchWord.getWordName().length()) {
-                            the3rdMatchWord = get3rdMatchWord(iworditems);
+                        if (word.getWordName().length() == the3rdMatchWord.getWordName().length()) {
+                            the3rdMatchWord = get3rdMatchWord(words);
                         }
-                        if (the3rdMatchWord != null && iworditem.getWordName().length() == the3rdMatchWord.getWordName().length()) {
-                            the3rdMatchWord = get3rdMatchWord(iworditems);
+                        if (the3rdMatchWord != null && word.getWordName().length() == the3rdMatchWord.getWordName().length()) {
+                            the3rdMatchWord = get3rdMatchWord(words);
                         }
                     }
                 }
             }
         }
-        return iworditem;
+        return word;
     }
 
     private DomainDictionary getDomainDictionary() {
@@ -300,14 +306,18 @@ public class GraphBuilder {
     public void setUseContextFreqSegment(boolean useContextFreqSegment) {
         this.useContextFreqSegment = useContextFreqSegment;
     }
+
     private final static boolean isUpperCaseAll = Configure.getInstance().isUpperCaseAll();
     private final static boolean isHalfShapeAll = Configure.getInstance().isHalfShapeAll();
     private final static boolean isUpperCaseOrHalfShapeAll = isUpperCaseAll || isHalfShapeAll;
-    private final static int maxWordLength = Configure.getInstance().isSegmentMin() ? 4 : Configure.getInstance().getMaxWordLength();
+    private final static int maxWordLength = Configure.getInstance().getMaxWordLength();
+    //    private final static int maxWordLength = Configure.getInstance().isSegmentMin() ? 4 : Configure.getInstance().getMaxWordLength();
     private final static boolean loadDomainDictionary = Configure.getInstance().isLoadDomainDictionary();
     private final static boolean loadUserDictionary = Configure.getInstance().isLoadUserDictionary();
+    private final static int BigWordLength = 4;
     private IWord the2ndMatchWord;
     private IWord the3rdMatchWord;
+    private int matchedWordCount = 0;
     int lastMinWordLen = 0;
     String sentence = "";
 }

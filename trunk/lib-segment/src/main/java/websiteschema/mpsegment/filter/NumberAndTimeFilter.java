@@ -1,18 +1,10 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package websiteschema.mpsegment.filter;
 
-import websiteschema.mpsegment.util.NumberUtil;
-import websiteschema.mpsegment.conf.Configure;
 import websiteschema.mpsegment.dict.POSUtil;
-import static websiteschema.mpsegment.util.WordUtil.*;
+import websiteschema.mpsegment.util.NumberUtil;
 
-/**
- *
- * @author ray
- */
+import static websiteschema.mpsegment.util.WordUtil.isNumerical;
+
 public class NumberAndTimeFilter extends AbstractSegmentFilter {
 
     @Override
@@ -142,5 +134,5 @@ public class NumberAndTimeFilter extends AbstractSegmentFilter {
     private static int posT = POSUtil.POS_T;
     private static int posNR = POSUtil.POS_NR;
     private static String wuLiuWan = "伍陆万";
-    private boolean recognizeTime = !Configure.getInstance().isSegmentMin();
+    private boolean recognizeTime = true;
 }

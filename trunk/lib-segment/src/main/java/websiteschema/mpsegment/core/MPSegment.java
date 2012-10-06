@@ -62,10 +62,10 @@ public class MPSegment {
     public IWord getItem(String word) {
         IWord iworditem = null;
         if ((loadDomainDictionary || loadUserDictionary) && word.length() > 1) {
-            iworditem = getDomainDictionary().getWordItem(word);
+            iworditem = getDomainDictionary().getWord(word);
         }
         if (iworditem == null) {
-            iworditem = getHashDictionary().getWordItem(word);
+            iworditem = getHashDictionary().getWord(word);
         }
         return iworditem;
     }
@@ -230,10 +230,10 @@ public class MPSegment {
         IWord iworditem = null;
         int i1 = 0;
         if ((loadDomainDictionary || loadUserDictionary) && word.length() > 1) {
-            iworditem = getDomainDictionary().getWordItem(word);
+            iworditem = getDomainDictionary().getWord(word);
         }
         if (iworditem == null) {
-            iworditem = getHashDictionary().getWordItem(word);
+            iworditem = getHashDictionary().getWord(word);
         }
         if (iworditem != null) {
             i1 = (int) iworditem.getOccuredSum();

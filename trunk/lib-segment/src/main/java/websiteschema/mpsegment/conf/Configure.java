@@ -1,8 +1,9 @@
 package websiteschema.mpsegment.conf;
 
-import java.io.*;
-import java.util.Properties;
 import org.apache.log4j.Logger;
+
+import java.io.IOException;
+import java.util.Properties;
 
 public final class Configure {
 
@@ -153,6 +154,10 @@ public final class Configure {
 
     public boolean isSegmentMin() {
         return segment_min;
+    }
+
+    public void setSegmentMin(boolean segmentMin) {
+        this.segment_min = segmentMin;
     }
 
     public String getGlueChar() {

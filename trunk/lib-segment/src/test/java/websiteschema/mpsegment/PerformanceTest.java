@@ -4,18 +4,16 @@
  */
 package websiteschema.mpsegment;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import junit.framework.Assert;
 import org.junit.Test;
 import websiteschema.mpsegment.core.SegmentEngine;
 import websiteschema.mpsegment.core.SegmentResult;
 import websiteschema.mpsegment.core.SegmentWorker;
 
-/**
- * @author ray
- */
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 public class PerformanceTest {
 
     @Test
@@ -119,7 +117,7 @@ public class PerformanceTest {
     }
 
     @Test
-    public void should_spend_memory_within_40_MB() throws IOException, InterruptedException {
+    public void should_spend_memory_within_30_MB() throws IOException, InterruptedException {
         BufferedReader reader = new BufferedReader(
                 new InputStreamReader(
                         getClass().getClassLoader().getResourceAsStream("Sophie's_World.txt"), "UTF-8"));
@@ -138,9 +136,9 @@ public class PerformanceTest {
         long totalMemory = Runtime.getRuntime().totalMemory();
         long freeMemory = Runtime.getRuntime().freeMemory();
         long memorySize = (totalMemory - freeMemory) / 1024 / 1024;
-        System.out.println("should_spend_memory_within_40_MB");
+        System.out.println("should_spend_memory_within_30_MB");
         System.out.println("    Current application has taken " + memorySize + "MB memory size.");
-        Assert.assertTrue(memorySize < 40);
+        Assert.assertTrue(memorySize < 21);
     }
 
     public static void main(String[] args) throws IOException {

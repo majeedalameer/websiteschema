@@ -10,38 +10,37 @@ import java.util.HashMap;
 
 
 /**
- *
  * @author twer
  */
-public interface IWordArray {
+public interface IWordArray<Word extends IWord> {
 
-    public IWord find(String word);
-    
-    public IWord[] getWordItems();
+    public Word find(String word);
 
-    public void add(IWord word);
+    public Word[] getWordItems();
+
+    public void add(Word word);
 }
 
 
-class BinaryWordArray implements IWordArray {
+class BinaryWordArray<Word extends IWord> implements IWordArray<Word> {
 
     IWord[] wordItems;
 
-    BinaryWordArray(IWord[] wordItems) {
+    BinaryWordArray(Word[] wordItems) {
         this.wordItems = wordItems;
     }
 
     @Override
-    public IWord find(String word) {
+    public Word find(String word) {
         int index = lookupWordItem(word);
         if (index >= 0) {
-            return wordItems[index];
+            return (Word)wordItems[index];
         }
         return null;
     }
 
     @Override
-    public void add(IWord word) {
+    public void add(Word word) {
         IWord[] temp = new IWord[wordItems.length + 1];
         System.arraycopy(wordItems, 0, temp, 0, wordItems.length);
         temp[wordItems.length] = word;
@@ -73,43 +72,48 @@ class BinaryWordArray implements IWordArray {
     }
 
     @Override
-    public IWord[] getWordItems() {
-        return wordItems;
+    public Word[] getWordItems() {
+        return (Word[])wordItems;
     }
 }
 
-class HashWordArray implements IWordArray {
+class HashWordArray<Word extends IWord> implements IWordArray<Word> {
 
     HashMap<String, Integer> wordIndex;
     IWord[] wordItems;
 
-    HashWordArray(IWord[] words) {
+    HashWordArray(Word[] words) {
         this.wordIndex = new HashMap<String, Integer>(words.length);
         int i = 0;
-        for(IWord word : words) {
+        for (Word word : words) {
             wordIndex.put(word.getWordName(), i++);
         }
-        
+
         wordItems = words;
     }
 
     @Override
-    public IWord find(String word) {
+    public Word find(String word) {
         Integer index = wordIndex.get(word);
         if (null != index && index >= 0) {
-            return wordItems[index];
+            return (Word)wordItems[index];
         }
         return null;
     }
 
     @Override
-    public IWord[] getWordItems() {
-        return wordItems;
+    public Word[] getWordItems() {
+        return (Word[])wordItems;
     }
 
     @Override
-    public void add(IWord word) {
-        throw new UnsupportedOperationException();
+    public void add(Word word) {
+        IWord[] temp = new IWord[wordItems.length + 1];
+        System.arraycopy(wordItems, 0, temp, 0, wordItems.length);
+        int index = wordItems.length;
+        temp[index] = word;
+        wordIndex.put(word.getWordName(), index);
+        wordItems = temp;
     }
 }
 

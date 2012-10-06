@@ -6,11 +6,6 @@ package websiteschema.mpsegment.dict;
 
 import org.junit.Assert;
 import org.junit.Test;
-import websiteschema.mpsegment.conf.Configure;
-import websiteschema.mpsegment.dict.HashDictionary;
-import websiteschema.mpsegment.dict.IWord;
-import websiteschema.mpsegment.dict.POSAndFreq;
-import websiteschema.mpsegment.util.FileUtil;
 
 /**
  * @author ray

@@ -13,6 +13,8 @@ public class WordImpl implements Serializable, Comparable, IWord {
         log2Freq = 0;
         this.wordName = wordName;
         domainType = 0;
+        posArray = new POSArray();
+        posArray.add(new POS("UN", 200));
     }
 
     public WordImpl(String wordName, int i) {
@@ -29,21 +31,31 @@ public class WordImpl implements Serializable, Comparable, IWord {
 
     @Override
     public void setOccuredCount(String posName, int freq) {
-        POSAndFreq.setFreq(indexOfPosDB, wordPOSNumber, POSUtil.getPOSIndex(posName), freq);
+        int[][] posTable = posArray.getWordPOSTable();
+        for (int i = 0; i < posTable.length; i++) {
+            String pos = POSUtil.getPOSString(posTable[i][0]);
+            if (posName.equals(pos)) {
+                posTable[i][1] = freq;
+                calculateLogFreq();
+                break;
+            }
+        }
     }
 
     @Override
-    public void setOccuredCount(int factor) {
-        POSAndFreq.setScaleFreq(indexOfPosDB, wordPOSNumber, factor);
-        log2Freq = 0;
-        getLog2Freq();
+    public void setOccuredSum(int sum) {
+        double factor = (double)sum / (double)getOccuredSum();
+        int[][] posTable = posArray.getWordPOSTable();
+        for (int i = 0; i < posTable.length; i++) {
+            int freq = posTable[i][1];
+            posTable[i][1] = (int) (freq * factor);
+            calculateLogFreq();
+        }
+        calculateLogFreq();
     }
 
     @Override
     public POSArray getPOSArray() {
-        if (null == posArray || posArray.getSize() != wordPOSNumber) {
-            return buildPOSArray();
-        }
         return posArray;
     }
 
@@ -52,42 +64,39 @@ public class WordImpl implements Serializable, Comparable, IWord {
         return getPOSArray().getWordPOSTable();
     }
 
-    private POSArray buildPOSArray() {
-        if (posArray != null) {
-            return posArray;
-        }
-        posArray = new POSArray();
-        for (int i = 0; i < wordPOSNumber; i++) {
-            String name = POSUtil.getPOSString(POSAndFreq.getPOS(indexOfPosDB + i));
-            int count = POSAndFreq.getFreq(indexOfPosDB + i);
-            POS pos = new POS(name, count);
-            posArray.add(pos);
-        }
-        return posArray;
-    }
-
     public void setPosArray(POSArray posArray) {
         this.posArray = posArray;
     }
 
     @Override
     public int getWordMaxPOS() {
-        return POSAndFreq.getMaxOccuriedPOS(indexOfPosDB, wordPOSNumber);
+        int maxOccuredPOS = POSUtil.POS_UNKOWN;
+        int maxOccured = 0;
+        int[][] posTable = posArray.getWordPOSTable();
+        for (int i = 0; i < posTable.length; i++) {
+            int freq = posTable[i][1];
+            if (freq > maxOccured) {
+                maxOccuredPOS = posTable[i][0];
+            }
+        }
+
+        return maxOccuredPOS;
     }
 
     @Override
-    public int getWordPOSTable(int posTable[][]) {
-        for (int i = 0; i < wordPOSNumber; i++) {
-            if (i < posTable.length) {
-                posTable[i][0] = POSAndFreq.getPOS(indexOfPosDB + i);
-                posTable[i][1] = POSAndFreq.getFreq(indexOfPosDB + i);
+    public int getWordPOSTable(int posTableRef[][]) {
+        int[][] posTable = getPOSArray().getWordPOSTable();
+        for (int i = 0; i < posTable.length; i++) {
+            if (i < posTableRef.length) {
+                posTableRef[i][0] = posTable[i][0];
+                posTableRef[i][1] = posTable[i][1];
             }
         }
-        for (int j = wordPOSNumber; j < posTable.length; j++) {
-            posTable[j][0] = 0;
-            posTable[j][1] = 0;
+        for (int j = posTable.length; j < posTableRef.length; j++) {
+            posTableRef[j][0] = 0;
+            posTableRef[j][1] = 0;
         }
-        return wordPOSNumber;
+        return posTable.length;
     }
 
     @Override
@@ -96,8 +105,8 @@ public class WordImpl implements Serializable, Comparable, IWord {
     }
 
     @Override
-    public void setWordName(String s) {
-        wordName = s;
+    public void setWordName(String wordName) {
+        this.wordName = wordName;
     }
 
     @Override
@@ -118,54 +127,53 @@ public class WordImpl implements Serializable, Comparable, IWord {
     @Override
     public int getLog2Freq() {
         if (log2Freq == 0) {
-            log2Freq = (int) (Math.log(getOccuredSum() + 1L) * 100D);
+            calculateLogFreq();
         }
         return log2Freq;
     }
 
+    private void calculateLogFreq() {
+        log2Freq = (int) (Math.log(getOccuredSum() + 1L) * 100D);
+    }
+
     @Override
     public long getOccuredSum() {
-        return (long) POSAndFreq.getFreqSum(indexOfPosDB, wordPOSNumber);
+        int[][] posTable = getPOSArray().getWordPOSTable();
+        int occuredSum = 0;
+        for (int i = 0; i < posTable.length; i++) {
+            occuredSum += posTable[i][1];
+        }
+        return occuredSum;
     }
 
     @Override
     public long getOccuredCount(String s) {
-        int i = POSUtil.getPOSIndex(s);
-        return (long) POSAndFreq.getPOSFreq(indexOfPosDB, wordPOSNumber, i);
+        int pos = POSUtil.getPOSIndex(s);
+        int[][] posTable = getPOSArray().getWordPOSTable();
+        for (int i = 0; i < posTable.length; i++) {
+            if (posTable[i][0] == pos) {
+                return (long) posTable[i][1];
+            }
+        }
+        return 0L;
     }
 
     @Override
     public void incOccuredCount(String s) {
-        int i = POSUtil.getPOSIndex(s);
-        POSAndFreq.incPOSFreq(indexOfPosDB, wordPOSNumber, i);
-    }
-
-    public void setPOSFreq(int i, int j) {
-        indexOfPosDB = i;
-        wordPOSNumber = j;
+        setOccuredCount(s, (int) getOccuredCount(s) + 1);
     }
 
     public final void load(RandomAccessFile randomaccessfile)
             throws IOException {
         byte byte0 = randomaccessfile.readByte();
-        byte abyte0[] = new byte[byte0];
-        randomaccessfile.read(abyte0);
-        wordName = new String(abyte0, Configure.getInstance().getFileEncoding());
+        byte bytes[] = new byte[byte0];
+        randomaccessfile.read(bytes);
+        wordName = new String(bytes, Configure.getInstance().getFileEncoding());
         domainType = randomaccessfile.readInt();
         domainType /= 100;
         indexOfPosDB = randomaccessfile.readInt();
         wordPOSNumber = randomaccessfile.readInt();
-    }
-
-    public String toText() {
-        String space = " ";
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(wordName).append(space);
-        sb.append(domainType).append(space);
-        sb.append(indexOfPosDB).append(space);
-        sb.append(wordPOSNumber).append(space);
-        return sb.toString();
+        buildPOSArray();
     }
 
     private void load(BufReader bufreader)
@@ -178,14 +186,26 @@ public class WordImpl implements Serializable, Comparable, IWord {
         domainType /= 100;
         indexOfPosDB = bufreader.readInt();
         wordPOSNumber = bufreader.readInt();
+        buildPOSArray();
+    }
+
+    private POSArray buildPOSArray() {
+        posArray = new POSArray();
+        for (int i = 0; i < wordPOSNumber; i++) {
+            String name = POSUtil.getPOSString(POSAndFreq.getPOS(indexOfPosDB + i));
+            int count = POSAndFreq.getFreq(indexOfPosDB + i);
+            POS pos = new POS(name, count);
+            posArray.add(pos);
+        }
+        return posArray;
     }
 
     @Override
     public void save(RandomAccessFile randomaccessfile)
             throws IOException {
-        byte abyte0[] = wordName.getBytes(Configure.getInstance().getFileEncoding());
-        randomaccessfile.write((byte) abyte0.length);
-        randomaccessfile.write(abyte0);
+        byte bytes[] = wordName.getBytes(Configure.getInstance().getFileEncoding());
+        randomaccessfile.write((byte) bytes.length);
+        randomaccessfile.write(bytes);
         domainType *= 100;
         int i = domainType;
         randomaccessfile.writeInt(i);

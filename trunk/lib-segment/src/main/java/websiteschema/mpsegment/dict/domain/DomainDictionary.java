@@ -1,13 +1,12 @@
 package websiteschema.mpsegment.dict.domain;
 
+import org.apache.log4j.Logger;
+import websiteschema.mpsegment.dict.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
-import websiteschema.mpsegment.conf.Configure;
-import websiteschema.mpsegment.dict.DomainWordItem;
-import websiteschema.mpsegment.dict.HeadIndexer;
-import websiteschema.mpsegment.dict.IDictionary;
-import websiteschema.mpsegment.dict.IWord;
 
 public class DomainDictionary implements IDictionary {
 
@@ -16,14 +15,12 @@ public class DomainDictionary implements IDictionary {
         arrayWordItem = new ArrayList<DomainWordItem>();
         synonymIndexHashMap = new HashMap<Integer, Integer>();
         synonymHashMap = new HashMap<Integer, List<Integer>>();
+        hashDictionary = new HashDictionary<DomainWordItem>();
+        hashDictionary.setHeadLength(2);
     }
 
-    private DomainWordItem getWord(String wordName) {
-        if (wordNameIndexHashMap.containsKey(wordName)) {
-            int wordIndex = wordNameIndexHashMap.get(wordName);
-            return this.arrayWordItem.get(wordIndex);
-        }
-        return null;
+    private DomainWordItem lookupWord(String wordName) {
+        return hashDictionary.lookupWord(wordName);
     }
 
     private DomainWordItem getWord(int wordIndex) {
@@ -35,39 +32,33 @@ public class DomainDictionary implements IDictionary {
                 ? wordNameIndexHashMap.get(wordName) : -1;
     }
 
-    private int addNewWord(String wordName, String pos, int freq, int domainType) {
+    private int addWord(String wordName, String pos, int freq, int domainType) throws DictionaryException {
         DomainWordItem word = new DomainWordItem(wordName, domainType);
         word.setOccuredCount(pos, freq);
         int index = arrayWordItem.size();
         wordNameIndexHashMap.put(wordName, index);
         arrayWordItem.add(word);
-        if(wordName.length() > maxWordLength) {
+        hashDictionary.addWord(word);
+        if (wordName.length() > maxWordLength) {
             maxWordLength = wordName.length();
         }
         return index;
     }
 
-    public List getAllWords() {
-        return arrayWordItem;
-    }
-
-    public void addEntity(String word, String headWord, String pos, int freq, int domainType, DomainDictionary dict) {
-        dict.pushWord(word, headWord, pos, freq, domainType);
-    }
-
-    public void pushWord(String wordName, String synonym, String pos, int freq, int domainType) {
+    public void pushWord(String wordName, String synonym, String pos, int freq, int domainType) throws DictionaryException {
         if (wordName == null || wordName.trim().equals("") || pos == null || pos.trim().equals("") || wordName.trim().length() < 2) {
+            l.warn("Load a error word '" + wordName + "'into domain dictionary, already ignored.");
             return;
         }
         wordName = wordName.trim();
-        DomainWordItem word = getWord(wordName);
+        DomainWordItem word = lookupWord(wordName);
         int index = -1;
         if (null != word) {
             word.setOccuredCount(pos, freq);
             word.setDomainType(domainType);
             index = getWordIndex(wordName);
         } else {
-            index = addNewWord(wordName, pos, freq, domainType);
+            index = addWord(wordName, pos, freq, domainType);
         }
         if (null != synonym && !synonym.isEmpty()) {
             int synonymIndex = getWordIndex(synonym);
@@ -75,13 +66,7 @@ public class DomainDictionary implements IDictionary {
         }
     }
 
-    public void addSynonym(String word, String synonym) {
-        int index = getWordIndex(word);
-        int synonymIndex = getWordIndex(synonym);
-        addSynonym(index, synonymIndex);
-    }
-
-    public void addSynonym(int index, int synonymIndex) {
+    private void addSynonym(int index, int synonymIndex) {
         if (index >= 0 && synonymIndex >= 0) {
             this.synonymIndexHashMap.put(index, synonymIndex);
             List<Integer> synonymSet = this.synonymHashMap.get(synonymIndex);
@@ -121,23 +106,8 @@ public class DomainDictionary implements IDictionary {
     }
 
     @Override
-    public IWord getWordItem(String wordName) {
-        int maxWordLen = maxWordLength;
-        if (wordName.length() < maxWordLen) {
-            maxWordLen = wordName.length();
-        }
-        DomainWordItem word = null;
-        for (int i = maxWordLen; i >= 2; i--) {
-            String s2 = wordName.substring(0, i);
-            int wordIndex = getWordIndex(s2);
-            if (wordIndex <= 0) {
-                continue;
-            }
-            word = getWord(wordIndex);
-            break;
-        }
-
-        return word;
+    public IWord getWord(String wordName) {
+        return hashDictionary.getWord(wordName);
     }
 
     public IWord getWordItem(String wordName, int minLength) {
@@ -160,14 +130,20 @@ public class DomainDictionary implements IDictionary {
     }
 
     @Override
-    public IWord[] getWordItems(String wordStr) {
-        return new IWord[]{getWordItem(wordStr)};
+    public IWord[] getWords(String wordStr) {
+        return hashDictionary.getWords(wordStr);
     }
 
-    private HashMap<String, HeadIndexer> headIndexerHashMap = new HashMap<String, HeadIndexer>();
+    @Override
+    public Iterator<IWord> iterator() {
+        return (Iterator) arrayWordItem.iterator();
+    }
+
+    private HashDictionary<DomainWordItem> hashDictionary;
     private HashMap<String, Integer> wordNameIndexHashMap;
     private List<DomainWordItem> arrayWordItem;
     private HashMap<Integer, Integer> synonymIndexHashMap;
     private HashMap<Integer, List<Integer>> synonymHashMap;
     private int maxWordLength = 0;
+    private final static Logger l = Logger.getLogger("segment");
 }

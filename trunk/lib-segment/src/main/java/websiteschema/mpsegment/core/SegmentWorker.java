@@ -15,7 +15,7 @@ public class SegmentWorker {
         mpSegment.setUseDomainDictionary(flag);
     }
 
-    public boolean getUseDomainDictionary() {
+    public boolean isUseDomainDictionary() {
         return mpSegment.isUseDomainDictionary();
     }
 
