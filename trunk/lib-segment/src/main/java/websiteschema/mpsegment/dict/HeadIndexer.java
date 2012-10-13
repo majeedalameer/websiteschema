@@ -1,10 +1,8 @@
 package websiteschema.mpsegment.dict;
 
-import websiteschema.mpsegment.conf.Configure;
 import websiteschema.mpsegment.util.BufReader;
 
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.util.LinkedList;
 
 public class HeadIndexer<Word extends IWord> {
@@ -129,19 +127,6 @@ public class HeadIndexer<Word extends IWord> {
             wordArray = new BinaryWordArray<Word>((Word[])wordItems);
         } else {
             wordArray = new HashWordArray<Word>((Word[])wordItems);
-        }
-
-    }
-
-    public final void save(RandomAccessFile randomaccessfile)
-            throws IOException {
-        byte bytes[] = headStr.getBytes(Configure.getInstance().getFileEncoding());
-        randomaccessfile.write((byte) bytes.length);
-        randomaccessfile.write(bytes);
-        randomaccessfile.writeInt(getWordCount());
-        IWord[] wordItems = wordArray.getWordItems();
-        for (int i = 0; i < wordItems.length; i++) {
-            wordItems[i].save(randomaccessfile);
         }
 
     }

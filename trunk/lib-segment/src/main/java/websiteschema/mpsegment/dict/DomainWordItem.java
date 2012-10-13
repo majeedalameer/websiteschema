@@ -40,10 +40,19 @@ public class DomainWordItem
     }
 
     @Override
-    public void setOccuredSum(int factor) {
-        posArray.setPOSCount(factor);
-        log2Freq = 0;
-        getLog2Freq();
+    public void setOccuredSum(int sum) {
+        double factor = (double)sum / (double)getOccuredSum();
+        int[][] posTable = posArray.getWordPOSTable();
+        for (int i = 0; i < posTable.length; i++) {
+            int freq = posTable[i][1];
+            posTable[i][1] = (int) (freq * factor);
+            calculateLogFreq();
+        }
+        calculateLogFreq();
+    }
+
+    private void calculateLogFreq() {
+        log2Freq = (int) (Math.log(getOccuredSum() + 1L) * 100D);
     }
 
     @Override
@@ -62,18 +71,8 @@ public class DomainWordItem
     }
 
     @Override
-    public int getWordPOSTable(int ai[][]) {
-        return posArray.getWordPOSTable(ai);
-    }
-
-    @Override
     public String getWordName() {
         return wordName;
-    }
-
-    @Override
-    public void setWordName(String s) {
-        wordName = s;
     }
 
     @Override
@@ -119,7 +118,7 @@ public class DomainWordItem
         byte numByteWordName = randomaccessfile.readByte();
         byte byteWordName[] = new byte[numByteWordName];
         randomaccessfile.read(byteWordName);
-        wordName = new String(byteWordName, Configure.getInstance().getFileEncoding());
+        wordName = new String(byteWordName, Configure.getInstance().getDefaultFileEncoding());
         domainType = randomaccessfile.readInt();
         id = randomaccessfile.readInt();
         posIndex = randomaccessfile.readInt();
@@ -136,7 +135,7 @@ public class DomainWordItem
         int numByteWordName = bufreader.readIntByte();
         byte byteWordName[] = new byte[numByteWordName];
         bufreader.read(byteWordName);
-        wordName = new String(byteWordName, Configure.getInstance().getFileEncoding());
+        wordName = new String(byteWordName, Configure.getInstance().getDefaultFileEncoding());
         domainType = bufreader.readInt();
         id = bufreader.readInt();
         posIndex = bufreader.readInt();
@@ -146,34 +145,6 @@ public class DomainWordItem
 
         addPOS(posIndex, freq);
         addPOS(posIndex1, freq1);
-    }
-
-    @Override
-    public void save(RandomAccessFile randomaccessfile)
-            throws IOException {
-        byte abyte0[] = wordName.getBytes(Configure.getInstance().getFileEncoding());
-        randomaccessfile.write((byte) abyte0.length);
-        randomaccessfile.write(abyte0);
-        int t = domainType;
-        randomaccessfile.writeInt(t);
-        randomaccessfile.writeInt(id);
-
-        int[][] pos_array = posArray.getWordPOSTable();
-        if (null != pos_array) {
-            if (pos_array.length > 0) {
-                posIndex = pos_array[0][0];
-                freq = pos_array[0][1];
-                if (pos_array.length > 1) {
-                    posIndex1 = pos_array[1][0];
-                    freq1 = pos_array[1][1];
-                }
-            }
-        }
-
-        randomaccessfile.writeInt(posIndex);
-        randomaccessfile.writeInt(freq);
-        randomaccessfile.writeInt(posIndex1);
-        randomaccessfile.writeInt(freq1);
     }
 
     @Override
@@ -203,17 +174,10 @@ public class DomainWordItem
 
     @Override
     public String toString() {
-        StringBuilder stringbuffer = new StringBuilder();
-        stringbuffer.append((new StringBuilder(String.valueOf(getWordName()))).append("\n").toString());
-        stringbuffer.append(getPOSArray().toString());
-        return stringbuffer.toString();
-    }
-
-    @Override
-    public String toWordString() {
-        StringBuilder stringbuffer = new StringBuilder();
-        stringbuffer.append((new StringBuilder(String.valueOf(getWordName()))).append("\\").toString());
-        return stringbuffer.toString();
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append((new StringBuilder(String.valueOf(getWordName()))).append("\n").toString());
+        stringBuilder.append(getPOSArray().toString());
+        return stringBuilder.toString();
     }
 
     @Override

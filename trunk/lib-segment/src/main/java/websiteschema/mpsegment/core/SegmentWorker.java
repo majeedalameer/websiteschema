@@ -4,6 +4,11 @@ import websiteschema.mpsegment.filter.SegmentResultFilter;
 
 public class SegmentWorker {
 
+    private SegmentResultFilter unKnownFilter;
+    private int maxSegStrLength;
+    private MPSegment mpSegment;
+    private boolean recognizePOS = true;
+
     public SegmentWorker() {
         unKnownFilter = null;
         maxSegStrLength = 400000;
@@ -50,8 +55,4 @@ public class SegmentWorker {
     public void setRecognizePOS(boolean recognizePOS) {
         this.recognizePOS = recognizePOS;
     }
-    private SegmentResultFilter unKnownFilter;
-    private int maxSegStrLength;
-    private MPSegment mpSegment;
-    private boolean recognizePOS = true;
 }

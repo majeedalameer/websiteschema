@@ -34,7 +34,7 @@ public class AccuracyTest {
         Assert.assertTrue(segmentAccuracy.getErrorNewWord() <= 24458);
         Assert.assertTrue(segmentAccuracy.getErrorNER_NR() <= 4185);
         Assert.assertTrue(segmentAccuracy.getErrorNER_NS() <= 3284);
-        Assert.assertTrue(segmentAccuracy.getErrorContain() <= 34035);
+        Assert.assertTrue(segmentAccuracy.getErrorContain() <= 34069);
         Assert.assertTrue(segmentAccuracy.getErrorOther() <= 3426);
     }
     @Test

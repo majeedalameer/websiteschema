@@ -4,10 +4,12 @@
  */
 package websiteschema.mpsegment.core;
 
+import org.apache.log4j.Logger;
 import websiteschema.mpsegment.conf.Configure;
 import websiteschema.mpsegment.dict.DictionaryFactory;
 import websiteschema.mpsegment.dict.HashDictionary;
 import websiteschema.mpsegment.dict.IWord;
+import websiteschema.mpsegment.dict.POSUtil;
 import websiteschema.mpsegment.dict.domain.DomainDictFactory;
 import websiteschema.mpsegment.dict.domain.DomainDictionary;
 import websiteschema.mpsegment.graph.IGraph;
@@ -21,6 +23,7 @@ import java.util.Map;
  */
 public class GraphBuilder {
 
+    private static Logger logger = Logger.getLogger(GraphBuilder.class);
     private final IGraph graph;
     private final double logCorpus;
     private final HashDictionary hashDictionary = DictionaryFactory.getInstance().getCoreDictionary();
@@ -61,7 +64,7 @@ public class GraphBuilder {
         return index;
     }
 
-    private int getLastMinWordLength(int begin) {
+    private int scanTheMinWordLength(int begin) {
         int index = scanEnglishWordAndShorten(begin);
         int minWordLen = (index - begin) + 1;
         return minWordLen;
@@ -118,23 +121,23 @@ public class GraphBuilder {
     }
 
     private void addEdgeObject(int head, int tail, int weight, IWord word) {
-//        System.out.println(word.getWordName() + " weight " + weight);
+        logger.trace(word.getWordName() + " weight " + weight);
         graph.addEdge(head, tail, weight, word);
     }
 
     public void scanContextFreq(final int startPos) {
         lastMinWordLen = 0;
         try {
-            final int slen = sentence.length();
-            for (int begin = startPos; begin < slen; begin += lastMinWordLen) {
-                lastMinWordLen = getLastMinWordLength(begin);
+            final int sentencelength = sentence.length();
+            for (int begin = startPos; begin < sentencelength; begin += lastMinWordLen) {
+                lastMinWordLen = scanTheMinWordLength(begin);
 
                 //find all possible slices except single word
                 final String candidateWord = getCandidateSentence(begin);
-                final IWord iworditem = getItem(candidateWord, lastMinWordLen);
-                if (iworditem != null && iworditem.getWordLength() > 1) {
+                final IWord the1stMatchWord = getItem(candidateWord, lastMinWordLen);
+                if (the1stMatchWord != null && the1stMatchWord.getWordLength() > 1) {
                     //查找结果不为空且不是单字词
-                    increaseContextFreq(iworditem.getWordName());
+                    increaseContextFreq(the1stMatchWord.getWordName());
                     if (the2ndMatchWord != null && the2ndMatchWord.getWordLength() > 1) {
                         increaseContextFreq(the2ndMatchWord.getWordName());
                     }
@@ -168,48 +171,66 @@ public class GraphBuilder {
         if (useContextFreqSegment) {
             scanContextFreq(startPos);
         }
-        final int slen = sentence.length();
-        for (int i = 0; i < slen; i++) {
+        final int length = sentence.length();
+        for (int i = 0; i < length; i++) {
             graph.addVertex();
         }
 
-        for (int begin = startPos; begin < slen; begin += lastMinWordLen) {
-            lastMinWordLen = getLastMinWordLength(begin);
+        for (int begin = startPos; begin < length; begin += lastMinWordLen) {
+            final int minWordLen = scanTheMinWordLength(begin);
+            this.lastMinWordLen = minWordLen;
 
             //find single char word or multi-chars alpha-numeric word
-            String atomWord = sentence.substring(begin, begin + lastMinWordLen);
-            IWord singleCharWord = getItem(atomWord, lastMinWordLen); // single char word 单字词
+            String atomWord = sentence.substring(begin, begin + minWordLen);
+            IWord singleCharWord = getItem(atomWord, minWordLen); // single char word 单字词
             if (singleCharWord == null) {
                 singleCharWord = initAsUnknownWord(atomWord);//Unknown Word
             }
 
             //find all possible slices except single word
             final String candidateWord = getCandidateSentence(begin);
-            final IWord the1stMatchWord = getItem(candidateWord, lastMinWordLen);
+            final IWord the1stMatchWord = getItem(candidateWord, minWordLen);
             //将查找到的词添加到图中。
             //为了减少图的分支，同时因为单字词在中文中往往没有太多意义。
             //如果存在多个多字词，则不向图中添加单字词
-            if (the1stMatchWord != null && the1stMatchWord.getWordLength() > 1) {
-                //查找结果不为空且不是单字词
-                if (the2ndMatchWord != null) {
-                    addEdgeObject(begin + 1, begin + the2ndMatchWord.getWordLength() + 1, getWeight(the2ndMatchWord), the2ndMatchWord);
-                } else {
-                    //仅有一个多字词，需要向图中添加单字词
-                    addEdgeObject(begin + 1, begin + lastMinWordLen + 1, getWeight(singleCharWord), singleCharWord);
-                }
-                if (the3rdMatchWord != null) {
-                    addEdgeObject(begin + 1, begin + the3rdMatchWord.getWordLength() + 1, getWeight(the3rdMatchWord), the3rdMatchWord);
-                }
+            boolean shouldAddSingleCharWord = the1stMatchWord == null || the1stMatchWord.getWordLength() == 1 || matchedWordCount < 2;
+            if (shouldAddSingleCharWord) {
+                addSingleCharWordToGraph(begin, singleCharWord);
+            }
+            boolean foundOtherWords = the1stMatchWord != null && the1stMatchWord.getWordLength() > 1;
+            if (foundOtherWords) {
+                addMatchedWordToGraph(begin, the2ndMatchWord);
+                addMatchedWordToGraph(begin, the3rdMatchWord);
                 boolean segmentMin = Configure.getInstance().isSegmentMin();
-                boolean matchedWordMoreThanOne = matchedWordCount > 1;
-                boolean firstWordIsBigWord = the1stMatchWord.getWordLength() > BigWordLength;
-                if (!segmentMin || !matchedWordMoreThanOne || !firstWordIsBigWord) {
-                    addEdgeObject(begin + 1, begin + the1stMatchWord.getWordLength() + 1, getWeight(the1stMatchWord), the1stMatchWord);
+                if (!segmentMin || !isMatchedMoreThanOneWord() || !isFirstMatchedWordBigWord(the1stMatchWord) || isAtomWordAccordingPOS(the1stMatchWord)) {
+                    addMatchedWordToGraph(begin, the1stMatchWord);
                 }
-            } else {
-                addEdgeObject(begin + 1, begin + lastMinWordLen + 1, getWeight(singleCharWord), singleCharWord);
             }
         }
+    }
+
+    private boolean isFirstMatchedWordBigWord(IWord the1stMatchWord) {
+        return the1stMatchWord.getWordLength() > BigWordLength;
+    }
+
+    private boolean isMatchedMoreThanOneWord() {
+        return matchedWordCount > 1;
+    }
+
+    private boolean isAtomWordAccordingPOS(IWord the1stMatchWord) {
+        int[][] wordPOSTable = the1stMatchWord.getWordPOSTable();
+        int the1stMatchedWordPOS = null != wordPOSTable ? wordPOSTable[0][0] : -1;
+        return the1stMatchedWordPOS == POSUtil.POS_I || the1stMatchedWordPOS == POSUtil.POS_L;
+    }
+
+    private void addMatchedWordToGraph(int begin, IWord matchedWord) {
+        if (null != matchedWord) {
+            addEdgeObject(begin + 1, begin + matchedWord.getWordLength() + 1, getWeight(matchedWord), matchedWord);
+        }
+    }
+
+    private void addSingleCharWordToGraph(int begin, IWord singleCharWord) {
+        addEdgeObject(begin + 1, begin + lastMinWordLen + 1, getWeight(singleCharWord), singleCharWord);
     }
 
     private IWord get1stMatchWord(IWord[] words) {
@@ -311,7 +332,6 @@ public class GraphBuilder {
     private final static boolean isHalfShapeAll = Configure.getInstance().isHalfShapeAll();
     private final static boolean isUpperCaseOrHalfShapeAll = isUpperCaseAll || isHalfShapeAll;
     private final static int maxWordLength = Configure.getInstance().getMaxWordLength();
-    //    private final static int maxWordLength = Configure.getInstance().isSegmentMin() ? 4 : Configure.getInstance().getMaxWordLength();
     private final static boolean loadDomainDictionary = Configure.getInstance().isLoadDomainDictionary();
     private final static boolean loadUserDictionary = Configure.getInstance().isLoadUserDictionary();
     private final static int BigWordLength = 4;

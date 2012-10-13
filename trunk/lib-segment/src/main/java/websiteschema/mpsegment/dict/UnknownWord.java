@@ -1,8 +1,5 @@
 package websiteschema.mpsegment.dict;
 
-import java.io.IOException;
-import java.io.RandomAccessFile;
-
 /**
  *
  * @author ray
@@ -14,14 +11,6 @@ public class UnknownWord implements IWord {
 
     public UnknownWord(String wordName) {
         this.wordName = wordName;
-    }
-
-    @Override
-    public int compareTo(Object obj) {
-        if (obj instanceof UnknownWord) {
-            wordName.compareTo(((UnknownWord) obj).wordName);
-        }
-        return 1;
     }
 
     @Override
@@ -72,10 +61,6 @@ public class UnknownWord implements IWord {
     }
 
     @Override
-    public void save(RandomAccessFile randomaccessfile) throws IOException {
-    }
-
-    @Override
     public void setDomainType(int i) {
     }
 
@@ -85,26 +70,6 @@ public class UnknownWord implements IWord {
 
     @Override
     public void setOccuredSum(int i) {
-    }
-
-    @Override
-    public void setWordName(String s) {
-        this.wordName = s;
-    }
-
-    @Override
-    public int getWordPOSTable(int[][] ai) {
-        for (int i = 0; i < 1; i++) {
-            if (i < ai.length) {
-                ai[i][0] = POSUtil.POS_UNKOWN;
-                ai[i][1] = 1;
-            }
-        }
-        for (int j = 1; j < ai.length; j++) {
-            ai[j][0] = 0;
-            ai[j][1] = 0;
-        }
-        return 1;
     }
 
     @Override
@@ -119,10 +84,4 @@ public class UnknownWord implements IWord {
         return stringbuffer.toString();
     }
 
-    @Override
-    public String toWordString() {
-        StringBuilder stringbuffer = new StringBuilder();
-        stringbuffer.append((new StringBuilder(String.valueOf(getWordName()))).append("\\").toString());
-        return stringbuffer.toString();
-    }
 }

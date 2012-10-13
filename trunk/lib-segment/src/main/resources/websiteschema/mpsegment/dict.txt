@@ -1299,7 +1299,6 @@
 "下一" = {domainType:0,POSTable:{M:4}}
 "下一代" = {domainType:0,POSTable:{N:69}}
 "下一步" = {domainType:0,POSTable:{N:1}}
-"下一步该怎么办" = {domainType:0,POSTable:{N:1}}
 "下不为例" = {domainType:0,POSTable:{I:5}}
 "下不了台" = {domainType:0,POSTable:{L:1}}
 "下不来" = {domainType:0,POSTable:{V:5}}
@@ -1570,7 +1569,6 @@
 "不值一提" = {domainType:0,POSTable:{L:4}}
 "不值一文" = {domainType:0,POSTable:{A:1}}
 "不值一驳" = {domainType:0,POSTable:{V:1}}
-"不值得羡慕" = {domainType:0,POSTable:{A:1}}
 "不假思索" = {domainType:0,POSTable:{I:19}}
 "不偏不倚" = {domainType:0,POSTable:{I:6}}
 "不做" = {domainType:0,POSTable:{V:1}}
@@ -2188,9 +2186,6 @@
 "不锈钢" = {domainType:0,POSTable:{N:22}}
 "不错" = {domainType:0,POSTable:{V:1,A:254}}
 "不问" = {domainType:0,POSTable:{C:4,V:11}}
-"不问前因后果" = {domainType:0,POSTable:{V:1}}
-"不问是非曲直" = {domainType:0,POSTable:{V:1}}
-"不问青红皂白" = {domainType:0,POSTable:{V:1}}
 "不间断" = {domainType:0,POSTable:{A:1}}
 "不闻不问" = {domainType:0,POSTable:{I:10}}
 "不限" = {domainType:0,POSTable:{D:1}}
@@ -2342,7 +2337,6 @@
 "专递" = {domainType:0,POSTable:{V:1,N:1,VN:2}}
 "专长" = {domainType:0,POSTable:{N:36}}
 "专门" = {domainType:0,POSTable:{N:1,D:631,B:429}}
-"专门小组成员" = {domainType:0,POSTable:{N:1}}
 "专集" = {domainType:0,POSTable:{N:15}}
 "专项" = {domainType:0,POSTable:{N:6,D:11,B:354}}
 "专题" = {domainType:0,POSTable:{N:291,D:2}}

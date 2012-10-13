@@ -1,10 +1,8 @@
 package websiteschema.mpsegment.dict;
 
-import websiteschema.mpsegment.conf.Configure;
 import websiteschema.mpsegment.util.BufReader;
 
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.io.Serializable;
 
 public class WordImpl implements Serializable, Comparable, IWord {
@@ -26,7 +24,6 @@ public class WordImpl implements Serializable, Comparable, IWord {
     public WordImpl(BufReader bufreader)
             throws IOException {
         log2Freq = 0;
-        load(bufreader);
     }
 
     @Override
@@ -84,29 +81,8 @@ public class WordImpl implements Serializable, Comparable, IWord {
     }
 
     @Override
-    public int getWordPOSTable(int posTableRef[][]) {
-        int[][] posTable = getPOSArray().getWordPOSTable();
-        for (int i = 0; i < posTable.length; i++) {
-            if (i < posTableRef.length) {
-                posTableRef[i][0] = posTable[i][0];
-                posTableRef[i][1] = posTable[i][1];
-            }
-        }
-        for (int j = posTable.length; j < posTableRef.length; j++) {
-            posTableRef[j][0] = 0;
-            posTableRef[j][1] = 0;
-        }
-        return posTable.length;
-    }
-
-    @Override
     public String getWordName() {
         return wordName;
-    }
-
-    @Override
-    public void setWordName(String wordName) {
-        this.wordName = wordName;
     }
 
     @Override
@@ -163,32 +139,6 @@ public class WordImpl implements Serializable, Comparable, IWord {
         setOccuredCount(s, (int) getOccuredCount(s) + 1);
     }
 
-    public final void load(RandomAccessFile randomaccessfile)
-            throws IOException {
-        byte byte0 = randomaccessfile.readByte();
-        byte bytes[] = new byte[byte0];
-        randomaccessfile.read(bytes);
-        wordName = new String(bytes, Configure.getInstance().getFileEncoding());
-        domainType = randomaccessfile.readInt();
-        domainType /= 100;
-        indexOfPosDB = randomaccessfile.readInt();
-        wordPOSNumber = randomaccessfile.readInt();
-        buildPOSArray();
-    }
-
-    private void load(BufReader bufreader)
-            throws IOException {
-        int i = bufreader.readIntByte();
-        byte wordNameBytes[] = new byte[i];
-        bufreader.read(wordNameBytes);
-        wordName = new String(wordNameBytes, Configure.getInstance().getFileEncoding());
-        domainType = bufreader.readInt();
-        domainType /= 100;
-        indexOfPosDB = bufreader.readInt();
-        wordPOSNumber = bufreader.readInt();
-        buildPOSArray();
-    }
-
     private POSArray buildPOSArray() {
         posArray = new POSArray();
         for (int i = 0; i < wordPOSNumber; i++) {
@@ -198,19 +148,6 @@ public class WordImpl implements Serializable, Comparable, IWord {
             posArray.add(pos);
         }
         return posArray;
-    }
-
-    @Override
-    public void save(RandomAccessFile randomaccessfile)
-            throws IOException {
-        byte bytes[] = wordName.getBytes(Configure.getInstance().getFileEncoding());
-        randomaccessfile.write((byte) bytes.length);
-        randomaccessfile.write(bytes);
-        domainType *= 100;
-        int i = domainType;
-        randomaccessfile.writeInt(i);
-        randomaccessfile.writeInt(indexOfPosDB);
-        randomaccessfile.writeInt(wordPOSNumber);
     }
 
     @Override
@@ -242,13 +179,6 @@ public class WordImpl implements Serializable, Comparable, IWord {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append((new StringBuilder(String.valueOf(getWordName()))).append("\n").toString());
         stringBuilder.append(getPOSArray().toString());
-        return stringBuilder.toString();
-    }
-
-    @Override
-    public String toWordString() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append((new StringBuilder(String.valueOf(getWordName()))).append("\\").toString());
         return stringBuilder.toString();
     }
 

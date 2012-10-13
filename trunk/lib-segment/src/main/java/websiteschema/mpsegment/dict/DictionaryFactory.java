@@ -6,7 +6,6 @@ import websiteschema.mpsegment.core.MPSegment;
 import websiteschema.mpsegment.dict.domain.DomainDictFactory;
 import websiteschema.mpsegment.dict.domain.DomainDictionary;
 import websiteschema.mpsegment.tools.StringWordConverter;
-import websiteschema.mpsegment.util.FileUtil;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -28,17 +27,6 @@ public class DictionaryFactory {
 
     public HashDictionary getCoreDictionary() {
         return coreDict;
-    }
-
-    public void loadDictionary2() {
-        String segment_dict = Configure.getInstance().getSegmentDict();
-        String segment_dict_fre = (new StringBuilder(String.valueOf(FileUtil.removeExtension(segment_dict)))).append(".fre").toString();
-        long l1 = System.currentTimeMillis();
-        POSAndFreq.loadPOSDb(segment_dict_fre);
-        coreDict = new HashDictionary(Configure.getInstance().getSegmentDict());
-
-        l1 = System.currentTimeMillis() - l1;
-        l.debug((new StringBuilder()).append("[Segment] ").append("loading dictionary time used(ms): ").append(l1).toString());
     }
 
     public void loadDictionary() {

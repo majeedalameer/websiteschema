@@ -60,17 +60,6 @@ public class HashDictionary<Word extends IWord> implements IDictionary {
         }
     }
 
-    public void saveDict(RandomAccessFile randomaccessfile) {
-        try {
-            randomaccessfile.writeInt(getCapacity());
-            for (int i = 0; i < headIndexers.size(); i++) {
-                headIndexers.get(i).save(randomaccessfile);
-            }
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-    }
-
     protected HeadIndexer<Word> lookupHeadIndexer(String head) {
         return headIndexersHashMap.get(head);
     }
