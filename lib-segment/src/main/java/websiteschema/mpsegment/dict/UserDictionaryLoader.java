@@ -187,7 +187,7 @@ public class UserDictionaryLoader {
 
     public ArrayList loadSynonymMap(String s) {
         File file = new File(s);
-        String s1 = Configure.getInstance().getFileEncoding();
+        String s1 = Configure.getInstance().getDefaultFileEncoding();
         ArrayList arraylist = new ArrayList();
         if (file.isFile() && file.exists()) {
             try {
@@ -216,7 +216,7 @@ public class UserDictionaryLoader {
 
     public ArrayList loadStopWord(String s) {
         File file = new File(s);
-        String s1 = Configure.getInstance().getFileEncoding();
+        String s1 = Configure.getInstance().getDefaultFileEncoding();
         ArrayList arrayList = new ArrayList();
         if (file.isFile() && file.exists()) {
             try {

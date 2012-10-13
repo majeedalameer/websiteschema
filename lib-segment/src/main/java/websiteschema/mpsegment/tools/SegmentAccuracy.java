@@ -42,7 +42,7 @@ public class SegmentAccuracy {
 
     public void checkSegmentAccuracy() {
         boolean xingMingSeparate = Configure.getInstance().isXingMingSeparate();
-        Configure.getInstance().setXingmingseparate(true);
+        Configure.getInstance().setXingmingSeparate(true);
         SegmentWorker segmentWorker = SegmentEngine.getInstance().getSegmentWorker();
         boolean isUseContextFreq = segmentWorker.isUseContextFreqSegment();
         segmentWorker.setUseContextFreqSegment(true);
@@ -60,7 +60,7 @@ public class SegmentAccuracy {
         } catch (IOException ex) {
             ex.printStackTrace();
         } finally {
-            Configure.getInstance().setXingmingseparate(xingMingSeparate);
+            Configure.getInstance().setXingmingSeparate(xingMingSeparate);
             segmentWorker.setUseContextFreqSegment(isUseContextFreq);
         }
         assert (correct > 0 && totalWords > 0);

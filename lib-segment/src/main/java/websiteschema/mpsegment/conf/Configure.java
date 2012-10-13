@@ -3,30 +3,45 @@ package websiteschema.mpsegment.conf;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Properties;
 
 public final class Configure {
 
     private static Logger l = Logger.getLogger("segment");
-    private static final Configure configure = new Configure();
+    private static final Configure instance = new Configure();
+    private static int SECTION_SIZE = 1024;
+    private Properties properties;
 
     private Configure() {
-        Properties p = new Properties();
+        properties = new Properties();
+        loadFromConfiguration();
+        initialize();
+    }
+
+    private void loadFromConfiguration() {
         try {
             l.debug("load maxprob-default.cfg: " + Configure.class.getClassLoader().getResource("maxprob-default.cfg"));
-            p.load(Configure.class.getClassLoader().getResourceAsStream("maxprob-default.cfg"));
+            properties.load(Configure.class.getClassLoader().getResourceAsStream("maxprob-default.cfg"));
             if (null != Configure.class.getClassLoader().getResource("maxprob.cfg")) {
                 l.debug("load maxprob.cfg: " + Configure.class.getClassLoader().getResource("maxprob.cfg"));
-                p.load(Configure.class.getClassLoader().getResourceAsStream("maxprob.cfg"));
+                properties.load(Configure.class.getClassLoader().getResourceAsStream("maxprob.cfg"));
             }
         } catch (IOException ex) {
-            l.error("error when loading Chinese NLP configure files", ex);
+            l.error("error when loading Chinese NLP instance files", ex);
         }
-        initialize(p);
+    }
+
+    public Configure(Map<String, String> config) {
+        properties = new Properties(instance.properties);
+        for(String key : config.keySet()) {
+            properties.put(key, config.get(key));
+        }
+        initialize();
     }
 
     public static Configure getInstance() {
-        return configure;
+        return instance;
     }
 
     private String getHomePath() {
@@ -34,7 +49,7 @@ public final class Configure {
     }
 
     public static int SectionSize() {
-        return 1024;
+        return SECTION_SIZE;
     }
 
     public void setHomePath(String path) {
@@ -48,88 +63,45 @@ public final class Configure {
         }
     }
 
-    public String getDictFile() {
-        return new StringBuilder(homePath).append("./segment.dat").toString();
+    private void initialize() {
+        stopwordfilter = Boolean.valueOf(properties.getProperty("segment.stopwordfilter", "false")).booleanValue();
+        querysyntax = Boolean.valueOf(properties.getProperty("segment.querysyntax", "false")).booleanValue();
+        loaduserdictionary = Boolean.valueOf(properties.getProperty("user.loaduserdictionary", "false")).booleanValue();
+        loaddomaindictionary = Boolean.valueOf(properties.getProperty("domain.loaddomaindictionary", "true")).booleanValue();
+        segment_min = Boolean.valueOf(properties.getProperty("segment.min", "false")).booleanValue();
+        chinesenameidentify = Boolean.valueOf(properties.getProperty("segment.chinesenameidentify", "true")).booleanValue();
+        xingmingseparate = Boolean.valueOf(properties.getProperty("segment.xingmingseparate", "true")).booleanValue();
+        halfshapeall = Boolean.valueOf(properties.getProperty("segment.halfshapeall", "false")).booleanValue();
+        uppercaseall = Boolean.valueOf(properties.getProperty("segment.uppercaseall", "false")).booleanValue();
+        ExtendPOSInDomainDictionary = Boolean.valueOf(properties.getProperty("domain.extendposindomaindictionary", "false")).booleanValue();
     }
 
-    public final void initialize(Properties prop) {
-        l.debug(new StringBuilder().append("[System] load properties begin...").toString());
-        try {
-            segment_maximumthreads = Integer.parseInt(prop.getProperty("segment.maximumthreads", "2").trim());
-            segment_dict = prop.getProperty("cnnlp.lexical.segment.MPSegment", "segment.dict");
-            POSMatrix_fre = prop.getProperty("cnnlp.lexical.segment.POSTagging", "pos.dat");
-            NamePOSMatrix_fre = prop.getProperty("cnnlp.lexical.segment.NameTagging", "NamePOSMatrix.fre");
-            ChNameDict = prop.getProperty("cnnlp.lexical.segment.ChNameDict", "ChName.dict");
-            word_freq = prop.getProperty("ir.wordfreq", "word.freq");
-            loaddomaindictionary = Boolean.valueOf(prop.getProperty("domain.loaddomaindictionary", "true")).booleanValue();
-            loadDomainDictFromDB = Boolean.valueOf(prop.getProperty("domain.loaddictionaryfromdb", "false")).booleanValue();
-            domaindictionaryurl = prop.getProperty("domain.db.url", "");
-            domaindictloader = prop.getProperty("domain.dictloader", "");
-            domaindictionaryusername = prop.getProperty("domain.db.username", "");
-            domaindictionarypassword = prop.getProperty("domain.db.password", "");
-            domaindictionary = prop.getProperty("domain.domaindictionary", "domain.dict");
-            domain_dof = prop.getProperty("domain.domainontology", "domain.dof");
-            loaduserdictionary = Boolean.valueOf(prop.getProperty("user.loaduserdictionary", "false")).booleanValue();
-            userdict_txt = prop.getProperty("user.dictionaryfile", "userdict.txt");
-            stopword_txt = prop.getProperty("user.stopwordfile", "stopword.txt");
-            stoplist = prop.getProperty("user.stoplist", "");
-            segment_min = Boolean.valueOf(prop.getProperty("segment.min", "false")).booleanValue();
-            querysyntax = Boolean.valueOf(prop.getProperty("segment.querysyntax", "false")).booleanValue();
-            gluechar = prop.getProperty("segment.gluechar", "*?~/_[]:");
-            maxquerylength = Integer.parseInt(prop.getProperty("segment.maxquerylength", "512").trim());
-            stopwordfilter = Boolean.valueOf(prop.getProperty("segment.stopwordfilter", "false")).booleanValue();
-            chinesenumbertodigital = Boolean.valueOf(prop.getProperty("segment.chinesenumbertodigital", "false")).booleanValue();
-            chinesenameidentify = Boolean.valueOf(prop.getProperty("segment.chinesenameidentify", "true")).booleanValue();
-            xingmingseparate = Boolean.valueOf(prop.getProperty("segment.xingmingseparate", "true")).booleanValue();
-            halfshapeall = Boolean.valueOf(prop.getProperty("segment.halfshapeall", "false")).booleanValue();
-            uppercaseall = Boolean.valueOf(prop.getProperty("segment.uppercaseall", "false")).booleanValue();
-            maxwordlength = Integer.parseInt(prop.getProperty("segment.maxwordlength", "8").trim());
-            ExtendPOSInDomainDictionary = Boolean.valueOf(prop.getProperty("domain.extendposindomaindictionary", "false")).booleanValue();
-            prop = null;
-        } catch (Exception e) {
-            l.error((new StringBuilder()).append("[System] Could not find ").append(cfgFile).append(" !").toString());
-        }
-        l.debug(new StringBuilder().append("[System] load properties finished !").toString());
-    }
-
-    public String getFileEncoding() {
-        return default_encoding;
-    }
-
-    public int getMaximumThreads() {
-        return segment_maximumthreads;
+    public String getDefaultFileEncoding() {
+        return defaultFileEncoding;
     }
 
     public String getSegmentDict() {
-        return new StringBuilder(getHomePath()).append(segment_dict).toString();
+        return new StringBuilder(getHomePath()).
+                append(properties.getProperty("cnnlp.lexical.segment.MPSegment", "segment.dict")).toString();
     }
 
     public String getPOSMatrix() {
-        return new StringBuilder(getHomePath()).append(POSMatrix_fre).toString();
+        return new StringBuilder(getHomePath()).
+                append(properties.getProperty("cnnlp.lexical.segment.POSTagging", "pos.dat")).toString();
     }
 
     public String getNamePOSMatrix() {
-        return new StringBuilder(getHomePath()).append(NamePOSMatrix_fre).toString();
+        return new StringBuilder(getHomePath()).
+                append(properties.getProperty("cnnlp.lexical.segment.NameTagging", "NamePOSMatrix.fre")).toString();
     }
 
     public String getChNameDict() {
-        return new StringBuilder(getHomePath()).append(ChNameDict).toString();
-    }
-
-    public String getWordFreqFile() {
-        return new StringBuilder(getHomePath()).append(word_freq).toString();
+        return new StringBuilder(getHomePath()).
+                append(properties.getProperty("cnnlp.lexical.segment.ChNameDict", "ChName.dict")).toString();
     }
 
     public boolean isLoadDomainDictionary() {
         return loaddomaindictionary;
-    }
-
-    public String getDomainDictionaryFile() {
-        return new StringBuilder(getHomePath()).append(domaindictionary).toString();
-    }
-
-    public String getDomainOntologyFile() {
-        return new StringBuilder(getHomePath()).append(domain_dof).toString();
     }
 
     public boolean isLoadUserDictionary() {
@@ -137,11 +109,7 @@ public final class Configure {
     }
 
     public String getUserDictionaryFile() {
-        return new StringBuilder(getHomePath()).append(userdict_txt).toString();
-    }
-
-    public String getStopWordFile() {
-        return new StringBuilder(getHomePath()).append(stopword_txt).toString();
+        return new StringBuilder(getHomePath()).append(properties.getProperty("user.dictionaryfile", "userdict.txt")).toString();
     }
 
     public boolean isSupportQuerySyntax() {
@@ -149,7 +117,11 @@ public final class Configure {
     }
 
     public String getStopPosList() {
-        return stoplist;
+        return properties.getProperty("user.stoplist", "");
+    }
+
+    public String getStopWordFile() {
+        return new StringBuilder(getHomePath()).append(properties.getProperty("user.stopwordfile", "")).toString();
     }
 
     public boolean isSegmentMin() {
@@ -161,10 +133,12 @@ public final class Configure {
     }
 
     public String getGlueChar() {
+        String gluechar = properties.getProperty("segment.gluechar", "*?~/_[]:");
         return gluechar;
     }
 
     public int getMaxQueryLength() {
+        int maxquerylength = Integer.parseInt(properties.getProperty("segment.maxquerylength", "512").trim());
         return maxquerylength;
     }
 
@@ -184,7 +158,7 @@ public final class Configure {
         return xingmingseparate;
     }
 
-    public void setXingmingseparate(boolean separate) {
+    public void setXingmingSeparate(boolean separate) {
         xingmingseparate = separate;
     }
 
@@ -197,64 +171,31 @@ public final class Configure {
     }
 
     public int getMaxWordLength() {
+        int maxwordlength = Integer.parseInt(properties.getProperty("segment.maxwordlength", "8").trim());
         return maxwordlength;
     }
 
-    public boolean isLoadDomainDictionaryFromDB() {
-        return loadDomainDictFromDB;
-    }
-
     public String getDomainDictLoader() {
+        String domaindictloader = properties.getProperty("domain.dictloader", "");
         return domaindictloader;
-    }
-
-    public String getDomainDatabaseURL() {
-        return domaindictionaryurl;
-    }
-
-    public String getDomainDatabaseUsername() {
-        return domaindictionaryusername;
-    }
-
-    public String getDomainDatabasePassword() {
-        return domaindictionarypassword;
     }
 
     public boolean isExtendPOSInDomainDictionary() {
         return ExtendPOSInDomainDictionary;
     }
+
     private String homePath = "";
-    private int segment_maximumthreads = 2;
-    private String default_encoding = "gbk";
-    private String cfgFile = "./cnnlp.cfg";
-    private String segment_dict = "segment.dict";
-    private String POSMatrix_fre = "POSMatrix.fre";
-    private String NamePOSMatrix_fre = "NamePOSMatrix.fre";
-    private String ChNameDict = "ChName.dict";
-    private String word_freq = "word.freq";
+    private String defaultFileEncoding = "gbk";
     private boolean loaddomaindictionary = false;
-    private boolean loadDomainDictFromDB = false;
-    private String domaindictloader = "";
-    private String domaindictionaryurl = "";
-    private String domaindictionaryusername = "";
-    private String domaindictionarypassword = "";
-    private String domaindictionary = "domain.dict";
-    private String domain_dof = "domain.dof";
     private boolean loaduserdictionary = false;
-    private String userdict_txt = "userdict.txt";
     private boolean segment_min = false;
-    private String stopword_txt = "stopword.txt";
-    private String stoplist = "";
     private boolean querysyntax = false;
-    private String gluechar = "*?~/_[]:";
-    private int maxquerylength = 512;
     private boolean stopwordfilter = false;
     private boolean chinesenumbertodigital = false;
     private boolean chinesenameidentify = true;
     private boolean xingmingseparate = true;
     private boolean halfshapeall = false;
     private boolean uppercaseall = false;
-    private int maxwordlength = 8;
     //领域词典中的词是否扩展其在普通词典中的词性
     private boolean ExtendPOSInDomainDictionary = false;
 }

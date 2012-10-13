@@ -11,7 +11,7 @@ public class StopList {
     }
 
     public void loadStopList(String s) {
-        String encoding = Configure.getInstance().getFileEncoding();
+        String encoding = Configure.getInstance().getDefaultFileEncoding();
         try {
             int i = 0;
 

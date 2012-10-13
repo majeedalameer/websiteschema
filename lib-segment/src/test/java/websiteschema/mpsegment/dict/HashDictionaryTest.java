@@ -6,8 +6,6 @@ package websiteschema.mpsegment.dict;
 
 import org.junit.Assert;
 import org.junit.Test;
-import websiteschema.mpsegment.conf.Configure;
-import websiteschema.mpsegment.util.FileUtil;
 
 import java.util.Iterator;
 
@@ -43,7 +41,7 @@ public class HashDictionaryTest {
             iterator.next();
         }
         System.out.println(count);
-        Assert.assertEquals(78687, count);
+        Assert.assertEquals(78681, count);
     }
 
     @Test
@@ -52,14 +50,5 @@ public class HashDictionaryTest {
         for (IWord word : words) {
             System.out.println("词：" + word.getWordName() + "\n" + word.getPOSArray());
         }
-    }
-
-    @Test
-    public void should_Load_POS_and_Freq_Which_Top_is_98350() {
-        String segment_dict = Configure.getInstance().getSegmentDict();
-        String segment_dict_fre = (new StringBuilder(String.valueOf(FileUtil.removeExtension(segment_dict)))).append(".fre").toString();
-        POSAndFreq.loadPOSDb(segment_dict_fre);
-        System.out.println(POSAndFreq.toText());
-        Assert.assertEquals(POSAndFreq.getTop(), 98350);
     }
 }

@@ -48,7 +48,7 @@ public class POSArray
             discount = (double) count / discount;
         }
         for (String name : posTable.keySet()) {
-            POS pos = (POS) posTable.get(name);
+            POS pos = posTable.get(name);
             double d1 = ((double) pos.getCount()) * discount;
             setPOSCount(name, (int) d1);
         }
@@ -72,10 +72,11 @@ public class POSArray
             }
         }
 
-        for (String name : posArray.getPOSTable().keySet()) {
-            add(posArray.getPOSTable().get(name));
+        int [][] arrayPosTable = posArray.getWordPOSTable();
+        for(int i = 0; i < arrayPosTable.length; i++) {
+            String posString = POSUtil.getPOSString(arrayPosTable[i][0]);
+            add(new POS(posString, arrayPosTable[i][1]));
         }
-
     }
 
     public void add(POS pos) {
@@ -231,9 +232,9 @@ public class POSArray
 
     public long getOccurredSum() {
         long sum = 0L;
-        for (String name : posTable.keySet()) {
-            POS pos = posTable.get(name);
-            sum += pos.getCount();
+        int[][] posAndFreq = getWordPOSTable();
+        for(int i = 0; i < posAndFreq.length; i++) {
+            sum += posAndFreq[i][1];
         }
 
         return sum;
