@@ -1,7 +1,7 @@
 package websiteschema.mpsegment.dict;
 
 import org.apache.log4j.Logger;
-import websiteschema.mpsegment.conf.Configure;
+import websiteschema.mpsegment.conf.MPSegmentConfiguration;
 import websiteschema.mpsegment.core.MPSegment;
 import websiteschema.mpsegment.dict.domain.DomainDictFactory;
 import websiteschema.mpsegment.dict.domain.DomainDictionary;
@@ -22,8 +22,8 @@ public class DictionaryFactory {
 
     private HashDictionary coreDict;
     private DomainDictFactory domainFactory;
-    private boolean loadDomainDictionary = Configure.getInstance().isLoadDomainDictionary();
-    private boolean loadUserDictionary = Configure.getInstance().isLoadUserDictionary();
+    private boolean loadDomainDictionary = MPSegmentConfiguration.getINSTANCE().isLoadDomainDictionary();
+    private boolean loadUserDictionary = MPSegmentConfiguration.getINSTANCE().isLoadUserDictionary();
 
     public HashDictionary getCoreDictionary() {
         return coreDict;
@@ -83,7 +83,7 @@ public class DictionaryFactory {
     public void loadUserDictionary() {
         if (loadUserDictionary) {
             long l1 = System.currentTimeMillis();
-            String userDictFile = Configure.getInstance().getUserDictionaryFile();
+            String userDictFile = MPSegmentConfiguration.getINSTANCE().getUserDictionaryFile();
             DomainDictionary domainDictionary = DomainDictFactory.getInstance().getDomainDictionary();
             UserDictionaryLoader userDictionaryLoader = new UserDictionaryLoader(domainDictionary, coreDict);
             try {

@@ -1,6 +1,6 @@
 package websiteschema.mpsegment.core;
 
-import websiteschema.mpsegment.conf.Configure;
+import websiteschema.mpsegment.conf.MPSegmentConfiguration;
 import websiteschema.mpsegment.dict.DictionaryFactory;
 import websiteschema.mpsegment.dict.HashDictionary;
 import websiteschema.mpsegment.dict.IWord;
@@ -24,7 +24,7 @@ public class MPSegment {
         initializeGraph();
         initializeCache();
         logCorpus = Math.log(CorpusSize) * 100;
-        maxWordLength = Configure.getInstance().isSegmentMin() ? 4 : Configure.getInstance().getMaxWordLength();
+        maxWordLength = MPSegmentConfiguration.getINSTANCE().isSegmentMin() ? 4 : MPSegmentConfiguration.getINSTANCE().getMaxWordLength();
         initializePOSTagging();
     }
 
@@ -265,8 +265,8 @@ public class MPSegment {
         this.useContextFreqSegment = useContextFreqSegment;
     }
     private int maxWordLength;
-    private boolean loadDomainDictionary = Configure.getInstance().isLoadDomainDictionary();
-    private boolean loadUserDictionary = Configure.getInstance().isLoadUserDictionary();
+    private boolean loadDomainDictionary = MPSegmentConfiguration.getINSTANCE().isLoadDomainDictionary();
+    private boolean loadUserDictionary = MPSegmentConfiguration.getINSTANCE().isLoadUserDictionary();
     private IShortestPath dijk;
     private IGraph graph;
     private IPOSRecognizer posTagging;

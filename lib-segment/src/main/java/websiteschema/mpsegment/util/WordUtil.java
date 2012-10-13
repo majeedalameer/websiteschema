@@ -4,7 +4,7 @@
  */
 package websiteschema.mpsegment.util;
 
-import websiteschema.mpsegment.conf.Configure;
+import websiteschema.mpsegment.conf.MPSegmentConfiguration;
 import websiteschema.mpsegment.dict.POSUtil;
 
 /**
@@ -95,5 +95,5 @@ public class WordUtil {
         return ch.equals("向") || ch.equals("自") || ch.equals("乃") || ch.equals("以") || ch.equals("从") || ch.equals("和") || ch.equals("得") || ch.equals("为") || ch.equals("则") || ch.equals("如");
     }
     private static String glueChars = "*?~/_[]:";
-    private static String glueChar = Configure.getInstance().getGlueChar();//"~_:";
+    private static String glueChar = MPSegmentConfiguration.getINSTANCE().getGlueChar();//"~_:";
 }

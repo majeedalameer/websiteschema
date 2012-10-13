@@ -5,7 +5,7 @@
 package websiteschema.mpsegment.filter;
 
 import websiteschema.mpsegment.dict.POSUtil;
-import websiteschema.mpsegment.conf.Configure;
+import websiteschema.mpsegment.conf.MPSegmentConfiguration;
 import websiteschema.mpsegment.util.WordUtil;
 import websiteschema.mpsegment.dict.ChNameDictionary;
 import static websiteschema.mpsegment.util.WordUtil.*;
@@ -41,7 +41,7 @@ public class UnknownNameFilter extends AbstractSegmentFilter {
         if (useChNameDict) {
             if (chNameDict == null) {
                 chNameDict = new ChNameDictionary();
-                chNameDict.loadNameDict(Configure.getInstance().getChNameDict());
+                chNameDict.loadNameDict(MPSegmentConfiguration.getINSTANCE().getChNameDict());
             }
             if (useForeignNameDict && foreignName == null) {
                 foreignName = new ForeignName();
@@ -72,7 +72,7 @@ public class UnknownNameFilter extends AbstractSegmentFilter {
 
     @Override
     public void doFilter() {
-        if (useChNameDict && Configure.getInstance().isChineseNameIdentify()) {
+        if (useChNameDict && MPSegmentConfiguration.getINSTANCE().isChineseNameIdentify()) {
             segmentResultLength = segmentResult.length();
             markPositionImpossibleToBeName();
 
@@ -136,7 +136,7 @@ public class UnknownNameFilter extends AbstractSegmentFilter {
             numOfNameWordItem = 0;
         }
         if (numOfNameWordItem > 0) {
-            if (Configure.getInstance().isXingMingSeparate()) {
+            if (MPSegmentConfiguration.getINSTANCE().isXingMingSeparate()) {
                 if (numOfNameWordItem >= 3) {
                     mergeWordsWithPOS(nameStartIndex + 1, nameStartIndex + 2, posNR);
                 }

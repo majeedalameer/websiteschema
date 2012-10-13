@@ -1,7 +1,8 @@
 package websiteschema.mpsegment.filter;
 
+import websiteschema.mpsegment.conf.MPSegmentConfiguration;
 import websiteschema.mpsegment.dict.POSUtil;
-import websiteschema.mpsegment.conf.Configure;
+
 import static websiteschema.mpsegment.util.WordUtil.*;
 
 public final class QuerySyntaxFilter
@@ -117,6 +118,6 @@ public final class QuerySyntaxFilter
     private static String underScore = "_";
     private static String slash = "/";
     private static String colon = ":";
-    private boolean supportQuerySyntax = Configure.getInstance().isSupportQuerySyntax();
-    private int maxQueryLength = Configure.getInstance().getMaxQueryLength();
+    private boolean supportQuerySyntax = MPSegmentConfiguration.getINSTANCE().isSupportQuerySyntax();
+    private int maxQueryLength = MPSegmentConfiguration.getINSTANCE().getMaxQueryLength();
 }

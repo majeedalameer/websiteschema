@@ -4,7 +4,7 @@
  */
 package websiteschema.mpsegment.tools;
 
-import websiteschema.mpsegment.conf.Configure;
+import websiteschema.mpsegment.conf.MPSegmentConfiguration;
 import websiteschema.mpsegment.core.SegmentEngine;
 import websiteschema.mpsegment.core.SegmentResult;
 import websiteschema.mpsegment.core.SegmentWorker;
@@ -41,8 +41,8 @@ public class SegmentAccuracy {
     }
 
     public void checkSegmentAccuracy() {
-        boolean xingMingSeparate = Configure.getInstance().isXingMingSeparate();
-        Configure.getInstance().setXingmingSeparate(true);
+        boolean xingMingSeparate = MPSegmentConfiguration.getINSTANCE().isXingMingSeparate();
+        MPSegmentConfiguration.getINSTANCE().setXingmingSeparate(true);
         SegmentWorker segmentWorker = SegmentEngine.getInstance().getSegmentWorker();
         boolean isUseContextFreq = segmentWorker.isUseContextFreqSegment();
         segmentWorker.setUseContextFreqSegment(true);
@@ -60,7 +60,7 @@ public class SegmentAccuracy {
         } catch (IOException ex) {
             ex.printStackTrace();
         } finally {
-            Configure.getInstance().setXingmingSeparate(xingMingSeparate);
+            MPSegmentConfiguration.getINSTANCE().setXingmingSeparate(xingMingSeparate);
             segmentWorker.setUseContextFreqSegment(isUseContextFreq);
         }
         assert (correct > 0 && totalWords > 0);

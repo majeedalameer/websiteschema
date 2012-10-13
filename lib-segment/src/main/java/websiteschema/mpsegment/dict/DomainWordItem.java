@@ -1,6 +1,6 @@
 package websiteschema.mpsegment.dict;
 
-import websiteschema.mpsegment.conf.Configure;
+import websiteschema.mpsegment.conf.MPSegmentConfiguration;
 import websiteschema.mpsegment.util.BufReader;
 
 import java.io.IOException;
@@ -118,7 +118,7 @@ public class DomainWordItem
         byte numByteWordName = randomaccessfile.readByte();
         byte byteWordName[] = new byte[numByteWordName];
         randomaccessfile.read(byteWordName);
-        wordName = new String(byteWordName, Configure.getInstance().getDefaultFileEncoding());
+        wordName = new String(byteWordName, MPSegmentConfiguration.getINSTANCE().getDefaultFileEncoding());
         domainType = randomaccessfile.readInt();
         id = randomaccessfile.readInt();
         posIndex = randomaccessfile.readInt();
@@ -135,7 +135,7 @@ public class DomainWordItem
         int numByteWordName = bufreader.readIntByte();
         byte byteWordName[] = new byte[numByteWordName];
         bufreader.read(byteWordName);
-        wordName = new String(byteWordName, Configure.getInstance().getDefaultFileEncoding());
+        wordName = new String(byteWordName, MPSegmentConfiguration.getINSTANCE().getDefaultFileEncoding());
         domainType = bufreader.readInt();
         id = bufreader.readInt();
         posIndex = bufreader.readInt();

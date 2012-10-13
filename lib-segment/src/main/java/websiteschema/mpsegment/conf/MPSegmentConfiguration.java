@@ -6,14 +6,14 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
 
-public final class Configure {
+public final class MPSegmentConfiguration {
 
     private static Logger l = Logger.getLogger("segment");
-    private static final Configure instance = new Configure();
+    private static final MPSegmentConfiguration INSTANCE = new MPSegmentConfiguration();
     private static int SECTION_SIZE = 1024;
     private Properties properties;
 
-    private Configure() {
+    private MPSegmentConfiguration() {
         properties = new Properties();
         loadFromConfiguration();
         initialize();
@@ -21,27 +21,27 @@ public final class Configure {
 
     private void loadFromConfiguration() {
         try {
-            l.debug("load maxprob-default.cfg: " + Configure.class.getClassLoader().getResource("maxprob-default.cfg"));
-            properties.load(Configure.class.getClassLoader().getResourceAsStream("maxprob-default.cfg"));
-            if (null != Configure.class.getClassLoader().getResource("maxprob.cfg")) {
-                l.debug("load maxprob.cfg: " + Configure.class.getClassLoader().getResource("maxprob.cfg"));
-                properties.load(Configure.class.getClassLoader().getResourceAsStream("maxprob.cfg"));
+            l.debug("load maxprob-default.cfg: " + MPSegmentConfiguration.class.getClassLoader().getResource("maxprob-default.cfg"));
+            properties.load(MPSegmentConfiguration.class.getClassLoader().getResourceAsStream("maxprob-default.cfg"));
+            if (null != MPSegmentConfiguration.class.getClassLoader().getResource("maxprob.cfg")) {
+                l.debug("load maxprob.cfg: " + MPSegmentConfiguration.class.getClassLoader().getResource("maxprob.cfg"));
+                properties.load(MPSegmentConfiguration.class.getClassLoader().getResourceAsStream("maxprob.cfg"));
             }
         } catch (IOException ex) {
-            l.error("error when loading Chinese NLP instance files", ex);
+            l.error("error when loading Chinese NLP INSTANCE files", ex);
         }
     }
 
-    public Configure(Map<String, String> config) {
-        properties = new Properties(instance.properties);
+    public MPSegmentConfiguration(Map<String, String> config) {
+        properties = new Properties(INSTANCE.properties);
         for(String key : config.keySet()) {
             properties.put(key, config.get(key));
         }
         initialize();
     }
 
-    public static Configure getInstance() {
-        return instance;
+    public static MPSegmentConfiguration getINSTANCE() {
+        return INSTANCE;
     }
 
     private String getHomePath() {
@@ -190,6 +190,7 @@ public final class Configure {
     private boolean loaduserdictionary = false;
     private boolean segment_min = false;
     private boolean querysyntax = false;
+    //TODO: add test case for stop word filter.
     private boolean stopwordfilter = false;
     private boolean chinesenumbertodigital = false;
     private boolean chinesenameidentify = true;
