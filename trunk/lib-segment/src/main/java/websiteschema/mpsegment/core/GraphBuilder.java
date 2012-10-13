@@ -5,7 +5,7 @@
 package websiteschema.mpsegment.core;
 
 import org.apache.log4j.Logger;
-import websiteschema.mpsegment.conf.Configure;
+import websiteschema.mpsegment.conf.MPSegmentConfiguration;
 import websiteschema.mpsegment.dict.DictionaryFactory;
 import websiteschema.mpsegment.dict.HashDictionary;
 import websiteschema.mpsegment.dict.IWord;
@@ -201,7 +201,7 @@ public class GraphBuilder {
             if (foundOtherWords) {
                 addMatchedWordToGraph(begin, the2ndMatchWord);
                 addMatchedWordToGraph(begin, the3rdMatchWord);
-                boolean segmentMin = Configure.getInstance().isSegmentMin();
+                boolean segmentMin = MPSegmentConfiguration.getINSTANCE().isSegmentMin();
                 if (!segmentMin || !isMatchedMoreThanOneWord() || !isFirstMatchedWordBigWord(the1stMatchWord) || isAtomWordAccordingPOS(the1stMatchWord)) {
                     addMatchedWordToGraph(begin, the1stMatchWord);
                 }
@@ -328,12 +328,12 @@ public class GraphBuilder {
         this.useContextFreqSegment = useContextFreqSegment;
     }
 
-    private final static boolean isUpperCaseAll = Configure.getInstance().isUpperCaseAll();
-    private final static boolean isHalfShapeAll = Configure.getInstance().isHalfShapeAll();
+    private final static boolean isUpperCaseAll = MPSegmentConfiguration.getINSTANCE().isUpperCaseAll();
+    private final static boolean isHalfShapeAll = MPSegmentConfiguration.getINSTANCE().isHalfShapeAll();
     private final static boolean isUpperCaseOrHalfShapeAll = isUpperCaseAll || isHalfShapeAll;
-    private final static int maxWordLength = Configure.getInstance().getMaxWordLength();
-    private final static boolean loadDomainDictionary = Configure.getInstance().isLoadDomainDictionary();
-    private final static boolean loadUserDictionary = Configure.getInstance().isLoadUserDictionary();
+    private final static int maxWordLength = MPSegmentConfiguration.getINSTANCE().getMaxWordLength();
+    private final static boolean loadDomainDictionary = MPSegmentConfiguration.getINSTANCE().isLoadDomainDictionary();
+    private final static boolean loadUserDictionary = MPSegmentConfiguration.getINSTANCE().isLoadUserDictionary();
     private final static int BigWordLength = 4;
     private IWord the2ndMatchWord;
     private IWord the3rdMatchWord;

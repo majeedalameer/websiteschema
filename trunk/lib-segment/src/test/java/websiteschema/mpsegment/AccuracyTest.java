@@ -2,7 +2,7 @@ package websiteschema.mpsegment;
 
 import junit.framework.Assert;
 import org.junit.Test;
-import websiteschema.mpsegment.conf.Configure;
+import websiteschema.mpsegment.conf.MPSegmentConfiguration;
 import websiteschema.mpsegment.tools.SegmentAccuracy;
 
 import java.io.IOException;
@@ -12,10 +12,10 @@ public class AccuracyTest {
     @Test
     public void should_be_higher_accuracy_rate_than_0_dot_93_with_segment_minimum() throws IOException {
         SegmentAccuracy segmentAccuracy = new SegmentAccuracy("PFR-199801-utf-8.txt");
-        boolean segmentMin = Configure.getInstance().isSegmentMin();
-        Configure.getInstance().setSegmentMin(true);
+        boolean segmentMin = MPSegmentConfiguration.getINSTANCE().isSegmentMin();
+        MPSegmentConfiguration.getINSTANCE().setSegmentMin(true);
         segmentAccuracy.checkSegmentAccuracy();
-        Configure.getInstance().setSegmentMin(segmentMin);
+        MPSegmentConfiguration.getINSTANCE().setSegmentMin(segmentMin);
         System.out.println("Accuracy rate of segment is: " + segmentAccuracy.getAccuracyRate());
         System.out.println("There are " + segmentAccuracy.getWrong() + " errors and total expect word is " + segmentAccuracy.getTotalWords() + " when doing accuracy test.");
 

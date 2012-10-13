@@ -1,6 +1,6 @@
 package websiteschema.mpsegment.core;
 
-import websiteschema.mpsegment.conf.Configure;
+import websiteschema.mpsegment.conf.MPSegmentConfiguration;
 import websiteschema.mpsegment.hmm.NodeRepository;
 import websiteschema.mpsegment.hmm.Pi;
 import websiteschema.mpsegment.hmm.Transition;
@@ -39,7 +39,7 @@ public class POSResources {
         pi = new Pi();
         stateBank = new NodeRepository();
 
-        String resource = Configure.getInstance().getPOSMatrix();
+        String resource = MPSegmentConfiguration.getINSTANCE().getPOSMatrix();
         try {
             SerializeHandler readHandler = new SerializeHandler(
                     new DataInputStream(FileUtil.getResourceAsStream(resource)));

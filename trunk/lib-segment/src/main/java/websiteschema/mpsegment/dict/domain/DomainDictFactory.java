@@ -1,7 +1,7 @@
 package websiteschema.mpsegment.dict.domain;
 
 import org.apache.log4j.Logger;
-import websiteschema.mpsegment.conf.Configure;
+import websiteschema.mpsegment.conf.MPSegmentConfiguration;
 
 public class DomainDictFactory {
 
@@ -14,7 +14,7 @@ public class DomainDictFactory {
     }
 
     public final void buildDictionary() {
-        if (Configure.getInstance().isLoadDomainDictionary()) {
+        if (MPSegmentConfiguration.getINSTANCE().isLoadDomainDictionary()) {
             DomainDictionary dict = new DomainDictionary();
             initializeDictionaryLoaderThenLoad(dict);
             domainDict = dict;
@@ -36,7 +36,7 @@ public class DomainDictFactory {
     }
 
     private void initializeAndLoad(DomainDictionary dict) {
-        String classNames[] = Configure.getInstance().getDomainDictLoader().split("[,; ]+");
+        String classNames[] = MPSegmentConfiguration.getINSTANCE().getDomainDictLoader().split("[,; ]+");
         for (String className : classNames) {
             DomainDictLoader loader = createDictLoader(className);
             if (null != loader) {

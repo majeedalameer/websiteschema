@@ -11,11 +11,11 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+//TODO: deserialize concept info
 public class StringWordConverter {
 
     private static Pattern patternWord = Pattern.compile("\"(.*)\"\\s*=\\s*(\\{.*\\})");
     private static Pattern patternPair = Pattern.compile("([\\w\\d]+)\\s*:\\s*((\\{[^\\}]+?\\})|([\\w\\d]+))\\s*(,|$)");
-//    private WordImpl word;
     private static String domainTypeKey = "domainType";
     private static String posTableKey = "POSTable";
 

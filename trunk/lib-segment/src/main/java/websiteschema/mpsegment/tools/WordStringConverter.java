@@ -3,6 +3,7 @@ package websiteschema.mpsegment.tools;
 import websiteschema.mpsegment.dict.IWord;
 import websiteschema.mpsegment.dict.POSUtil;
 
+//TODO: serialize concept info
 public class WordStringConverter {
 
     private StringBuilder stringBuilder = new StringBuilder();

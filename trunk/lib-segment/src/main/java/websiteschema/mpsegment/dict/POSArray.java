@@ -8,7 +8,6 @@ import java.io.RandomAccessFile;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class POSArray
         implements Serializable {
@@ -52,11 +51,6 @@ public class POSArray
             double d1 = ((double) pos.getCount()) * discount;
             setPOSCount(name, (int) d1);
         }
-
-    }
-
-    private Map<String, POS> getPOSTable() {
-        return posTable;
     }
 
     public void add(POSArray posArray) {
@@ -260,6 +254,7 @@ public class POSArray
 
         return stringBuilder.toString();
     }
-    LinkedHashMap<String, POS> posTable;
     int arrayPOSAndFreq[][] = null;
+    //TODO: remove posTable, use array of Int only.
+    LinkedHashMap<String, POS> posTable;
 }

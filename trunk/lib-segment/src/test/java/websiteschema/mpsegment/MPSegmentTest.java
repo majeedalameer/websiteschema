@@ -6,7 +6,7 @@ package websiteschema.mpsegment;
 
 import org.junit.Assert;
 import org.junit.Test;
-import websiteschema.mpsegment.conf.Configure;
+import websiteschema.mpsegment.conf.MPSegmentConfiguration;
 import websiteschema.mpsegment.core.SegmentEngine;
 import websiteschema.mpsegment.core.SegmentResult;
 import websiteschema.mpsegment.core.SegmentWorker;
@@ -150,11 +150,11 @@ public class MPSegmentTest {
     public void should_segment_big_word_to_litter_words() {
         String str = "中华人民共和国在1949年10月1日正式宣布成立。";
         SegmentEngine engine = SegmentEngine.getInstance();
-        boolean segmentMin = Configure.getInstance().isSegmentMin();
-        Configure.getInstance().setSegmentMin(true);
+        boolean segmentMin = MPSegmentConfiguration.getINSTANCE().isSegmentMin();
+        MPSegmentConfiguration.getINSTANCE().setSegmentMin(true);
         SegmentWorker worker = engine.getSegmentWorker();
         SegmentResult words = worker.segment(str);
-        Configure.getInstance().setSegmentMin(segmentMin);
+        MPSegmentConfiguration.getINSTANCE().setSegmentMin(segmentMin);
         System.out.println(words);
         Assert.assertEquals(words.getWord(0), "中华");
         Assert.assertEquals(words.getWord(1), "人民");
@@ -165,11 +165,11 @@ public class MPSegmentTest {
     public void should_segment_big_word_to_litter_words_except_POS_I_L() {
         String str = "习惯成自然是一句俗语。";
         SegmentEngine engine = SegmentEngine.getInstance();
-        boolean segmentMin = Configure.getInstance().isSegmentMin();
-        Configure.getInstance().setSegmentMin(true);
+        boolean segmentMin = MPSegmentConfiguration.getINSTANCE().isSegmentMin();
+        MPSegmentConfiguration.getINSTANCE().setSegmentMin(true);
         SegmentWorker worker = engine.getSegmentWorker();
         SegmentResult words = worker.segment(str);
-        Configure.getInstance().setSegmentMin(segmentMin);
+        MPSegmentConfiguration.getINSTANCE().setSegmentMin(segmentMin);
         System.out.println(words);
         Assert.assertEquals(words.getWord(0), "习惯成自然");
     }

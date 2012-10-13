@@ -65,6 +65,8 @@ public class HeadIndexer<Word extends IWord> {
         }
         wordCount++;
         wordOccuredSum++;
+        //NOTE: 5711 HeadIndexers have words less than 64, which total number is 51426,
+        //      232 HeadIndexers have words more than 64, which total number is 27261
         if (wordCount > Word_Array_Size_Threshold && wordArray instanceof BinaryWordArray) {
             IWordArray tmpWordArray = new HashWordArray(wordArray.getWordItems());
             wordArray = tmpWordArray;
@@ -121,8 +123,6 @@ public class HeadIndexer<Word extends IWord> {
                 headWord = (Word) word;
             }
         }
-        // TODO: 5711 HeadIndexers have words less than 64, which total number is 51426,
-        //       232 HeadIndexers have words more than 64, which total number is 27261
         if (wordCount <= Word_Array_Size_Threshold) {
             wordArray = new BinaryWordArray<Word>((Word[])wordItems);
         } else {

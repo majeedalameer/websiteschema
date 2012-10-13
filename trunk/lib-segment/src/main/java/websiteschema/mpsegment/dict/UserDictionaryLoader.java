@@ -1,6 +1,6 @@
 package websiteschema.mpsegment.dict;
 
-import websiteschema.mpsegment.conf.Configure;
+import websiteschema.mpsegment.conf.MPSegmentConfiguration;
 import websiteschema.mpsegment.core.*;
 import websiteschema.mpsegment.dict.domain.DomainDictionary;
 import websiteschema.mpsegment.dict.domain.DomainDictFactory;
@@ -187,7 +187,7 @@ public class UserDictionaryLoader {
 
     public ArrayList loadSynonymMap(String s) {
         File file = new File(s);
-        String s1 = Configure.getInstance().getDefaultFileEncoding();
+        String s1 = MPSegmentConfiguration.getINSTANCE().getDefaultFileEncoding();
         ArrayList arraylist = new ArrayList();
         if (file.isFile() && file.exists()) {
             try {
@@ -216,7 +216,7 @@ public class UserDictionaryLoader {
 
     public ArrayList loadStopWord(String s) {
         File file = new File(s);
-        String s1 = Configure.getInstance().getDefaultFileEncoding();
+        String s1 = MPSegmentConfiguration.getINSTANCE().getDefaultFileEncoding();
         ArrayList arrayList = new ArrayList();
         if (file.isFile() && file.exists()) {
             try {

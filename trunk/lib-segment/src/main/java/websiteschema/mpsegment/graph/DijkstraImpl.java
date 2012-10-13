@@ -6,7 +6,7 @@ package websiteschema.mpsegment.graph;
 
 import java.util.*;
 
-import websiteschema.mpsegment.conf.Configure;
+import websiteschema.mpsegment.conf.MPSegmentConfiguration;
 
 /**
  * @author ray
@@ -14,7 +14,7 @@ import websiteschema.mpsegment.conf.Configure;
 public class DijkstraImpl implements IShortestPath {
 
     private IGraph graph;
-    private final static int numOfVertexes = Configure.SectionSize();
+    private final static int numOfVertexes = MPSegmentConfiguration.SectionSize();
     private int[] route;
     private DijkstraElement dijk = new DijkstraElement(numOfVertexes);
 

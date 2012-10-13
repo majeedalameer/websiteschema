@@ -1,6 +1,7 @@
 package websiteschema.mpsegment.dict;
 
-import websiteschema.mpsegment.conf.Configure;
+import websiteschema.mpsegment.conf.MPSegmentConfiguration;
+
 import java.io.*;
 import java.util.HashMap;
 
@@ -11,7 +12,7 @@ public class StopList {
     }
 
     public void loadStopList(String s) {
-        String encoding = Configure.getInstance().getDefaultFileEncoding();
+        String encoding = MPSegmentConfiguration.getINSTANCE().getDefaultFileEncoding();
         try {
             int i = 0;
 
@@ -36,7 +37,7 @@ public class StopList {
             System.out.println((new StringBuilder()).append("[StopWord] exception:").append(exception.getMessage()).toString());
         }
 
-        String posStopList = Configure.getInstance().getStopPosList();
+        String posStopList = MPSegmentConfiguration.getINSTANCE().getStopPosList();
         posStopList = posStopList.trim();
         if (posStopList.length() > 0) {
             String as[] = posStopList.split(",");
