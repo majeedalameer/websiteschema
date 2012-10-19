@@ -262,7 +262,7 @@ public class NamePOSProbMatrix {
             randomaccessfile.close();
             randomaccessfile = null;
         } catch (IOException ioexception) {
-            System.out.println((new StringBuilder("POSProbMatrix.saveToFile() error:")).append(ioexception.getMessage()).toString());
+            System.out.println((new StringBuilder("NamePOSProbMatrix.saveToFile() error:")).append(ioexception.getMessage()).toString());
         }
     }
     private int numPOS;
