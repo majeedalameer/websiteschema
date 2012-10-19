@@ -1,16 +1,12 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package websiteschema.mpsegment.graph;
-
-import java.util.*;
 
 import websiteschema.mpsegment.conf.MPSegmentConfiguration;
 
-/**
- * @author ray
- */
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.TreeSet;
+
 public class DijkstraImpl implements IShortestPath {
 
     private IGraph graph;

@@ -12,7 +12,6 @@ public class UserDictionaryLoader {
     public UserDictionaryLoader(DomainDictionary domaindictionary, HashDictionary hashdictionary) {
         defaultFreq = 50;
         defaultDomainType = 250;
-        checkExist = false;
         disambiguateRuleArrayList = new ArrayList();
         this.hashDictionary = hashdictionary;
         this.domainDict = domaindictionary;
@@ -20,7 +19,7 @@ public class UserDictionaryLoader {
 
     private boolean existedInHashDict(String s) {
         boolean flag = false;
-        if (!checkExist && hashDictionary != null && hashDictionary.lookupWord(s) != null) {
+        if (hashDictionary != null && hashDictionary.lookupWord(s) != null) {
             flag = true;
         }
         return flag;
@@ -72,7 +71,6 @@ public class UserDictionaryLoader {
                 for (int k = 0; k < as1.length; k++) {
                     if (!existedInHashDict(as1[k])) {
                         domainDict.pushWord(as1[k], null, "N", defaultFreq, defaultDomainType);
-//                        domainOnto.addOneElement(as1[k]);
                     }
                 }
 
@@ -117,7 +115,7 @@ public class UserDictionaryLoader {
                 String as[] = right.split(" ");
                 for (int i1 = 0; i1 < as.length; i1++) {
                     String s6 = as[i1].trim();
-                    if (getLog2Freq(mpSegment, s6) < 0) {
+                    if (getLog2Freq(s6) < 0) {
                         domainDict.pushWord(s6, null, "N", defaultFreq, defaultDomainType);
                     }
                 }
@@ -131,20 +129,20 @@ public class UserDictionaryLoader {
                 String right = line.substring(j + 2);
                 int leftFee = getFee(mpSegment, left);  //
                 String as1[] = right.split(" ");
-                int rightFee = getFee(mpSegment, as1);
+                int rightFee = getFee(as1);
                 for (int k2 = 0; rightFee > leftFee && k2 < maxDisambiguateIteration; k2++) {
                     int minTF = 100000;
                     for (int i3 = 0; i3 < as1.length; i3++) {
                         String word = as1[i3].trim();
-                        int tf = mpSegment.getTF(word);
+                        int tf = getTF(word);
                         if (tf < minTF) {
                             minTF = tf;
                             minTFIndex = i3;
                         }
                     }
                     String minTFWord = as1[minTFIndex].trim();
-                    setOccurredCount(mpSegment, minTFWord, minTF + minTF);
-                    rightFee = getFee(mpSegment, as1);
+                    setOccurredCount(minTFWord, minTF + minTF);
+                    rightFee = getFee(as1);
                 }
                 leftFee = getFee(mpSegment, left);
             }
@@ -154,34 +152,34 @@ public class UserDictionaryLoader {
 
     private int getFee(MPSegment mpsegment, String s) {
         int i = 0;
-        SegmentResult wordatoms = mpsegment.segmentMP(s, true);
-        for (int j = 0; j < wordatoms.length(); j++) {
-            i = (i + mpsegment.getLogCorpus()) - getLog2Freq(mpsegment, wordatoms.getWord(j));
+        SegmentResult segmentResult = mpsegment.segmentMP(s, true);
+        for (int j = 0; j < segmentResult.length(); j++) {
+            i = (i + getLogCorpus()) - getLog2Freq(segmentResult.getWord(j));
         }
         return i;
     }
 
-    private int getFee(MPSegment mpsegment, String as[]) {
+    private int getFee(String as[]) {
         int i = 0;
         for (int j = 0; j < as.length; j++) {
-            i = (i + mpsegment.getLogCorpus()) - getLog2Freq(mpsegment, as[j]);
+            i = (i + getLogCorpus()) - getLog2Freq(as[j]);
         }
         return i;
     }
 
-    private int getLog2Freq(MPSegment mpsegment, String s) {
-        IWord iworditem = mpsegment.getItem(s);
-        if (iworditem != null) {
-            return iworditem.getLog2Freq();
+    private int getLog2Freq(String s) {
+        IWord word = getItem(s);
+        if (word != null) {
+            return word.getLog2Freq();
         } else {
             return -1;
         }
     }
 
-    private void setOccurredCount(MPSegment mpsegment, String s, int factor) {
-        IWord iworditem = mpsegment.getItem(s);
-        if (iworditem != null) {
-            iworditem.setOccuredSum(factor);
+    private void setOccurredCount(String s, int factor) {
+        IWord word = getItem(s);
+        if (word != null) {
+            word.setOccuredSum(factor);
         }
     }
 
@@ -242,18 +240,35 @@ public class UserDictionaryLoader {
         return arrayList;
     }
 
-    public boolean isCheckExist() {
-        return checkExist;
+    private IWord getItem(String wordStr) {
+        IWord word = null;
+        if (wordStr.length() > 1) {
+            word = domainDict.getWord(wordStr);
+        }
+        if (word == null) {
+            word = hashDictionary.getWord(wordStr);
+        }
+        return word;
     }
 
-    public void setCheckExist(boolean flag) {
-        checkExist = flag;
+    private int getTF(String wordStr) {
+        IWord iworditem = getItem(wordStr);
+        int tf = 0;
+        if (iworditem != null) {
+            tf = (int) iworditem.getOccuredSum();
+        }
+        return tf;
     }
+
+    private int getLogCorpus() {
+        return (int) MPSegmentConfiguration.LOG_CORPUS;
+    }
+
     private DomainDictionary domainDict = DomainDictFactory.getInstance().getDomainDictionary();
     private HashDictionary hashDictionary;
     private int defaultFreq;
     private int defaultDomainType;
     private ArrayList disambiguateRuleArrayList;
     private int maxDisambiguateIteration = 50;
-    private boolean checkExist;
+
 }

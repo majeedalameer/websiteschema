@@ -6,10 +6,7 @@ package websiteschema.mpsegment.core;
 
 import org.apache.log4j.Logger;
 import websiteschema.mpsegment.conf.MPSegmentConfiguration;
-import websiteschema.mpsegment.dict.DictionaryFactory;
-import websiteschema.mpsegment.dict.HashDictionary;
-import websiteschema.mpsegment.dict.IWord;
-import websiteschema.mpsegment.dict.POSUtil;
+import websiteschema.mpsegment.dict.*;
 import websiteschema.mpsegment.dict.domain.DomainDictFactory;
 import websiteschema.mpsegment.dict.domain.DomainDictionary;
 import websiteschema.mpsegment.graph.IGraph;
@@ -25,18 +22,15 @@ public class GraphBuilder {
 
     private static Logger logger = Logger.getLogger(GraphBuilder.class);
     private final IGraph graph;
-    private final double logCorpus;
+    private final double logCorpus = MPSegmentConfiguration.LOG_CORPUS;
     private final HashDictionary hashDictionary = DictionaryFactory.getInstance().getCoreDictionary();
     private final boolean useDomainDictionary;
-    private final UnknownWordCache objectCache;
     private Map<String, Integer> contextFreqMap = new HashMap<String, Integer>();
     private boolean useContextFreqSegment = false;
 
-    public GraphBuilder(IGraph graph, double logCorpus, boolean useDomainDictionary, UnknownWordCache objectCache) {
+    public GraphBuilder(IGraph graph, boolean useDomainDictionary) {
         this.graph = graph;
-        this.logCorpus = logCorpus;
         this.useDomainDictionary = useDomainDictionary;
-        this.objectCache = objectCache;
     }
 
     private String doUpperCaseAndHalfShape(String word) {
@@ -312,8 +306,8 @@ public class GraphBuilder {
         return DomainDictFactory.getInstance().getDomainDictionary();
     }
 
-    private IWord initAsUnknownWord(String unknownWord) {
-        return objectCache.getNewWordItem(unknownWord);
+    private IWord initAsUnknownWord(String unknownWordStr) {
+        return new UnknownWord(unknownWordStr);
     }
 
     public Map<String, Integer> getContextFreqMap() {
