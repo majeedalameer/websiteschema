@@ -199,4 +199,5 @@ public final class MPSegmentConfiguration {
     private boolean uppercaseall = false;
     //领域词典中的词是否扩展其在普通词典中的词性
     private boolean ExtendPOSInDomainDictionary = false;
+    public final static double LOG_CORPUS = Math.log(8000000) * 100;
 }
