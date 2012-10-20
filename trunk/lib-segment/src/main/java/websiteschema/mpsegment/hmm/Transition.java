@@ -20,13 +20,13 @@ public class Transition implements ISerialize {
         return root;
     }
     NodeRepository stateBank = new NodeRepository();
-    TreeNodeSortor sortor = null;
+    TrieNodeSortor sortor = null;
 
     public void setStateBank(NodeRepository stateBank) {
         this.stateBank = stateBank;
     }
 
-    public void setSortor(TreeNodeSortor sortor) {
+    public void setSortor(TrieNodeSortor sortor) {
         Trie.setTreeNodeSorter(sortor);
     }
 

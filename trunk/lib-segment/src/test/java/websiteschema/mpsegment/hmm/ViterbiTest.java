@@ -18,7 +18,7 @@ public class ViterbiTest {
     @Test
     public void should_return_status_333332_with_giving_observes_THTHTH() {
         Viterbi viterbi = new Viterbi();
-        TreeNodeSortor sortor = new TreeNodeBinarySort();
+        TrieNodeSortor sortor = new TrieNodeBinarySort();
 
         viterbi.setSortor(sortor);
 
@@ -44,7 +44,7 @@ public class ViterbiTest {
     public void should_handle_unknown_State() {
         List<String> o = Arrays.asList(new String[]{"A", "H"});
         Viterbi viterbi = new Viterbi();
-        TreeNodeSortor sortor = new TreeNodeBinarySort();
+        TrieNodeSortor sortor = new TrieNodeBinarySort();
 
         viterbi.setSortor(sortor);
 

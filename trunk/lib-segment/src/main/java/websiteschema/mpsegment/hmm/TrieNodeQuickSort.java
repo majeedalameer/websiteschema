@@ -10,11 +10,11 @@ import java.util.Comparator;
  *
  * @author ray
  */
-public class TreeNodeQuickSort implements TreeNodeSortor {
+public class TrieNodeQuickSort implements TrieNodeSortor {
 
     Comparator<Trie> comparator = null;
     
-    public TreeNodeQuickSort() {
+    public TrieNodeQuickSort() {
         comparator = new Comparator<Trie>() {
 
             @Override

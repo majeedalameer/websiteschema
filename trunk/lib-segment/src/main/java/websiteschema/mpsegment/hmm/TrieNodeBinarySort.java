@@ -10,11 +10,11 @@ import java.util.*;
  *
  * @author ray
  */
-public class TreeNodeBinarySort implements TreeNodeSortor {
+public class TrieNodeBinarySort implements TrieNodeSortor {
 
     Comparator<Trie> comparator = null;
     
-    public TreeNodeBinarySort() {
+    public TrieNodeBinarySort() {
         comparator = new Comparator<Trie>() {
 
             @Override
