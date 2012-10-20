@@ -22,7 +22,7 @@ public class Viterbi {
     int n = 2; // ngram
 
 
-    public void setSortor(TreeNodeSortor sortor) {
+    public void setSortor(TrieNodeSortor sortor) {
         tran.setSortor(sortor);
     }
 

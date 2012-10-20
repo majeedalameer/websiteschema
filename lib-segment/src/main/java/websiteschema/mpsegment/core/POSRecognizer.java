@@ -4,7 +4,6 @@
  */
 package websiteschema.mpsegment.core;
 
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +12,6 @@ import websiteschema.mpsegment.dict.POSArray;
 import websiteschema.mpsegment.graph.IGraph;
 import websiteschema.mpsegment.graph.Path;
 import websiteschema.mpsegment.hmm.*;
-import websiteschema.mpsegment.util.ISerialize;
 import websiteschema.mpsegment.util.SerializeHandler;
 
 /**
@@ -30,7 +28,7 @@ public class POSRecognizer implements IPOSRecognizer {
 
     public POSRecognizer() {
         viterbi = new Viterbi();
-        viterbi.setSortor(new TreeNodeQuickSort());
+        viterbi.setSortor(new TrieNodeQuickSort());
         load();
     }
 

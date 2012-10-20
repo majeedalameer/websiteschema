@@ -20,10 +20,10 @@ public class Trie implements ISerialize {
     int count = 0;
     double prob = 0.0;
     Trie descendant[] = null;
-    private static TreeNodeSortor sortor = new TreeNodeBinarySort();
+    private static TrieNodeSortor sortor = new TrieNodeBinarySort();
 
-    public static void setTreeNodeSorter(TreeNodeSortor treeNodeSortor) {
-        sortor = treeNodeSortor;
+    public static void setTreeNodeSorter(TrieNodeSortor trieNodeSortor) {
+        sortor = trieNodeSortor;
     }
     
     public int getKey() {

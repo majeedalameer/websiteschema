@@ -6,7 +6,7 @@ import java.util.List;
 public class Concept {
 
     private int id;
-    private int name;
+    private String name;
 
     public List<Concept> getChildren() {
         throw new UnsupportedOperationException();

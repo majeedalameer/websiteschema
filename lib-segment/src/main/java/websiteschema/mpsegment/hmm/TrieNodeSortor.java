@@ -8,7 +8,7 @@ package websiteschema.mpsegment.hmm;
  *
  * @author ray
  */
-public interface TreeNodeSortor {
+public interface TrieNodeSortor {
 
     public Trie[] sort(Trie[] values);
 }
