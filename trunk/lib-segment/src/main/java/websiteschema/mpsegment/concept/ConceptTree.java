@@ -30,12 +30,20 @@ public class ConceptTree {
     }
 
     public void addConcept(Concept concept, Concept parent) throws DuplicateConceptException {
+        verifyUniqConcept(concept);
+        buildIndex(concept);
+        parent.addChild(concept);
+    }
+
+    private void verifyUniqConcept(Concept concept) throws DuplicateConceptException {
         Concept existed = getConceptById(concept.getId());
         if (null != existed) {
             throw new DuplicateConceptException(existed);
         }
-        buildIndex(concept);
-        parent.addChild(concept);
+        existed = getConceptByName(concept.getName());
+        if (null != existed) {
+            throw new DuplicateConceptException(existed);
+        }
     }
 
     private void buildIndex(Concept concept) {

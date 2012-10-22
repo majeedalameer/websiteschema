@@ -47,17 +47,4 @@ public class ConceptLoaderTest {
         Assert.assertEquals(10101, grandChildren.get(0).getId());
         Assert.assertEquals("n-entity", grandChildren.get(0).getName());
     }
-
-    @Test
-    public void should_load_noun_verb_adj_concepts_from_resources() {
-        try {
-            ConceptRepository conceptRepository = new ConceptRepository();
-            ConceptTree nounConceptTree = conceptRepository.getNounConceptTree();
-            ConceptTree verbConceptTree = conceptRepository.getVerbConceptTree();
-            ConceptTree adjConceptTree = conceptRepository.getAdjConceptTree();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            Assert.fail();
-        }
-    }
 }

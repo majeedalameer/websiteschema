@@ -99,7 +99,7 @@ public class Viterbi {
 
         Set<Integer> relatedStates = e.getStateProbByObserve(o1.getIndex());
         if (null == relatedStates || relatedStates.isEmpty()) {
-            throw new ObserveListException("unknown observe object " + o + ".");
+            throw new ObserveListException("UNKNOWN observe object " + o + ".");
         }
         ret.states = new int[listObserve.size()][];
         ret.delta = new double[listObserve.size()][];
@@ -126,7 +126,7 @@ public class Viterbi {
 
             Set<Integer> stateSet = e.getStateProbByObserve(oi.getIndex());
             if (stateSet.isEmpty()) {
-                throw new ObserveListException("unknown observe object " + o + ".");
+                throw new ObserveListException("UNKNOWN observe object " + o + ".");
             }
             ret.states[p] = new int[stateSet.size()];
             ret.delta[p] = new double[stateSet.size()];

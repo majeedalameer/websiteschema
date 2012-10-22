@@ -1,5 +1,6 @@
 package websiteschema.mpsegment.dict;
 
+import websiteschema.mpsegment.concept.Concept;
 import websiteschema.mpsegment.util.BufReader;
 
 import java.io.IOException;
@@ -189,10 +190,20 @@ public class WordImpl implements Serializable, Comparable, IWord {
         return stringBuilder.toString();
     }
 
+    @Override
+    public Concept[] getConcepts() {
+        return null != concepts ? concepts : new Concept[]{Concept.UNKNOWN};
+    }
+
+    public void setConcepts(Concept[] concepts) {
+        this.concepts = concepts;
+    }
+
     private String wordName;
     private int domainType;
     private int log2Freq;
     private int indexOfPosDB;
     private int wordPOSNumber;
     private POSArray posArray;
+    private Concept[] concepts;
 }

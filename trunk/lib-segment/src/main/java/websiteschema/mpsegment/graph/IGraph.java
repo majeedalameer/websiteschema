@@ -1,6 +1,5 @@
 package websiteschema.mpsegment.graph;
 
-import java.util.Collection;
 import websiteschema.mpsegment.dict.IWord;
 
 public interface IGraph {

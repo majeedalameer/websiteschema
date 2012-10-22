@@ -1,8 +1,14 @@
 package websiteschema.mpsegment.concept;
 
 public class ConceptRepository {
-    private ConceptTree nounConceptTree;
+    private static ConceptRepository instance = new ConceptRepository();
+
+    public static ConceptRepository getInstance() {
+        return instance;
+    }
+
     private ConceptTree verbConceptTree;
+    private ConceptTree nounConceptTree;
     private ConceptTree adjConceptTree;
 
     public ConceptRepository() {
@@ -15,11 +21,38 @@ public class ConceptRepository {
         return nounConceptTree;
     }
 
+    protected void setNounConceptTree(ConceptTree nounConceptTree) {
+        this.nounConceptTree = nounConceptTree;
+    }
+
+    protected void setVerbConceptTree(ConceptTree verbConceptTree) {
+        this.verbConceptTree = verbConceptTree;
+    }
+
+    protected void setAdjConceptTree(ConceptTree adjConceptTree) {
+        this.adjConceptTree = adjConceptTree;
+    }
+
     public ConceptTree getAdjConceptTree() {
         return adjConceptTree;
     }
 
     public ConceptTree getVerbConceptTree() {
         return verbConceptTree;
+    }
+
+    public Concept getConceptByName(String name) {
+        if (name.startsWith("n-")) {
+            return getNounConceptTree().getConceptByName(name);
+        }
+
+        if (name.startsWith("v-")) {
+            return getVerbConceptTree().getConceptByName(name);
+        }
+
+        if (name.startsWith("a-")) {
+            return getAdjConceptTree().getConceptByName(name);
+        }
+        return null;
     }
 }

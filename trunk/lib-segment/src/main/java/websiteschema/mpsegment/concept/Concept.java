@@ -3,8 +3,9 @@ package websiteschema.mpsegment.concept;
 import java.util.ArrayList;
 import java.util.List;
 
-//TODO: use concept instead of domain type.
 public class Concept {
+
+    public static final Concept UNKNOWN = new Concept(0, "N/A");
 
     private long id;
     private String name;
