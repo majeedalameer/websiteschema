@@ -1,5 +1,7 @@
 package websiteschema.mpsegment.dict;
 
+import websiteschema.mpsegment.concept.Concept;
+
 /**
  *
  * @author ray
@@ -82,6 +84,11 @@ public class UnknownWord implements IWord {
         StringBuilder stringbuffer = new StringBuilder();
         stringbuffer.append(getPOSArray().toDBFString(getWordName()));
         return stringbuffer.toString();
+    }
+
+    @Override
+    public Concept[] getConcepts() {
+        return new Concept[]{Concept.UNKNOWN};
     }
 
 }

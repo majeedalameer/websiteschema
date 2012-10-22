@@ -2,6 +2,7 @@ package websiteschema.mpsegment.tools;
 
 import org.junit.Assert;
 import org.junit.Test;
+import websiteschema.mpsegment.concept.ConceptRepository;
 import websiteschema.mpsegment.dict.IWord;
 import websiteschema.mpsegment.dict.POSUtil;
 
@@ -30,5 +31,16 @@ public class StringToWordTest {
 
         Assert.assertEquals(",\"()[]{}", word.getWordName());
         Assert.assertEquals(2, word.getDomainType());
+    }
+
+    @Test
+    public void should_convert_string_to_word_with_word_concepts() {
+        String wordString = "\"测试\" = {domainType:2,POSTable:{N:100,V:20},concepts:[n-insect,n-person]}";
+        StringWordConverter converter = new StringWordConverter();
+        converter.setConceptRepository(ConceptRepository.getInstance());
+        IWord word = converter.convert(wordString);
+        Assert.assertEquals(2, word.getConcepts().length);
+        Assert.assertEquals("n-insect", word.getConcepts()[0].getName());
+        Assert.assertEquals("n-person", word.getConcepts()[1].getName());
     }
 }

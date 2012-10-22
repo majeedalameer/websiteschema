@@ -43,6 +43,17 @@ public class ConceptTreeTest {
     }
 
     @Test
+    public void should_return_error_when_add_a_concept_which_name_already_existed() {
+        Concept nounDuplicate = new Concept(100005, "noun");
+        try {
+            conceptTree.addConcept(nounDuplicate, nounRoot);
+            Assert.fail();
+        } catch (DuplicateConceptException ex) {
+            Assert.assertEquals(ex.getMessage(), "A concept 'noun' has id 100000 already existed.");
+        }
+    }
+
+    @Test
     public void should_add_concept_to_concept_tree_correctly() {
         Concept nounRoot = conceptTree.getRootConcept();
         List<Concept> children = conceptTree.getRootConcept().getChildren();

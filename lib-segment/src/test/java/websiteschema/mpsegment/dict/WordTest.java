@@ -4,7 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import websiteschema.mpsegment.tools.StringWordConverter;
 
-public class WordImplTest {
+public class WordTest {
 
     @Test
     public void should_return_correct_occured_sum() {
