@@ -78,8 +78,8 @@
             <groupId>com.eye-ocr</groupId>
             <artifactId>eye-ocr</artifactId>
             <version>1.0-ALPHA</version>
-		</dependency>
-        <dependency>
+        </dependency>
+<!--        <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-atom</artifactId>
             <version>1.8</version>
@@ -148,7 +148,7 @@
             <groupId>com.sun.jersey.contribs.jersey-oauth</groupId>
             <artifactId>oauth-signature</artifactId>
             <version>1.8</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>net.sourceforge.htmlcleaner</groupId>
             <artifactId>htmlcleaner</artifactId>

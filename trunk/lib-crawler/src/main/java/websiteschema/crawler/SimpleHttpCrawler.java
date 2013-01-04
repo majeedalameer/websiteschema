@@ -73,7 +73,7 @@ public class SimpleHttpCrawler implements Crawler {
                 }
             }
             String title = doc.title();
-            System.out.println(title);
+            System.out.println("-----------------title: " + title);
             org.w3c.dom.Document document = JsoupUtil.getInstance().convert(doc);
             httpStatus = conn.response().statusCode();
             url = conn.response().url().toString();
