@@ -55,7 +55,7 @@
     <!--enale component scanning (beware that this does not enable mapper scanning!)-->
     <context:component-scan base-package="${mapper.scan.package}" />
     <context:component-scan base-package="websiteschema.service" />
-    <context:component-scan base-package="com.apc.websiteschema.fms.service" />
+<!--    <context:component-scan base-package="com.apc.websiteschema.fms.service" />-->
     <context:component-scan base-package="websiteschema.rest" />
 
     <!-- enable autowire -->
@@ -76,7 +76,7 @@
         <property name="sqlSessionFactory" ref="sqlSessionFactory" />
     </bean>
 
-    <bean id="dataSource2" class="oracle.ucp.jdbc.PoolDataSourceFactory" factory-method="getPoolDataSource">
+<!--    <bean id="dataSource2" class="oracle.ucp.jdbc.PoolDataSourceFactory" factory-method="getPoolDataSource">
         <property name="URL" value="jdbc:oracle:thin:@10.8.0.160:1521:fms"/>
         <property name="user" value="fcm"/>
         <property name="password" value="fcm"/>
@@ -102,6 +102,6 @@
     <bean id="mapperScannerConfigurer2" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
         <property name="basePackage" value="com.apc.websiteschema.fms.mapper" />
         <property name="sqlSessionFactory" ref="sqlSessionFactory2" />
-    </bean>
+    </bean>-->
 
 </beans>
