@@ -3,6 +3,8 @@
 /* Created on:     2011-11-26 23:34:57                          */
 /*==============================================================*/
 
+drop table if exists Cipher;
+
 drop table if exists Category;
 
 drop table if exists Channel;
@@ -146,7 +148,7 @@ create table Cipher
    updateTime           datetime,
    lastUpdateUser       varchar(30),
    primary key (id)
-)
+);
 
 /*==============================================================*/
 /* Table: Follow                                                */
@@ -207,8 +209,8 @@ create table Keyword
 create table Location
 (
    id                   int not null auto_increment,
-   name                 varchar(300),not null
-   address              varchar(300),not null
+   name                 varchar(300) not null,
+   address              varchar(300) not null,
    createTime           datetime,
    createUser           varchar(30),
    updateTime           datetime,
@@ -239,14 +241,13 @@ create table Sample
 (
    id                   bigint not null auto_increment,
    rowKey               varchar(333),
-   url                  varchar(333),
+   url                  varchar(300),
    siteId               varchar(100),
    content              mediumtext,
    httpStatus           int,
    lastUpdateTime       datetime,
    createTime           datetime,
-   primary key (id),
-   unique (rowKey)
+   primary key (id)
 );
 
 /*=============================================================*/
@@ -375,8 +376,7 @@ create table UrlLink
    depth                int,
    httpStatus           int,
    jobname              varchar(100),
-   primary key (id),
-   unique (rowKey)
+   primary key (id)
 );
 
 /*==============================================================*/
@@ -388,8 +388,7 @@ create table UrlLog
    rowKey               varchar(333),
    createTime           bigint,
    jobname              varchar(100),
-   primary key (id),
-   unique (rowKey)
+   primary key (id)
 );
 
 /*==============================================================*/

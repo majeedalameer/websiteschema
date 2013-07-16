@@ -4,13 +4,16 @@
  */
 package com.apc.websiteschema.cluster.fields;
 
-import cnnlp.lexical.dict.POSUtil;
-import cnnlp.lexical.segment.SegmentEngine2;
-import cnnlp.lexical.segment.SegmentWorker;
-import cnnlp.lexical.segment.WordAtoms;
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 import websiteschema.cluster.analyzer.Doc;
 import websiteschema.cluster.analyzer.IFieldFilter;
+import websiteschema.mpsegment.core.SegmentEngine;
+import websiteschema.mpsegment.core.SegmentResult;
+import websiteschema.mpsegment.core.SegmentWorker;
+import websiteschema.mpsegment.dict.POSUtil;
 import websiteschema.utils.StringUtil;
 
 /**
@@ -56,11 +59,9 @@ public class AuthorFilter implements IFieldFilter {
         }
     }
 
-    private WordAtoms segment(String text) {
-        SegmentWorker worker = SegmentEngine2.getInstance().getSegmentWorker();
-        WordAtoms words = worker.segment2(text);
-        SegmentEngine2.getInstance().freeWorker(worker);
-        return words;
+    private SegmentResult segment(String text) {
+        SegmentWorker worker = SegmentEngine.instance().getSegmentWorker();
+        return worker.segment(text);
     }
 
     private String findAuthorInField(Collection<String> authorStrSet) {
@@ -75,13 +76,13 @@ public class AuthorFilter implements IFieldFilter {
 
     public String findAuthorInField(String authorString) {
         if (null != authorString) {
-            WordAtoms words = segment(authorString);
+            SegmentResult words = segment(authorString);
             if (null != words) {
                 String ret = "";
                 for (int i = 0; i < words.length(); i++) {
-                    int tag = words.getTags(i);
-                    if (POSUtil.POS_NR == tag) {
-                        ret += words.getWords(i) + " ";
+                    int tag = words.getPOS(i);
+                    if (POSUtil.POS_NR() == tag) {
+                        ret += words.getWord(i) + " ";
                     }
                 }
                 return ret.trim();
@@ -108,32 +109,35 @@ public class AuthorFilter implements IFieldFilter {
         return null;
     }
 
+    private final static int POS_NR = 27;
+    private final static int POS_UNKNOWN = 44;
+    
     private String findAuthorInContent(String content) {
         String ret = "";
 
         boolean hasWordAuthor = false;
         int positionWordAuthor = 0;
-        WordAtoms words = segment(content);
+        SegmentResult words = segment(content);
         Map<String, Integer> names = new LinkedHashMap<String, Integer>();
         int index = 0;
         for (int i = 0; i < words.length(); i++) {
-            switch (words.getTags(i)) {
+            switch (words.getPOS(i)) {
                 // 自定义分词其tag总是1
                 case 1:
                     index++;
-                    String word = words.getWords(i);
+                    String word = words.getWord(i);
                     if (word.matches("^(记者|作者)") && !hasWordAuthor) {
                         hasWordAuthor = true;
                         positionWordAuthor = index;
                     }
-                    if (10001 == words.getMarks(i)) {
+                    if (10001 == words.getDomainType(i)) {
                         names.put(word, index);
                     }
                     break;
-                case cnnlp.lexical.dict.POSUtil.POS_NR:
-                    names.put(words.getWords(i), index++);
+                case POS_NR:
+                    names.put(words.getWord(i), index++);
                     break;
-                case cnnlp.lexical.dict.POSUtil.POS_UNKOWN:
+                case POS_UNKNOWN:
                     break;
                 default:
                     index++;

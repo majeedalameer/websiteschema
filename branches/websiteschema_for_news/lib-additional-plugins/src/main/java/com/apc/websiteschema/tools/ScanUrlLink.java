@@ -4,7 +4,6 @@
  */
 package com.apc.websiteschema.tools;
 
-import com.apc.websiteschema.fb.DreAddDataFB;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -34,7 +33,6 @@ public class ScanUrlLink {
     Map<String, String> map = new HashMap<String, String>();
     Map<String, String> def = new HashMap<String, String>();
     List<String> encodeFields = new ArrayList<String>();
-    DreAddDataFB sendFB = new DreAddDataFB();
     Logger l = Logger.getLogger(getClass());
 
     ScanUrlLink() {
@@ -47,7 +45,6 @@ public class ScanUrlLink {
         encodeFields.add("URL");
         List<String> server = new ArrayList<String>();
         server.add("localhost:9601");
-        sendFB.servers = server;
     }
 
     public static void main(String args[]) {
@@ -96,8 +93,6 @@ public class ScanUrlLink {
                         }
                     }
                 }
-                sendFB.content = DocumentUtil.getXMLString(index);
-                sendFB.send();
             }
         });
     }

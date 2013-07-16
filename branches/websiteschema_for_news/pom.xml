@@ -19,32 +19,27 @@
         <hadoop-version>0.20.2-cdh3u2</hadoop-version>
         <avro-version>1.5.4</avro-version>
 
-        <!-- 团队开发环境 -->
-        <rabbitmq-server>192.168.4.173</rabbitmq-server>
+<!--        <rabbitmq-server>192.168.4.173</rabbitmq-server>
         <metadata-deploy-host>192.168.4.173</metadata-deploy-host>
         <hbase.master>hadoop-hbase1</hbase.master>
         <hbase.zookeeper.quorum>hadoop-hbase1</hbase.zookeeper.quorum>
-        <jdbc-url>jdbc:mysql://192.168.4.189:3306/websiteschema</jdbc-url>
+        <jdbc-url>jdbc:mysql://192.168.4.189:3306/websiteschema</jdbc-url>-->
 
-        <!-- 团队开发测试环境 -->
 <!--        <rabbitmq-server>172.16.100.161</rabbitmq-server>
         <metadata-deploy-host>172.16.100.161</metadata-deploy-host>
         <hbase.master>hadoop2</hbase.master>
         <hbase.zookeeper.quorum>hadoop1,hadoop2,hadoop3,hadoop4,hadoop5</hbase.zookeeper.quorum>
         <jdbc-url>jdbc:mysql://172.16.100.162:3306/websiteschema</jdbc-url>-->
 
-        <!-- 个人开发环境 -->
-<!--  <rabbitmq-server>localhost</rabbitmq-server>
+        <rabbitmq-server>localhost</rabbitmq-server>
         <metadata-deploy-host>localhost</metadata-deploy-host>
         <hbase.master>localhost</hbase.master>
         <hbase.zookeeper.quorum>localhost</hbase.zookeeper.quorum>
-        <jdbc-url>jdbc:mysql://localhost:3306/websiteschema</jdbc-url>--> 
+        <jdbc-url>jdbc:mysql://localhost:3306/websiteschema?useUnicode=true&amp;amp;characterEncoding=utf8</jdbc-url>
         <jdbc-username>websiteschema</jdbc-username>
         <jdbc-passwd>websiteschema</jdbc-passwd>
-        <webrenderer.classifier>linux64</webrenderer.classifier>
-        <!-- 使用关系型数据库存储数据 -->
+        <webrenderer.classifier>osx64</webrenderer.classifier>
         <mapper.scan.package>websiteschema.persistence.mapper</mapper.scan.package>
-        <!-- 使用Hbase数据库存储数据 -->
 <!--        <mapper.scan.package>websiteschema.persistence.hbase</mapper.scan.package>-->
     </properties>
 
@@ -359,16 +354,6 @@
                 <groupId>commons-httpclient</groupId>
                 <artifactId>commons-httpclient</artifactId>
                 <version>3.1</version>
-            </dependency>
-            <dependency>
-                <groupId>com.oracle</groupId>
-                <artifactId>ojdbc6</artifactId>
-                <version>11.2.0</version>
-            </dependency>
-            <dependency>
-                <groupId>com.oracle</groupId>
-                <artifactId>ucp</artifactId>
-                <version>11.2.0</version>
             </dependency>
             <dependency>
                 <groupId>com.oracle</groupId>
