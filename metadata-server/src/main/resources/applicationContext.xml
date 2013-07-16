@@ -55,7 +55,6 @@
     <!--enale component scanning (beware that this does not enable mapper scanning!)-->
     <context:component-scan base-package="${mapper.scan.package}" />
     <context:component-scan base-package="websiteschema.service" />
-    <context:component-scan base-package="com.apc.websiteschema.fms.service" />
     <context:component-scan base-package="websiteschema.rest" />
 
     <!-- enable autowire -->
@@ -74,34 +73,6 @@
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
         <property name="basePackage" value="websiteschema.persistence.rdbms" />
         <property name="sqlSessionFactory" ref="sqlSessionFactory" />
-    </bean>
-
-    <bean id="dataSource2" class="oracle.ucp.jdbc.PoolDataSourceFactory" factory-method="getPoolDataSource">
-        <property name="URL" value="jdbc:oracle:thin:@10.8.0.160:1521:fms"/>
-        <property name="user" value="fcm"/>
-        <property name="password" value="fcm"/>
-        <property name="connectionFactoryClassName" value="oracle.jdbc.pool.OracleDataSource"/>
-        <property name="connectionPoolName" value="ANAG_POOL"/>
-        <property name="minPoolSize" value="2"/>
-        <property name="maxPoolSize" value="10"/>
-        <property name="initialPoolSize" value="5"/>
-        <property name="inactiveConnectionTimeout" value="120"/>
-        <property name="validateConnectionOnBorrow" value="true"/>
-        <property name="maxStatements" value="10"/>
-    </bean>
-
-    <bean id="transactionManager2" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-        <property name="dataSource" ref="dataSource2" />
-    </bean>
-
-    <bean id="sqlSessionFactory2" class="org.mybatis.spring.SqlSessionFactoryBean">
-        <property name="dataSource" ref="dataSource2" />
-        <property name="typeAliasesPackage" value="com.apc.websiteschema.fms" />
-    </bean>
-
-    <bean id="mapperScannerConfigurer2" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="com.apc.websiteschema.fms.mapper" />
-        <property name="sqlSessionFactory" ref="sqlSessionFactory2" />
     </bean>
 
 </beans>
